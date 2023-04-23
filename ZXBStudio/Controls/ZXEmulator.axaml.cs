@@ -41,6 +41,25 @@ namespace ZXBasicStudio.Controls
         ushort address = 0;
         public bool Running { get { return machine.Running; } }
         public bool Paused { get { return machine.Paused; } }
+        public bool Borderless 
+        { 
+            get { return renderer.Borderless; } 
+            set 
+            {
+                bool pause = Running && !Paused;
+
+                if (pause)
+                    Pause();
+
+                Thread.Sleep(100);
+
+                renderer.Borderless = value; 
+                emuScr.Borderless = value;
+
+                if (pause)
+                    Resume();
+            } 
+        }
         public bool TurboEnabled 
         { 
             get { return machine.TurboEnabled; } 

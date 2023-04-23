@@ -123,7 +123,8 @@ namespace ZXBasicStudio
             btnUncomment.Click += BtnUncomment_Click;
             btnRemoveBreakpoints.Click += BtnRemoveBreakpoints_Click;
             btnTurbo.Click += TurboModeEmulator;
-            btnDirectScreen.Click += BtnDirectScreen_Click;
+            btnBorderless.Click += Borderless;
+            btnDirectScreen.Click += DirectScreen;
             #endregion
 
             #region Attach Breakpoint manager events
@@ -159,6 +160,7 @@ namespace ZXBasicStudio
 
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom);
         }
+
 
         #region File manipulation
         private void PeExplorer_SelectedPathChanged(object? sender, System.EventArgs e)
@@ -496,6 +498,8 @@ namespace ZXBasicStudio
             FileInfo.ProjectLoaded = true;
             FileInfo.FileLoaded = false;
             FileInfo.FileSystemObjectSelected = false;
+            EmulatorInfo.CanDebug = true;
+            EmulatorInfo.CanRun = true;
         }
 
         ZXTextEditor? OpenFile(string file)
@@ -580,46 +584,61 @@ namespace ZXBasicStudio
         #endregion
 
         #region Emulator control
-        private void BtnDirectScreen_Click(object? sender, RoutedEventArgs e)
+        private void DirectScreen(object? sender, RoutedEventArgs e)
         {
             emu.DirectMode = btnDirectScreen.IsChecked ?? false;
         }
-                
+
+        private void Borderless(object? sender, RoutedEventArgs e)
+        {
+            emu.Borderless = btnBorderless.IsChecked ?? false;
+        }
         private void SwapFullScreen()
         {
-            bool running = emu.Running;
-            bool paused = emu.Paused;
 
-            if (rootContent == null)
+            ZXFloatingWindow? floatW = ZXFloatController.Windows.FirstOrDefault(w => w.DockingContainer.DockingControls.Contains(emuDock));
+
+            if (floatW == null)
             {
 
-                if (running && !paused)
-                    emu.Pause();
+                bool running = emu.Running;
+                bool paused = emu.Paused;
 
-                rootContent = this.Content;
-                emuDock.DockedControl = null;
-                //grdEmulator.Children.Remove(emu);
-                this.Content = emu;
+                if (rootContent == null)
+                {
 
-                if (running && !paused)
-                    emu.Resume();
+                    if (running && !paused)
+                        emu.Pause();
 
-                emu.Focus();
+                    rootContent = this.Content;
+                    emuDock.DockedControl = null;
+                    //grdEmulator.Children.Remove(emu);
+                    this.Content = emu;
+
+                    if (running && !paused)
+                        emu.Resume();
+
+                    emu.Focus();
+                }
+                else
+                {
+                    if (running && !paused)
+                        emu.Pause();
+
+                    this.Content = rootContent;
+                    emuDock.DockedControl = emu;
+                    //grdEmulator.Children.Add(emu);
+
+                    if (running && !paused)
+                        emu.Resume();
+
+                    rootContent = null;
+                    emu.Focus();
+                }
             }
             else
             {
-                if (running && !paused)
-                    emu.Pause();
-
-                this.Content = rootContent;
-                emuDock.DockedControl = emu;
-                //grdEmulator.Children.Add(emu);
-
-                if (running && !paused)
-                    emu.Resume();
-
-                rootContent = null;
-                emu.Focus();
+                floatW.WindowState = floatW.WindowState == WindowState.FullScreen ? WindowState.Normal : WindowState.FullScreen;
             }
         }
 
@@ -923,6 +942,7 @@ namespace ZXBasicStudio
                 return;
             }
             outDock.Select();
+            outLog.Clear();
             Cleanup();
             EmulatorInfo.CanDebug = false;
             EmulatorInfo.CanRun = false;
@@ -951,6 +971,7 @@ namespace ZXBasicStudio
                 return;
             }
             outDock.Select();
+            outLog.Clear();
             Cleanup();
             EmulatorInfo.CanDebug = false;
             EmulatorInfo.CanRun = false;
@@ -1011,6 +1032,7 @@ namespace ZXBasicStudio
                 return;
             }
             outDock.Select();
+            outLog.Clear();
             Cleanup();
             BlockEditors();
             EmulatorInfo.CanDebug = false;
@@ -1116,6 +1138,7 @@ namespace ZXBasicStudio
             string file = opts.OutputPath;
 
             outDock.Select();
+            outLog.Clear();
             Cleanup();
             BlockEditors();
             EmulatorInfo.CanDebug = false;

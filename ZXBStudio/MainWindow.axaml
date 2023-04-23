@@ -150,6 +150,9 @@
         <svg:Svg Path="/Svg/truck-fast-solid.svg"></svg:Svg>
       </Button>
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <ToggleButton Classes="toolbar" Name="btnBorderless" ToolTip.Tip="Borderless mode">
+        <svg:Svg Path="/Svg/maximize-solid.svg"></svg:Svg>
+      </ToggleButton>
       <ToggleButton Classes="toolbar" Name="btnDirectScreen" ToolTip.Tip="Direct screen mode">
         <svg:Svg Path="/Svg/display-lines-solid.svg"></svg:Svg>
       </ToggleButton>

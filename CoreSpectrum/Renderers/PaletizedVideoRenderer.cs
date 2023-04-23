@@ -11,17 +11,19 @@ namespace CoreSpectrum.Renderers
     public class PaletizedVideoRenderer<T> : IVideoRenderer
     {
         bool _borderless;
-        public bool Borderless { get { return _borderless; } }
+        public bool Borderless { get { return _borderless; } set { _borderless = value; } }
 
         protected T[] _videoBuffer;
+        protected T[] _videoBufferBorderless;
         protected T[] _palette;
 
-        public T[] VideoBuffer { get { return _videoBuffer; } }
+        public T[] VideoBuffer { get { return _borderless ? _videoBufferBorderless : _videoBuffer; } }
 
         public PaletizedVideoRenderer(T[] palette, bool borderless)
         {
             _borderless = borderless;
-            _videoBuffer = Borderless ? new T[256 * 192] : new T[312 * 416];
+            _videoBuffer = new T[312 * 416];
+            _videoBufferBorderless = new T[256 * 192];
             _palette = (T[])palette.Clone();
         }
 
@@ -95,7 +97,7 @@ namespace CoreSpectrum.Renderers
                 T realInk = _palette[invert ? paper : ink];
 
                 for (int bit = 128; bit > 0; bit >>= 1)
-                    _videoBuffer[lineStart++] = (byt & bit) != 0 ? realInk : realPaper;
+                    _videoBufferBorderless[lineStart++] = (byt & bit) != 0 ? realInk : realPaper;
             }
         }
         private void FillBorder(int start, int length, byte color)

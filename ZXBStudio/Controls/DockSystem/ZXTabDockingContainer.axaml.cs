@@ -263,7 +263,13 @@ namespace ZXBasicStudio.Controls.DockSystem
             var tabButton = (ZXTabDockingButton?)tabButtons.Children.FirstOrDefault(c => (c as ZXTabDockingButton)?.AssociatedControl == Element);
 
             if (tabButton != null)
+            {
                 SelectTab(tabButton);
+                var parentWindow = this.Parent as ZXFloatingWindow;
+
+                if (parentWindow != null)
+                    parentWindow.Activate();
+            }
         }
     }
 
