@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="24"
+             x:Class="ZXBasicStudio.Controls.ZXVariablePropertyView" Margin="0">
+  <Border BorderBrush="#000000" BorderThickness="1" Padding="0" Height="24">
+    <Grid ColumnDefinitions="1.5*,*,*" Background="Transparent">
+      <StackPanel Orientation="Horizontal">
+        <Svg Name="svgImg" Path="{Binding SvgPath}" Margin="5,0,5,0" VerticalAlignment="Center" Height="12" Width="12" HorizontalAlignment="Left"></Svg>
+        <TextBlock Name="tbName" Foreground="#ffffff" Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding PropertyName}"></TextBlock>
+      </StackPanel>
+      <TextBlock Grid.Column="1" Name="tbValue" Foreground="#ffffff" Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding PropertyValue}"></TextBlock>
+      <TextBlock Grid.Column="2" Name="tbType" Foreground="#ffffff" Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding PropertyType}"></TextBlock>
+    
+      <Border BorderBrush="Black" BorderThickness="1" CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#ff303030" Name="brdEdit" IsVisible="False" Grid.ColumnSpan="3" Margin="-2" Padding="0">
+        <RelativePanel HorizontalAlignment="Stretch" VerticalAlignment="Center">
+          <TextBlock RelativePanel.AlignVerticalCenterWithPanel="True" Name="tbDesc" VerticalAlignment="Center" Margin="10,0,5,0">New value:</TextBlock>
+          <TextBox RelativePanel.RightOf="tbDesc" Height="18" Margin="0" VerticalContentAlignment="Center" RelativePanel.AlignRightWithPanel="True" Name="txtEdit" Background="White" Foreground="Black" IsReadOnly="False" Padding="5,0,0,0">asas</TextBox>
+        </RelativePanel>
+      </Border>
+    </Grid>
+  </Border>
+</UserControl>

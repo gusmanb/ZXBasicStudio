@@ -1,0 +1,308 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="Instructions Execution\Instructions\ADC HL,rr +          .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ADC HL,rr +          .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\ADD A,r +             .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ADD A,r +             .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\ADD rr,rr               .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ADD rr,rr               .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\AND r +               .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AND r +               .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\BIT b,r +            .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BIT b,r +            .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\EX %28SP%29,HL +            .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EX (SP),HL +            .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\IM n            .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IM n            .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\IN r,%28C%29             .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IN r,(C)             .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\INC r +         .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>INC r +         .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\INC rr +        .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>INC rr +        .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\INI +             .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>INI +             .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\JP %28HL%29 +          .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>JP (HL) +          .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\JR cc         .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>JR cc         .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD %28aa%29,rr        .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD (aa),rr        .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD %28HL%29,n +        .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD (HL),n +        .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD A,I +            .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD A,I +            .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD I,A +            .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD I,A +            .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD r,%28rr%29 +          .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD r,(rr) +          .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD r,n       .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD r,n       .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD r,r       .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD r,r       .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD rr,%28aa%29   .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD rr,(aa)   .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD rr,nn    .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD rr,nn    .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LD SP,HL +         .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LD SP,HL +         .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\LDI +                    .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LDI +                    .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\OUT %28C%29,r            .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>OUT (C),r            .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\PUSH rr +                   .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PUSH rr +                   .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\RET +              .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RET +              .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\RETN            .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RETN            .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\RLCA +             .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RLCA +             .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\RRD +           .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RRD +           .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\RST                   .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RST                   .cs</LastGenOutput>
+    </None>
+    <None Update="Instructions Execution\Instructions\SET b,r +               .tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SET b,r +               .cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Instructions Execution\Instructions\ADC HL,rr +          .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ADC HL,rr +          .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\ADD A,r +             .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ADD A,r +             .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\ADD rr,rr               .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ADD rr,rr               .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\AND r +               .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AND r +               .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\BIT b,r +            .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BIT b,r +            .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\EX %28SP%29,HL +            .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EX (SP),HL +            .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\IM n            .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>IM n            .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\IN r,%28C%29             .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>IN r,(C)             .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\INC r +         .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>INC r +         .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\INC rr +        .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>INC rr +        .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\INI +             .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>INI +             .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\JP %28HL%29 +          .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>JP (HL) +          .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\JR cc         .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>JR cc         .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD %28aa%29,rr        .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD (aa),rr        .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD %28HL%29,n +        .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD (HL),n +        .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD A,I +            .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD A,I +            .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD I,A +            .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD I,A +            .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD r,%28rr%29 +          .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD r,(rr) +          .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD r,n       .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD r,n       .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD r,r       .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD r,r       .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD rr,%28aa%29   .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD rr,(aa)   .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD rr,nn    .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD rr,nn    .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LD SP,HL +         .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LD SP,HL +         .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\LDI +                    .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LDI +                    .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\OUT %28C%29,r            .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OUT (C),r            .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\PUSH rr +                   .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PUSH rr +                   .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\RET +              .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RET +              .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\RETN            .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RETN            .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\RLCA +             .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RLCA +             .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\RRD +           .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RRD +           .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\RST                   .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RST                   .tt</DependentUpon>
+    </Compile>
+    <Compile Update="Instructions Execution\Instructions\SET b,r +               .cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SET b,r +               .tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,210 @@
+<wnd:ZXWindowBase xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:zxc="using:ZXBasicStudio.Controls"
+        xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
+        xmlns:wnd="using:ZXBasicStudio.Classes"
+        xmlns:svg="using:Avalonia.Svg.Skia"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+        Width="1024" Height="768"
+        Icon="/Assets/zxbs.ico"
+        x:Class="ZXBasicStudio.MainWindow"
+        Title="ZXBasicStudio" WindowStartupLocation="CenterScreen">
+  <Window.Styles>
+    <Style Selector="TabItem.closeTab">
+      <Setter Property="Header">
+        <Template>
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding $parent[1].Tag}" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+            <Button Height="16" Width="16" Padding="0,-3,0,0" 
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Click="CloseFile" Grid.Column="1">x</Button>
+          </Grid>
+        </Template>
+      </Setter>
+    </Style>
+    <Style Selector="Button.toolbar">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="ToggleButton.toolbar">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="Button.toolbar:disabled">
+      <Setter Property="Background" Value="#ff606060" />
+      <Setter Property="BorderBrush" Value="#ff606060" />
+    </Style>
+    <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#ffb0b0b0" />
+    </Style>
+    <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#ff606060" />
+    </Style>
+  </Window.Styles>
+  <Grid Grid.Row="1" RowDefinitions="Auto,Auto,2*,4,*" ColumnDefinitions="0.6*,4,2*,4,*" Name="grdMain">
+    <Menu Grid.ColumnSpan="5" Background="#ff303030">
+      <MenuItem Header="File">
+        <MenuItem Header="Open project" Name="mnuOpenProject" Icon="{svg:SvgImage /Svg/White/diagram-project-solid.svg}"></MenuItem>
+        <Separator></Separator>
+        <MenuItem Header="New...">
+          <MenuItem Header="Project" Name="mnuCreateProject" Icon="{SvgImage /Svg/White/diagram-project-plus-solid.svg}"></MenuItem>
+          <MenuItem Header="Folder" IsEnabled="{Binding FileInfo.ProjectLoaded}" Name="mnuCreateFolder" Icon="{SvgImage /Svg/White/folder-plus-solid.svg}"></MenuItem>
+          <MenuItem Header="File" IsEnabled="{Binding FileInfo.ProjectLoaded}" Name="mnuCreateFile" Icon="{SvgImage /Svg/White/file-circle-plus-solid.svg}"></MenuItem>
+        </MenuItem>
+        <MenuItem Header="Save file" IsEnabled="{Binding FileInfo.FileLoaded}" Name="mnuSaveFile" Icon="{SvgImage /Svg/White/file-arrow-down-solid.svg}"></MenuItem>
+        <MenuItem Header="Close...">
+          <MenuItem Header="Project" IsEnabled="{Binding FileInfo.ProjectLoaded}" Name="mnuCloseProject" Icon="{SvgImage /Svg/White/diagram-project-cross-solid.svg}"></MenuItem>
+          <MenuItem Header="File" IsEnabled="{Binding FileInfo.FileLoaded}" Name="mnuCloseFile" Icon="{SvgImage /Svg/White/file-circle-xmark-solid.svg}"></MenuItem>
+        </MenuItem>
+      </MenuItem>
+      <MenuItem Header="Project">
+        <MenuItem Header="Configure project" IsEnabled="{Binding FileInfo.ProjectLoaded}" Name="mnuConfigureProject" Icon="{SvgImage /Svg/White/gears-solid.svg}"></MenuItem>
+      </MenuItem>
+      <MenuItem Header="Build">
+        <MenuItem Header="Build project" IsEnabled="{Binding EmulatorInfo.CanRun}" Name="mnuBuild" Icon="{SvgImage /Svg/White/rectangle-list-solid.svg}"></MenuItem>
+        <MenuItem Header="Build and run" IsEnabled="{Binding EmulatorInfo.CanRun}" Name="mnuBuildRun" Icon="{SvgImage /Svg/White/play-solid.svg}"></MenuItem>
+        <MenuItem Header="Build and debug" IsEnabled="{Binding EmulatorInfo.CanDebug}" Name="mnuBuildDebug" Icon="{SvgImage /Svg/White/bug-solid.svg}"></MenuItem>
+        <MenuItem Header="Export..." IsEnabled="{Binding EmulatorInfo.CanRun}" Name="mnuExport" Icon="{SvgImage /Svg/White/file-export-solid.svg}"></MenuItem>
+      </MenuItem>
+      <MenuItem Header="Debug">
+        <MenuItem Header="Pause" IsEnabled="{Binding EmulatorInfo.CanPause}" Name="mnuPause" Icon="{SvgImage /Svg/White/pause-solid.svg}"></MenuItem>
+        <MenuItem Header="Continue" Name="mnuContinue" IsEnabled="{Binding EmulatorInfo.CanResume}" Icon="{SvgImage /Svg/White/forward-solid.svg}"></MenuItem>
+        <MenuItem Header="Turbo mode" Name="mnuTurbo" IsEnabled="{Binding EmulatorInfo.CanPause}" Icon="{SvgImage /Svg/White/truck-fast-solid.svg}"></MenuItem>
+        <Separator></Separator>
+        <MenuItem Header="Basic step" Name="mnuBasicStep" IsEnabled="{Binding EmulatorInfo.CanStep}" Icon="{SvgImage /Svg/White/forward-fast-solid.svg}"></MenuItem>
+        <MenuItem Header="Assembler step" Name="mnuAssemblerStep" IsEnabled="{Binding EmulatorInfo.CanStep}" Icon="{SvgImage /Svg/White/forward-step-solid.svg}"></MenuItem>
+      </MenuItem>
+      <MenuItem Header="Tools">
+        <MenuItem Header="Dump memory" Name="mnuDumpMem" IsEnabled="{Binding EmulatorInfo.CanStep}" Icon="{SvgImage /Svg/White/dumpster-solid.svg}"></MenuItem>
+        <MenuItem Header="Dump registers" Name="mnuDumpRegs" IsEnabled="{Binding EmulatorInfo.CanStep}" Icon="{SvgImage /Svg/White/dumpster-solid.svg}"></MenuItem>
+        <Separator></Separator>
+        <MenuItem Header="Restore layout" Name="mnuRestoreLayout" Icon="{SvgImage /Svg/White/clock-rotate-left-solid.svg}"></MenuItem>
+        <Separator></Separator>
+        <MenuItem Header="Options..." Name="mnuGlobalOptions" Icon="{SvgImage /Svg/White/gears-solid.svg}"></MenuItem>
+      </MenuItem>
+    </Menu>
+    <StackPanel Spacing="4" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5" Margin="10">
+      <Button Classes="toolbar" Name="btnOpenProject" ToolTip.Tip="Open project">
+        <svg:Svg Path="/Svg/diagram-project-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnNewFolder" IsEnabled="{Binding FileInfo.ProjectLoaded}" ToolTip.Tip="New folder">
+        <svg:Svg Path="/Svg/folder-plus-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnNewFile" IsEnabled="{Binding FileInfo.ProjectLoaded}" ToolTip.Tip="New file">
+        <svg:Svg Path="/Svg/file-circle-plus-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnSave" IsEnabled="{Binding FileInfo.FileLoaded}" ToolTip.Tip="Save file">
+        <svg:Svg Path="/Svg/floppy-disk-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnSaveAll" IsEnabled="{Binding FileInfo.FileLoaded}" ToolTip.Tip="Save all files">
+        <svg:Svg Path="/Svg/floppy-multiple-disk-solid.svg"></svg:Svg>
+      </Button>
+      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <Button Classes="toolbar" Name="btnCollapse" IsEnabled="{Binding FileInfo.FileLoaded}" ToolTip.Tip="Collapse code">
+        <svg:Svg Path="/Svg/square-minus-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnExpand" IsEnabled="{Binding FileInfo.FileLoaded}" ToolTip.Tip="Expand code">
+        <svg:Svg Path="/Svg/square-plus-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnComment" IsEnabled="{Binding FileInfo.FileLoaded}" ToolTip.Tip="Comment selection">
+        <svg:Svg Path="/Svg/comment-dots-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnUncomment" IsEnabled="{Binding FileInfo.FileLoaded}" ToolTip.Tip="Uncomment selection">
+        <svg:Svg Path="/Svg/comment-slash-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnRemoveBreakpoints" IsEnabled="{Binding FileInfo.ProjectLoaded}" ToolTip.Tip="Remove all breakpoints">
+        <svg:Svg Path="/Svg/circle-xmark-solid.svg"></svg:Svg>
+      </Button>
+      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <Button Classes="toolbar" Name="btnRun" IsEnabled="{Binding EmulatorInfo.CanRun}" ToolTip.Tip="Build and run (F5)">
+        <svg:Svg Path="/Svg/play-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnDebug" IsEnabled="{Binding EmulatorInfo.CanDebug}" ToolTip.Tip="Build and debug (F6)">
+        <svg:Svg Path="/Svg/bug-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnPause"  IsEnabled="{Binding EmulatorInfo.CanPause}" ToolTip.Tip="Pause (F7)">
+        <svg:Svg Path="/Svg/pause-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnResume" IsEnabled="{Binding EmulatorInfo.CanResume}" ToolTip.Tip="Resume (F8)">
+        <svg:Svg Path="/Svg/forward-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnNextInstruction" IsEnabled="{Binding EmulatorInfo.CanStep}" ToolTip.Tip="Next assembler instruction (F9)">
+        <svg:Svg Path="/Svg/forward-step-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnNextLine" IsEnabled="{Binding EmulatorInfo.CanStep}" ToolTip.Tip="Next basic instruction (F10)">
+        <svg:Svg Path="/Svg/forward-fast-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnStop" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Stop (F11)">
+        <svg:Svg Path="/Svg/stop-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnTurbo" IsEnabled="{Binding EmulatorInfo.CanPause}" ToolTip.Tip="Turbo mode (F12)">
+        <svg:Svg Path="/Svg/truck-fast-solid.svg"></svg:Svg>
+      </Button>
+      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <ToggleButton Classes="toolbar" Name="btnDirectScreen" ToolTip.Tip="Direct screen mode">
+        <svg:Svg Path="/Svg/display-lines-solid.svg"></svg:Svg>
+      </ToggleButton>
+      <Button Classes="toolbar" Name="btnFloat" IsEnabled="True" ToolTip.Tip="Turbo mode (F12)">
+        <svg:Svg Path="/Svg/truck-fast-solid.svg"></svg:Svg>
+      </Button>
+    </StackPanel>
+    <zxd:ZXDockingContainer Grid.Column="0" Grid.Row="2" Grid.RowSpan="3" Name="dockLeft" RowDefinitions="*">
+      <zxd:ZXDockingControl Title="Project explorer" Name="projDock">
+        <zxd:ZXDockingControl.DockedControl>
+          <zxc:ZXProjectExplorer Name="peExplorer"></zxc:ZXProjectExplorer>
+        </zxd:ZXDockingControl.DockedControl>
+      </zxd:ZXDockingControl>
+    </zxd:ZXDockingContainer>
+    <GridSplitter Classes="vertical" Grid.Column="1" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns" />
+    <TabControl Grid.Column="2" Grid.Row="2" Name="tcEditors" Items="{Binding EditItems}" />
+    <GridSplitter Classes="vertical" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns"></GridSplitter>
+    <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,*" Grid.RowSpan="3" Name="dockRight">
+      <zxd:ZXDockingControl Title="Variables" Name="varsDock">
+        <zxd:ZXDockingControl.DockedControl>
+          <zxc:ZXVariablesView Name="varsView"></zxc:ZXVariablesView>
+        </zxd:ZXDockingControl.DockedControl>
+      </zxd:ZXDockingControl>
+      <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
+      <zxd:ZXDockingControl Title="T-States" Grid.Row="2" Name="tstatesDock">
+        <zxd:ZXDockingControl.DockedControl>
+          <zxc:ZXTStatesView Name="statesView"></zxc:ZXTStatesView>
+        </zxd:ZXDockingControl.DockedControl>
+      </zxd:ZXDockingControl>
+      <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
+      <zxd:ZXDockingControl Title="Registers" Grid.Row="4" Name="regsDock">
+        <zxd:ZXDockingControl.DockedControl>
+          <zxc:ZXRegistersView Name="regView" AllowEdit="{Binding EmulatorInfo.CanStep}"></zxc:ZXRegistersView>
+        </zxd:ZXDockingControl.DockedControl>
+      </zxd:ZXDockingControl>
+    </zxd:ZXDockingContainer>
+    <GridSplitter Classes="horizontal" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="3" ResizeDirection="Rows"></GridSplitter>
+    <zxd:ZXTabDockingContainer Name="dockBottom" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="4" TabsPosition="Bottom">
+      <zxd:ZXTabDockingContainer.DockedControls>
+        <zxd:ZXDockingControl Title="Memory viewer" Name="memDock">
+          <zxd:ZXDockingControl.DockedControl>
+            <zxc:ZXMemoryBlockView Name="memView" Background="#202020"></zxc:ZXMemoryBlockView>
+          </zxd:ZXDockingControl.DockedControl>
+        </zxd:ZXDockingControl>
+        <zxd:ZXDockingControl Title="Output" Name="outDock">
+          <zxd:ZXDockingControl.DockedControl>
+            <zxc:ZXOutputLog Name="outLog"></zxc:ZXOutputLog>
+          </zxd:ZXDockingControl.DockedControl>
+        </zxd:ZXDockingControl>
+        <zxd:ZXDockingControl Title="Emulator" Name="emuDock">
+          <zxd:ZXDockingControl.DockedControl>
+            <zxc:ZXEmulator Name="emu" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></zxc:ZXEmulator>
+          </zxd:ZXDockingControl.DockedControl>
+        </zxd:ZXDockingControl>
+      </zxd:ZXTabDockingContainer.DockedControls>
+    </zxd:ZXTabDockingContainer>
+</Grid>
+</wnd:ZXWindowBase>

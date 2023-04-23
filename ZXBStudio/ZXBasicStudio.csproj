@@ -1,0 +1,299 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>ZXBasicStudio</AssemblyName>
+    <RootNamespace>ZXBasicStudio</RootNamespace>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Platforms>AnyCPU;x64</Platforms>
+    <ApplicationIcon>zxbs.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaXaml Remove="Controls\ZXLocalVariablesView.axaml" />
+    <AvaloniaXaml Remove="Controls\ZXVariableView.axaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Classes\GLConsts.cs" />
+    <Compile Remove="Classes\MicroTimer.cs" />
+    <Compile Remove="Classes\ObjectTreeEventHandler.cs" />
+    <Compile Remove="Classes\ZXGlobalVariableMap.cs" />
+    <Compile Remove="Classes\ZXLocalVariableMap.cs" />
+    <Compile Remove="Controls\ZXLocalVariablesView.axaml.cs" />
+    <Compile Remove="Controls\ZXVariableView.axaml.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove=".gitignore" />
+    <None Remove="Assets\asmFile.png" />
+    <None Remove="Assets\cfgFile.png" />
+    <None Remove="Assets\debug.png" />
+    <None Remove="Assets\folder.png" />
+    <None Remove="Assets\LogoBig.png" />
+    <None Remove="Assets\logoSmall.png" />
+    <None Remove="Assets\unknFile.png" />
+    <None Remove="Assets\zxbFile.png" />
+    <None Remove="Assets\zxbs.ico" />
+    <None Remove="Fonts\NimbusSanL-Bol.ttf" />
+    <None Remove="Fonts\NimbusSanL-BolIta.ttf" />
+    <None Remove="Fonts\NimbusSanL-Reg.ttf" />
+    <None Remove="Fonts\NimbusSanL-RegIta.ttf" />
+    <None Remove="Svg\box-open-solid.svg" />
+    <None Remove="Svg\box-solid.svg" />
+    <None Remove="Svg\boxes-stacked-solid.svg" />
+    <None Remove="Svg\bug-solid.svg" />
+    <None Remove="Svg\circle-minus-solid.svg" />
+    <None Remove="Svg\circle-xmark-solid.svg" />
+    <None Remove="Svg\clock-rotate-left-solid.svg" />
+    <None Remove="Svg\comment-dots-solid.svg" />
+    <None Remove="Svg\comment-slash-solid.svg" />
+    <None Remove="Svg\copy-solid.svg" />
+    <None Remove="Svg\diagram-project-cross-solid.svg" />
+    <None Remove="Svg\diagram-project-plus-solid.svg" />
+    <None Remove="Svg\diagram-project-solid.svg" />
+    <None Remove="Svg\display-lines-solid.svg" />
+    <None Remove="Svg\dumpster-solid.svg" />
+    <None Remove="Svg\file-arrow-down-solid.svg" />
+    <None Remove="Svg\file-circle-minus-solid.svg" />
+    <None Remove="Svg\file-circle-plus-solid.svg" />
+    <None Remove="Svg\file-circle-xmark-solid.svg" />
+    <None Remove="Svg\file-export-solid.svg" />
+    <None Remove="Svg\floppy-disk-solid.svg" />
+    <None Remove="Svg\floppy-multiple-disk-solid.svg" />
+    <None Remove="Svg\folder-open-solid.svg" />
+    <None Remove="Svg\folder-plus-solid.svg" />
+    <None Remove="Svg\forward-fast-solid.svg" />
+    <None Remove="Svg\forward-solid.svg" />
+    <None Remove="Svg\forward-step-solid.svg" />
+    <None Remove="Svg\gears-solid.svg" />
+    <None Remove="Svg\hashtag-solid.svg" />
+    <None Remove="Svg\list-ol-solid.svg" />
+    <None Remove="Svg\magnifying-glass-location-solid.svg" />
+    <None Remove="Svg\maximize-solid.svg" />
+    <None Remove="Svg\minimize-solid.svg" />
+    <None Remove="Svg\paste-solid.svg" />
+    <None Remove="Svg\pause-solid.svg" />
+    <None Remove="Svg\play-solid.svg" />
+    <None Remove="Svg\power-off-solid.svg" />
+    <None Remove="Svg\rectangle-list-solid.svg" />
+    <None Remove="Svg\rectangle-xmark-solid.svg" />
+    <None Remove="Svg\scissors-solid.svg" />
+    <None Remove="Svg\square-minus-solid.svg" />
+    <None Remove="Svg\square-plus-solid.svg" />
+    <None Remove="Svg\stop-solid.svg" />
+    <None Remove="Svg\tag-solid.svg" />
+    <None Remove="Svg\trash-can-regular.svg" />
+    <None Remove="Svg\trash-solid.svg" />
+    <None Remove="Svg\truck-fast-solid.svg" />
+    <None Remove="Svg\White\box-open-solid.svg" />
+    <None Remove="Svg\White\box-solid.svg" />
+    <None Remove="Svg\White\boxes-stacked-solid.svg" />
+    <None Remove="Svg\White\bug-solid.svg" />
+    <None Remove="Svg\White\circle-minus-solid.svg" />
+    <None Remove="Svg\White\circle-xmark-solid.svg" />
+    <None Remove="Svg\White\clock-rotate-left-solid.svg" />
+    <None Remove="Svg\White\comment-dots-solid.svg" />
+    <None Remove="Svg\White\comment-slash-solid.svg" />
+    <None Remove="Svg\White\copy-solid.svg" />
+    <None Remove="Svg\White\diagram-project-cross-solid.svg" />
+    <None Remove="Svg\White\diagram-project-plus-solid.svg" />
+    <None Remove="Svg\White\diagram-project-solid.svg" />
+    <None Remove="Svg\White\display-lines-solid.svg" />
+    <None Remove="Svg\White\dumpster-solid.svg" />
+    <None Remove="Svg\White\file-arrow-down-solid.svg" />
+    <None Remove="Svg\White\file-circle-minus-solid.svg" />
+    <None Remove="Svg\White\file-circle-plus-solid.svg" />
+    <None Remove="Svg\White\file-circle-xmark-solid.svg" />
+    <None Remove="Svg\White\file-export-solid.svg" />
+    <None Remove="Svg\White\floppy-disk-solid.svg" />
+    <None Remove="Svg\White\folder-open-solid.svg" />
+    <None Remove="Svg\White\folder-plus-solid.svg" />
+    <None Remove="Svg\White\forward-fast-solid.svg" />
+    <None Remove="Svg\White\forward-solid.svg" />
+    <None Remove="Svg\White\forward-step-solid.svg" />
+    <None Remove="Svg\White\gears-solid.svg" />
+    <None Remove="Svg\White\hashtag-solid.svg" />
+    <None Remove="Svg\White\list-ol-solid.svg" />
+    <None Remove="Svg\White\magnifying-glass-location-solid.svg" />
+    <None Remove="Svg\White\maximize-solid.svg" />
+    <None Remove="Svg\White\minimize-solid.svg" />
+    <None Remove="Svg\White\paste-solid.svg" />
+    <None Remove="Svg\White\pause-solid.svg" />
+    <None Remove="Svg\White\play-solid.svg" />
+    <None Remove="Svg\White\power-off-solid.svg" />
+    <None Remove="Svg\White\rectangle-list-solid.svg" />
+    <None Remove="Svg\White\rectangle-xmark-solid.svg" />
+    <None Remove="Svg\White\scissors-solid.svg" />
+    <None Remove="Svg\White\square-minus-solid.svg" />
+    <None Remove="Svg\White\square-plus-solid.svg" />
+    <None Remove="Svg\White\stop-solid.svg" />
+    <None Remove="Svg\White\tag-solid.svg" />
+    <None Remove="Svg\White\trash-can-regular.svg" />
+    <None Remove="Svg\White\trash-solid.svg" />
+    <None Remove="Svg\White\truck-fast-solid.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\asmFile.png" />
+    <AvaloniaResource Include="Assets\cfgFile.png" />
+    <AvaloniaResource Include="Assets\debug.png" />
+    <AvaloniaResource Include="Assets\folder.png" />
+    <AvaloniaResource Include="Assets\LogoBig.png" />
+    <AvaloniaResource Include="Assets\logoSmall.png" />
+    <AvaloniaResource Include="Assets\unknFile.png" />
+    <AvaloniaResource Include="Assets\zxbFile.png" />
+    <AvaloniaResource Include="Assets\zxbs.ico" />
+    <AvaloniaResource Include="Fonts\NimbusSanL-Bol.ttf" />
+    <AvaloniaResource Include="Fonts\NimbusSanL-BolIta.ttf" />
+    <AvaloniaResource Include="Fonts\NimbusSanL-Reg.ttf" />
+    <AvaloniaResource Include="Fonts\NimbusSanL-RegIta.ttf" />
+    <AvaloniaResource Include="Svg\box-open-solid.svg" />
+    <AvaloniaResource Include="Svg\box-solid.svg" />
+    <AvaloniaResource Include="Svg\boxes-stacked-solid.svg" />
+    <AvaloniaResource Include="Svg\bug-solid.svg" />
+    <AvaloniaResource Include="Svg\circle-minus-solid.svg" />
+    <AvaloniaResource Include="Svg\circle-xmark-solid.svg" />
+    <AvaloniaResource Include="Svg\clock-rotate-left-solid.svg" />
+    <AvaloniaResource Include="Svg\comment-dots-solid.svg" />
+    <AvaloniaResource Include="Svg\comment-slash-solid.svg" />
+    <AvaloniaResource Include="Svg\copy-solid.svg" />
+    <AvaloniaResource Include="Svg\diagram-project-cross-solid.svg" />
+    <AvaloniaResource Include="Svg\diagram-project-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\diagram-project-solid.svg" />
+    <AvaloniaResource Include="Svg\display-lines-solid.svg" />
+    <AvaloniaResource Include="Svg\dumpster-solid.svg" />
+    <AvaloniaResource Include="Svg\file-arrow-down-solid.svg" />
+    <AvaloniaResource Include="Svg\file-circle-minus-solid.svg" />
+    <AvaloniaResource Include="Svg\file-circle-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\file-circle-xmark-solid.svg" />
+    <AvaloniaResource Include="Svg\file-export-solid.svg" />
+    <AvaloniaResource Include="Svg\floppy-disk-solid.svg" />
+    <AvaloniaResource Include="Svg\floppy-multiple-disk-solid.svg" />
+    <AvaloniaResource Include="Svg\folder-open-solid.svg" />
+    <AvaloniaResource Include="Svg\folder-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\forward-fast-solid.svg" />
+    <AvaloniaResource Include="Svg\forward-solid.svg" />
+    <AvaloniaResource Include="Svg\forward-step-solid.svg" />
+    <AvaloniaResource Include="Svg\gears-solid.svg" />
+    <AvaloniaResource Include="Svg\hashtag-solid.svg" />
+    <AvaloniaResource Include="Svg\list-ol-solid.svg" />
+    <AvaloniaResource Include="Svg\magnifying-glass-location-solid.svg" />
+    <AvaloniaResource Include="Svg\maximize-solid.svg" />
+    <AvaloniaResource Include="Svg\minimize-solid.svg" />
+    <AvaloniaResource Include="Svg\paste-solid.svg" />
+    <AvaloniaResource Include="Svg\pause-solid.svg" />
+    <AvaloniaResource Include="Svg\play-solid.svg" />
+    <AvaloniaResource Include="Svg\power-off-solid.svg" />
+    <AvaloniaResource Include="Svg\rectangle-list-solid.svg" />
+    <AvaloniaResource Include="Svg\rectangle-xmark-solid.svg" />
+    <AvaloniaResource Include="Svg\scissors-solid.svg" />
+    <AvaloniaResource Include="Svg\square-minus-solid.svg" />
+    <AvaloniaResource Include="Svg\square-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\stop-solid.svg" />
+    <AvaloniaResource Include="Svg\tag-solid.svg" />
+    <AvaloniaResource Include="Svg\trash-can-regular.svg" />
+    <AvaloniaResource Include="Svg\trash-solid.svg" />
+    <AvaloniaResource Include="Svg\truck-fast-solid.svg" />
+    <AvaloniaResource Include="Svg\White\box-open-solid.svg" />
+    <AvaloniaResource Include="Svg\White\box-solid.svg" />
+    <AvaloniaResource Include="Svg\White\boxes-stacked-solid.svg" />
+    <AvaloniaResource Include="Svg\White\bug-solid.svg" />
+    <AvaloniaResource Include="Svg\White\circle-minus-solid.svg" />
+    <AvaloniaResource Include="Svg\White\circle-xmark-solid.svg" />
+    <AvaloniaResource Include="Svg\White\clock-rotate-left-solid.svg" />
+    <AvaloniaResource Include="Svg\White\comment-dots-solid.svg" />
+    <AvaloniaResource Include="Svg\White\comment-slash-solid.svg" />
+    <AvaloniaResource Include="Svg\White\copy-solid.svg" />
+    <AvaloniaResource Include="Svg\White\diagram-project-cross-solid.svg" />
+    <AvaloniaResource Include="Svg\White\diagram-project-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\White\diagram-project-solid.svg" />
+    <AvaloniaResource Include="Svg\White\display-lines-solid.svg" />
+    <AvaloniaResource Include="Svg\White\dumpster-solid.svg" />
+    <AvaloniaResource Include="Svg\White\file-arrow-down-solid.svg" />
+    <AvaloniaResource Include="Svg\White\file-circle-minus-solid.svg" />
+    <AvaloniaResource Include="Svg\White\file-circle-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\White\file-circle-xmark-solid.svg" />
+    <AvaloniaResource Include="Svg\White\file-export-solid.svg" />
+    <AvaloniaResource Include="Svg\White\floppy-disk-solid.svg" />
+    <AvaloniaResource Include="Svg\White\folder-open-solid.svg" />
+    <AvaloniaResource Include="Svg\White\folder-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\White\forward-fast-solid.svg" />
+    <AvaloniaResource Include="Svg\White\forward-solid.svg" />
+    <AvaloniaResource Include="Svg\White\forward-step-solid.svg" />
+    <AvaloniaResource Include="Svg\White\gears-solid.svg" />
+    <AvaloniaResource Include="Svg\White\hashtag-solid.svg" />
+    <AvaloniaResource Include="Svg\White\list-ol-solid.svg" />
+    <AvaloniaResource Include="Svg\White\magnifying-glass-location-solid.svg" />
+    <AvaloniaResource Include="Svg\White\maximize-solid.svg" />
+    <AvaloniaResource Include="Svg\White\minimize-solid.svg" />
+    <AvaloniaResource Include="Svg\White\paste-solid.svg" />
+    <AvaloniaResource Include="Svg\White\pause-solid.svg" />
+    <AvaloniaResource Include="Svg\White\play-solid.svg" />
+    <AvaloniaResource Include="Svg\White\power-off-solid.svg" />
+    <AvaloniaResource Include="Svg\White\rectangle-list-solid.svg" />
+    <AvaloniaResource Include="Svg\White\rectangle-xmark-solid.svg" />
+    <AvaloniaResource Include="Svg\White\scissors-solid.svg" />
+    <AvaloniaResource Include="Svg\White\square-minus-solid.svg" />
+    <AvaloniaResource Include="Svg\White\square-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\White\stop-solid.svg" />
+    <AvaloniaResource Include="Svg\White\tag-solid.svg" />
+    <AvaloniaResource Include="Svg\White\trash-can-regular.svg" />
+    <AvaloniaResource Include="Svg\White\trash-solid.svg" />
+    <AvaloniaResource Include="Svg\White\truck-fast-solid.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="zxbs.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="Roots.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.0.0-preview5" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview5" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview5" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview5" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0-preview5" />
+    <PackageReference Include="MessageBox.Avalonia" Version="2.3.1-prev5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3-beta1" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bufdio\Bufdio.csproj" />
+    <ProjectReference Include="..\CoreSpectrum\CoreSpectrum.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Controls\DockSystem\ZXFloatingWindow.axaml.cs">
+      <DependentUpon>ZXFloatingWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\ZXKeyView.axaml.cs">
+      <DependentUpon>ZXKeyView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\ZXRegisterView.axaml.cs">
+      <DependentUpon>ZXRegisterView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\ZXRegistersView.axaml.cs">
+      <DependentUpon>ZXRegistersView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Dialogs\ZXBuildSettingsDialog.axaml.cs">
+      <DependentUpon>ZXBuildSettingsDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Dialogs\ZXExportDialog.axaml.cs">
+      <DependentUpon>ZXExportDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Dialogs\ZXOptionsDialog.axaml.cs">
+      <DependentUpon>ZXOptionsDialog.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Controls\ZXOutputLog.axaml" />
+  </ItemGroup>
+</Project>

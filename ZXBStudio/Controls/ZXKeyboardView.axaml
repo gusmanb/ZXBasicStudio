@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:zxc="using:ZXBasicStudio.Controls"
+             mc:Ignorable="d" d:DesignWidth="630" d:DesignHeight="300"
+             MaxHeight="320" MaxWidth="630"
+             MinHeight="320" MinWidth="630"
+             x:Class="ZXBasicStudio.Controls.ZXKeyboardView">
+  <UserControl.Styles>
+    <Style Selector="TextBlock">
+      <Setter Property="FontFamily" Value="avares://ZXBasicStudio/Fonts#Nimbus Sans L"></Setter>
+      <Setter Property="FontSize" Value="8"></Setter>
+      <Setter Property="VerticalAlignment" Value="Bottom"></Setter>
+      <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+      <Setter Property="Margin" Value="5,0,0,-5"></Setter>
+      <Setter Property="Background" Value="#000000"></Setter>
+    </Style>
+  </UserControl.Styles>
+  <Grid RowDefinitions="*,4*,4*,4*,4*" HorizontalAlignment="Stretch" Background="#000000">
+    <Grid Width="600" HorizontalAlignment="Left" Grid.Row="0" ColumnDefinitions="*,*,*,*,*,*,*,*,*,*">
+      <TextBlock Foreground="Blue" Background="Black" Name="tbBlue">BLUE</TextBlock>
+      <TextBlock Grid.Column="1" Foreground="Red" Background="Black" Name="tbRed">RED</TextBlock>
+      <TextBlock Grid.Column="2" Foreground="Magenta" Background="Black" Name="tbMagenta">MAGENTA</TextBlock>
+      <TextBlock Grid.Column="3" Foreground="Green" Background="Black" Name="tbGreen">GREEN</TextBlock>
+      <TextBlock Grid.Column="4" Foreground="Cyan" Background="Black" Name="tbCyan">CYAN</TextBlock>
+      <TextBlock Grid.Column="5" Foreground="Yellow" Background="Black" Name="tbYellow">YELLOW</TextBlock>
+      <TextBlock Grid.Column="6" Foreground="White" Background="Black" Name="tbWhite">WHITE</TextBlock>
+      <TextBlock Grid.Column="9" Foreground="Black" Padding="1,0,1,0" Background="White" Name="tbBlack">BLACK</TextBlock>
+    </Grid>
+    <Grid Width="600" HorizontalAlignment="Left" Grid.Row="1" ColumnDefinitions="*,*,*,*,*,*,*,*,*,*">
+      <zxc:ZXKeyView Margin="5" HorizontalAlignment="Stretch" Name="key1"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="1" HorizontalAlignment="Stretch" Name="key2"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="2" HorizontalAlignment="Stretch" Name="key3"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="3" HorizontalAlignment="Stretch" Name="key4"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="4" HorizontalAlignment="Stretch" Name="key5"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="5" HorizontalAlignment="Stretch" Name="key6"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="6" HorizontalAlignment="Stretch" Name="key7"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="7" HorizontalAlignment="Stretch" Name="key8"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="8" HorizontalAlignment="Stretch" Name="key9"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="9" HorizontalAlignment="Stretch" Name="key0"></zxc:ZXKeyView>
+    </Grid>
+    <Grid Width="580" Grid.Row="2" ColumnDefinitions="*,*,*,*,*,*,*,*,*,*">
+      <zxc:ZXKeyView Margin="5" HorizontalAlignment="Stretch" Name="keyQ"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="1" HorizontalAlignment="Stretch" Name="keyW"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="2" HorizontalAlignment="Stretch" Name="keyE"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="3" HorizontalAlignment="Stretch" Name="keyR"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="4" HorizontalAlignment="Stretch" Name="keyT"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="5" HorizontalAlignment="Stretch" Name="keyY"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="6" HorizontalAlignment="Stretch" Name="keyU"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="7" HorizontalAlignment="Stretch" Name="keyI"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="8" HorizontalAlignment="Stretch" Name="keyO"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="9" HorizontalAlignment="Stretch" Name="keyP"></zxc:ZXKeyView>
+    </Grid>
+    <Grid Width="580" Grid.Row="3" Margin="50,0,0,0" ColumnDefinitions="*,*,*,*,*,*,*,*,*,*">
+      <zxc:ZXKeyView Margin="5" HorizontalAlignment="Stretch" Name="keyA"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="1" HorizontalAlignment="Stretch" Name="keyS"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="2" HorizontalAlignment="Stretch" Name="keyD"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="3" HorizontalAlignment="Stretch" Name="keyF"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="4" HorizontalAlignment="Stretch" Name="keyG"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="5" HorizontalAlignment="Stretch" Name="keyH"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="6" HorizontalAlignment="Stretch" Name="keyJ"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="7" HorizontalAlignment="Stretch" Name="keyK"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="8" HorizontalAlignment="Stretch" Name="keyL"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5,11,5,11" Grid.Column="9" HorizontalAlignment="Stretch" Name="keyEnter"></zxc:ZXKeyView>
+    </Grid>
+    <Grid Grid.Row="4" HorizontalAlignment="Stretch" ColumnDefinitions="1.5*,*,*,*,*,*,*,*,*,1.5*">
+      <zxc:ZXKeyView Margin="5,11,5,11" HorizontalAlignment="Stretch" Name="keyShift"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="1" HorizontalAlignment="Stretch" Name="keyZ"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="2" HorizontalAlignment="Stretch" Name="keyX"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="3" HorizontalAlignment="Stretch" Name="keyC"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="4" HorizontalAlignment="Stretch" Name="keyV"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="5" HorizontalAlignment="Stretch" Name="keyB"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="6" HorizontalAlignment="Stretch" Name="keyN"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5" Grid.Column="7" HorizontalAlignment="Stretch" Name="keyM"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5,11,5,11" Grid.Column="8" HorizontalAlignment="Stretch" Name="keySymbol"></zxc:ZXKeyView>
+      <zxc:ZXKeyView Margin="5,11,5,11" Grid.Column="9" HorizontalAlignment="Stretch" Name="keySpace"></zxc:ZXKeyView>
+    </Grid>
+  </Grid>
+</UserControl>

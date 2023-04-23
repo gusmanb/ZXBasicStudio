@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/Konamiman/Z80dotNet/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/Konamiman/Z80dotNet</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/Konamiman/Z80dotNet/master/Z80dotNet.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>$description$</summary>
+	<description>Z80.NET is a Z80 processor simulator complete with all instructions (documented and undocumented) and support for interrupts. Memory and port access can be controlled via events or by plugging custom memory space implementations, while interrupts are handled by plugging one or more custom interrupt sources. Use Z80.NET to exercise pieces of Z80 code or to create your dream 8 bit computer emulator!</description>
+    <releaseNotes>Fixed: memory access events were not fired when reading the pointer to the routine to service an interrupt in IM2.</releaseNotes>
+    <copyright>Copyright (c) 2015 Konamiman</copyright>
+    <tags></tags>
+  </metadata>
+</package>

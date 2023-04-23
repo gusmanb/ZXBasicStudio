@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:zxb="using:ZXBasicStudio.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.Controls.ZXProjectExplorer">
+  <Grid RowDefinitions="Auto,*">
+    <TextBlock Name="tbRoot" Padding="10,11,10,10" Background="#ff303030">No project open</TextBlock>
+    <TreeView Name="tvExplorer" Grid.Row="1" Background="#ff202020" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0">
+      <TreeView.ItemTemplate>
+        <TreeDataTemplate ItemsSource="{Binding ChildNodes}">
+          <Border BorderThickness="1,0,0,0" BorderBrush="#ff303030">
+            <Panel Background="#00ffffff">
+              <Panel.ContextMenu>
+                <ContextMenu>
+                  <MenuItem IsVisible="{Binding IsFile}" Header="Open" Name="mnuOpenFile" Click="ContextMenuOpenFileClick"/>
+                  <Separator IsVisible="{Binding IsFile}"></Separator>
+                  <MenuItem IsVisible="{Binding !IsFile}" Header="New file" Name="mnuNewFile" Click="ContextMenuNewFileClick"/>
+                  <MenuItem IsVisible="{Binding !IsFile}" Header="New folder" Name="mnuNewFolder" Click="ContextMenuFolderFileClick"/>
+                  <Separator IsVisible="{Binding !IsFile}"></Separator>
+                  <MenuItem Header="Copy path" Name="mnuCopy" Click="ContextMenuCopyClick"/>
+                  <Separator></Separator>
+                  <MenuItem Header="Rename" Name="mnuRename" Click="ContextMenuRenameClick"/>
+                  <MenuItem Header="Delete" Name="mnuDelete" Click="ContextMenuDeleteClick"/>
+                  <Separator></Separator>
+                  <MenuItem Header="Show in browser" Name="mnuShowExplorer" Click="ContextMenuShowBrowserClick"/>
+                </ContextMenu>
+              </Panel.ContextMenu>
+            
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Image Source="{Binding Image}" ContextMenu="{Binding $parent.ContextMenu}" Margin="5,0,0,0" />
+            <TextBlock Text="{Binding Text}" VerticalAlignment="Center" Margin="10,0,0,0" />
+          </StackPanel>
+            </Panel>
+          </Border>
+          
+        </TreeDataTemplate>
+      </TreeView.ItemTemplate>
+    </TreeView>
+  </Grid>
+</UserControl>

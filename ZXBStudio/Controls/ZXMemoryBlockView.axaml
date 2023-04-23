@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:zxc="using:ZXBasicStudio.Controls"
+             mc:Ignorable="d" d:DesignWidth="390" d:DesignHeight="310"
+             x:Class="ZXBasicStudio.Controls.ZXMemoryBlockView">
+  <UserControl.Styles>
+    <Style Selector="TextBlock">
+      <Setter Property="Foreground" Value="#ffffff"></Setter>
+      <Setter Property="Margin" Value="2"></Setter>
+      <Setter Property="VerticalAlignment" Value="Center"></Setter>
+      <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+      <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace"></Setter>
+    </Style>
+  </UserControl.Styles>
+  <Grid ColumnDefinitions="*, 16" RowDefinitions="*">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1">
+      <Grid ColumnDefinitions="2*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#303030">
+        <TextBlock Grid.Column="1">00</TextBlock>
+        <TextBlock Grid.Column="2">01</TextBlock>
+        <TextBlock Grid.Column="3">02</TextBlock>
+        <TextBlock Grid.Column="4">03</TextBlock>
+        <TextBlock Grid.Column="5">04</TextBlock>
+        <TextBlock Grid.Column="6">05</TextBlock>
+        <TextBlock Grid.Column="7">06</TextBlock>
+        <TextBlock Grid.Column="8">07</TextBlock>
+        <TextBlock Grid.Column="9">08</TextBlock>
+        <TextBlock Grid.Column="10">09</TextBlock>
+        <TextBlock Grid.Column="11">0A</TextBlock>
+        <TextBlock Grid.Column="12">0B</TextBlock>
+        <TextBlock Grid.Column="13">0C</TextBlock>
+        <TextBlock Grid.Column="14">0D</TextBlock>
+        <TextBlock Grid.Column="15">0E</TextBlock>
+        <TextBlock Grid.Column="16">0F</TextBlock>
+      </Grid>
+      <zxc:ZXMemoryRowView Name="rowView1" Row="{Binding Block.Row1}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView2" Row="{Binding Block.Row2}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView3" Row="{Binding Block.Row3}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView4" Row="{Binding Block.Row4}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView5" Row="{Binding Block.Row5}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView6" Row="{Binding Block.Row6}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView7" Row="{Binding Block.Row7}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView8" Row="{Binding Block.Row8}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView9" Row="{Binding Block.Row9}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView10" Row="{Binding Block.Row10}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView11" Row="{Binding Block.Row11}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView12" Row="{Binding Block.Row12}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView13" Row="{Binding Block.Row13}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView14" Row="{Binding Block.Row14}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView15" Row="{Binding Block.Row15}"></zxc:ZXMemoryRowView>
+      <zxc:ZXMemoryRowView Name="rowView16" Row="{Binding Block.Row16}"></zxc:ZXMemoryRowView>
+    </StackPanel>
+    <ScrollBar Name="scrFirstRow" Orientation="Vertical" Minimum="0" Maximum="4080" Grid.Column="1" Grid.Row="1"></ScrollBar>
+  </Grid>
+</UserControl>

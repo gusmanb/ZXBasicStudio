@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="50"
+             x:Class="ZXBasicStudio.Controls.DockSystem.ZXTabDockingButton">
+  <UserControl.ContextMenu>
+    <ContextMenu>
+      <MenuItem Header="Float" Name="mnuFloat"/>
+    </ContextMenu>
+  </UserControl.ContextMenu>
+  <Grid Name="grdMain" Background="Transparent" Margin="0" RowDefinitions="2,*,2" ColumnDefinitions="*,Auto">
+    <Rectangle Name="rectTop" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="#ffccdd" Grid.ColumnSpan="2" IsVisible="False"></Rectangle>
+    <TextBlock Grid.Row="1" Name="txtButton" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10" Foreground="{Binding Foreground}" Text="{Binding Title}" />
+    <Button Name="btnClose" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" Padding="5,0,5,2" CornerRadius="3" FontWeight="ExtraBlack" IsVisible="{Binding Path=AssociatedControl.CanClose, TargetNullValue=False, FallbackValue=False}">x</Button>
+    <Rectangle Name="rectBottom" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="#ffccdd" IsVisible="False" Grid.ColumnSpan="2"></Rectangle>
+  </Grid>
+</UserControl>

@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", "{BBA3EC3E-C8F8-421C-A450-5C206BACDC98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7EC18F5A-DEDF-49FD-BFEF-EF20FA41189F}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+		ReleaseNotes.txt = ReleaseNotes.txt
+		Z80dotNet.png = Z80dotNet.png
+		Z80dotNet.shfbproj = Z80dotNet.shfbproj
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main.Tests", "Main.Tests\Main.Tests.csproj", "{B2F2FEA1-C72C-46E9-8AE4-4DEE9A85E234}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{43991AEE-1CC9-4F95-9CAF-3259347DF0DF}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\Configuration.md = Docs\Configuration.md
+		Docs\Dependencies.md = Docs\Dependencies.md
+		Docs\HowExecutionWorks.md = Docs\HowExecutionWorks.md
+		Docs\InstructionExecutionFlow.md = Docs\InstructionExecutionFlow.md
+		Interrupts.md = Interrupts.md
+		Docs\MemoryAccessFlow.md = Docs\MemoryAccessFlow.md
+		Docs\State.md = Docs\State.md
+		Docs\StopConditions.md = Docs\StopConditions.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZexallTest", "ZexallTest\ZexallTest.csproj", "{8BBEA494-2013-481A-B38C-735F22B93D73}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBA3EC3E-C8F8-421C-A450-5C206BACDC98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA3EC3E-C8F8-421C-A450-5C206BACDC98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA3EC3E-C8F8-421C-A450-5C206BACDC98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA3EC3E-C8F8-421C-A450-5C206BACDC98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2F2FEA1-C72C-46E9-8AE4-4DEE9A85E234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2F2FEA1-C72C-46E9-8AE4-4DEE9A85E234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2F2FEA1-C72C-46E9-8AE4-4DEE9A85E234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2F2FEA1-C72C-46E9-8AE4-4DEE9A85E234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BBEA494-2013-481A-B38C-735F22B93D73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BBEA494-2013-481A-B38C-735F22B93D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BBEA494-2013-481A-B38C-735F22B93D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BBEA494-2013-481A-B38C-735F22B93D73}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EF4F6EB7-C3FF-4183-B547-3BF2900A0B10}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.Controls.DockSystem.ZXDockingControl"
+             Background="#282828">
+  <Grid RowDefinitions="Auto,*">
+    <zxd:ZXGrip Background="Transparent" DotColor="#1b1b1b" DotRadius="1" DotSpacing="5" Name="grip" IsVisible="{Binding !TabMode}">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <TextBlock Background="{Binding Background}" HorizontalAlignment="Left" VerticalAlignment="Center"  Padding="10,2,10,2" Name="titleBlock">Title</TextBlock>
+        <Button Name="btnClose" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Padding="4,-2,4,0" CornerRadius="3" FontWeight="ExtraBlack" IsVisible="{Binding CanClose}">x</Button>
+      </Grid>
+      <zxd:ZXGrip.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="Float" Name="mnuFloat"/>
+        </ContextMenu>
+      </zxd:ZXGrip.ContextMenu>
+    </zxd:ZXGrip>
+    <Border Grid.Row="1" BorderThickness="1" BorderBrush="#000">
+      <ContentControl Name="content" />
+    </Border>
+  </Grid>
+</UserControl>

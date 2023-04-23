@@ -1,0 +1,70 @@
+<wnd:ZXWindowBase xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="200"
+        MaxWidth="300" MaxHeight="200"
+        MinWidth="300" MinHeight="200"
+        CanResize="false"
+        Icon="/Assets/zxbs.ico"
+        WindowStartupLocation="CenterOwner"
+        xmlns:wnd="using:ZXBasicStudio.Classes"
+        x:Class="ZXBasicStudio.Dialogs.ZXDumpMemoryDialog"
+        Title="Dump memory">
+  <wnd:ZXWindowBase.Styles>
+    <Style Selector="TextBlock">
+      <Setter Property="Foreground" Value="#ffffffff"></Setter>
+      <Setter Property="Margin" Value="5"></Setter>
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="MaxWidth" Value="140"></Setter>
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="Padding" Value="0"></Setter>
+    </Style>
+
+    <Style Selector="NumericUpDown">
+      <Setter Property="Margin" Value="0"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Padding" Value="5,7,0,0"></Setter>
+      <Setter Property="VerticalAlignment" Value="Center"></Setter>
+      <Setter Property="BorderThickness" Value="0"></Setter>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+    </Style>
+    <Style Selector="NumericUpDown /template/ ContentPresenter#PART_TextBox">
+      <Setter Property="Margin" Value="0"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Padding" Value="10"></Setter>
+      <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+      <Setter Property="BorderThickness" Value="0"></Setter>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+    </Style>
+  </wnd:ZXWindowBase.Styles>
+  <Grid ColumnDefinitions="*,5*,8*,2*" RowDefinitions="*,*,*,*">
+    <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Output file:</TextBlock>
+    <TextBox Grid.Row="0" Grid.Column="2" Name="txtPath" IsReadOnly="True"></TextBox>
+    <Button Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Name="btnSelectOutput">...</Button>
+    <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Start address:</TextBlock>
+    <Border Height="32" Grid.Row="1" Grid.Column="2" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,0,5,0">
+      <NumericUpDown VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="32768" FormatString="####" Minimum="0" Maximum="65535" Name="nudStart"></NumericUpDown>
+    </Border>
+    <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">End address:</TextBlock>
+    <Border Height="32" Grid.Row="2" Grid.Column="2" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,0,5,0">
+      <NumericUpDown VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="65535" FormatString="####" Minimum="0" Maximum="65535" Name="nudEnd"></NumericUpDown>
+    </Border>
+    <StackPanel Margin="0,0,0,10" Grid.Row="3" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button VerticalAlignment="Bottom" Padding="7" Name="btnCancel">Cancel</Button>
+      <Button VerticalAlignment="Bottom" Padding="7" Name="btnAccept">Accept</Button>
+    </StackPanel>
+  </Grid>
+</wnd:ZXWindowBase>

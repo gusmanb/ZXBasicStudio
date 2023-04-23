@@ -1,0 +1,81 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:AvalonEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             x:Class="ZXBasicStudio.App" RequestedThemeVariant="Dark">
+  <Application.Styles>
+    <SimpleTheme  />
+    <Style Selector="TextBlock">
+      <Setter Property="Foreground" Value="#FFFFFF"></Setter>
+    </Style>
+    <StyleInclude Source="avares://AvaloniaEdit/AvaloniaEdit.xaml" />
+    <Style Selector="Window">
+      <Setter Property="Background" Value="#ff202020"></Setter>
+    </Style>
+    <Style Selector="Menu">
+      <Setter Property="Background" Value="#ff303030"/>
+    </Style>
+    <Style Selector="TabControl">
+      <Setter Property="Background" Value="#ff303030" />
+      <Setter Property="Margin" Value="0" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="TabItem">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Background" Value="#ff303030" />
+      <Setter Property="MinWidth" Value="67" />
+      <Setter Property="Margin" Value="0,5,0,0" />
+      <Setter Property="MinHeight" Value="40" />
+    </Style>
+    <Style Selector="TabItem /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Margin" Value="0,0,0,0" />
+      <Setter Property="Padding" Value="10,0,10,0" />
+    </Style>
+    <Style Selector="TabControl WrapPanel">
+      <Setter Property="Background" Value="#ff303030" />
+      <Setter Property="Height" Value="36" />
+      <Setter Property="Margin" Value="0" />
+    </Style>
+    <Style Selector="TabItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#ff202020" />
+      <Setter Property="CornerRadius" Value="12,0,0,0" />
+    </Style>
+    <Style Selector="TabItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#ff404040" />
+    </Style>
+    <Style Selector="TabItem:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderThickness" Value="1,1,1,0" />
+      <Setter Property="BorderBrush" Value="#ff404040" />
+    </Style>
+    <Style Selector="TreeViewItem">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+
+    </Style>
+    <Style Selector="AvalonEdit|TextEditor">
+      <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace" />
+      <Setter Property="Foreground" Value="#D4D4D4" />
+      <Setter Property="Background" Value="#ff202020" />
+      <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+    <Style Selector="GridSplitter.vertical">
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+          <GradientStop Offset="0" Color="#707070" />
+          <GradientStop Offset="0.5" Color="#202020" />
+          <GradientStop Offset="1" Color="#707070" />
+        </LinearGradientBrush>
+      </Setter>
+    </Style>
+    <Style Selector="GridSplitter.horizontal">
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+          <GradientStop Offset="0" Color="#707070" />
+          <GradientStop Offset="0.5" Color="#202020" />
+          <GradientStop Offset="1" Color="#707070" />
+        </LinearGradientBrush>
+      </Setter>
+    </Style>
+  </Application.Styles>
+</Application>
