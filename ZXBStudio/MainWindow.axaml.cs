@@ -124,7 +124,6 @@ namespace ZXBasicStudio
             btnRemoveBreakpoints.Click += BtnRemoveBreakpoints_Click;
             btnTurbo.Click += TurboModeEmulator;
             btnDirectScreen.Click += BtnDirectScreen_Click;
-            btnFloat.Click += BtnFloat_Click;
             #endregion
 
             #region Attach Breakpoint manager events
@@ -160,35 +159,6 @@ namespace ZXBasicStudio
 
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom);
         }
-
-        private void BtnFloat_Click(object? sender, RoutedEventArgs e)
-        {
-            ZXFloatingWindow window = new ZXFloatingWindow();
-            window.Show();
-            window.DockingContainer.AddToStart(emuDock);
-        }
-
-        private void Window_Activated(object? sender, EventArgs e)
-        {
-            var window = sender as ZXFloatingWindow;
-
-            if (window == null)
-                return;
-
-            emuDock.DockedControl = null;
-            window.Content = emu;
-
-            /*
-            var window = sender as ZXFloatingWindow;
-
-            if (window == null)
-                return;
-
-            window.DockingContainer.AddToStart(emuDock);
-            emu.EndFloat();
-            window.Activated -= Window_Activated;*/
-        }
-
 
         #region File manipulation
         private void PeExplorer_SelectedPathChanged(object? sender, System.EventArgs e)

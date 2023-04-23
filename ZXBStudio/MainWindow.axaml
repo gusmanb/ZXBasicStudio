@@ -153,9 +153,6 @@
       <ToggleButton Classes="toolbar" Name="btnDirectScreen" ToolTip.Tip="Direct screen mode">
         <svg:Svg Path="/Svg/display-lines-solid.svg"></svg:Svg>
       </ToggleButton>
-      <Button Classes="toolbar" Name="btnFloat" IsEnabled="True" ToolTip.Tip="Turbo mode (F12)">
-        <svg:Svg Path="/Svg/truck-fast-solid.svg"></svg:Svg>
-      </Button>
     </StackPanel>
     <zxd:ZXDockingContainer Grid.Column="0" Grid.Row="2" Grid.RowSpan="3" Name="dockLeft" RowDefinitions="*">
       <zxd:ZXDockingControl Title="Project explorer" Name="projDock">
