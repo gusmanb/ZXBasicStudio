@@ -125,6 +125,11 @@ namespace ZXBasicStudio
             btnTurbo.Click += TurboModeEmulator;
             btnBorderless.Click += Borderless;
             btnDirectScreen.Click += DirectScreen;
+            btnFullLayout.Click += FullLayout;
+            btnExplorerLayout.Click += ExplorerLayout;
+            btnToolsLayout.Click += ToolsLayout;
+            btnDebugLayout.Click += DebugLayout;
+            btnPlayLayout.Click += PlayLayout;
             #endregion
 
             #region Attach Breakpoint manager events
@@ -160,7 +165,6 @@ namespace ZXBasicStudio
 
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom);
         }
-
 
         #region File manipulation
         private void PeExplorer_SelectedPathChanged(object? sender, System.EventArgs e)
@@ -1316,6 +1320,38 @@ namespace ZXBasicStudio
 
             await ShowInfo("Restore layout", "Layout has been reset, restart the application to apply the changes.");
         }
+
+        private void PlayLayout(object? sender, RoutedEventArgs e)
+        {
+            grdMain.RowDefinitions = RowDefinitions.Parse("Auto,Auto,2*,4,*");
+            grdMain.ColumnDefinitions = ColumnDefinitions.Parse("0*,4,2*,4,0*");
+        }
+
+        private void DebugLayout(object? sender, RoutedEventArgs e)
+        {
+            grdMain.RowDefinitions = RowDefinitions.Parse("Auto,Auto,2*,4,*");
+            grdMain.ColumnDefinitions = ColumnDefinitions.Parse("0*,4,2.6*,4,*");
+        }
+
+        private void ToolsLayout(object? sender, RoutedEventArgs e)
+        {
+            grdMain.RowDefinitions = RowDefinitions.Parse("Auto,Auto,2*,4,*");
+            grdMain.ColumnDefinitions = ColumnDefinitions.Parse("0.6*,4,2*,4,*");
+        }
+
+        private void ExplorerLayout(object? sender, RoutedEventArgs e)
+        {
+            grdMain.RowDefinitions = RowDefinitions.Parse("Auto,Auto,*,4,0*");
+            grdMain.ColumnDefinitions = ColumnDefinitions.Parse("0.6*,4,3*,4,0*");
+        }
+
+        private void FullLayout(object? sender, RoutedEventArgs e)
+        {
+            grdMain.RowDefinitions = RowDefinitions.Parse("Auto,Auto,*,4,0*");
+            grdMain.ColumnDefinitions = ColumnDefinitions.Parse("0*,4,*,4,0*");
+        }
+
+
         #endregion
 
         #region General functions
@@ -1558,11 +1594,13 @@ namespace ZXBasicStudio
 
         protected override void OnClosing(WindowClosingEventArgs e)
         {
-            if(!skipLayout)
+            emu.Stop();
+
+            if (!skipLayout)
                 ZXLayoutPersister.SaveLayout(grdMain, dockLeft, dockRight, dockBottom);
 
             base.OnClosing(e);
-            emu.Stop();
+            
         }
         #endregion
 

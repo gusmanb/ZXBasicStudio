@@ -156,6 +156,22 @@
       <ToggleButton Classes="toolbar" Name="btnDirectScreen" ToolTip.Tip="Direct screen mode">
         <svg:Svg Path="/Svg/display-lines-solid.svg"></svg:Svg>
       </ToggleButton>
+      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <Button Classes="toolbar" Name="btnFullLayout" ToolTip.Tip="Code mode">
+        <svg:Svg Path="/Svg/layout-full-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnExplorerLayout" ToolTip.Tip="Project mode">
+        <svg:Svg Path="/Svg/layout-explorer-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnDebugLayout" ToolTip.Tip="Project mode">
+        <svg:Svg Path="/Svg/layout-debug-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnPlayLayout" ToolTip.Tip="Project mode">
+        <svg:Svg Path="/Svg/layout-play-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnToolsLayout" ToolTip.Tip="Full mode">
+        <svg:Svg Path="/Svg/layout-alltools-solid.svg"></svg:Svg>
+      </Button>
     </StackPanel>
     <zxd:ZXDockingContainer Grid.Column="0" Grid.Row="2" Grid.RowSpan="3" Name="dockLeft" RowDefinitions="*">
       <zxd:ZXDockingControl Title="Project explorer" Name="projDock">
