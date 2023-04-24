@@ -27,6 +27,8 @@ namespace ZXBasicStudio.Controls
         DateTime? lastTurboUpdate;
         bool turbo = false;
         object turboLocker = new object();
+        object drawLocker = new object();
+
         bool _borderless;
         bool _recreate = false;
         public bool Borderless 
@@ -76,11 +78,15 @@ namespace ZXBasicStudio.Controls
 
                     lastTurboUpdate = DateTime.Now;
                 }
+            }
 
-                if (_recreate)
+            if (_recreate)
+            {
+                lock (drawLocker)
                 {
                     buffer.Dispose();
                     buffer = new WriteableBitmap(_borderless ? borderlessSize : borderSize, new Vector(72, 72), Avalonia.Platform.PixelFormat.Bgra8888, Avalonia.Platform.AlphaFormat.Opaque);
+                    _recreate = false;
                 }
             }
 
@@ -97,40 +103,42 @@ namespace ZXBasicStudio.Controls
 
         public override void Render(DrawingContext context)
         {
-            if (buffer == null)
-                return;
-
-            if (IsRunning)
+            lock (drawLocker)
             {
-                var scale = Bounds.Width / buffer.PixelSize.Width;
-                if (buffer.PixelSize.Height * scale > Bounds.Height)
-                    scale = Bounds.Height / buffer.PixelSize.Height;
+                if (buffer == null)
+                    return;
 
-                var w = buffer.PixelSize.Width * scale;
-                var h = buffer.PixelSize.Height * scale;
-                var xOffset = (Bounds.Width - w) / 2.0;
-                var yOffset = (Bounds.Height - h) / 2.0;
+                if (IsRunning)
+                {
+                    var scale = Bounds.Width / buffer.PixelSize.Width;
+                    if (buffer.PixelSize.Height * scale > Bounds.Height)
+                        scale = Bounds.Height / buffer.PixelSize.Height;
 
-                var targetRect = new Rect(xOffset, yOffset, w, h);
+                    var w = buffer.PixelSize.Width * scale;
+                    var h = buffer.PixelSize.Height * scale;
+                    var xOffset = (Bounds.Width - w) / 2.0;
+                    var yOffset = (Bounds.Height - h) / 2.0;
 
-                context.DrawImage(buffer, new Rect(0, 0, buffer.PixelSize.Width, buffer.PixelSize.Height), targetRect, BitmapInterpolationMode.LowQuality);
+                    var targetRect = new Rect(xOffset, yOffset, w, h);
+
+                    context.DrawImage(buffer, new Rect(0, 0, buffer.PixelSize.Width, buffer.PixelSize.Height), targetRect, BitmapInterpolationMode.LowQuality);
+                }
+                else
+                {
+                    var scale = Bounds.Width / logoBitmap.PixelSize.Width;
+                    if (logoBitmap.PixelSize.Height * scale > Bounds.Height)
+                        scale = Bounds.Height / logoBitmap.Size.Height;
+
+                    var w = logoBitmap.PixelSize.Width * scale;
+                    var h = logoBitmap.PixelSize.Height * scale;
+                    var xOffset = (Bounds.Width - w) / 2.0;
+                    var yOffset = (Bounds.Height - h) / 2.0;
+
+                    var targetRect = new Rect(xOffset, yOffset, w, h);
+
+                    context.DrawImage(logoBitmap, new Rect(0, 0, logoBitmap.PixelSize.Width, logoBitmap.PixelSize.Height), targetRect, BitmapInterpolationMode.HighQuality);
+                }
             }
-            else
-            {
-                var scale = Bounds.Width / logoBitmap.PixelSize.Width;
-                if (logoBitmap.PixelSize.Height * scale > Bounds.Height)
-                    scale = Bounds.Height / logoBitmap.Size.Height;
-
-                var w = logoBitmap.PixelSize.Width * scale;
-                var h = logoBitmap.PixelSize.Height * scale;
-                var xOffset = (Bounds.Width - w) / 2.0;
-                var yOffset = (Bounds.Height - h) / 2.0;
-
-                var targetRect = new Rect(xOffset, yOffset, w, h);
-
-                context.DrawImage(logoBitmap, new Rect(0, 0, logoBitmap.PixelSize.Width, logoBitmap.PixelSize.Height), targetRect, BitmapInterpolationMode.HighQuality);
-            }
-
         }
     }
 }

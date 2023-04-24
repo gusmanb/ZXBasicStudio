@@ -434,21 +434,6 @@ namespace ZXBasicStudio.Controls
         //    catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         //}
 
-        //protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
-        //{
-        //    base.OnDetachedFromLogicalTree(e);
-        //    try
-        //    {
-        //        if (machine.Running && !machine.Paused)
-        //        {
-        //            machine.Pause();
-        //        }
-        //        //machine.Stop();
-        //        //sampler.Dispose();
-        //    }
-        //    catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
-        //}
-
         class FloatingStatus
         {
             public bool Running { get; set; }
