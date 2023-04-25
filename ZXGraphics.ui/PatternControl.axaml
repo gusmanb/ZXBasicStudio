@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXGraphics.ui.PatternControl"
+             Width="34" Height="52" Margin="1">
+  <Grid RowDefinitions="16,34">
+    <Grid ColumnDefinitions="*,*" Background="Black">
+      <TextBlock Name="lblNumber" Foreground="Cyan"/>
+      <TextBlock Name="lblName" Grid.Column="1" Foreground="White"/>
+    </Grid>
+    <Border BorderBrush="White" BorderThickness="1" Grid.Row="1" Margin="0" Padding="0">
+      <Canvas Name="cnvPoints" Width="32" Height="32" Background="#c0c0c0"></Canvas>
+    </Border>
+  </Grid>
+</UserControl>

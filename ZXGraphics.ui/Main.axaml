@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXGraphics.ui.Main">
+  <Grid Name="grdMain" ColumnDefinitions="150,*,Auto" Margin="0,8,0,0">
+    <Canvas Name="cnvPatterns" Grid.Column="0" VerticalAlignment="Top"/>
+    <Grid Name="grdEditor" Grid.Column="1">
+      <TextBlock>Editor</TextBlock>
+    </Grid>
+    <Grid Name="grdPreview" Grid.Column="2">
+      <TextBlock>Preview</TextBlock>
+    </Grid>
+  </Grid>
+</UserControl>
