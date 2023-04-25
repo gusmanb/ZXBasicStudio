@@ -149,8 +149,8 @@ namespace ZXBasicStudio
             memView.Initialize(emu.Memory);
             System.Resources.ResourceManager resources = new System.Resources.ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
 
-            romDisassembly = resources.GetObject("romDisassembly") as string;
-            string romMapB = resources.GetObject("romDisassemblyMap") as string;
+            romDisassembly = resources.GetObject("48k_asm") as string;
+            string romMapB = resources.GetObject("48k_map") as string;
 
             var romMap = JsonConvert.DeserializeObject<RomLine[]>(romMapB);
 

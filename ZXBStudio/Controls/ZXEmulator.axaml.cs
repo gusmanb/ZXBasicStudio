@@ -90,7 +90,7 @@ namespace ZXBasicStudio.Controls
         {
             System.Resources.ResourceManager resources = new System.Resources. ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
 
-            var rom = resources.GetObject("_48k") as byte[];
+            var rom = resources.GetObject("48k_rom") as byte[];
 
             if (rom == null)
                 throw new InvalidProgramException("Missing ROM resource!");

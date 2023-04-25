@@ -14,7 +14,7 @@ namespace CoreSpectrum.Hardware
         private const int CyclesPerScan = 224;
 
         internal readonly Z80Processor _z80;
-        internal readonly Memory _romram;
+        internal readonly Memory48 _romram;
         internal readonly ULA _ula;
         internal readonly TapePlayer _player;
 
@@ -44,13 +44,13 @@ namespace CoreSpectrum.Hardware
         public bool Paused { get { return _pause; } }
         public bool TurboEnabled { get { return _turbo; } }
         public Z80Processor Z80 { get { return _z80; } }
-        public Memory ROMRAM { get { return _romram; } }
+        public Memory48 ROMRAM { get { return _romram; } }
         public ULA ULA { get { return _ula; } }
         public TapePlayer DataCorder { get { return _player; } }
 
         public Machine(byte[] romContent, IVideoRenderer renderer, IAudioSampler sampler)
         {
-            _romram = new Memory(64 * 1024, romContent);
+            _romram = new Memory48(romContent);
             _ula = new ULA(this, renderer, sampler);
             _z80 = new Z80Processor();
             _z80.Memory = _romram;

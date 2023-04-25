@@ -24,21 +24,21 @@ var reconstructedRom1plus2 = ProcessROMListing(romLines);
 
 Directory.CreateDirectory("Recreated");
 
-File.Copy("Spectrum128_ROM0.asm", "Recreated/128k_0.asm");
-File.WriteAllBytes("Recreated/128k_0.bin", reconstructedRom0128.Binary);
-File.WriteAllText("Recreated/128k_0.map", JsonConvert.SerializeObject(reconstructedRom0128.Map));
+File.Copy("Spectrum128_ROM0.asm", "Recreated/128k_0_asm.asm");
+File.WriteAllBytes("Recreated/128k_0_rom.bin", reconstructedRom0128.Binary);
+File.WriteAllText("Recreated/128k_0_map.map", JsonConvert.SerializeObject(reconstructedRom0128.Map));
 
-File.Copy("Spectrum128_ROM1.asm", "Recreated/128k_1.asm");
-File.WriteAllBytes("Recreated/128k_1.bin", reconstructedRom1128.Binary);
-File.WriteAllText("Recreated/128k_1.map", JsonConvert.SerializeObject(reconstructedRom1128.Map));
+File.Copy("Spectrum128_ROM1.asm", "Recreated/128k_1_asm.asm");
+File.WriteAllBytes("Recreated/128k_1_rom.bin", reconstructedRom1128.Binary);
+File.WriteAllText("Recreated/128k_1_map.map", JsonConvert.SerializeObject(reconstructedRom1128.Map));
 
-File.Copy("SpectrumPlus2_ROM0.asm", "Recreated/Plus2_0.asm");
-File.WriteAllBytes("Recreated/Plus2_0.bin", reconstructedRom0plus2.Binary);
-File.WriteAllText("Recreated/Plus2_0.map", JsonConvert.SerializeObject(reconstructedRom0plus2.Map));
+File.Copy("SpectrumPlus2_ROM0.asm", "Recreated/Plus2_0_asm.asm");
+File.WriteAllBytes("Recreated/Plus2_0_rom.bin", reconstructedRom0plus2.Binary);
+File.WriteAllText("Recreated/Plus2_0_map.map", JsonConvert.SerializeObject(reconstructedRom0plus2.Map));
 
-File.Copy("SpectrumPlus2_ROM1.asm", "Recreated/Plus2_1.asm");
+File.Copy("SpectrumPlus2_ROM1.asm", "Recreated/Plus2_1_asm.asm");
 File.WriteAllBytes("Recreated/Plus2_1.bin", reconstructedRom1plus2.Binary);
-File.WriteAllText("Recreated/Plus2_1.map", JsonConvert.SerializeObject(reconstructedRom1plus2.Map));
+File.WriteAllText("Recreated/Plus2_1_map.map", JsonConvert.SerializeObject(reconstructedRom1plus2.Map));
 
 ReconstructedROM ProcessROMListing(string[] ROMLines)
 {
