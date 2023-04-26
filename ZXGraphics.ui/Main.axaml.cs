@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Common;
 using System.Diagnostics;
 using ZXGraphics.log;
 using ZXGraphics.neg;
@@ -10,6 +11,12 @@ namespace ZXGraphics.ui
         private FileTypeConfig fileType = null;
         private byte[] fileData = null;
         private PatternControl[] patterns = null;
+        private int lastZoom = 0;
+
+        private int[] zooms = new int[]
+        {
+            1,2,4,8,16,24,32,48,64
+        };
 
 
         /// <summary>
@@ -44,12 +51,21 @@ namespace ZXGraphics.ui
             fileType = ServiceLayer.GetFileType(fileName);
             fileData = ServiceLayer.GetFileData(fileName);
 
-            UpdatePatterns();
+            ctrlPreview.Initialize(GetPattern, fileType.NumerOfPatterns);
+
+            CreatePatterns();
+
+            sldZoom.PropertyChanged += SldZoom_PropertyChanged;
+            txtEditorWidth.ValueChanged += TxtEditorWidth_ValueChanged;
+            txtEditorHeight.ValueChanged += TxtEditorHeight_ValueChanged;
             return true;
         }
 
 
-        public void UpdatePatterns()
+        /// <summary>
+        /// Create patterns
+        /// </summary>
+        public void CreatePatterns()
         {
             if (patterns == null)
             {
@@ -71,6 +87,7 @@ namespace ZXGraphics.ui
                     }
                     patterns[n] = ctrl;
                 }
+                patterns[0].IsSelected = true;
             }
 
             // Update patterns
@@ -103,9 +120,86 @@ namespace ZXGraphics.ui
                         break;
                 }
                 p.Data = ServiceLayer.Binary2PointData(n, fileData, 0, 0);
-                patterns[n].Data = p;
+                patterns[n].Initialize(p,Pattern_Click);
                 patterns[n].Refresh();
             }
+
+            cnvPatterns.Height = (fileType.NumerOfPatterns / 4) * 60;
+
+            ctrEditor.Initialize(0, GetPattern, SetPattern);
         }
+
+
+        /// <summary>
+        /// Click on the pattern
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void Pattern_Click(PatternControl selectedPattern)
+        {
+            foreach(var pattern in patterns)
+            {
+                pattern.IsSelected = false;
+            }
+            selectedPattern.IsSelected = true;
+            ctrEditor.IdPattern = selectedPattern.Pattern.Id;
+        }
+
+
+        private void SldZoom_PropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
+        {
+            int z = (int)sldZoom.Value;
+            if (z==0 ||z == lastZoom)
+            {
+                return;
+            }
+            lastZoom = z;
+
+            z = zooms[z-1];
+            txtZoom.Text = "Zoom " + z.ToString() + "x";
+            ctrEditor.Zoom = z;
+        }
+
+
+        private void TxtEditorHeight_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
+        {
+            int h = txtEditorHeight.Text.ToInteger();
+            ctrEditor.ItemsHeight = h;
+        }
+
+
+        private void TxtEditorWidth_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
+        {
+            int w = txtEditorWidth.Text.ToInteger();
+            ctrEditor.ItemsWidth = w;
+        }
+
+
+
+        private Pattern GetPattern(int id)
+        {
+            var pat = patterns.FirstOrDefault(d => d.Pattern.Id == id);
+            if (pat != null)
+            {
+                return pat.Pattern;
+            }
+            return null;
+        }
+
+
+        private void SetPattern(int id,Pattern pattern)
+        {
+            var pat = patterns.FirstOrDefault(d => d.Pattern.Id == pattern.Id);
+            if (pat != null)
+            {
+                pat.Pattern = pattern;
+                pat.Refresh();
+            }
+        }
+
+
+
+
+
     }
 }

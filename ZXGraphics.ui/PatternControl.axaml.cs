@@ -7,14 +7,31 @@ namespace ZXGraphics.ui
 {
     public partial class PatternControl : UserControl
     {
+        public Action<PatternControl> callBackClik = null;
+
         /// <summary>
         /// pattern data
         /// </summary>
-        public Pattern Data { get; set; }
+        public Pattern Pattern { get; set; }
+
+        public bool IsSelected
+        {
+            get
+            {
+                return _IsSelected;
+            }
+            set
+            {
+                _IsSelected = value;
+                Refresh();
+            }
+        }
+
+        private bool _IsSelected = false;
 
 
         /// <summary>
-        /// Constructor, madatory to set Data property
+        /// Constructor, madatory to call Initialize
         /// </summary>
         public PatternControl()
         {
@@ -23,33 +40,59 @@ namespace ZXGraphics.ui
 
 
         /// <summary>
-        /// Constructor with pattern data included
+        /// Initializes the control
         /// </summary>
         /// <param name="patternData">Data for the Pattern</param>
-        public PatternControl(Pattern patternData)
+        /// <param name="callBackClik">Delegate for click event</param>
+        /// <returns>True if ok or False if error</returns>
+        public bool Initialize(Pattern patternData, Action<PatternControl> callBackClik)
         {
-            InitializeComponent();
-            Data = patternData;
+            Pattern = patternData;
+            this.callBackClik = callBackClik;
+            this.Tapped += PatternControl_Tapped;
+            return true;
+        }
+
+        /// <summary>
+        /// User click on the control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PatternControl_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
+        {
+            callBackClik(this);
         }
 
 
+        /// <summary>
+        /// Refresh the control
+        /// </summary>
         public void Refresh()
         {
-            if (Data == null)
+            if (_IsSelected)
+            {
+                brdMain.BorderBrush = Brushes.Red;
+            }
+            else
+            {
+                brdMain.BorderBrush = Brushes.Transparent;
+            }
+
+            if (Pattern == null)
             {
                 return;
             }
 
-            lblNumber.Text = Data.Number;
-            lblName.Text = Data.Name;
+            lblNumber.Text = Pattern.Number;
+            lblName.Text = Pattern.Name;
 
-            if (Data.Data == null)
+            if (Pattern.Data == null)
             {
                 return;
             }
 
             cnvPoints.Children.Clear();
-            foreach (var d in Data.Data)
+            foreach (var d in Pattern.Data)
             {
                 if (d.ColorIndex == 1)
                 {
