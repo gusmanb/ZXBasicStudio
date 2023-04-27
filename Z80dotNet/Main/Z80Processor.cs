@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Main.Dependencies_Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -13,22 +14,12 @@ namespace Konamiman.Z80dotNet
         private const int MemorySpaceSize = 65536;
         private const int PortSpaceSize = 65536;
 
-        private const decimal MaxEffectiveClockSpeed = 100M;
-        private const decimal MinEffectiveClockSpeed = 0.001M;
-
         private const ushort NmiServiceRoutine = 0x66;
         private const byte NOP_opcode = 0x00;
         private const byte RST38h_opcode = 0xFF;
 
         public Z80Processor()
         {
-            ClockSynchronizer = new ClockSynchronizer();
-
-            ClockFrequencyInMHz = 4;
-            ClockSpeedFactor = 1;
-            
-            AutoStopOnDiPlusHalt = true;
-            AutoStopOnRetWithStackEmpty = false;
             unchecked { StartOfStack =  (short)0xFFFF; }
 
             SetMemoryWaitStatesForM1(0, MemorySpaceSize, 0);
@@ -43,105 +34,14 @@ namespace Konamiman.Z80dotNet
 
             Registers = new Z80Registers();
             InterruptSources = new List<IZ80InterruptSource>();
+            TStatesTargets = new List<ITStatesTarget>();
 
             InstructionExecutor = new Z80InstructionExecutor();
 
-            StopReason = StopReason.NeverRan;
-            State = ProcessorState.Stopped;
+            executionContext = new InstructionExecutionContext();
         }
 
         #region Processor control
-
-        public void Start(object userState = null)
-        {
-            if(userState != null)
-                this.UserState = userState;
-
-            Reset();
-            TStatesElapsedSinceStart = 0;
-
-            InstructionExecutionLoop();
-        }
-
-        public void Continue()
-        {
-            InstructionExecutionLoop();
-        }
-
-        private int InstructionExecutionLoop(bool isSingleInstruction = false)
-        {
-            try
-            {
-                return InstructionExecutionLoopCore(isSingleInstruction);
-            }
-            catch
-            {
-                State = ProcessorState.Stopped;
-                StopReason = StopReason.ExceptionThrown;
-
-                throw;
-            }
-        }
-
-        private int InstructionExecutionLoopCore(bool isSingleInstruction)
-        {
-            if(clockSynchronizer != null) clockSynchronizer.Start();
-            executionContext = new InstructionExecutionContext();
-            StopReason = StopReason.NotApplicable;
-            State = ProcessorState.Running;
-            var totalTStates = 0;
-
-            while(!executionContext.MustStop)
-            {
-                executionContext.StartNewInstruction();
-
-                FireBeforeInstructionFetchEvent();
-                if(executionContext.MustStop)
-                    break;
-
-                var executionTStates = ExecuteNextOpcode();
-                
-                totalTStates = executionTStates + executionContext.AccummulatedMemoryWaitStates;
-                TStatesElapsedSinceStart += (ulong)totalTStates;
-                TStatesElapsedSinceReset += (ulong)totalTStates;
-
-                ThrowIfNoFetchFinishedEventFired();
-
-                if(!isSingleInstruction)
-                {
-                    CheckAutoStopForHaltOnDi();
-                    CheckForAutoStopForRetWithStackEmpty();
-                    CheckForLdSpInstruction();
-                }
-
-                FireAfterInstructionExecutionEvent(totalTStates);
-
-                if(!IsHalted)
-                    IsHalted = executionContext.IsHaltInstruction;
-
-                var interruptTStates = AcceptPendingInterrupt();
-                totalTStates += interruptTStates;
-                TStatesElapsedSinceStart += (ulong)interruptTStates;
-                TStatesElapsedSinceReset += (ulong)interruptTStates;
-
-                if(isSingleInstruction)
-                    executionContext.StopReason = StopReason.ExecuteNextInstructionInvoked;
-                else if(clockSynchronizer != null)
-                    clockSynchronizer.TryWait(totalTStates);
-            }
-
-            if(clockSynchronizer != null)
-                clockSynchronizer.Stop();
-            this.StopReason = executionContext.StopReason;
-            this.State =
-                StopReason == StopReason.PauseInvoked
-                    ? ProcessorState.Paused
-                    : ProcessorState.Stopped;
-
-            executionContext = null;
-
-            return totalTStates;
-        }
 
         private int ExecuteNextOpcode()
         {
@@ -228,30 +128,7 @@ namespace Konamiman.Z80dotNet
                 instructionAddress: (ushort)(Registers.PC - executionContext.OpcodeBytes.Count),
                 fetchedBytes: executionContext.OpcodeBytes.ToArray());
         }
-
-        private void CheckAutoStopForHaltOnDi()
-        {
-            if(AutoStopOnDiPlusHalt && executionContext.IsHaltInstruction && !InterruptsEnabled)
-                executionContext.StopReason = StopReason.DiPlusHalt;
-        }
-
-        private void CheckForAutoStopForRetWithStackEmpty()
-        {
-            if(AutoStopOnRetWithStackEmpty && executionContext.IsRetInstruction && StackIsEmpty())
-                executionContext.StopReason = StopReason.RetWithStackEmpty;
-        }
-
-        private void CheckForLdSpInstruction()
-        {
-            if(executionContext.IsLdSpInstruction)
-                StartOfStack = Registers.SP;
-        }
-
-        private bool StackIsEmpty()
-        {
-            return executionContext.SpAfterInstructionFetch == StartOfStack;
-        }
-
+        
         private bool InterruptsEnabled
         {
             get
@@ -334,7 +211,46 @@ namespace Konamiman.Z80dotNet
 
         public int ExecuteNextInstruction()
         {
-            return InstructionExecutionLoop(isSingleInstruction: true);
+            executionContext.StartNewInstruction();
+
+            var totalTStates = 0;
+
+            FireBeforeInstructionFetchEvent();
+
+            if (executionContext.MustStop)
+                return totalTStates;
+
+            var executionTStates = ExecuteNextOpcode();
+
+            totalTStates = executionTStates + executionContext.AccummulatedMemoryWaitStates;
+            TStatesElapsedSinceStart += (ulong)totalTStates;
+            TStatesElapsedSinceReset += (ulong)totalTStates;
+
+            UpdateTStatesTargets();
+
+            ThrowIfNoFetchFinishedEventFired();
+
+            FireAfterInstructionExecutionEvent(totalTStates);
+
+            if (!IsHalted)
+                IsHalted = executionContext.IsHaltInstruction;
+
+            var interruptTStates = AcceptPendingInterrupt();
+            totalTStates += interruptTStates;
+            TStatesElapsedSinceStart += (ulong)interruptTStates;
+            TStatesElapsedSinceReset += (ulong)interruptTStates;
+
+            UpdateTStatesTargets();
+
+            executionContext.StopReason = StopReason.ExecuteNextInstructionInvoked;
+
+            return totalTStates;
+        }
+
+        private void UpdateTStatesTargets()
+        {
+            foreach (var target in TStatesTargets)
+                target.TStates = TStatesElapsedSinceStart;
         }
 
         #endregion
@@ -344,10 +260,6 @@ namespace Konamiman.Z80dotNet
         public ulong TStatesElapsedSinceStart { get; private set; }
 
         public ulong TStatesElapsedSinceReset { get; private set; }
-
-        public StopReason StopReason { get; private set; }
-
-        public ProcessorState State { get; private set; }
 
         public object UserState { get; set; }
 
@@ -503,55 +415,27 @@ namespace Konamiman.Z80dotNet
             InterruptSources.Clear();
         }
 
+        private IList<ITStatesTarget> TStatesTargets { get; set; }
+        public void RegisterTStatesTarget(ITStatesTarget target)
+        {
+            if (TStatesTargets.Contains(target))
+                return;
+
+            TStatesTargets.Add(target);
+        }
+        public void UnregisterAllTStatesTargets()
+        {
+            TStatesTargets.Clear();
+        }
+
+        public IEnumerable<ITStatesTarget> GetRegisteredTStatesTarget()
+        {
+            return TStatesTargets.ToArray();
+        }
+
         #endregion
 
         #region Configuration
-
-        private decimal effectiveClockFrequency;
-
-        private decimal _ClockFrequencyInMHz = 1;
-        public decimal ClockFrequencyInMHz
-        {
-            get
-            {
-                return _ClockFrequencyInMHz;
-            }
-            set
-            {
-                SetEffectiveClockFrequency(value, ClockSpeedFactor);
-                _ClockFrequencyInMHz = value;
-            }
-        }
-
-        private void SetEffectiveClockFrequency(decimal clockFrequency, decimal clockSpeedFactor)
-        {
-            decimal effectiveClockFrequency = clockFrequency * clockSpeedFactor;
-            if((effectiveClockFrequency > MaxEffectiveClockSpeed) ||
-                (effectiveClockFrequency < MinEffectiveClockSpeed))
-                throw new ArgumentException(string.Format("Clock frequency multiplied by clock speed factor must be a number between {0} and {1}", MinEffectiveClockSpeed, MaxEffectiveClockSpeed));
-
-            this.effectiveClockFrequency = effectiveClockFrequency;
-            if(clockSynchronizer != null)
-                clockSynchronizer.EffectiveClockFrequencyInMHz = effectiveClockFrequency;
-        }
-
-        private decimal _ClockSpeedFactor = 1;
-        public decimal ClockSpeedFactor
-        {
-            get
-            {
-                return _ClockSpeedFactor;
-            }
-            set
-            {
-                SetEffectiveClockFrequency(ClockFrequencyInMHz, value);
-                _ClockSpeedFactor = value;
-            }
-        }
-
-        public bool AutoStopOnDiPlusHalt { get; set; }
-
-        public bool AutoStopOnRetWithStackEmpty { get; set; }
 
         private byte[] memoryWaitStatesForM1 = new byte[MemorySpaceSize];
 
@@ -607,23 +491,6 @@ namespace Konamiman.Z80dotNet
                 _InstructionExecutor = value;
                 _InstructionExecutor.ProcessorAgent = this;
                 _InstructionExecutor.InstructionFetchFinished += InstructionExecutor_InstructionFetchFinished;
-            }
-        }
-
-        private IClockSynchronizer clockSynchronizer;
-        public IClockSynchronizer ClockSynchronizer
-        {
-            get
-            {
-                return clockSynchronizer;
-            }
-            set
-            {
-                clockSynchronizer = value;
-                if (value == null)
-                    return;
-
-                clockSynchronizer.EffectiveClockFrequencyInMHz = effectiveClockFrequency;
             }
         }
 
@@ -764,8 +631,8 @@ namespace Konamiman.Z80dotNet
         }
 
         private byte ReadFromPort(
-            byte port,
-            byte upperPart,
+            byte portLo,
+            byte portHi,
             IIO io,
             MemoryAccessMode accessMode,
             MemoryAccessEventType beforeEventType,
@@ -773,12 +640,12 @@ namespace Konamiman.Z80dotNet
             byte waitStates)
         {
 
-            var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, port, 0xFF);
+            var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, portLo, 0xFF);
 
             byte value;
             if (!beforeEventArgs.CancelMemoryAccess &&
                 (accessMode == MemoryAccessMode.ReadAndWrite || accessMode == MemoryAccessMode.ReadOnly))
-                value = io[port, upperPart];
+                value = io[portLo, portHi];
             else
                 value = beforeEventArgs.Value;
 
@@ -787,7 +654,7 @@ namespace Konamiman.Z80dotNet
 
             var afterEventArgs = FireMemoryAccessEvent(
             afterEventType,
-                port,
+                portLo,
                 value,
                 beforeEventArgs.LocalUserState,
                 beforeEventArgs.CancelMemoryAccess);
@@ -853,8 +720,8 @@ namespace Konamiman.Z80dotNet
         }
 
         private void WritetoPort(
-            byte port,
-            byte upperPart,
+            byte portLo,
+            byte portHi,
             byte value,
             IIO io,
             MemoryAccessMode accessMode,
@@ -862,52 +729,52 @@ namespace Konamiman.Z80dotNet
             MemoryAccessEventType afterEventType,
             byte waitStates)
         {
-            var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, port, value);
+            var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, portLo, value);
 
             if (!beforeEventArgs.CancelMemoryAccess &&
                 (accessMode == MemoryAccessMode.ReadAndWrite || accessMode == MemoryAccessMode.WriteOnly))
-                io[port, upperPart] = beforeEventArgs.Value;
+                io[portLo, portHi] = beforeEventArgs.Value;
 
             if (executionContext != null)
                 executionContext.AccummulatedMemoryWaitStates += waitStates;
 
             FireMemoryAccessEvent(
                 afterEventType,
-                port,
+                portLo,
                 beforeEventArgs.Value,
                 beforeEventArgs.LocalUserState,
                 beforeEventArgs.CancelMemoryAccess);
         }
 
-        public byte ReadFromPort(byte portNumber, byte upperPart)
+        public byte ReadFromPort(byte portLo, byte portHi)
         {
             FailIfNoExecutionContext();
             FailIfNoInstructionFetchComplete();
 
             return ReadFromPort(
-                portNumber, 
-                upperPart,
+                portLo, 
+                portHi,
                 PortsSpace, 
-                GetPortAccessMode(portNumber),
+                GetPortAccessMode(portLo),
                 MemoryAccessEventType.BeforePortRead,
                 MemoryAccessEventType.AfterPortRead,
-                GetPortWaitStates(portNumber));
+                GetPortWaitStates(portLo));
         }
 
-        public void WriteToPort(byte portNumber, byte upperPart, byte value)
+        public void WriteToPort(byte portLo, byte portHi, byte value)
         {
             FailIfNoExecutionContext();
             FailIfNoInstructionFetchComplete();
 
             WritetoPort(
-                portNumber,
-                upperPart,
+                portLo,
+                portHi,
                 value,
                 PortsSpace,
-                GetPortAccessMode(portNumber),
+                GetPortAccessMode(portLo),
                 MemoryAccessEventType.BeforePortWrite,
                 MemoryAccessEventType.AfterPortWrite,
-                GetPortWaitStates(portNumber));
+                GetPortWaitStates(portLo));
         }
 
         public void SetInterruptMode(byte interruptMode)
@@ -922,11 +789,11 @@ namespace Konamiman.Z80dotNet
         {
             FailIfNoExecutionContext();
 
-            if(!executionContext.ExecutingBeforeInstructionEvent)
+            if (!executionContext.ExecutingBeforeInstructionEvent)
                 FailIfNoInstructionFetchComplete();
 
-            executionContext.StopReason = 
-                isPause ? 
+            executionContext.StopReason =
+                isPause ?
                 StopReason.PauseInvoked :
                 StopReason.StopInvoked;
         }

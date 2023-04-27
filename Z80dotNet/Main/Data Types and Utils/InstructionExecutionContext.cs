@@ -35,6 +35,7 @@ namespace Konamiman.Z80dotNet
             AccummulatedMemoryWaitStates = 0;
             PeekedOpcode = null;
             IsEiOrDiInstruction = false;
+            StopReason = StopReason.NotApplicable;
         }
 
         public bool ExecutingBeforeInstructionEvent

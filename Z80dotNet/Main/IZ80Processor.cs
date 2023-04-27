@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Main.Dependencies_Interfaces;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Konamiman.Z80dotNet
 {
@@ -62,14 +64,14 @@ namespace Konamiman.Z80dotNet
         /// <param name="userState">If this value is not null, it will be copied to the
         /// <see cref="IZ80Processor.UserState"/> property.
         /// </param>
-        void Start(object userState = null);
+        //void Start(object userState = null);
 
         /// <summary>
         /// Sets the processor in running state without first doing a reset, thus preserving the state of all the registers.
         /// This method cannot be invoked from an event handler.
         /// </summary>
         /// <exception cref="InvalidOperationException">The method is invoked from within an event handler.</exception>
-        void Continue();
+        //void Continue();
 
         /// <summary>
         /// Resets all registers to its initial state. The running state of the processor is not modified.
@@ -144,12 +146,12 @@ namespace Konamiman.Z80dotNet
         /// Obtains the reason for the processor not being in the running state,
         /// that is, what triggered the last stop.
         /// </summary>
-        StopReason StopReason { get; }
+        //StopReason StopReason { get; }
 
         /// <summary>
         /// Obtains the current processor execution state.
         /// </summary>
-        ProcessorState State { get; }
+        //ProcessorState State { get; }
 
         /// <summary>
         /// Contains an user-defined state object. This property exists for the client code convenience
@@ -261,48 +263,52 @@ namespace Konamiman.Z80dotNet
         /// </remarks>
         void UnregisterAllInterruptSources();
 
+        public void RegisterTStatesTarget(ITStatesTarget target);
+        public void UnregisterAllTStatesTargets();
+        IEnumerable<ITStatesTarget> GetRegisteredTStatesTarget();
+
         #endregion
 
         #region Configuration
 
-        /// <summary>
-        /// Gets or sets the clock frequency in MegaHertzs. 
-        /// This value cannot be changed while the processor is running or in single instruction execution mode.
-        /// </summary>
-        /// <exception cref="System.ArgumentException">The product of <see cref="IZ80Processor.ClockSpeedFactor"/>
-        /// by the new value gives a number that is smaller than 0.001 or greater than 100.</exception>
-        /// <exception cref="System.InvalidOperationException">The procesor is running or in single instruction execution mode.</exception>
-        decimal ClockFrequencyInMHz { get; set; }
+        ///// <summary>
+        ///// Gets or sets the clock frequency in MegaHertzs. 
+        ///// This value cannot be changed while the processor is running or in single instruction execution mode.
+        ///// </summary>
+        ///// <exception cref="System.ArgumentException">The product of <see cref="IZ80Processor.ClockSpeedFactor"/>
+        ///// by the new value gives a number that is smaller than 0.001 or greater than 100.</exception>
+        ///// <exception cref="System.InvalidOperationException">The procesor is running or in single instruction execution mode.</exception>
+        //decimal ClockFrequencyInMHz { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value that is multiplied by the clock frequency to obtain the effective
-        /// clock frequency simulated by the processor.
-        /// </summary>
-        /// <exception cref="System.ArgumentException">The product of <see cref="IZ80Processor.ClockFrequencyInMHz"/>
-        /// by the new value gives a number that is smaller than 0.001 or greater than 100.</exception>
-        decimal ClockSpeedFactor { get; set; }
+        ///// <summary>
+        ///// Gets or sets a value that is multiplied by the clock frequency to obtain the effective
+        ///// clock frequency simulated by the processor.
+        ///// </summary>
+        ///// <exception cref="System.ArgumentException">The product of <see cref="IZ80Processor.ClockFrequencyInMHz"/>
+        ///// by the new value gives a number that is smaller than 0.001 or greater than 100.</exception>
+        //decimal ClockSpeedFactor { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value that indicates whether the processor should stop automatically or not when a HALT
-        /// instruction is executed with interrupts disabled.
-        /// </summary>
-        bool AutoStopOnDiPlusHalt { get; set; }
+        ///// <summary>
+        ///// Gets or sets a value that indicates whether the processor should stop automatically or not when a HALT
+        ///// instruction is executed with interrupts disabled.
+        ///// </summary>
+        //bool AutoStopOnDiPlusHalt { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value that indicates whether the processor should stop automatically when a RET
-        /// instruction is executed and the stack is empty.
-        /// </summary>
-        /// <remarks>
-        /// <para>"The stack is empty" means that the SP register has the value
-        /// it had when the <see cref="IZ80Processor.Start"/> method
-        /// was executed, or the value set by the last execution of a <c>LD SP,xx</c> instruction.
-        /// </para>
-        /// <para>
-        /// This setting is useful for testing simple programs, so that the processor stops automatically
-        /// as soon as the program finishes with a RET.
-        /// </para>
-        /// </remarks>
-        bool AutoStopOnRetWithStackEmpty { get; set; }
+        ///// <summary>
+        ///// Gets or sets a value that indicates whether the processor should stop automatically when a RET
+        ///// instruction is executed and the stack is empty.
+        ///// </summary>
+        ///// <remarks>
+        ///// <para>"The stack is empty" means that the SP register has the value
+        ///// it had when the <see cref="IZ80Processor.Start"/> method
+        ///// was executed, or the value set by the last execution of a <c>LD SP,xx</c> instruction.
+        ///// </para>
+        ///// <para>
+        ///// This setting is useful for testing simple programs, so that the processor stops automatically
+        ///// as soon as the program finishes with a RET.
+        ///// </para>
+        ///// </remarks>
+        //bool AutoStopOnRetWithStackEmpty { get; set; }
 
         /// <summary>
         /// Sets the wait states that will be simulated when accessing the visible memory
@@ -369,7 +375,7 @@ namespace Konamiman.Z80dotNet
         /// </remarks>
         /// This property can be set to _null_, in this case no clock syncrhonization will be performed
         /// and the simulation will run at the maximum speed that the host system can provide.
-        IClockSynchronizer ClockSynchronizer { get; set; }
+        //IClockSynchronizer ClockSynchronizer { get; set; }
 
         #endregion
 

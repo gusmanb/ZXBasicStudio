@@ -8,7 +8,7 @@ namespace CoreSpectrum.Interfaces
 {
     public interface IAudioSampler
     {
-        void AddSample(ulong Sample);
+        void AddSample(ulong TStates, byte Value);
         void Play();
         void Pause();
         void Resume(ulong TStates);

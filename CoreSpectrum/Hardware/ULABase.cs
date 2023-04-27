@@ -1,7 +1,7 @@
 ﻿using CoreSpectrum.Enums;
 using CoreSpectrum.Interfaces;
-using CoreSpectrum.SupportClasses;
 using Konamiman.Z80dotNet;
+using Main.Dependencies_Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +10,9 @@ using System.Threading.Tasks;
 
 namespace CoreSpectrum.Hardware
 {
-    public class ULA : IIO, IZ80InterruptSource
+    public abstract class ULABase : IIO, IZ80InterruptSource, ITStatesTarget
     {
-        int _currentLine = 0;
-        int _flashFrames = 0;
-        bool _screenIrq;
-        private readonly Machine _machine;
-        private readonly IAudioSampler _sampler;
-        internal readonly IVideoRenderer _renderer;
-
-        public IVideoRenderer Renderer { get { return _renderer; } }
-        public IAudioSampler Sampler { get { return _sampler; } }
-
-
-        byte[] keybSegments = new byte[] { 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, };
-        private readonly Dictionary<SpectrumKeys, KeyInfo> keyInfos = new Dictionary<SpectrumKeys, KeyInfo>
+        protected readonly Dictionary<SpectrumKeys, KeyInfo> keyInfos = new Dictionary<SpectrumKeys, KeyInfo>
         {
             [SpectrumKeys.Caps] = new KeyInfo { Row = 0, BitValue = 1 },
             [SpectrumKeys.Z] = new KeyInfo { Row = 0, BitValue = 2 },
@@ -75,33 +63,20 @@ namespace CoreSpectrum.Hardware
             [SpectrumKeys.B] = new KeyInfo { Row = 7, BitValue = 16 }
         };
 
+        protected readonly IAudioSampler _sampler;
+        protected readonly IVideoRenderer _renderer;
+
+        private int _currentLine = 0;
+        private int _flashFrames = 0;
+        private bool _screenIrq;
+        private byte _mic;
+        private byte _ear;
+        private bool _newFrame;
+        protected byte[] keybSegments = new byte[] { 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, };
+
         public event EventHandler? NmiInterruptPulse;
-        public byte this[byte port, byte upperPart]
-        {
-            get
-            {
-                if ((port & 1) != 0)
-                    return 0xff;
-
-                byte value = ReadKeyboard(upperPart);
-
-                return (byte)(value | (Ear ? 0x40 : 0));
-            }
-
-            set
-            {
-                if ((port & 1) != 0)
-                    return;
-
-                Border = (byte)(value & 7);
-                byte newMic = (byte)((value & 0x18) >> 3);
-
-                _mic = newMic;
-                CreateAudioSample();
-            }
-        }
-
-        public bool IntLineIsActive
+        public abstract byte this[byte portLo, byte portHi] { get; set; }
+        public virtual bool IntLineIsActive
         {
             get
             {
@@ -113,9 +88,7 @@ namespace CoreSpectrum.Hardware
                 return false;
             }
         }
-
-        bool _newFrame;
-        public bool NewFrame
+        public virtual bool NewFrame
         {
             get
             {
@@ -127,54 +100,68 @@ namespace CoreSpectrum.Hardware
                 return false;
             }
         }
-
-        public byte? ValueOnDataBus => 255;
-
+        public virtual byte? ValueOnDataBus => 255;
+        public virtual ulong TStates { get; set; }
         /// <summary>
-        /// Input
+        /// Audio input
         /// </summary>
-        public bool Ear 
+        public virtual byte Ear 
         { 
-            get 
-            {
-                return _machine._player.AudioOutput();
+            get { return _ear; } 
+            set 
+            { 
+                if (_ear != value) 
+                { 
+                    _ear = value; 
+                    CreateAudioSample(); 
+                } 
             } 
         }
-        byte _mic;
         /// <summary>
-        /// Output
+        /// Audio output
         /// </summary>
-        public byte Mic
+        public virtual byte Mic
         {
             get
             {
-                return _machine._player.Playing ? (byte)(Ear ? 3 : 0) : _mic;
+                return _mic;
+            }
+            protected set 
+            {
+                if (value != _mic)
+                {
+                    _mic = value;
+                    CreateAudioSample();
+                }
             }
         }
-        public byte Border { get; private set; }
-        public bool FlashInvert { get; private set; }
-        internal ULA(Machine machine, IVideoRenderer renderer, IAudioSampler sampler)
+        public virtual byte AudioOutput
         {
-            _machine = machine;
+            get { return (byte)(_ear + _mic); }
+        }
+        public virtual byte Border { get; protected set; }
+        public virtual bool FlashInvert { get; protected set; }
+        protected ULABase(IVideoRenderer renderer, IAudioSampler sampler)
+        {
             _sampler = sampler;
             _renderer = renderer;
         }
-        public void PressKey(SpectrumKeys Key)
+        public virtual void PressKey(SpectrumKeys Key)
         {
             var info = keyInfos[Key];
             keybSegments[info.Row] = (byte)(keybSegments[info.Row] & ~info.BitValue);
         }
-        public void ReleaseKey(SpectrumKeys Key)
+        public virtual void ReleaseKey(SpectrumKeys Key)
         {
             var info = keyInfos[Key];
             keybSegments[info.Row] = (byte)(keybSegments[info.Row] | info.BitValue);
         }
-        public void ScanLine()
+        public virtual void ScanLine(Span<byte> VideoMemory)
         {
-            _renderer.RenderLine(_machine._romram, Border, FlashInvert, _currentLine++);
+            _renderer.RenderLine(VideoMemory, Border, FlashInvert, _currentLine++);
 
-            if(_machine._player.Playing)
-                CreateAudioSample();
+            //if (_machine._player.Playing)
+            //    CreateAudioSample();
 
             if (_currentLine == 312)
             {
@@ -182,7 +169,7 @@ namespace CoreSpectrum.Hardware
                 _screenIrq = true;
                 _newFrame = true;
                 _flashFrames++;
-                
+
                 if (_flashFrames >= 25)
                 {
                     _flashFrames = 0;
@@ -190,7 +177,7 @@ namespace CoreSpectrum.Hardware
                 }
             }
         }
-        private byte ReadKeyboard(byte LinesToRead)
+        protected virtual byte ReadKeyboard(byte LinesToRead)
         {
             byte result = 0xBF;
 
@@ -220,12 +207,11 @@ namespace CoreSpectrum.Hardware
 
             return result;
         }
-        internal void CreateAudioSample()
+        protected virtual void CreateAudioSample()
         {
-            ulong sample = (_machine._z80.TStatesElapsedSinceStart << 2) | Mic;
-            _sampler.AddSample(sample);
+            _sampler.AddSample(TStates, AudioOutput);
         }
-        class KeyInfo
+        protected class KeyInfo
         {
             public int Row { get; set; }
             public int BitValue { get; set; }

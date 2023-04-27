@@ -1,4 +1,5 @@
-﻿using Konamiman.Z80dotNet;
+﻿using CoreSpectrum.Interfaces;
+using Konamiman.Z80dotNet;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CoreSpectrum.Hardware
 {
-    public class Memory128 : IMemory
+    public class Memory128k : ISpectrumMemory
     {
 
         const int MEMORY_TYPE_ROM = 0;
@@ -38,7 +39,7 @@ namespace CoreSpectrum.Hardware
 
         public Memory128Map Map { get { return map; } }
 
-        public Memory128(byte[] Rom0, byte[] Rom1)
+        public Memory128k(byte[] Rom0, byte[] Rom1)
         {
             if (Rom0 == null || Rom0.Length != 16 * 1024)
                 throw new InvalidDataException("ROM must be 16kb long");
@@ -124,6 +125,11 @@ namespace CoreSpectrum.Hardware
             }
         }
 
+        public Span<byte> GetVideoMemory() 
+        {
+            return new Span<byte>(compositeMemory[MEMORY_TYPE_RAM][map.ActiveScreenPage], 0, 6912);
+        }
+
         public class Memory128Map
         {
 
@@ -134,6 +140,7 @@ namespace CoreSpectrum.Hardware
             int activeRom = 0;
             int activeBank = 0;
             int activeScreen = 0;
+            int activeScreenPage = 0;
 
             MemoryRange romRange = new MemoryRange(0, 0x3FFF);
             MemoryRange screenRange = new MemoryRange(0x4000, 0x7FFF);
@@ -143,7 +150,7 @@ namespace CoreSpectrum.Hardware
             public int ActiveROM { get { return activeRom; } }
             public int ActiveBank { get { return activeBank;} }
             public int ActiveScreen { get { return activeScreen;} }
-
+            public int ActiveScreenPage { get { return activeScreenPage; } }
             public void SetActiveRom(int RomNumber)
             {
                 if (RomNumber < 0 || RomNumber > 1)
@@ -167,6 +174,7 @@ namespace CoreSpectrum.Hardware
                     throw new IndexOutOfRangeException("Active screen can be 1 or 0");
 
                 activeScreen = ScreenNumber;
+                activeScreenPage = activeScreen == 0 ? fixedScreenIndex : altScreenIndex;
             }
 
             internal void GetMemoryIndex(int Address, out MemoryIndex Index)
@@ -198,16 +206,6 @@ namespace CoreSpectrum.Hardware
                 }
                 else
                     throw new IndexOutOfRangeException("Address is out of range");
-            }
-
-            internal void GetScreenIndex(int Address, out MemoryIndex Index) 
-            {
-                if(!screenRange.Contains(Address))
-                    throw new IndexOutOfRangeException("Address is out of range");
-
-                Index.MemoryType = MEMORY_TYPE_RAM;
-                Index.Segment = activeScreen == 0 ? fixedScreenIndex : altScreenIndex;
-                Index.Offset = Address - screenRange.Start;
             }
 
             internal IndexedMemoryRange[] GetMemoryRanges(int StartAddress, int Length)

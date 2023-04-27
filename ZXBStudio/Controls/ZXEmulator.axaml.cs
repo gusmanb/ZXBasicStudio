@@ -11,6 +11,7 @@ using CoreSpectrum.AudioSamplers;
 using CoreSpectrum.Debug;
 using CoreSpectrum.Enums;
 using CoreSpectrum.Hardware;
+using CoreSpectrum.Interfaces;
 using CoreSpectrum.Renderers;
 using Fizzler;
 using Konamiman.Z80dotNet;
@@ -36,7 +37,7 @@ namespace ZXBasicStudio.Controls
 
         FloatingStatus? floatStatus;
 
-        Machine machine;
+        MachineBase machine;
         byte[]? programToInject = null;
         ushort address = 0;
         public bool Running { get { return machine.Running; } }
@@ -79,7 +80,7 @@ namespace ZXBasicStudio.Controls
         }
         public bool DirectMode { get; set; }
         public IZ80Registers Registers { get { return machine.Z80.Registers; } }
-        public IMemory Memory { get { return machine.ROMRAM; } }
+        public ISpectrumMemory Memory { get { return machine.Memory; } }
 
         public ulong TStates { get { return machine.Z80.TStatesElapsedSinceReset; } }
 
@@ -96,7 +97,7 @@ namespace ZXBasicStudio.Controls
                 throw new InvalidProgramException("Missing ROM resource!");
 
             renderer = new ZXVideoRenderer();
-            machine = new Machine(rom, renderer, sampler);
+            machine = new Spectrum48k(new byte[][] { rom }, renderer, sampler);
             sampler.Machine = machine;
             machine.FrameRendered += Machine_FrameRendered;
             machine.BreakpointHit += Machine_BreakpointHit;
@@ -196,7 +197,7 @@ namespace ZXBasicStudio.Controls
                 }
             });
         }
-        private void Machine_BreakpointHit(object? sender, Machine.BreakPointEventArgs e)
+        private void Machine_BreakpointHit(object? sender, BreakPointEventArgs e)
         {
             try
             {
@@ -208,13 +209,13 @@ namespace ZXBasicStudio.Controls
                 switch (cmd)
                 {
                     case ZXConstants.INJECT_BREAKPOINT:
-                        machine.ROMRAM.SetContents(address, programToInject);
+                        machine.Memory.SetContents(address, programToInject);
                         machine.Z80.Registers.PC = address;
                         var sp = (ushort)machine.Z80.Registers.SP;
                         byte[] retAddr = BitConverter.GetBytes(e.Breakpoint.Address);
                         sp -= 2;
                         machine.Z80.Registers.SP = unchecked((short)sp);
-                        machine.ROMRAM.SetContents(sp, retAddr);
+                        machine.Memory.SetContents(sp, retAddr);
 
                         if (ProgramReady != null)
                             ProgramReady(this, EventArgs.Empty);
@@ -332,9 +333,8 @@ namespace ZXBasicStudio.Controls
                 {
                     try
                     {
-                        int[] buffer = new int[312 * 416];
-                        renderer.DumpScreenMemory(machine, buffer);
-                        emuScr.RenderFrame(buffer);
+                        renderer.DumpScreenMemory(machine);
+                        emuScr.RenderFrame(renderer.VideoBuffer);
                     }
                     catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
                 }
@@ -405,7 +405,7 @@ namespace ZXBasicStudio.Controls
                 else
                 {
                     machine.Pause();
-                    machine.ROMRAM.SetContents(Address, Data);
+                    machine.Memory.SetContents(Address, Data);
                     machine.Resume();
                 }
             }
@@ -413,7 +413,7 @@ namespace ZXBasicStudio.Controls
 
         }
 
-        private void Machine_FrameRendered(object? sender, Machine.SpectrumFrameArgs e)
+        private void Machine_FrameRendered(object? sender, SpectrumFrameArgs e)
         {
             try
             {

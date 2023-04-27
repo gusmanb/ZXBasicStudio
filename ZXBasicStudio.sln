@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSpectrum", "CoreSpectrum\CoreSpectrum.csproj", "{F65553BC-B86F-4125-B5BA-EBBCC223100B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCore", "TestCore\TestCore.csproj", "{03D8189F-949A-4234-8EE7-C50CF5A798CB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZXBasicStudio", "ZXBStudio\ZXBasicStudio.csproj", "{726F8E04-840F-4F15-935D-429D81AC0311}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RomReconstructor", "RomReconstructor\RomReconstructor.csproj", "{F91A239A-F9AB-42A3-AECD-9AB844A5B908}"
@@ -15,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bufdio", "Bufdio\Bufdio.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main", "Z80dotNet\Main\Main.csproj", "{3EFA2E44-4D1E-4212-B6BB-9F34CD228772}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rom128Reconstructor", "Rom128Reconstructor\Rom128Reconstructor.csproj", "{8B15A1B8-5C8A-4F81-A50B-834687EEE040}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rom128Reconstructor", "Rom128Reconstructor\Rom128Reconstructor.csproj", "{8B15A1B8-5C8A-4F81-A50B-834687EEE040}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +31,6 @@ Global
 		{F65553BC-B86F-4125-B5BA-EBBCC223100B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F65553BC-B86F-4125-B5BA-EBBCC223100B}.Release|x64.ActiveCfg = Release|x64
 		{F65553BC-B86F-4125-B5BA-EBBCC223100B}.Release|x64.Build.0 = Release|x64
-		{03D8189F-949A-4234-8EE7-C50CF5A798CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03D8189F-949A-4234-8EE7-C50CF5A798CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03D8189F-949A-4234-8EE7-C50CF5A798CB}.Debug|x64.ActiveCfg = Debug|x64
-		{03D8189F-949A-4234-8EE7-C50CF5A798CB}.Debug|x64.Build.0 = Debug|x64
-		{03D8189F-949A-4234-8EE7-C50CF5A798CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03D8189F-949A-4234-8EE7-C50CF5A798CB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03D8189F-949A-4234-8EE7-C50CF5A798CB}.Release|x64.ActiveCfg = Release|x64
-		{03D8189F-949A-4234-8EE7-C50CF5A798CB}.Release|x64.Build.0 = Release|x64
 		{726F8E04-840F-4F15-935D-429D81AC0311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{726F8E04-840F-4F15-935D-429D81AC0311}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{726F8E04-840F-4F15-935D-429D81AC0311}.Debug|x64.ActiveCfg = Debug|x64

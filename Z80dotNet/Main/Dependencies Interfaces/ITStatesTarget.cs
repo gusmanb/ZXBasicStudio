@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Konamiman.Z80dotNet
+namespace Main.Dependencies_Interfaces
 {
-    public interface IIO
+    public interface ITStatesTarget
     {
-        byte this[byte portLo, byte portHi] { get; set; }
+        ulong TStates { get; set; }
     }
 }

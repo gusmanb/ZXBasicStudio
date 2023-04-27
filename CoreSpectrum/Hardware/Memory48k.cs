@@ -1,4 +1,5 @@
-﻿using Konamiman.Z80dotNet;
+﻿using CoreSpectrum.Interfaces;
+using Konamiman.Z80dotNet;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -8,18 +9,9 @@ using System.Threading.Tasks;
 
 namespace CoreSpectrum.Hardware
 {
-    public class Memory48 : IMemory
+    public class Memory48k : ISpectrumMemory
     {
         byte[] memory = new byte[64 * 1024];
-
-        public Memory48(byte[] RomContent)
-        {
-
-            if (RomContent == null || RomContent.Length != 16 * 1024)
-                throw new InvalidDataException("ROM must be 16kb long");
-
-            Buffer.BlockCopy(RomContent, 0, memory, 0, RomContent.Length);
-        }
 
         public byte this[int address]
         {
@@ -32,6 +24,14 @@ namespace CoreSpectrum.Hardware
             get => memory.Length;
         }
 
+        public Memory48k(byte[][] RomSet)
+        {
+            if (RomSet == null || RomSet.Length != 1 || RomSet[0].Length != 16 * 1024)
+                throw new InvalidDataException("Spectrum 48k ROM set must contain a single 16Kb ROM");
+
+            Buffer.BlockCopy(RomSet[0], 0, memory, 0, RomSet[0].Length);
+        }
+
         public byte[] GetContents(int startAddress, int length)
         {
             byte[] vs = new byte[length];
@@ -42,6 +42,11 @@ namespace CoreSpectrum.Hardware
         public void SetContents(int startAddress, byte[] contents, int startIndex = 0, int? length = null)
         {
             Buffer.BlockCopy(contents, startIndex, memory, startAddress, length ?? contents.Length);
+        }
+
+        public Span<byte> GetVideoMemory()
+        {
+            return new Span<byte>(memory, 0x4000, 6912);
         }
     }
 }

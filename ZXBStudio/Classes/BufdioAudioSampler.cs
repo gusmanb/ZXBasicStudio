@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -20,31 +21,33 @@ namespace ZXBasicStudio.Classes
         const int SAMPLE_RATE = 44100;
         const int CPU_CLOCK = 3500000;
         const double LATENCY = 0.1f; //In s
-        const decimal SAMPLE_T_STATES = (decimal)CPU_CLOCK / (decimal)SAMPLE_RATE;
+        const double SAMPLE_T_STATES = (double)CPU_CLOCK / (double)SAMPLE_RATE;
         const float AMPLITUDE = 1;
         const int timerTick = 10;
-
+        const int BUFFER_SIZE = 10000;
         Timer? audioTimer;
 
         IAudioEngine? engine;
 
         private static readonly float[] audioOutSpkLevels = { 0, AMPLITUDE / 3, AMPLITUDE / 1.5f, AMPLITUDE };
 
-        long nextChange = -1;
-        long latency = 0;
+        ulong nextChange = 0;
+        ulong latency = 0;
         float nextValue = 0;
         float currentValue = 0;
         bool _pause = false;
 
-        private volatile ulong[] sampleBuffer = new ulong[10000];
+        private volatile ulong[] statesBuffer = new ulong[BUFFER_SIZE];
+        private volatile byte[] valuesBuffer = new byte[BUFFER_SIZE];
         private volatile int readPos = 0;
         private volatile int writePos = 0;
         float[] outBuffer = new float[SAMPLE_RATE * 10];
         private ulong cTicks;
-        decimal rest = 0;
+        double rest = 0;
 
         object locker = new object();
-        public Machine? Machine { get; set; }
+        //public Machine? Machine { get; set; }
+        public MachineBase? Machine { get; set; }
 
         public BufdioAudioSampler() 
         {
@@ -104,21 +107,22 @@ namespace ZXBasicStudio.Classes
             }
         }
 
-        public void AddSample(ulong sample)
+        public void AddSample(ulong TStates, byte Value)
         {
             if (ZXOptions.Current.AudioDisabled)
                 return;
 
-            sampleBuffer[writePos++] = sample;
+            statesBuffer[writePos] = TStates;
+            valuesBuffer[writePos++] = Value;
 
-            if (writePos >= sampleBuffer.Length)
+            if (writePos >= BUFFER_SIZE)
                 writePos = 0;
 
         }
 
         private float NextSample()
         {
-            decimal sum = 0;
+            float sum = 0;
             int ticksThisSample = (int)SAMPLE_T_STATES;
 
             rest += SAMPLE_T_STATES - ticksThisSample;
@@ -133,10 +137,10 @@ namespace ZXBasicStudio.Classes
             {
                 cTicks++;
                 NextTickSample();
-                sum += (decimal)currentValue;
+                sum += currentValue;
             }
 
-            return (float)(sum / ticksThisSample);
+            return sum / ticksThisSample;
         }
 
         private void NextTickSample()
@@ -144,24 +148,18 @@ namespace ZXBasicStudio.Classes
             if (ZXOptions.Current.AudioDisabled)
                 return;
 
-            long ticks = (long)cTicks;
-
-            if (nextChange == -1 || ticks >= nextChange)
+            if (nextChange == 0 || cTicks >= nextChange)
             {
-                nextChange = -1;
+                nextChange = 0;
                 currentValue = nextValue;
 
-                ulong next;
-
-                while (nextChange <= ticks && readPos != writePos)
+                while (nextChange <= cTicks && readPos != writePos)
                 {
-                    next = sampleBuffer[readPos++];
+                    nextChange = statesBuffer[readPos] + latency;
+                    nextValue = audioOutSpkLevels[valuesBuffer[readPos++]];
 
-                    if (readPos >= sampleBuffer.Length)
+                    if (readPos >= BUFFER_SIZE)
                         readPos = 0;
-
-                    nextChange = (long)(next >> 2) + latency;
-                    nextValue = audioOutSpkLevels[next & 2];
                 }
             }
         }

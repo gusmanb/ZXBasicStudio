@@ -27,17 +27,17 @@ namespace CoreSpectrum.Renderers
             _palette = (T[])palette.Clone();
         }
 
-        public void RenderLine(IMemory memory, byte borderColor, bool flashInvert, int line)
+        public void RenderLine(Span<byte> videoMemory, byte borderColor, bool flashInvert, int line)
         {
             if (_borderless)
-                RenderBorderless(memory, flashInvert, line);
+                RenderBorderless(videoMemory, flashInvert, line);
             else
-                RenderBorder(memory, borderColor, flashInvert, line);
+                RenderBorder(videoMemory, borderColor, flashInvert, line);
         }
-        private void RenderBorder(IMemory memory, byte borderColor, bool flashInvert, int line)
+        private void RenderBorder(Span<byte> videoMemory, byte borderColor, bool flashInvert, int line)
         {
             int lineStart = line * 416;
-            if (line < 64 || line >= 256) // top and bottom border
+            if (line < 64 || line >= 256) // top and bottom border, CORRECT FOR 128k
             {
                 FillBorder(lineStart, 416, borderColor);
                 return;
@@ -48,18 +48,18 @@ namespace CoreSpectrum.Renderers
 
             lineStart += 80;
             line -= 64;
-            int charY = 0x5800 + ((line >> 3) << 5);
-            int lineAddr = ((line & 0x07) << 8) | ((line & 0x38) << 2) | ((line & 0xC0) << 5) | 0x4000;
+            int charY = 0x1800 + ((line >> 3) << 5);
+            int lineAddr = ((line & 0x07) << 8) | ((line & 0x38) << 2) | ((line & 0xC0) << 5);
 
             for (int charX = 0; charX < 32; charX++)
             {
-                byte att = memory[charY + charX];
+                byte att = videoMemory[charY + charX];
                 int ink = att & 0x07;
                 int paper = (att & 0x38) >> 3;
                 if ((att & 0x40) != 0) { ink += 8; paper += 8; }
                 bool flash = (att & 0x80) != 0;
                 bool invert = flash && flashInvert;
-                byte byt = memory[lineAddr++];
+                byte byt = videoMemory[lineAddr++];
 
                 T realPaper = _palette[invert ? ink : paper];
                 T realInk = _palette[invert ? paper : ink];
@@ -68,30 +68,27 @@ namespace CoreSpectrum.Renderers
                     _videoBuffer[lineStart++] = (byt & bit) != 0 ? realInk : realPaper;
             }
         }
-        private void RenderBorderless(IMemory memory, bool flashInvert, int line)
+        private void RenderBorderless(Span<byte> videoMemory, bool flashInvert, int line)
         {
-
-            int lineStart = line * 416;
-            if (line < 64 || line >= 256) // top and bottom border
+            if (line < 64 || line >= 256) // top and bottom border, CORRECT FOR 128k
             {
                 return;
             }
 
-
             line -= 64;
-            lineStart = line * 256;
-            int charY = 0x5800 + ((line >> 3) << 5);
-            int lineAddr = ((line & 0x07) << 8) | ((line & 0x38) << 2) | ((line & 0xC0) << 5) | 0x4000;
+            int lineStart = line * 256;
+            int charY = 0x1800 + ((line >> 3) << 5);
+            int lineAddr = ((line & 0x07) << 8) | ((line & 0x38) << 2) | ((line & 0xC0) << 5);
 
             for (int charX = 0; charX < 32; charX++)
             {
-                byte att = memory[charY + charX];
+                byte att = videoMemory[charY + charX];
                 int ink = att & 0x07;
                 int paper = (att & 0x38) >> 3;
                 if ((att & 0x40) != 0) { ink += 8; paper += 8; }
                 bool flash = (att & 0x80) != 0;
                 bool invert = flash && flashInvert;
-                byte byt = memory[lineAddr++];
+                byte byt = videoMemory[lineAddr++];
 
                 T realPaper = _palette[invert ? ink : paper];
                 T realInk = _palette[invert ? paper : ink];
@@ -100,6 +97,7 @@ namespace CoreSpectrum.Renderers
                     _videoBufferBorderless[lineStart++] = (byt & bit) != 0 ? realInk : realPaper;
             }
         }
+
         private void FillBorder(int start, int length, byte color)
         {
             Array.Fill(_videoBuffer, _palette[color], start, length);

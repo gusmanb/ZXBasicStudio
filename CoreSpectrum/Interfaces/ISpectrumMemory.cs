@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace CoreSpectrum.Interfaces
 {
-    public interface IVideoRenderer
+    public interface ISpectrumMemory : IMemory
     {
-        void RenderLine(Span<byte> Memory, byte borderColor, bool FlashInvert, int LineNumber);
+        Span<byte> GetVideoMemory();
     }
 }
