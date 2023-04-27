@@ -44,7 +44,7 @@ namespace ZXBasicStudio
         //TODO: Añadir lista de proyectos recientes al menú
 
         List<ZXTextEditor> openEditors = new List<ZXTextEditor>();
-        List<ZXGraphics.ui.Main> openZXGraphics = new List<ZXGraphics.ui.Main>();
+        List<ZXGraphics.Main> openZXGraphics = new List<ZXGraphics.Main>();
         ObservableCollection<TabItem> editTabs = new ObservableCollection<TabItem>();
 
         ZXProgram? loadedProgram;
@@ -313,9 +313,9 @@ namespace ZXBasicStudio
                 }
                 openEditors.Remove(editor);
             }
-            else if (tipo == typeof(ZXGraphics.ui.Main))
+            else if (tipo == typeof(ZXGraphics.Main))
             {
-                var editor = tab.Content as ZXGraphics.ui.Main;
+                var editor = tab.Content as ZXGraphics.Main;
 
                 if (editor == null)
                 {
@@ -384,9 +384,9 @@ namespace ZXBasicStudio
                     return;
                 }
             }
-            else if (tipo == typeof(ZXGraphics.ui.Main))
+            else if (tipo == typeof(ZXGraphics.Main))
             {
-                var editor = activeTab.Content as ZXGraphics.ui.Main;
+                var editor = activeTab.Content as ZXGraphics.Main;
 
                 if (editor == null)
                     return;
@@ -628,7 +628,7 @@ namespace ZXBasicStudio
                 }
 
                 ZXTextEditor editor = null;
-                ZXGraphics.ui.Main graphicsEditor = null;
+                ZXGraphics.Main graphicsEditor = null;
 
                 if (file.IsZXAssembler() || file == ZXConstants.DISASSEMBLY_DOC || file == ZXConstants.ROM_DOC)
                     editor = new ZXAssemblerEditor(file);
@@ -638,7 +638,7 @@ namespace ZXBasicStudio
                     editor = new ZXTextEditor(file);
                 else if (file.IsZXGraphics())
                 {
-                    graphicsEditor = new ZXGraphics.ui.Main();
+                    graphicsEditor = new ZXGraphics.Main();
                     graphicsEditor.Initialize(file);
                 }
                 else
@@ -715,9 +715,9 @@ namespace ZXBasicStudio
                     return;
                 tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
             }
-            else if (tipo == typeof(ZXGraphics.ui.Main))
+            else if (tipo == typeof(ZXGraphics.Main))
             {
-                var editor = (ZXGraphics.ui.Main?)sender;
+                var editor = (ZXGraphics.Main?)sender;
                 if (editor == null)
                     return;
                 var tab = editor.Parent as TabItem;
@@ -740,9 +740,9 @@ namespace ZXBasicStudio
                     return;
                 tab.Tag = tab.Tag?.ToString() + "*";
             }
-            else if (tipo == typeof(ZXGraphics.ui.Main))
+            else if (tipo == typeof(ZXGraphics.Main))
             {
-                var editor = (ZXGraphics.ui.Main?)sender;
+                var editor = (ZXGraphics.Main?)sender;
                 if (editor == null)
                     return;
                 var tab = editor.Parent as TabItem;

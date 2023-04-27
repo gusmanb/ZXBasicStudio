@@ -289,7 +289,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Bufdio\Bufdio.csproj" />
     <ProjectReference Include="..\CoreSpectrum\CoreSpectrum.csproj" />
-    <ProjectReference Include="..\ZXGraphics.ui\ZXGraphics.ui.csproj" />
+    <ProjectReference Include="..\ZXGraphics\ZXGraphics.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="using:ZXGraphics"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXGraphics.Main">
+  <Grid Name="grdMain" ColumnDefinitions="166,*,140" Margin="0,8,0,0">
+
+    <Grid Grid.Column="1" Grid.Row="1" RowDefinitions="Auto,Auto,*">
+      <WrapPanel Orientation="Horizontal">
+        <TextBlock Name="txtZoom" Width="55" VerticalAlignment="Center">Zoom 24x</TextBlock>
+        <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" Margin="2,0,16,0" VerticalAlignment="Center"/>
+        <TextBlock VerticalAlignment="Center">Width</TextBlock>
+        <NumericUpDown Name="txtEditorWidth" Minimum="1" Increment="1" Maximum="256" Value="1" Margin="2,0,16,0" VerticalAlignment="Center" />
+        <TextBlock VerticalAlignment="Center">Height</TextBlock>
+        <NumericUpDown Name="txtEditorHeight" Minimum="1" Increment="1" Maximum="256" Value="1" Margin="2,0,16,0" VerticalAlignment="Center"/>
+        <TextBlock>Paper</TextBlock>
+        <TextBlock>Ink</TextBlock>
+        <TextBlock>Bright</TextBlock>
+      </WrapPanel>
+      
+      <WrapPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,4">
+        <Button Width="32" Height="32" Margin="1">
+          <Image Source="/Images/Clear.png"/>
+        </Button>
+        <Button Width="32" Height="32" Margin="4,1,1,1">
+          <Image Source="/Images/Cut.png"/>
+        </Button>
+        <Button Width="32" Height="32" Margin="1">
+          <Image Source="/Images/Copy.png"/>
+        </Button>
+      </WrapPanel>
+
+      <local:EditorControl Name="ctrEditor" Grid.Row="2"/>
+    </Grid>
+
+    <ScrollViewer VerticalScrollBarVisibility="Visible">
+      <Canvas Name="cnvPatterns"/>
+    </ScrollViewer>
+
+    <Grid Name="grdPreview" Grid.Column="2">
+      <local:PreviewControl Name="ctrlPreview"></local:PreviewControl>
+    </Grid>
+  </Grid>
+</UserControl>
