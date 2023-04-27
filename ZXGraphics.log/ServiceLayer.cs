@@ -128,5 +128,67 @@ namespace ZXGraphics.log
                 return null;
             }
         }
+
+
+        /// <summary>
+        /// Save a file of type GDU or Font to disk
+        /// </summary>
+        /// <param name="fileType">File information</param>
+        /// <param name="patterns">Pattens to save</param>
+        /// <returns>True if OK or FGalse if error</returns>
+        public static bool Files_Save_GDUorFont(FileTypeConfig fileType, IEnumerable<Pattern> patterns)
+        {
+            try
+            {
+                if (fileType.FileType != FileTypes.GDU && fileType.FileType != FileTypes.Font)
+                {
+                    return false;
+                }
+
+                var data = new byte[fileType.NumerOfPatterns * 8];
+                int index = 0;
+                for(int idPattern=0; idPattern < fileType.NumerOfPatterns; idPattern++)
+                {
+                    var pattern=patterns.FirstOrDefault(d=>d.Id==idPattern);
+                    if (pattern == null)
+                    {
+                        for(int n=0; n<8; n++)
+                        {
+                            data[index] = 0;
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        for(int y=0; y<8; y++)
+                        {
+                            int b = 0;
+                            for(int x=0; x<8; x++)
+                            {
+                                var p = pattern.Data.FirstOrDefault(d => d.Y == y && d.X==x);
+                                if (p == null)
+                                {
+                                    continue;
+                                }
+                                if (p.ColorIndex == 1)
+                                {
+                                    b = b | (int)Math.Pow(2,(7-x));
+                                }
+                            }
+                            data[index] = (byte)b;
+                            index++;
+                        }
+                    }
+                }
+
+                File.WriteAllBytes(fileType.FileName, data);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR saving file to disk: " + ex.Message + ex.StackTrace;
+                return false;
+            }
+        }
     }
 }

@@ -44,6 +44,7 @@ namespace ZXBasicStudio
         //TODO: Añadir lista de proyectos recientes al menú
 
         List<ZXTextEditor> openEditors = new List<ZXTextEditor>();
+        List<ZXGraphics.ui.Main> openZXGraphics = new List<ZXGraphics.ui.Main>();
         ObservableCollection<TabItem> editTabs = new ObservableCollection<TabItem>();
 
         ZXProgram? loadedProgram;
@@ -209,7 +210,9 @@ namespace ZXBasicStudio
 
             bool isFile = File.Exists(path);
 
-            if (!isFile && openEditors.Any(e => e.FileName.ToLower().StartsWith(path.ToLower())))
+            if (!isFile &&
+                (openEditors.Any(e => e.FileName.ToLower().StartsWith(path.ToLower())) ||
+                    openZXGraphics.Any(e => e.FileName.ToLower().StartsWith(path.ToLower()))))
             {
                 await ShowError("Open documents", "There are open documents in the selected folder, close any document in the folder before renaming it.");
                 return;
@@ -226,9 +229,43 @@ namespace ZXBasicStudio
             try
             {
                 if (isFile)
-                    File.Move(path, Path.Combine(Path.GetDirectoryName(path), newName));
+                {
+                    var dir = Path.GetDirectoryName(path);
+                    if (path.IsZXGraphics())
+                    {
+                        var editor = openZXGraphics.FirstOrDefault(d => d.FileName == path);
+                        if (editor != null)
+                        {
+                            if (editor.Modified)
+                            {
+                                // TODO: Renombrando un archivo modificado
+                                await ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
+                                return;
+                            }
+                            File.Move(path, Path.Combine(dir, newName));
+                            editor.FileName = Path.Combine(dir, newName);
+                        }
+                    }
+                    else
+                    {
+                        var editor = openEditors.FirstOrDefault(d => d.FileName == path);
+                        if (editor != null)
+                        {
+                            if (editor.Modified)
+                            {
+                                // TODO: Renombrando un archivo modificado
+                                await ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
+                                return;
+                            }
+                            File.Move(path, Path.Combine(dir, newName));
+                            editor.FileName = Path.Combine(dir, newName);
+                        }
+                    }
+                }
                 else
+                {
                     Directory.Move(path, Path.Combine(Path.GetDirectoryName(path), newName));
+                }
             }
             catch (Exception ex)
             {
@@ -259,29 +296,51 @@ namespace ZXBasicStudio
                     return;
             }
 
-            var editor = tab.Content as ZXTextEditor;
-
-            if (editor == null)
-                return;
-
-            if (editor.Modified)
+            var tipo = tab.Content.GetType();
+            if (tipo == typeof(ZXTextEditor))
             {
-                var res = await ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
+                var editor = tab.Content as ZXTextEditor;
 
-                if (!res)
+                if (editor == null)
                     return;
+
+                if (editor.Modified)
+                {
+                    var res = await ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
+
+                    if (!res)
+                        return;
+                }
+                openEditors.Remove(editor);
+            }
+            else if (tipo == typeof(ZXGraphics.ui.Main))
+            {
+                var editor = tab.Content as ZXGraphics.ui.Main;
+
+                if (editor == null)
+                {
+                    return;
+                }
+                if (editor.Modified)
+                {
+                    var res = await ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
+                    if (!res)
+                    {
+                        return;
+                    }
+                }
+                openZXGraphics.Remove(editor);
             }
 
-            openEditors.Remove(editor);
             editTabs.Remove(tab);
 
-            if (openEditors.Count == 0)
+            if (openEditors.Count == 0 && openZXGraphics.Count == 0)
                 FileInfo.FileLoaded = false;
         }
 
         private async void CloseProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (openEditors.Any(e => e.Modified))
+            if (openEditors.Any(e => e.Modified) || openZXGraphics.Any(d => d.Modified))
             {
                 var resConfirm = await ShowConfirm("Modified documents", "Some documents have been modified but not saved, if you close the project all the changes will be lost, are you sure you want to close the project?");
 
@@ -290,6 +349,7 @@ namespace ZXBasicStudio
             }
 
             openEditors.Clear();
+            openZXGraphics.Clear();
             editTabs.Clear();
             peExplorer.OpenProjectFolder(null);
             FileInfo.FileLoaded = false;
@@ -309,15 +369,33 @@ namespace ZXBasicStudio
             if (activeTab == null)
                 return;
 
-            var editor = activeTab.Content as ZXTextEditor;
+            var tipo = activeTab.Content.GetType();
 
-            if (editor == null)
-                return;
-
-            if (!editor.SaveDocument())
+            if (tipo == typeof(ZXTextEditor))
             {
-                await ShowError("Error", "Cannot save the file, check if another program is blocking it.");
-                return;
+                var editor = activeTab.Content as ZXTextEditor;
+
+                if (editor == null)
+                    return;
+
+                if (!editor.SaveDocument())
+                {
+                    await ShowError("Error", "Cannot save the file, check if another program is blocking it.");
+                    return;
+                }
+            }
+            else if (tipo == typeof(ZXGraphics.ui.Main))
+            {
+                var editor = activeTab.Content as ZXGraphics.ui.Main;
+
+                if (editor == null)
+                    return;
+
+                if (!editor.SaveDocument())
+                {
+                    await ShowError("Error", "Cannot save the file, check if another program is blocking it.");
+                    return;
+                }
             }
         }
 
@@ -333,6 +411,16 @@ namespace ZXBasicStudio
                 if (edit.Modified)
                     if (!edit.SaveDocument())
                         return false;
+            }
+            foreach (var edit in openZXGraphics)
+            {
+                if (edit.Modified)
+                {
+                    if (!edit.SaveDocument())
+                    {
+                        return false;
+                    }
+                }
             }
 
             return true;
@@ -358,8 +446,10 @@ namespace ZXBasicStudio
             basicFilter.Extensions.AddRange(ZXExtensions.ZXBasicFiles);
             var asmFilter = new FileDialogFilter { Name = "ZX Assembler file" };
             asmFilter.Extensions.AddRange(ZXExtensions.ZXAssemblerFiles);
+            var zxGraphicsFiler = new FileDialogFilter { Name = "ZXGraphics file" };
             dlg.Filters.Add(basicFilter);
             dlg.Filters.Add(asmFilter);
+            dlg.Filters.Add(zxGraphicsFiler);
             dlg.AllowMultiple = false;
             var file = (await dlg.ShowAsync(this))?.FirstOrDefault();
 
@@ -468,6 +558,13 @@ namespace ZXBasicStudio
                 if (!resConfirm)
                     return;
             }
+            if (openZXGraphics.Any(e => e.Modified))
+            {
+                var resConfirm = await ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
+
+                if (!resConfirm)
+                    return;
+            }
 
             var fld = await StorageProvider.OpenFolderPickerAsync(new Avalonia.Platform.Storage.FolderPickerOpenOptions { AllowMultiple = false, Title = "Select project's folder." });
 
@@ -499,6 +596,7 @@ namespace ZXBasicStudio
             peExplorer.OpenProjectFolder(selFolder);
             editTabs.Clear();
             openEditors.Clear();
+            openZXGraphics.Clear();
             FileInfo.ProjectLoaded = true;
             FileInfo.FileLoaded = false;
             FileInfo.FileSystemObjectSelected = false;
@@ -510,13 +608,23 @@ namespace ZXBasicStudio
         {
             try
             {
-                var opened = openEditors.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
-
-                if (opened != null)
                 {
-                    var tab = editTabs.First(t => t.Content == opened);
-                    tab.IsSelected = true;
-                    return opened;
+                    var opened = openEditors.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
+                    if (opened != null)
+                    {
+                        var tab = editTabs.First(t => t.Content == opened);
+                        tab.IsSelected = true;
+                        return opened;
+                    }
+                }
+                {
+                    var opened = openZXGraphics.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
+                    if (opened != null)
+                    {
+                        var tab = editTabs.First(t => t.Content == opened);
+                        tab.IsSelected = true;
+                        return null;
+                    }
                 }
 
                 ZXTextEditor editor = null;
@@ -576,11 +684,11 @@ namespace ZXBasicStudio
                     tItem.Tag = Path.GetFileName(file);
                     tItem.Content = graphicsEditor;
                     editTabs.Add(tItem);
-                    //openEditors.Add(editor);
+                    openZXGraphics.Add(graphicsEditor);
 
                     tItem.IsSelected = true;
-                    //editor.DocumentModified += EditorDocumentModified;
-                    //editor.DocumentSaved += EditorDocumentSaved;
+                    graphicsEditor.DocumentModified += EditorDocumentModified;
+                    graphicsEditor.DocumentSaved += EditorDocumentSaved;
                     FileInfo.FileLoaded = true;
                     peExplorer.SelectPath(file);
 
@@ -596,25 +704,54 @@ namespace ZXBasicStudio
 
         private void EditorDocumentSaved(object? sender, System.EventArgs e)
         {
-            var editor = (ZXTextEditor?)sender;
-            if (editor == null)
-                return;
-            var tab = editor.Parent as TabItem;
-            if (tab == null)
-                return;
-            tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
+            var tipo = sender?.GetType();
+            if (tipo == typeof(ZXTextEditor))
+            {
+                var editor = (ZXTextEditor?)sender;
+                if (editor == null)
+                    return;
+                var tab = editor.Parent as TabItem;
+                if (tab == null)
+                    return;
+                tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
+            }
+            else if (tipo == typeof(ZXGraphics.ui.Main))
+            {
+                var editor = (ZXGraphics.ui.Main?)sender;
+                if (editor == null)
+                    return;
+                var tab = editor.Parent as TabItem;
+                if (tab == null)
+                    return;
+                tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
+            }
         }
 
         private void EditorDocumentModified(object? sender, System.EventArgs e)
         {
-            var editor = (ZXTextEditor?)sender;
-            if (editor == null)
-                return;
-            var tab = editor.Parent as TabItem;
-            if (tab == null)
-                return;
-            tab.Tag = tab.Tag?.ToString() + "*";
+            var tipo = sender?.GetType();
+            if (tipo == typeof(ZXTextEditor))
+            {
+                var editor = (ZXTextEditor?)sender;
+                if (editor == null)
+                    return;
+                var tab = editor.Parent as TabItem;
+                if (tab == null)
+                    return;
+                tab.Tag = tab.Tag?.ToString() + "*";
+            }
+            else if (tipo == typeof(ZXGraphics.ui.Main))
+            {
+                var editor = (ZXGraphics.ui.Main?)sender;
+                if (editor == null)
+                    return;
+                var tab = editor.Parent as TabItem;
+                if (tab == null)
+                    return;
+                tab.Tag = tab.Tag?.ToString() + "*";
+            }
         }
+
         #endregion
 
         #region Emulator control

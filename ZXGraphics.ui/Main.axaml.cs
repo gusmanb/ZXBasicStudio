@@ -8,6 +8,37 @@ namespace ZXGraphics.ui
 {
     public partial class Main : UserControl
     {
+        public event EventHandler? DocumentModified;
+        public event EventHandler? DocumentSaved;
+
+        public bool Modified {
+            get
+            {
+                return _Modified;
+            }
+            set
+            {
+                if(_Modified==false && value == true)
+                {
+                    DocumentModified?.Invoke(this, EventArgs.Empty);
+                }
+                _Modified = value;               
+            }
+        }
+        private bool _Modified;
+
+        public string FileName 
+        {
+            get
+            {
+                return fileType.FileName;
+            }
+            set
+            {
+                fileType.FileName = value;
+            } 
+        }
+
         private FileTypeConfig fileType = null;
         private byte[] fileData = null;
         private PatternControl[] patterns = null;
@@ -46,6 +77,8 @@ namespace ZXGraphics.ui
         /// <returns>True if OK, or False if error</returns>
         public bool Initialize(string fileName)
         {
+            Modified = false;
+            
             ServiceLayer.Initialize();
 
             fileType = ServiceLayer.GetFileType(fileName);
@@ -189,6 +222,7 @@ namespace ZXGraphics.ui
 
         private void SetPattern(int id,Pattern pattern)
         {
+            Modified = true;
             var pat = patterns.FirstOrDefault(d => d.Pattern.Id == pattern.Id);
             if (pat != null)
             {
@@ -199,6 +233,17 @@ namespace ZXGraphics.ui
 
 
 
+        public bool SaveDocument()
+        {
+            if(!ServiceLayer.Files_Save_GDUorFont(fileType, patterns?.Select(d=>d.Pattern)))
+            {
+                return false;
+            };
+            
+            Modified = false;
+            DocumentSaved?.Invoke(this, EventArgs.Empty);
+            return true;
+        }
 
 
     }

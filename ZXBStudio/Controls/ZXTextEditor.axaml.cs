@@ -180,7 +180,7 @@ namespace ZXBasicStudio.Controls
                 BreakpointManager.UpdateFileName(OldName, NewName);
 
             if (!string.IsNullOrWhiteSpace(NewName) && NewName != "Untitled" && NewName != ZXConstants.DISASSEMBLY_DOC && NewName != ZXConstants.ROM_DOC)
-                editor.Document = new AvaloniaEdit.Document.TextDocument(File.ReadAllText(_fileName));
+                editor.Document = new AvaloniaEdit.Document.TextDocument(File.ReadAllText(NewName));
             else
                 editor.Document = new AvaloniaEdit.Document.TextDocument();
 
