@@ -78,12 +78,11 @@ namespace CoreSpectrum.Hardware
                         return;
 
                     if ((value & DISABLE_MAP_MASK) == DISABLE_MAP_MASK)
-                    {
                         _disableMapping = true;
-                        _mem.Map.SetActiveBank(0);
-                        _mem.Map.SetActiveScreen(0);
-                        //_mem.Map
-                    }
+
+                    _mem.Map.SetActiveBank(value & PAGE_MASK);
+                    _mem.Map.SetActiveScreen((value & DISPLAY_MASK) >> 3);
+                    _mem.Map.SetActiveRom((value & ROM_MASK) >> 4);
                 }
             }
         }

@@ -91,6 +91,8 @@ namespace ZXBasicStudio.Controls
         public event EventHandler<ExceptionEventArgs>? ExceptionTrapped;
         public ZXEmulator()
         {
+
+            /*
             System.Resources.ResourceManager resources = new System.Resources. ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
 
             var rom = resources.GetObject("48k_rom") as byte[];
@@ -100,6 +102,24 @@ namespace ZXBasicStudio.Controls
 
             renderer = new ZXVideoRenderer();
             machine = new Spectrum48k(new byte[][] { rom }, renderer);
+            */
+
+            System.Resources.ResourceManager resources = new System.Resources.ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
+
+            var rom0 = resources.GetObject("Plus2_0_rom") as byte[];
+
+            if (rom0 == null)
+                throw new InvalidProgramException("Missing ROM resource!");
+
+            var rom1 = resources.GetObject("Plus2_1_rom") as byte[];
+
+            if (rom1 == null)
+                throw new InvalidProgramException("Missing ROM resource!");
+
+            renderer = new ZXVideoRenderer();
+            machine = new Spectrum128k(new byte[][] { rom0, rom1 }, renderer);
+
+
             audio = new ZXEmulatorAudio(machine.ULA);
             machine.RegisterSynchronized(audio);
             //sampler.Machine = machine;
@@ -242,7 +262,10 @@ namespace ZXBasicStudio.Controls
         public void Start() 
         { 
             try 
-            { 
+            {
+                if (machine.Running)
+                    return;
+
                 emuScr.IsRunning = true; 
                 machine.Start(true); 
             }
@@ -403,7 +426,8 @@ namespace ZXBasicStudio.Controls
                 {
                     address = Address;
                     programToInject = Data;
-                    machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 0x12ac, Temporary = true, Id = "INJECT" });
+                    machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 9842, Temporary = true, Id = "INJECT" });
+                    //machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 0x12ac, Temporary = true, Id = "INJECT" });
                     machine.Reset();
                 }
                 else

@@ -27,17 +27,17 @@ namespace CoreSpectrum.Renderers
             _palette = (T[])palette.Clone();
         }
 
-        public void RenderLine(Span<byte> videoMemory, byte borderColor, bool flashInvert, int line)
+        public void RenderLine(Span<byte> videoMemory, byte firstScan, byte borderColor, bool flashInvert, int line)
         {
             if (_borderless)
-                RenderBorderless(videoMemory, flashInvert, line);
+                RenderBorderless(videoMemory, firstScan, flashInvert, line);
             else
-                RenderBorder(videoMemory, borderColor, flashInvert, line);
+                RenderBorder(videoMemory, firstScan, borderColor, flashInvert, line);
         }
-        private void RenderBorder(Span<byte> videoMemory, byte borderColor, bool flashInvert, int line)
+        private void RenderBorder(Span<byte> videoMemory, byte firstScan, byte borderColor, bool flashInvert, int line)
         {
             int lineStart = line * 416;
-            if (line < 64 || line >= 256) // top and bottom border, CORRECT FOR 128k
+            if (line < firstScan || line >= firstScan + 192)
             {
                 FillBorder(lineStart, 416, borderColor);
                 return;
@@ -47,7 +47,7 @@ namespace CoreSpectrum.Renderers
             FillBorder(lineStart + 336, 80, borderColor);
 
             lineStart += 80;
-            line -= 64;
+            line -= firstScan;
             int charY = 0x1800 + ((line >> 3) << 5);
             int lineAddr = ((line & 0x07) << 8) | ((line & 0x38) << 2) | ((line & 0xC0) << 5);
 
@@ -68,14 +68,14 @@ namespace CoreSpectrum.Renderers
                     _videoBuffer[lineStart++] = (byt & bit) != 0 ? realInk : realPaper;
             }
         }
-        private void RenderBorderless(Span<byte> videoMemory, bool flashInvert, int line)
+        private void RenderBorderless(Span<byte> videoMemory, byte firstScan, bool flashInvert, int line)
         {
-            if (line < 64 || line >= 256) // top and bottom border, CORRECT FOR 128k
+            if (line < firstScan || line >= firstScan + 192)
             {
                 return;
             }
 
-            line -= 64;
+            line -= firstScan;
             int lineStart = line * 256;
             int charY = 0x1800 + ((line >> 3) << 5);
             int lineAddr = ((line & 0x07) << 8) | ((line & 0x38) << 2) | ((line & 0xC0) << 5);

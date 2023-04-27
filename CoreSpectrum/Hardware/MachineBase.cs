@@ -48,7 +48,7 @@ namespace CoreSpectrum.Hardware
         public ISpectrumMemory Memory { get { return _memory; } }
         public ULABase ULA { get { return _ula; } }
         public TapePlayer DataCorder { get { return _player; } }
-
+        public MachineTimmings Timmings { get { return _timmings; } }
         protected MachineBase(byte[][] RomSet, IVideoRenderer Renderer)
         {
 
@@ -132,7 +132,7 @@ namespace CoreSpectrum.Hardware
 
             _scanCycles -= _timmings.TStatesPerScan;
 
-            _ula.ScanLine(_memory.GetVideoMemory());
+            _ula.ScanLine(_memory.GetVideoMemory(), _timmings.FirstScan, _timmings.ScansPerFrame);
 
             if (_ula.NewFrame && (!_turbo || _renderOnturbo))
             {
@@ -337,10 +337,11 @@ namespace CoreSpectrum.Hardware
 
         #endregion
 
-        protected struct MachineTimmings
+        public struct MachineTimmings
         {
             public required int TStatesPerScan { get; set; }
             public required int ScansPerFrame { get; set; }
+            public required byte FirstScan { get; set; }
             public required int CpuClock { get; set; }
         }
 

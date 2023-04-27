@@ -162,7 +162,7 @@ namespace CoreSpectrum.Hardware
 
             public void SetActiveBank(int BankNumber)
             {
-                if (BankNumber < 0 || BankNumber > 1)
+                if (BankNumber < 0 || BankNumber > 7)
                     throw new IndexOutOfRangeException("Active bank can range from 0 to 7");
 
                 activeBank = BankNumber;
@@ -234,6 +234,14 @@ namespace CoreSpectrum.Hardware
                 }
 
                 return ranges.ToArray();
+            }
+
+            public void Reset()
+            {
+                activeRom = 0;
+                activeBank = 0;
+                activeScreen = 0;
+                activeScreenPage = fixedScreenIndex;
             }
         }
 

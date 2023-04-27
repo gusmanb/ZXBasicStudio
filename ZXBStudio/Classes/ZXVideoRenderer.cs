@@ -41,7 +41,7 @@ namespace ZXBasicStudio.Classes
             var mem = ZXMachine.Memory.GetVideoMemory();
 
             for (int buc = 0; buc < 312; buc++)
-                RenderLine(mem, 0, ZXMachine.ULA.FlashInvert, buc);
+                RenderLine(mem, 0, ZXMachine.Timmings.FirstScan, ZXMachine.ULA.FlashInvert, buc);
         }
     }
 }

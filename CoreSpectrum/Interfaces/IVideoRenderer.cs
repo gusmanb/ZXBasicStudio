@@ -9,6 +9,6 @@ namespace CoreSpectrum.Interfaces
 {
     public interface IVideoRenderer
     {
-        void RenderLine(Span<byte> Memory, byte borderColor, bool FlashInvert, int LineNumber);
+        void RenderLine(Span<byte> Memory, byte FirstScan, byte BorderColor, bool FlashInvert, int LineNumber);
     }
 }

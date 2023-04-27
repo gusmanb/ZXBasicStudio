@@ -157,11 +157,11 @@ namespace CoreSpectrum.Hardware
             var info = keyInfos[Key];
             keybSegments[info.Row] = (byte)(keybSegments[info.Row] | info.BitValue);
         }
-        public virtual void ScanLine(Span<byte> VideoMemory)
+        public virtual void ScanLine(Span<byte> VideoMemory, byte FirstScan, int ScansPerFrame)
         {
-            _renderer.RenderLine(VideoMemory, Border, FlashInvert, _currentLine++);
+            _renderer.RenderLine(VideoMemory, FirstScan, Border, FlashInvert, _currentLine++);
 
-            if (_currentLine == 312)
+            if (_currentLine == ScansPerFrame)
             {
                 _currentLine = 0;
                 _screenIrq = true;

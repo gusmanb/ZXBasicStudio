@@ -615,6 +615,9 @@ namespace Konamiman.Z80dotNet
             MemoryAccessEventType afterEventType,
             byte waitStates)
         {
+            if (MemoryAccess == null)
+                return memory[address];
+
             var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, address, 0xFF);
 
             byte value;
@@ -645,6 +648,9 @@ namespace Konamiman.Z80dotNet
             MemoryAccessEventType afterEventType,
             byte waitStates)
         {
+
+            if (MemoryAccess == null)
+                return io[portLo, portHi];
 
             var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, portLo, 0xFF);
 
@@ -708,6 +714,13 @@ namespace Konamiman.Z80dotNet
             MemoryAccessEventType afterEventType,
             byte waitStates)
         {
+
+            if (MemoryAccess == null)
+            {
+                memory[address] = value;
+                return;
+            }
+
             var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, address, value);
 
             if(!beforeEventArgs.CancelMemoryAccess &&
@@ -735,6 +748,13 @@ namespace Konamiman.Z80dotNet
             MemoryAccessEventType afterEventType,
             byte waitStates)
         {
+
+            if (MemoryAccess == null)
+            {
+                io[portLo, portHi] = value;
+                return;
+            }
+
             var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, portLo, value);
 
             if (!beforeEventArgs.CancelMemoryAccess &&
