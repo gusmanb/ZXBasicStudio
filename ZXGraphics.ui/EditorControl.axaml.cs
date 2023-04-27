@@ -205,7 +205,7 @@ namespace ZXGraphics.ui
             x = x % 8;
             y = y % 8;
 
-            var id = (py * ItemsWidth) + px;
+            var id = IdPattern+(py * ItemsWidth) + px;
             var pattern = callbackGetPattern(id);
             if (pattern != null)
             {
