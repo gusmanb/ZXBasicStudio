@@ -12,7 +12,7 @@ namespace CoreSpectrum.Hardware
 {
     public class ULA48k : ULABase
     {
-        public ULA48k(IVideoRenderer Renderer, IAudioSampler Sampler) : base(Renderer, Sampler) { }
+        public ULA48k(int CpuClock, int AudioSamplingFrequency, IVideoRenderer Renderer) : base(CpuClock, AudioSamplingFrequency, Renderer) { }
         public override byte this[byte portLo, byte portHi]
         {
             get

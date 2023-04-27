@@ -11,16 +11,16 @@ namespace CoreSpectrum.Hardware
     {
         private static readonly MachineTimmings Timmings48k = new MachineTimmings 
         { 
-            ProcessorSpeed = 3500000,
+            CpuClock = 3500000,
             ScansPerFrame = 312,
             TStatesPerScan = 224
         };
 
-        public Spectrum48k(byte[][] RomSet, IVideoRenderer Renderer, IAudioSampler Sampler) : base(RomSet, Renderer, Sampler) { }
+        public Spectrum48k(byte[][] RomSet, IVideoRenderer Renderer) : base(RomSet, Renderer) { }
 
-        protected override MachineHardware GetHardware(byte[][] RomSet, IVideoRenderer Renderer, IAudioSampler Sampler)
+        protected override MachineHardware GetHardware(byte[][] RomSet, IVideoRenderer Renderer)
         {
-            var ula = new ULA48k(Renderer, Sampler);
+            var ula = new ULA48k(Timmings48k.CpuClock, 44100, Renderer);
             var memory = new Memory48k(RomSet);
 
             MachineHardware hardware = new MachineHardware

@@ -1,4 +1,5 @@
-﻿using Bufdio;
+﻿using Avalonia.Platform;
+using Bufdio;
 using Bufdio.Engines;
 using CoreSpectrum.Hardware;
 using CoreSpectrum.Interfaces;
@@ -120,10 +121,11 @@ namespace ZXBasicStudio.Classes
 
         }
 
+        
         private float NextSample()
         {
             float sum = 0;
-            int ticksThisSample = (int)SAMPLE_T_STATES;
+            ulong ticksThisSample = (ulong)SAMPLE_T_STATES;
 
             rest += SAMPLE_T_STATES - ticksThisSample;
 
@@ -133,20 +135,28 @@ namespace ZXBasicStudio.Classes
                 ticksThisSample++;
             }
 
-            for (int loop = 0; loop < ticksThisSample; loop++)
+            ulong consumedTicks = 0;
+            ulong ticksLeft = ticksThisSample;
+
+            while (ticksLeft > 0) 
             {
-                cTicks++;
-                NextTickSample();
-                sum += currentValue;
+                consumedTicks = NextTickSample(ticksLeft);
+
+                if (consumedTicks == 0)
+                    continue;
+
+                ticksLeft -= consumedTicks;
+                cTicks += consumedTicks;
+                sum += currentValue * consumedTicks;
             }
 
             return sum / ticksThisSample;
         }
 
-        private void NextTickSample()
+        private ulong NextTickSample(ulong MaxTicks)
         {
             if (ZXOptions.Current.AudioDisabled)
-                return;
+                return 0;
 
             if (nextChange == 0 || cTicks >= nextChange)
             {
@@ -162,8 +172,15 @@ namespace ZXBasicStudio.Classes
                         readPos = 0;
                 }
             }
-        }
 
+            if (nextChange == 0)
+                return MaxTicks;
+
+            if (nextChange < cTicks + MaxTicks)
+                return nextChange - cTicks;
+            else
+                return MaxTicks;
+        }
         public void Pause()
         {
             lock (locker)
@@ -174,13 +191,16 @@ namespace ZXBasicStudio.Classes
                 if (audioTimer == null || engine == null)
                     return;
 
+                audioTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
                 if (engine != null)
                 {
                     engine.Dispose();
                     engine = null;
                 }
+
                 _pause = true;
-                audioTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                
                 readPos = 0;
                 writePos = 0;
                 cTicks = 0;

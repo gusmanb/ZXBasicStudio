@@ -33,7 +33,9 @@ namespace ZXBasicStudio.Controls
         private static readonly byte BRIGHT = 0xff, NORM = 0xd7;
 
         ZXVideoRenderer renderer;
-        BufdioAudioSampler sampler = new BufdioAudioSampler();
+        //BufdioAudioSampler sampler = new BufdioAudioSampler();
+
+        ZXEmulatorAudio audio;
 
         FloatingStatus? floatStatus;
 
@@ -97,8 +99,10 @@ namespace ZXBasicStudio.Controls
                 throw new InvalidProgramException("Missing ROM resource!");
 
             renderer = new ZXVideoRenderer();
-            machine = new Spectrum48k(new byte[][] { rom }, renderer, sampler);
-            sampler.Machine = machine;
+            machine = new Spectrum48k(new byte[][] { rom }, renderer);
+            audio = new ZXEmulatorAudio(machine.ULA);
+            machine.RegisterSynchronized(audio);
+            //sampler.Machine = machine;
             machine.FrameRendered += Machine_FrameRendered;
             machine.BreakpointHit += Machine_BreakpointHit;
             InitializeComponent();

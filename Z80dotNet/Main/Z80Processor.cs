@@ -249,8 +249,14 @@ namespace Konamiman.Z80dotNet
 
         private void UpdateTStatesTargets()
         {
-            foreach (var target in TStatesTargets)
-                target.TStates = TStatesElapsedSinceStart;
+            var tStates = TStatesElapsedSinceStart;
+
+            for (int buc = 0; buc < TStatesTargets.Count; buc++)
+                TStatesTargets[buc].TStates = tStates;
+
+
+            //foreach (var target in TStatesTargets)
+            //    target.TStates = TStatesElapsedSinceStart;
         }
 
         #endregion

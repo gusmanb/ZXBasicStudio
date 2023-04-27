@@ -21,7 +21,6 @@ namespace CoreSpectrum.Hardware
         protected readonly ULABase _ula;
         protected readonly TapePlayer _player;
         protected readonly MachineTimmings _timmings;
-        protected readonly IAudioSampler _sampler;
         protected readonly IVideoRenderer _renderer;
 
         protected bool _pause;
@@ -36,6 +35,8 @@ namespace CoreSpectrum.Hardware
         protected readonly double _ticksPerFrame;
         protected readonly double _millisPerFrame;
         protected readonly double _framesPerSecond;
+        
+        protected readonly List<ISynchronizedExecution> _syncExecs = new List<ISynchronizedExecution>();
 
         public event EventHandler<SpectrumFrameArgs>? FrameRendered;
         public event EventHandler<BreakPointEventArgs>? BreakpointHit;
@@ -48,16 +49,15 @@ namespace CoreSpectrum.Hardware
         public ULABase ULA { get { return _ula; } }
         public TapePlayer DataCorder { get { return _player; } }
 
-        protected MachineBase(byte[][] RomSet, IVideoRenderer Renderer, IAudioSampler Sampler)
+        protected MachineBase(byte[][] RomSet, IVideoRenderer Renderer)
         {
 
-            var hardware = GetHardware(RomSet, Renderer, Sampler);
+            var hardware = GetHardware(RomSet, Renderer);
 
             _timmings = hardware.Timmings;
             _memory = hardware.Memory;
             _ula = hardware.ULA;
             _renderer = Renderer;
-            _sampler = Sampler;
             _player = new TapePlayer();
             _player.AudioChanged += TapePlayer_AudioChanged;
 
@@ -71,7 +71,7 @@ namespace CoreSpectrum.Hardware
 
             //Compute timmings
             _ticksPerMilly = Stopwatch.Frequency / 1000.0;
-            _framesPerSecond = (double)_timmings.ProcessorSpeed / (double)(_timmings.TStatesPerScan * _timmings.ScansPerFrame);
+            _framesPerSecond = (double)_timmings.CpuClock / (double)(_timmings.TStatesPerScan * _timmings.ScansPerFrame);
             _millisPerFrame = (1.0 / _framesPerSecond) * 1000.0;
             _ticksPerFrame = _ticksPerMilly * _millisPerFrame;
             _z80.BeforeInstructionFetch += z80_BeforeInstructionFetch;
@@ -82,7 +82,7 @@ namespace CoreSpectrum.Hardware
             _ula.Ear = e.AudioLevel;
         }
 
-        protected abstract MachineHardware GetHardware(byte[][] RomSet, IVideoRenderer Renderer, IAudioSampler Sampler);
+        protected abstract MachineHardware GetHardware(byte[][] RomSet, IVideoRenderer Renderer);
 
         #region Machine execution
         protected virtual void SpectrumCycle(object? State)
@@ -106,7 +106,6 @@ namespace CoreSpectrum.Hardware
                         return;
 
                     _nextFrame = _sw.ElapsedTicks;
-                    _sampler.Resume(_z80.TStatesElapsedSinceStart);
                 }
 
                 NextInstruction();
@@ -163,6 +162,8 @@ namespace CoreSpectrum.Hardware
             _z80.Reset();
             _z80.Reset();
 
+            _ula._sampler.ResetSampler(_z80.TStatesElapsedSinceStart);
+
             if (!backgroundThread)
             {
                 Thread th = new Thread(SpectrumCycle);
@@ -171,13 +172,16 @@ namespace CoreSpectrum.Hardware
             else
                 Task.Run(() => SpectrumCycle(null));
 
-            _sampler.Play();
+            foreach(var exec in _syncExecs)
+                exec.Start();
         }
 
         public virtual void Stop()
         {
             _stop = true;
-            _sampler.Stop();
+
+            foreach (var exec in _syncExecs)
+                exec.Stop();
         }
 
         public virtual void Pause()
@@ -186,7 +190,9 @@ namespace CoreSpectrum.Hardware
                 return;
 
             _pause = true;
-            _sampler.Pause();
+
+            foreach (var exec in _syncExecs)
+                exec.Pause();
         }
 
         public virtual void Resume()
@@ -194,22 +200,29 @@ namespace CoreSpectrum.Hardware
             if (_stop)
                 return;
 
+            _ula._sampler.ResetSampler(_z80.TStatesElapsedSinceStart);
+
             _pause = false;
-            _sampler.Resume(_z80.TStatesElapsedSinceStart);
+
+            foreach (var exec in _syncExecs)
+                exec.Resume();
         }
 
         public virtual void Reset()
         {
             _z80.Reset();
+
+            foreach (var exec in _syncExecs)
+                exec.Reset();
         }
 
         public virtual void Turbo(bool Enable, bool RenderOnTurbo = false)
         {
             if (Enable)
             {
-                _sampler.Pause();
                 _turbo = true;
                 _renderOnturbo = RenderOnTurbo;
+                _ula.Turbo = true;
             }
             else
             {
@@ -222,15 +235,37 @@ namespace CoreSpectrum.Hardware
                 }
 
                 _turbo = false;
+                _ula.Turbo = false;
 
                 if (!paused && !_stop)
                     Resume();
             }
+
+            foreach (var exec in _syncExecs)
+                exec.Turbo(Enable);
         }
 
         public virtual void Step()
         {
             NextInstruction();
+
+            foreach (var exec in _syncExecs)
+                exec.Step();
+        }
+
+        #endregion
+
+        #region Synchronized execution
+
+        public void RegisterSynchronized(ISynchronizedExecution Exec)
+        {
+            if(!_syncExecs.Contains(Exec))
+                _syncExecs.Add(Exec);
+        }
+
+        public void ClearSynchronized()
+        {
+            _syncExecs.Clear();
         }
 
         #endregion
@@ -306,7 +341,7 @@ namespace CoreSpectrum.Hardware
         {
             public required int TStatesPerScan { get; set; }
             public required int ScansPerFrame { get; set; }
-            public required int ProcessorSpeed { get; set; }
+            public required int CpuClock { get; set; }
         }
 
         protected class MachineHardware

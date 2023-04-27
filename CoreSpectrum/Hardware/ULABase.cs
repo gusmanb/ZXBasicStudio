@@ -63,7 +63,7 @@ namespace CoreSpectrum.Hardware
             [SpectrumKeys.B] = new KeyInfo { Row = 7, BitValue = 16 }
         };
 
-        protected readonly IAudioSampler _sampler;
+        internal readonly ULASampler _sampler;
         protected readonly IVideoRenderer _renderer;
 
         private int _currentLine = 0;
@@ -141,9 +141,10 @@ namespace CoreSpectrum.Hardware
         }
         public virtual byte Border { get; protected set; }
         public virtual bool FlashInvert { get; protected set; }
-        protected ULABase(IVideoRenderer renderer, IAudioSampler sampler)
+        internal virtual bool Turbo { get; set; }
+        protected ULABase(int CpuClock, int AudioSamplingFrequency, IVideoRenderer renderer)
         {
-            _sampler = sampler;
+            _sampler = new ULASampler(AudioSamplingFrequency, CpuClock);
             _renderer = renderer;
         }
         public virtual void PressKey(SpectrumKeys Key)
@@ -160,9 +161,6 @@ namespace CoreSpectrum.Hardware
         {
             _renderer.RenderLine(VideoMemory, Border, FlashInvert, _currentLine++);
 
-            //if (_machine._player.Playing)
-            //    CreateAudioSample();
-
             if (_currentLine == 312)
             {
                 _currentLine = 0;
@@ -176,6 +174,10 @@ namespace CoreSpectrum.Hardware
                     FlashInvert = !FlashInvert;
                 }
             }
+        }
+        public virtual int GetSamples(float[] Buffer)
+        {
+            return _sampler.GetSamples(TStates, Buffer);
         }
         protected virtual byte ReadKeyboard(byte LinesToRead)
         {
@@ -209,6 +211,9 @@ namespace CoreSpectrum.Hardware
         }
         protected virtual void CreateAudioSample()
         {
+            if (Turbo)
+                return;
+
             _sampler.AddSample(TStates, AudioOutput);
         }
         protected class KeyInfo
