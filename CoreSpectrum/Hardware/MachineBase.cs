@@ -162,7 +162,7 @@ namespace CoreSpectrum.Hardware
             _z80.Reset();
             _z80.Reset();
 
-            _ula._sampler.ResetSampler(_z80.TStatesElapsedSinceStart);
+            _ula.ResetAudio(true);
 
             if (!backgroundThread)
             {
@@ -200,7 +200,7 @@ namespace CoreSpectrum.Hardware
             if (_stop)
                 return;
 
-            _ula._sampler.ResetSampler(_z80.TStatesElapsedSinceStart);
+            _ula.ResetAudio();
 
             _pause = false;
 

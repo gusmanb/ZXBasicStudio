@@ -22,7 +22,7 @@ namespace CoreSpectrum.Hardware
 
                 byte value = ReadKeyboard(portHi);
 
-                return (byte)(value | (AudioOutput > 0 ? 0x40 : 0));
+                return (byte)(value | (_ear > 0 ? 0x40 : 0));
             }
 
             set

@@ -69,8 +69,8 @@ namespace CoreSpectrum.Hardware
         private int _currentLine = 0;
         private int _flashFrames = 0;
         private bool _screenIrq;
-        private byte _mic;
-        private byte _ear;
+        protected byte _mic;
+        protected byte _ear;
         private bool _newFrame;
         protected byte[] keybSegments = new byte[] { 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, };
 
@@ -215,6 +215,10 @@ namespace CoreSpectrum.Hardware
                 return;
 
             _sampler.AddSample(TStates, AudioOutput);
+        }
+        public virtual void ResetAudio(bool FullReset = false)
+        {
+            _sampler.ResetSampler(TStates);
         }
         protected class KeyInfo
         {

@@ -33,7 +33,6 @@ namespace ZXBasicStudio.Controls
         private static readonly byte BRIGHT = 0xff, NORM = 0xd7;
 
         ZXVideoRenderer renderer;
-        //BufdioAudioSampler sampler = new BufdioAudioSampler();
 
         ZXEmulatorAudio audio;
 
@@ -84,6 +83,8 @@ namespace ZXBasicStudio.Controls
         public IZ80Registers Registers { get { return machine.Z80.Registers; } }
         public ISpectrumMemory Memory { get { return machine.Memory; } }
 
+        public TapePlayer Datacorder { get { return machine.DataCorder; } }
+
         public ulong TStates { get { return machine.Z80.TStatesElapsedSinceReset; } }
 
         public event EventHandler<BreakpointEventArgs>? Breakpoint;
@@ -102,6 +103,7 @@ namespace ZXBasicStudio.Controls
 
             renderer = new ZXVideoRenderer();
             machine = new Spectrum48k(new byte[][] { rom }, renderer);
+
             */
 
             System.Resources.ResourceManager resources = new System.Resources.ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
@@ -118,11 +120,10 @@ namespace ZXBasicStudio.Controls
 
             renderer = new ZXVideoRenderer();
             machine = new Spectrum128k(new byte[][] { rom0, rom1 }, renderer);
-
+            
 
             audio = new ZXEmulatorAudio(machine.ULA);
             machine.RegisterSynchronized(audio);
-            //sampler.Machine = machine;
             machine.FrameRendered += Machine_FrameRendered;
             machine.BreakpointHit += Machine_BreakpointHit;
             InitializeComponent();
@@ -418,7 +419,7 @@ namespace ZXBasicStudio.Controls
             }
         }
 
-        public async Task InjectProgram(ushort Address, byte[] Data, bool ImmediateJump)
+        public void InjectProgram(ushort Address, byte[] Data, bool ImmediateJump)
         {
             try
             {
@@ -426,8 +427,8 @@ namespace ZXBasicStudio.Controls
                 {
                     address = Address;
                     programToInject = Data;
-                    machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 9842, Temporary = true, Id = "INJECT" });
-                    //machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 0x12ac, Temporary = true, Id = "INJECT" });
+                    //machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 9842, Temporary = true, Id = "INJECT" });
+                    machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 0x12ac, Temporary = true, Id = "INJECT" });
                     machine.Reset();
                 }
                 else

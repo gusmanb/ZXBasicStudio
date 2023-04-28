@@ -15,6 +15,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using CoreSpectrum.Debug;
 using CoreSpectrum.Enums;
+using CoreSpectrum.SupportClasses;
 using HarfBuzzSharp;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
@@ -371,6 +372,21 @@ namespace ZXBasicStudio
 
         private async void OpenProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+
+            if (!EmulatorInfo.IsRunning)
+            {
+                emu.Start();
+                EmulatorInfo.IsRunning = true;
+                EmulatorInfo.CanPause = true;
+            }
+            else
+            {
+                var tape = TZXFile.Load("AWM.tzx");
+                emu.Datacorder.InsertTape(tape);
+                emu.Datacorder.Play();
+            }
+            return;
+
             if(FileInfo.ProjectLoaded)
             {
                 if (openEditors.Any(e => e.Modified))

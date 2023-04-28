@@ -17,20 +17,17 @@ namespace CoreSpectrum.Hardware
         const byte DISABLE_MAP_MASK = 0x20;
 
         Memory128k _mem;
-        ayemu_ay_t _ay;
+        AYSampler _aySampler;
 
         byte _activeAyReg = 0;
         bool _disableMapping = false;
 
+        byte[] _ayRegs = new byte[18];
+
         public ULA128k(int CpuClock, int AudioSamplingFrequency, IVideoRenderer Renderer, Memory128k Memory) : base(CpuClock, AudioSamplingFrequency, Renderer) 
         { 
             _mem = Memory;
-            _ay = new ayemu_ay_t();
-            Ay8912.ayemu_init(_ay);
-            Ay8912.ayemu_set_sound_format(_ay, 44100, 1, 16);
-            Ay8912.ayemu_set_stereo(_ay, ayemu_stereo_t.AYEMU_MONO, null);
-            Ay8912.ayemu_set_chip_type(_ay, ayemu_chip_t.AYEMU_AY, null);
-            Ay8912.ayemu_reset(_ay);
+            _aySampler = new AYSampler(AudioSamplingFrequency, CpuClock);
         }
         public override byte this[byte portLo, byte portHi]
         {
@@ -41,12 +38,14 @@ namespace CoreSpectrum.Hardware
 
                     byte value = ReadKeyboard(portHi);
 
-                    return (byte)(value | (AudioOutput > 0 ? 0x40 : 0));
+                    return (byte)(value | (_ear > 0 ? 0x40 : 0));
                 }
                 else if ((portHi & 0xC0) == 0xC0 && (portLo & 0x02) == 0)
                 {
-                    byte regValue = Ay8912.ayemu_get_reg(_ay, _activeAyReg);
-                    return regValue;
+                    if (_activeAyReg > 17)
+                        return 0xFF;
+
+                    return _ayRegs[_activeAyReg];
                 }
                 else
                     return 0xFF;
@@ -69,7 +68,11 @@ namespace CoreSpectrum.Hardware
                 }
                 else if ((portHi & 0xC0) == 0x80 && (portLo & 0x02) == 0)
                 {
-                    CreateAYSample(value);
+                    if (_activeAyReg > 17)
+                        return;
+
+                    _ayRegs[_activeAyReg] = value;
+                    _aySampler.AddSample(TStates, _activeAyReg, value);
                 }
                 else if ((portHi & 0x80) == 0 && (portLo & 0x02) == 0)
                 {
@@ -87,19 +90,23 @@ namespace CoreSpectrum.Hardware
             }
         }
 
-        void CreateAYSample(byte Value)
+        public override void ResetAudio(bool FullReset = false)
         {
-            AYSample sample = new AYSample();
-            sample.Register = _activeAyReg;
-            sample.Value = Value;
-            sample.TStates = TStates;
+            base.ResetAudio(FullReset);
+            _aySampler.ResetSampler(TStates, FullReset);
         }
 
-        struct AYSample
+        public override int GetSamples(float[] Buffer)
         {
-            public byte Register;
-            public byte Value;
-            public ulong TStates;
+            var tStates = TStates;
+
+            int ULASamplesGenerated = _sampler.GetSamples(tStates, Buffer);
+            int AYSamplesGenerated = _aySampler.GetSamples(tStates, Buffer);
+
+            if (ULASamplesGenerated != AYSamplesGenerated)
+                throw new Exception("Audio desync!!!");
+
+            return ULASamplesGenerated;
         }
     }
 }
