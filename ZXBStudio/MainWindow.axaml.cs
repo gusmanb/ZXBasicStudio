@@ -36,6 +36,7 @@ using ZXBasicStudio.Classes;
 using ZXBasicStudio.Controls;
 using ZXBasicStudio.Controls.DockSystem;
 using ZXBasicStudio.Dialogs;
+using DocumentEditors;
 
 namespace ZXBasicStudio
 {
@@ -44,7 +45,7 @@ namespace ZXBasicStudio
         //TODO: Añadir lista de proyectos recientes al menú
 
         List<ZXTextEditor> openEditors = new List<ZXTextEditor>();
-        List<ZXGraphics.Main> openZXGraphics = new List<ZXGraphics.Main>();
+        List<DocumentEditors.ZXGraphics.Main> openZXGraphics = new List<DocumentEditors.ZXGraphics.Main>();
         ObservableCollection<TabItem> editTabs = new ObservableCollection<TabItem>();
 
         ZXProgram? loadedProgram;
@@ -313,9 +314,9 @@ namespace ZXBasicStudio
                 }
                 openEditors.Remove(editor);
             }
-            else if (tipo == typeof(ZXGraphics.Main))
+            else if (tipo == typeof(DocumentEditors.ZXGraphics.Main))
             {
-                var editor = tab.Content as ZXGraphics.Main;
+                var editor = tab.Content as DocumentEditors.ZXGraphics.Main;
 
                 if (editor == null)
                 {
@@ -384,9 +385,9 @@ namespace ZXBasicStudio
                     return;
                 }
             }
-            else if (tipo == typeof(ZXGraphics.Main))
+            else if (tipo == typeof(DocumentEditors.ZXGraphics.Main))
             {
-                var editor = activeTab.Content as ZXGraphics.Main;
+                var editor = activeTab.Content as DocumentEditors.ZXGraphics.Main;
 
                 if (editor == null)
                     return;
@@ -628,7 +629,7 @@ namespace ZXBasicStudio
                 }
 
                 ZXTextEditor editor = null;
-                ZXGraphics.Main graphicsEditor = null;
+                DocumentEditors.ZXGraphics.Main graphicsEditor = null;
 
                 if (file.IsZXAssembler() || file == ZXConstants.DISASSEMBLY_DOC || file == ZXConstants.ROM_DOC)
                     editor = new ZXAssemblerEditor(file);
@@ -638,7 +639,7 @@ namespace ZXBasicStudio
                     editor = new ZXTextEditor(file);
                 else if (file.IsZXGraphics())
                 {
-                    graphicsEditor = new ZXGraphics.Main();
+                    graphicsEditor = new DocumentEditors.ZXGraphics.Main();
                     graphicsEditor.Initialize(file);
                 }
                 else
@@ -715,9 +716,9 @@ namespace ZXBasicStudio
                     return;
                 tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
             }
-            else if (tipo == typeof(ZXGraphics.Main))
+            else if (tipo == typeof(DocumentEditors.ZXGraphics.Main))
             {
-                var editor = (ZXGraphics.Main?)sender;
+                var editor = (DocumentEditors.ZXGraphics.Main?)sender;
                 if (editor == null)
                     return;
                 var tab = editor.Parent as TabItem;
@@ -740,9 +741,9 @@ namespace ZXBasicStudio
                     return;
                 tab.Tag = tab.Tag?.ToString() + "*";
             }
-            else if (tipo == typeof(ZXGraphics.Main))
+            else if (tipo == typeof(DocumentEditors.ZXGraphics.Main))
             {
-                var editor = (ZXGraphics.Main?)sender;
+                var editor = (DocumentEditors.ZXGraphics.Main?)sender;
                 if (editor == null)
                     return;
                 var tab = editor.Parent as TabItem;
