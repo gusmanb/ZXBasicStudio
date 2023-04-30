@@ -13,6 +13,7 @@ using CoreSpectrum.Enums;
 using CoreSpectrum.Hardware;
 using CoreSpectrum.Interfaces;
 using CoreSpectrum.Renderers;
+using CoreSpectrum.SupportClasses;
 using Fizzler;
 using Konamiman.Z80dotNet;
 using System;
@@ -36,9 +37,8 @@ namespace ZXBasicStudio.Controls
 
         ZXEmulatorAudio audio;
 
-        FloatingStatus? floatStatus;
-
         MachineBase machine;
+
         byte[]? programToInject = null;
         ushort address = 0;
         public bool Running { get { return machine.Running; } }
@@ -87,9 +87,18 @@ namespace ZXBasicStudio.Controls
 
         public ulong TStates { get { return machine.Z80.TStatesElapsedSinceReset; } }
 
+        #region Events
+
         public event EventHandler<BreakpointEventArgs>? Breakpoint;
-        public event EventHandler? ProgramReady;
+        public event EventHandler? ProgramReady 
+        {
+            add { machine.ProgramReady += value; }
+            remove { machine.ProgramReady -= value; }
+        }
         public event EventHandler<ExceptionEventArgs>? ExceptionTrapped;
+
+        #endregion
+
         public ZXEmulator()
         {
 
@@ -235,19 +244,6 @@ namespace ZXBasicStudio.Controls
 
                 switch (cmd)
                 {
-                    case ZXConstants.INJECT_BREAKPOINT:
-                        machine.Memory.SetContents(address, programToInject);
-                        machine.Z80.Registers.PC = address;
-                        var sp = (ushort)machine.Z80.Registers.SP;
-                        byte[] retAddr = BitConverter.GetBytes(e.Breakpoint.Address);
-                        sp -= 2;
-                        machine.Z80.Registers.SP = unchecked((short)sp);
-                        machine.Memory.SetContents(sp, retAddr);
-
-                        if (ProgramReady != null)
-                            ProgramReady(this, EventArgs.Empty);
-
-                        return;
                     case ZXConstants.BASIC_BREAKPOINT:
                     case ZXConstants.ASSEMBLER_BREAKPOINT:
                     case ZXConstants.USER_BREAKPOINT:
@@ -274,6 +270,7 @@ namespace ZXBasicStudio.Controls
             }
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
+
         public void Stop()
         {
             try
@@ -285,6 +282,7 @@ namespace ZXBasicStudio.Controls
             }
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
+
         public void Pause()
         {
             try
@@ -293,6 +291,7 @@ namespace ZXBasicStudio.Controls
             }
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
+
         public void Step()
         {
             try
@@ -302,6 +301,7 @@ namespace ZXBasicStudio.Controls
             }
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
+
         public void Resume()
         {
             try
@@ -310,6 +310,7 @@ namespace ZXBasicStudio.Controls
             }
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
+
         public void Reset() 
         {
             try
@@ -318,44 +319,6 @@ namespace ZXBasicStudio.Controls
             }
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
-
-        /*
-        public void BeginFloat()
-        {
-            floatStatus = new FloatingStatus
-            {
-                Paused = Paused,
-                Running = Running
-            };
-
-            if (floatStatus.Running)
-            {
-                if (!floatStatus.Paused)
-                    Pause();
-            }
-
-        }
-
-        public void EndFloat()
-        {
-            if (floatStatus == null)
-                return;
-
-            Task.Run(async () =>
-            {
-                await Dispatcher.UIThread.InvokeAsync(async () =>
-                {
-                    if (floatStatus.Running)
-                    {
-                        if (!floatStatus.Paused)
-                            Resume();
-                    }
-
-                    floatStatus = null;
-                });
-            });
-        }
-        */
 
         public void RefreshScreen()
         {
@@ -425,25 +388,18 @@ namespace ZXBasicStudio.Controls
 
         public void InjectProgram(ushort Address, byte[] Data, bool ImmediateJump)
         {
-            try
-            {
-                if (ImmediateJump)
-                {
-                    address = Address;
-                    programToInject = Data;
-                    //machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 9842, Temporary = true, Id = "INJECT" });
-                    machine.AddBreakpoint(new CoreSpectrum.Debug.Breakpoint { Address = 0x12ac, Temporary = true, Id = "INJECT" });
-                    machine.Reset();
-                }
-                else
-                {
-                    machine.Pause();
-                    machine.Memory.SetContents(Address, Data);
-                    machine.Resume();
-                }
-            }
-            catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
+            ProgramImage img = new ProgramImage 
+            { 
+                Org = Address, 
+                InitialBank = 0, 
+                Chunks = new[] 
+                { 
+                    new ImageChunk { Address = Address, Bank = 0, Data = Data }  
+                } 
+            };
 
+            machine.InjectProgram(img);
+            emuScr.IsRunning = true;
         }
 
         private void Machine_FrameRendered(object? sender, SpectrumFrameArgs e)
@@ -457,24 +413,9 @@ namespace ZXBasicStudio.Controls
             }
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
-
-        //protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
-        //{
-        //    try
-        //    {
-        //        base.OnDetachedFromVisualTree(e);
-        //    }
-        //    catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
-        //}
-
-        class FloatingStatus
-        {
-            public bool Running { get; set; }
-            public bool Paused { get; set; }
-        }
-
     }
 
+    #region EventArgs
     public class BreakpointEventArgs : EventArgs
     {
         public BreakpointEventArgs(Breakpoint Breakpoint) 
@@ -492,4 +433,5 @@ namespace ZXBasicStudio.Controls
             this.TrappedException = Exception;
         } 
     }
+    #endregion
 }

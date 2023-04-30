@@ -19,7 +19,7 @@ namespace ZXBasicStudio
             {
                 var splash = new SplashScreen();
                 desktop.MainWindow = splash;
-                //splash.Show();
+                splash.Show();
 
                 var main = new MainWindow();
                 await Task.Delay(2000);

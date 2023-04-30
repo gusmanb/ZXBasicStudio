@@ -843,22 +843,32 @@ namespace CoreSpectrum.Hardware
                 throw new ArgumentException("Invalid opcode!");
             else
             {
-                if (OpCode[0] == 0xCB)
-                    patternType = CB_OpcodeOps[OpCode[1]];
-                else if (OpCode[0] == 0xED)
-                    patternType = ED_OpcodeOps[OpCode[1]];
-                else if (OpCode[0] == 0xDD || OpCode[0] == 0xFD)
+                if (OpCode.Length > 1)
                 {
-                    if (OpCode[1] == 0xCB)
-                        patternType = DDCB_FDCB_OpcodeOps[OpCode[3]];
+                    if (OpCode[0] == 0xCB)
+                        patternType = CB_OpcodeOps[OpCode[1]];
+                    else if (OpCode[0] == 0xED)
+                        patternType = ED_OpcodeOps[OpCode[1]];
+                    else if (OpCode[0] == 0xDD || OpCode[0] == 0xFD)
+                    {
+                        if (OpCode[1] == 0xCB)
+                            patternType = DDCB_FDCB_OpcodeOps[OpCode[3]];
+                        else
+                        {
+                            patternType = DD_FD_OpcodeOps[OpCode[1]];
+                            if (patternType == CPT.None)
+                            {
+                                patternType = SingleOpcode_Ops[OpCode[1]];
+                                extraPrefix = true;
+                            }
+                        }
+                    }
                     else
                     {
-                        patternType = DD_FD_OpcodeOps[OpCode[1]];
-                        if (patternType == CPT.None)
-                        {
-                            patternType = SingleOpcode_Ops[OpCode[1]];
-                            extraPrefix = true;
-                        }
+                        if (OpCode[0] == 0 && MemoryAccesses.Length == 0)
+                            return 0;
+
+                        patternType = SingleOpcode_Ops[OpCode[0]];
                     }
                 }
                 else

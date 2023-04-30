@@ -121,5 +121,12 @@ namespace CoreSpectrum.Hardware
             return ULASamplesGenerated;
         }
 
+        public override void Reset()
+        {
+            _activeAyReg = 0;
+            _disableMapping = false;
+            _ayRegs = new byte[18];
+            base.Reset();
+        }
     }
 }

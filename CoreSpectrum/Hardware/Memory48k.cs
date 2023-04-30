@@ -53,5 +53,10 @@ namespace CoreSpectrum.Hardware
         {
             return new Span<byte>(memory, 0x4000, 6912);
         }
+
+        public void Clear()
+        {
+            Array.Fill<byte>(memory, 0x00);
+        }
     }
 }

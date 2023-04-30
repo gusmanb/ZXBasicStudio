@@ -372,7 +372,7 @@ namespace ZXBasicStudio
 
         private async void OpenProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            
+            /*
             if (!EmulatorInfo.IsRunning)
             {
                 emu.Start();
@@ -381,13 +381,13 @@ namespace ZXBasicStudio
             }
             else
             {
-                var tape = TZXFile.Load("AWM.tzx");
-                //var tape = TAPFile.Load("snake.tap");
+                //var tape = TZXFile.Load("AWM.tzx");
+                var tape = TAPFile.Load("fitrisb.tap");
                 emu.Datacorder.InsertTape(tape);
                 emu.Datacorder.Play();
             }
             return;
-            
+            */
 
             if(FileInfo.ProjectLoaded)
             {
@@ -1020,11 +1020,7 @@ namespace ZXBasicStudio
                                 disas.Text = loadedProgram.Disassembly.Content;
                         }
 
-                        if (!EmulatorInfo.IsRunning)
-                            emu.Start();
-                        emu.Pause();
                         emu.InjectProgram(program.Org, program.Binary, true);
-                        emu.Resume();
                         emuDock.Select();
                         emu.Focus();
                         EmulatorInfo.CanDebug = FileInfo.ProjectLoaded;
@@ -1101,11 +1097,12 @@ namespace ZXBasicStudio
 
                         UpdateUserBreakpoints();
 
-                        if (!EmulatorInfo.IsRunning)
-                            emu.Start();
-                        emu.Pause();
+                        //if (!EmulatorInfo.IsRunning)
+                        //    emu.Start();
+                        //emu.Pause();
+                        //emu.InjectProgram(program.Org, program.Binary, true);
+                        //emu.Resume();
                         emu.InjectProgram(program.Org, program.Binary, true);
-                        emu.Resume();
                         emuDock.Select();
                         emu.Focus();
                         EmulatorInfo.CanDebug = FileInfo.ProjectLoaded;

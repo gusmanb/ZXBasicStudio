@@ -239,6 +239,19 @@ namespace CoreSpectrum.Hardware
 
             _sampler.AddSample(TStates, AudioOutput);
         }
+        public virtual void Reset()
+        {
+            _currentLine = 0;
+            _flashFrames = 0;
+            _screenIrq = false;
+            _mic = 0;
+            _ear = 0;
+            _tStates = 0;
+            _irqStates = 0;
+            _newFrame = false;
+            keybSegments = new byte[] { 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, };
+            ResetAudio(true);
+    }
         public virtual void ResetAudio(bool FullReset = false)
         {
             _sampler.ResetSampler(TStates);

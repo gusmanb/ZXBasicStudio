@@ -151,6 +151,14 @@ namespace CoreSpectrum.Hardware
             return new Span<byte>(compositeMemory[MEMORY_TYPE_RAM][map.ActiveScreenPage], 0, 6912);
         }
 
+        public void Clear()
+        {
+            foreach (var mem in memoryPages)
+                Array.Fill<byte>(mem, 0x00);
+
+            map.Reset();
+        }
+
         public class Memory128Map
         {
 

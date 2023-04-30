@@ -179,6 +179,14 @@ namespace Konamiman.Z80dotNet
             StartOfStack = Registers.SP;
         }
 
+        public void Restart()
+        {
+            Reset();
+            Registers = new Z80Registers();
+            TStatesElapsedSinceReset = 0;
+            TStatesElapsedSinceStart = 0;
+        }
+
         public int ExecuteNextInstruction()
         {
             executionContext.StartNewInstruction();

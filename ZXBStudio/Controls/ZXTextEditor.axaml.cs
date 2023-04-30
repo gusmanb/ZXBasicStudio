@@ -120,7 +120,7 @@ namespace ZXBasicStudio.Controls
         private void Editor_TemplateApplied(object? sender, Avalonia.Controls.Primitives.TemplateAppliedEventArgs e)
         {
             if(SearchMarkerBrush != null)
-                editor.SearchPanel.MarkerBrush = SearchMarkerBrush;
+                editor.SearchPanel.SetSearchResultsBrush(SearchMarkerBrush);
         }
 
         bool firstRender = false;

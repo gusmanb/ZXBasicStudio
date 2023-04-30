@@ -10,7 +10,6 @@ namespace ZXBasicStudio.Classes
     {
         public const string DISASSEMBLY_DOC = "Disassembly";
         public const string ROM_DOC = "ROM Disassembly";
-        public const string INJECT_BREAKPOINT = "INJECT";
         public const string BASIC_BREAKPOINT = "BASICLINE";
         public const string ASSEMBLER_BREAKPOINT = "ASMLINE";
         public const string USER_BREAKPOINT = "USERLINE";

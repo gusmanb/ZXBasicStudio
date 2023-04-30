@@ -88,6 +88,11 @@ namespace Konamiman.Z80dotNet
         void Reset();
 
         /// <summary>
+        /// Does a full restart of the Z80 as if it were newly created.
+        /// </summary>
+        void Restart();
+
+        /// <summary>
         /// Executes the next instruction as pointed by the PC register, and then returns.
         /// This method cannot be invoked from an event handler.
         /// </summary>

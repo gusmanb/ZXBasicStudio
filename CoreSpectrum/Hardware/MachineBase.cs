@@ -14,6 +14,8 @@ namespace CoreSpectrum.Hardware
 {
     public abstract class MachineBase
     {
+        #region Variables
+
         protected readonly Breakpoint?[] _breakpoints = new Breakpoint?[65536];
 
         protected readonly Z80Processor _z80;
@@ -38,8 +40,17 @@ namespace CoreSpectrum.Hardware
         
         protected readonly List<ISynchronizedExecution> _syncExecs = new List<ISynchronizedExecution>();
 
+        #endregion
+
+        #region Events
+
         public event EventHandler<SpectrumFrameArgs>? FrameRendered;
         public event EventHandler<BreakPointEventArgs>? BreakpointHit;
+        public abstract event EventHandler? ProgramReady;
+
+        #endregion
+
+        #region Properties
 
         public bool Running { get { return !_stop; } }
         public bool Paused { get { return _pause; } }
@@ -49,6 +60,9 @@ namespace CoreSpectrum.Hardware
         public ULABase ULA { get { return _ula; } }
         public TapePlayer DataCorder { get { return _player; } }
         public MachineTimmings Timmings { get { return _timmings; } }
+
+        #endregion
+
         protected MachineBase(byte[][] RomSet, IVideoRenderer Renderer)
         {
 
@@ -78,28 +92,9 @@ namespace CoreSpectrum.Hardware
             _millisPerFrame = (1.0 / _framesPerSecond) * 1000.0;
             _ticksPerFrame = _ticksPerMilly * _millisPerFrame;
 
-            RunTest(true);
         }
 
-        //Synthetic test for contention
-        void RunTest(bool Is128k)
-        {
-            ulong firstState = Is128k ? 14361UL : 14335UL;
-            ulong scanCycles = Is128k ? 228UL : 224UL;
-            for (ulong buc = 0; buc < 192; buc++)
-            {
-                _memory.SetContents(25000, new byte[] { 0x77 }); //LD (HL), A
-                _z80.Registers.PC = 25000;
-                _z80.Registers.HL = unchecked((short)26000);
-                _z80.TStatesElapsedSinceStart = _z80.TStatesElapsedSinceReset = firstState + (scanCycles * buc);
-                int tStates = _z80.ExecuteNextInstruction();
-
-                if (tStates != 17)
-                    throw new Exception("Fuck!");
-            }
-
-            System.Diagnostics.Debug.Print("Oh yeah! (¯ー¯)b");
-        }
+        #region Event handlers
 
         private void _z80_InstructionWaitStates(object? sender, Main.EventArgs.InstructionWaitStatesEventArgs e)
         {
@@ -111,7 +106,13 @@ namespace CoreSpectrum.Hardware
             _ula.Ear = e.AudioLevel;
         }
 
+        #endregion
+
+        #region Machine initialization
+
         protected abstract MachineHardware GetHardware(byte[][] RomSet, IVideoRenderer Renderer);
+
+        #endregion
 
         #region Machine execution
         protected virtual void SpectrumCycle(object? State)
@@ -188,10 +189,15 @@ namespace CoreSpectrum.Hardware
         {
             _pause = false;
             _stop = false;
-            _z80.Reset();
-            _z80.Reset();
+            _turbo = false;
+            _scanCycles = 0;
+            _nextFrame = 0;
+            _sw.Stop();
 
-            _ula.ResetAudio(true);
+            _memory.Clear();
+            _ula.Reset();
+            _z80.Restart();
+            
 
             if (!backgroundThread)
             {
@@ -282,6 +288,8 @@ namespace CoreSpectrum.Hardware
                 exec.Step();
         }
 
+        public abstract bool InjectProgram(ProgramImage Image);
+
         #endregion
 
         #region Synchronized execution
@@ -366,15 +374,7 @@ namespace CoreSpectrum.Hardware
 
         #endregion
 
-        public struct MachineTimmings
-        {
-            public required int TStatesPerScan { get; set; }
-            public required int ScansPerFrame { get; set; }
-            public required byte FirstScan { get; set; }
-            public required int CpuClock { get; set; }
-            public required int IrqCycles { get; set; }
-        }
-
+        #region Machine initialization objects
         protected class MachineHardware
         {
             public required MachineTimmings Timmings { get; set; }
@@ -382,7 +382,19 @@ namespace CoreSpectrum.Hardware
             public required ISpectrumMemory Memory { get; set; }
         
         }
+        #endregion
     }
+
+    #region Machine information
+    public struct MachineTimmings
+    {
+        public required int TStatesPerScan { get; set; }
+        public required int ScansPerFrame { get; set; }
+        public required byte FirstScan { get; set; }
+        public required int CpuClock { get; set; }
+        public required int IrqCycles { get; set; }
+    }
+    #endregion
 
     #region Event args
     public class SpectrumFrameArgs : EventArgs

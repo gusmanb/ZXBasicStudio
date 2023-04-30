@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace CoreSpectrum.Hardware
 {
     /// <summary>
-    /// This is a very simple contention source, it's very fast but not accurate, it slows down contended memory and ports always for the max possible
-    /// value. Useful for inaccurate emulation but low resource usage
+    /// This is a very simple contention source, it's very fast but not accurate, it slows down contended memory and ports always
+    /// for the max possible value. Useful for inaccurate emulation but low resource usage
     /// </summary>
     public class SimpleContentionSource : IContentionSource
     {
@@ -24,10 +24,6 @@ namespace CoreSpectrum.Hardware
 
         public int GetContentionStates(ulong InitialState, int ExecutionStates, byte[] OpCode, ushort[] MemoryAccesses, (byte PortHi, byte PortLo)[] PortAccesses, IMemory Memory)
         {
-
-            if (OpCode.Length == 1 && OpCode[0] == 0xE3)
-                OpCode[0] = 0xCB;
-
 
             int states = 0;
 

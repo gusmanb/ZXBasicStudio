@@ -9,6 +9,7 @@ namespace CoreSpectrum.Interfaces
 {
     public interface ISpectrumMemory : IMemory
     {
+        void Clear();
         Span<byte> GetVideoMemory();
     }
 }
