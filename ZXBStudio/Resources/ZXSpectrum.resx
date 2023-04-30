@@ -163,4 +163,10 @@
   <data name="Plus2_1_rom" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>plus2_1_rom.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="zx128_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>zx128_0.rom;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="zx128_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>zx128_1.rom;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

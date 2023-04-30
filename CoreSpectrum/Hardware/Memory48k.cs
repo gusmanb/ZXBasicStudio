@@ -16,7 +16,12 @@ namespace CoreSpectrum.Hardware
         public byte this[int address]
         {
             get => memory[address];
-            set => memory[address] = value;
+            set 
+            { 
+                if (address < 16384) 
+                    return;
+                memory[address] = value; 
+            }
         }
 
         public int Size

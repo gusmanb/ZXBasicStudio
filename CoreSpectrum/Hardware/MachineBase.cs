@@ -67,14 +67,43 @@ namespace CoreSpectrum.Hardware
             _z80.RegisterInterruptSource(_ula);
             _z80.RegisterTStatesTarget(_player);
             _z80.RegisterTStatesTarget(_ula);
-            _z80.SetMemoryAccessMode(0, 16384, MemoryAccessMode.ReadOnly);
+
+            _z80.BeforeInstructionFetch += z80_BeforeInstructionFetch;
+            _z80.InstructionWaitStates += _z80_InstructionWaitStates;
+            
 
             //Compute timmings
             _ticksPerMilly = Stopwatch.Frequency / 1000.0;
             _framesPerSecond = (double)_timmings.CpuClock / (double)(_timmings.TStatesPerScan * _timmings.ScansPerFrame);
             _millisPerFrame = (1.0 / _framesPerSecond) * 1000.0;
             _ticksPerFrame = _ticksPerMilly * _millisPerFrame;
-            _z80.BeforeInstructionFetch += z80_BeforeInstructionFetch;
+
+            RunTest(true);
+        }
+
+        //Synthetic test for contention
+        void RunTest(bool Is128k)
+        {
+            ulong firstState = Is128k ? 14361UL : 14335UL;
+            ulong scanCycles = Is128k ? 228UL : 224UL;
+            for (ulong buc = 0; buc < 192; buc++)
+            {
+                _memory.SetContents(25000, new byte[] { 0x77 }); //LD (HL), A
+                _z80.Registers.PC = 25000;
+                _z80.Registers.HL = unchecked((short)26000);
+                _z80.TStatesElapsedSinceStart = _z80.TStatesElapsedSinceReset = firstState + (scanCycles * buc);
+                int tStates = _z80.ExecuteNextInstruction();
+
+                if (tStates != 17)
+                    throw new Exception("Fuck!");
+            }
+
+            System.Diagnostics.Debug.Print("Oh yeah! (¯ー¯)b");
+        }
+
+        private void _z80_InstructionWaitStates(object? sender, Main.EventArgs.InstructionWaitStatesEventArgs e)
+        {
+            e.WaitStates = _ula.ContentionSource.GetContentionStates(e.InitialState, e.ExecutionStates, e.OpCode, e.MemoryAccesses, e.PortAccesses, _memory);
         }
 
         private void TapePlayer_AudioChanged(object? sender, AudioEventArgs e)
@@ -141,11 +170,11 @@ namespace CoreSpectrum.Hardware
 
                 if (!_turbo)
                 {
-                    while (_nextFrame - _sw.ElapsedTicks > _ticksPerMilly * 2)
+                    while (_nextFrame - _sw.ElapsedTicks > _ticksPerMilly)
                         Thread.Sleep(1);
 
-                    while (_sw.ElapsedTicks < _nextFrame - _ticksPerMilly) ;
-
+                    while (_sw.ElapsedTicks < _nextFrame);
+                    
                     _nextFrame += _ticksPerFrame;
                 }
             }
@@ -343,6 +372,7 @@ namespace CoreSpectrum.Hardware
             public required int ScansPerFrame { get; set; }
             public required byte FirstScan { get; set; }
             public required int CpuClock { get; set; }
+            public required int IrqCycles { get; set; }
         }
 
         protected class MachineHardware

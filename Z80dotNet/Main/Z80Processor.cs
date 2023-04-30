@@ -1,8 +1,11 @@
 ﻿using Main.Dependencies_Interfaces;
+using Main.EventArgs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading;
 
 namespace Konamiman.Z80dotNet
 {
@@ -21,16 +24,8 @@ namespace Konamiman.Z80dotNet
         public Z80Processor()
         {
             unchecked { StartOfStack =  (short)0xFFFF; }
-
-            SetMemoryWaitStatesForM1(0, MemorySpaceSize, 0);
-            SetMemoryWaitStatesForNonM1(0, MemorySpaceSize, 0);
-            SetPortWaitStates(0, PortSpaceSize, 0);
-
             Memory = new PlainMemory(MemorySpaceSize);
             PortsSpace = new PlainIO();
-
-            SetMemoryAccessMode(0, MemorySpaceSize, MemoryAccessMode.ReadAndWrite);
-            SetPortsSpaceAccessMode(0, PortSpaceSize, MemoryAccessMode.ReadAndWrite);
 
             Registers = new Z80Registers();
             InterruptSources = new List<IZ80InterruptSource>();
@@ -137,15 +132,6 @@ namespace Konamiman.Z80dotNet
             }
         }
         
-        void FireAfterInstructionExecutionEvent(int tStates)
-        {
-            AfterInstructionExecution?.Invoke(this, new AfterInstructionExecutionEventArgs(
-                executionContext.OpcodeBytes.ToArray(),
-                stopper: this,
-                localUserState: executionContext.LocalUserStateFromPreviousEvent,
-                tStates: tStates));
-        }
-
         void InstructionExecutor_InstructionFetchFinished(object sender, InstructionFetchFinishedEventArgs e)
         {
             if(executionContext.FetchComplete)
@@ -159,9 +145,6 @@ namespace Konamiman.Z80dotNet
             executionContext.IsEiOrDiInstruction = e.IsEiOrDiInstruction;
 
             executionContext.SpAfterInstructionFetch = Registers.SP;
-
-            var eventArgs = FireBeforeInstructionExecutionEvent();
-            executionContext.LocalUserStateFromPreviousEvent = eventArgs.LocalUserState;
         }
 
         void FireBeforeInstructionFetchEvent()
@@ -178,19 +161,6 @@ namespace Konamiman.Z80dotNet
                 }
             }
 
-            executionContext.LocalUserStateFromPreviousEvent = eventArgs.LocalUserState;
-        }
-
-        BeforeInstructionExecutionEventArgs FireBeforeInstructionExecutionEvent()
-        {
-            var eventArgs = new BeforeInstructionExecutionEventArgs(
-                executionContext.OpcodeBytes.ToArray(),
-                executionContext.LocalUserStateFromPreviousEvent);
-
-            if(BeforeInstructionExecution != null)
-                BeforeInstructionExecution(this, eventArgs);
-
-            return eventArgs;
         }
 
         public void Reset()
@@ -213,30 +183,40 @@ namespace Konamiman.Z80dotNet
         {
             executionContext.StartNewInstruction();
 
-            var totalTStates = 0;
-
             FireBeforeInstructionFetchEvent();
 
             if (executionContext.MustStop)
-                return totalTStates;
+                return 0;
 
             var executionTStates = ExecuteNextOpcode();
 
-            totalTStates = executionTStates + executionContext.AccummulatedMemoryWaitStates;
-            TStatesElapsedSinceStart += (ulong)totalTStates;
-            TStatesElapsedSinceReset += (ulong)totalTStates;
+            if(InstructionWaitStates != null)
+            {
+                var args = new InstructionWaitStatesEventArgs
+                {
+                    InitialState = TStatesElapsedSinceStart,
+                    ExecutionStates = executionTStates,
+                    OpCode = executionContext.OpcodeBytes.ToArray(),
+                    MemoryAccesses = executionContext.MemoryAccesses.ToArray(),
+                    PortAccesses = executionContext.PortAccesses.ToArray(),
+                };
+
+                InstructionWaitStates(this, args);
+
+                executionTStates += args.WaitStates;
+            }
+
+            TStatesElapsedSinceStart += (ulong)executionTStates;
+            TStatesElapsedSinceReset += (ulong)executionTStates;
 
             UpdateTStatesTargets();
 
             ThrowIfNoFetchFinishedEventFired();
 
-            FireAfterInstructionExecutionEvent(totalTStates);
-
             if (!IsHalted)
                 IsHalted = executionContext.IsHaltInstruction;
 
             var interruptTStates = AcceptPendingInterrupt();
-            totalTStates += interruptTStates;
             TStatesElapsedSinceStart += (ulong)interruptTStates;
             TStatesElapsedSinceReset += (ulong)interruptTStates;
 
@@ -244,7 +224,7 @@ namespace Konamiman.Z80dotNet
 
             executionContext.StopReason = StopReason.ExecuteNextInstructionInvoked;
 
-            return totalTStates;
+            return executionTStates + interruptTStates;
         }
 
         private void UpdateTStatesTargets()
@@ -254,22 +234,19 @@ namespace Konamiman.Z80dotNet
             for (int buc = 0; buc < TStatesTargets.Count; buc++)
                 TStatesTargets[buc].TStates = tStates;
 
-
-            //foreach (var target in TStatesTargets)
-            //    target.TStates = TStatesElapsedSinceStart;
         }
 
         #endregion
 
         #region Information and state
 
-        public ulong TStatesElapsedSinceStart { get; private set; }
+        public ulong TStatesElapsedSinceStart { get; set; }
 
-        public ulong TStatesElapsedSinceReset { get; private set; }
+        public ulong TStatesElapsedSinceReset { get; set; }
 
         public object UserState { get; set; }
 
-        public bool IsHalted { get; protected set; }
+        public bool IsHalted { get; set; }
 
         private byte _InterruptMode;
         public byte InterruptMode
@@ -325,13 +302,6 @@ namespace Konamiman.Z80dotNet
             }
         }
 
-        private MemoryAccessMode[] memoryAccessModes = new MemoryAccessMode[MemorySpaceSize];
-
-        public void SetMemoryAccessMode(ushort startAddress, int length, MemoryAccessMode mode)
-        {
-             SetArrayContents(memoryAccessModes, startAddress, length, mode);
-        }
-
         private void SetArrayContents<T>(T[] array, ushort startIndex, int length, T value)
         {
             if(length < 0)
@@ -341,11 +311,6 @@ namespace Konamiman.Z80dotNet
 
             var data = Enumerable.Repeat(value, length).ToArray();
             Array.Copy(data, 0, array, startIndex, length);
-        }
-
-        public MemoryAccessMode GetMemoryAccessMode(ushort address)
-        {
-            return memoryAccessModes[address];
         }
 
         private IIO _PortsSpace;
@@ -362,18 +327,6 @@ namespace Konamiman.Z80dotNet
 
                 _PortsSpace = value;
             }
-        }
-
-        private MemoryAccessMode[] portsAccessModes = new MemoryAccessMode[PortSpaceSize];
-
-        public void SetPortsSpaceAccessMode(byte startPort, int length, MemoryAccessMode mode)
-        {
-            SetArrayContents(portsAccessModes, startPort, length, mode);
-        }
-
-        public MemoryAccessMode GetPortAccessMode(ushort portNumber)
-        {
-            return portsAccessModes[portNumber];
         }
 
         private IList<IZ80InterruptSource> InterruptSources { get; set; }
@@ -442,43 +395,6 @@ namespace Konamiman.Z80dotNet
         #endregion
 
         #region Configuration
-
-        private byte[] memoryWaitStatesForM1 = new byte[MemorySpaceSize];
-
-        public void SetMemoryWaitStatesForM1(ushort startAddress, int length, byte waitStates)
-        {
-            SetArrayContents(memoryWaitStatesForM1, startAddress, length, waitStates);
-        }
-
-        public byte GetMemoryWaitStatesForM1(ushort address)
-        {
-            return memoryWaitStatesForM1[address];
-        }
-
-        private byte[] memoryWaitStatesForNonM1 = new byte[MemorySpaceSize];
-
-        public void SetMemoryWaitStatesForNonM1(ushort startAddress, int length, byte waitStates)
-        {
-            SetArrayContents(memoryWaitStatesForNonM1, startAddress, length, waitStates);
-        }
-
-        public byte GetMemoryWaitStatesForNonM1(ushort address)
-        {
-            return memoryWaitStatesForNonM1[address];
-        }
-
-        private byte[] portWaitStates = new byte[PortSpaceSize];
-
-        public void SetPortWaitStates(ushort startPort, int length, byte waitStates)
-        {
-            SetArrayContents(portWaitStates, startPort, length, waitStates);
-        }
-
-        public byte GetPortWaitStates(ushort portNumber)
-        {
-            return portWaitStates[portNumber];
-        }
-
         private IZ80InstructionExecutor _InstructionExecutor;
         public IZ80InstructionExecutor InstructionExecutor
         {
@@ -504,13 +420,9 @@ namespace Konamiman.Z80dotNet
 
         #region Events
 
-        public event EventHandler<MemoryAccessEventArgs> MemoryAccess;
-
         public event EventHandler<BeforeInstructionFetchEventArgs> BeforeInstructionFetch;
 
-        public event EventHandler<BeforeInstructionExecutionEventArgs> BeforeInstructionExecution;
-
-        public event EventHandler<AfterInstructionExecutionEventArgs> AfterInstructionExecution;
+        public event EventHandler<InstructionWaitStatesEventArgs> InstructionWaitStates;
 
         #endregion
 
@@ -527,23 +439,16 @@ namespace Konamiman.Z80dotNet
             if (executionContext.PeekedOpcode == null)
             {
                 var address = Registers.PC;
-                opcode = ReadFromMemory(
-                    address,
-                    Memory,
-                    GetMemoryAccessMode(address),
-                    MemoryAccessEventType.BeforeMemoryRead,
-                    MemoryAccessEventType.AfterMemoryRead,
-                    GetMemoryWaitStatesForM1(address));
+                opcode = ReadFromMemoryInternal(address);
             }
             else
             {
-                executionContext.AccummulatedMemoryWaitStates +=
-                    GetMemoryWaitStatesForM1(executionContext.AddressOfPeekedOpcode);
                 opcode = executionContext.PeekedOpcode.Value;
                 executionContext.PeekedOpcode = null;
             }
 
             executionContext.OpcodeBytes.Add(opcode);
+            executionContext.FetchCycles++;
             Registers.PC++;
             return opcode;
         }
@@ -558,14 +463,7 @@ namespace Konamiman.Z80dotNet
             if (executionContext.PeekedOpcode == null)
             {
                 var address = Registers.PC;
-                var opcode = ReadFromMemory(
-                    address,
-                    Memory,
-                    GetMemoryAccessMode(address),
-                    MemoryAccessEventType.BeforeMemoryRead,
-                    MemoryAccessEventType.AfterMemoryRead,
-                    waitStates: 0);
-
+                var opcode = ReadFromMemoryInternal(address);
                 executionContext.PeekedOpcode = opcode;
                 executionContext.AddressOfPeekedOpcode = Registers.PC;
                 return opcode;
@@ -592,13 +490,9 @@ namespace Konamiman.Z80dotNet
 
         private byte ReadFromMemoryInternal(ushort address)
         {
-            return ReadFromMemory(
-                address,
-                Memory,
-                GetMemoryAccessMode(address),
-                MemoryAccessEventType.BeforeMemoryRead,
-                MemoryAccessEventType.AfterMemoryRead,
-                GetMemoryWaitStatesForNonM1(address));
+
+            executionContext.MemoryAccesses.Add(address);
+            return Memory[address];
         }
 
         protected virtual void FailIfNoInstructionFetchComplete()
@@ -607,82 +501,10 @@ namespace Konamiman.Z80dotNet
                 throw new InvalidOperationException("IZ80ProcessorAgent members other than FetchNextOpcode can be invoked only after the InstructionFetchFinished event has been raised.");
         }
 
-        private byte ReadFromMemory(
-            ushort address,
-            IMemory memory,
-            MemoryAccessMode accessMode,
-            MemoryAccessEventType beforeEventType,
-            MemoryAccessEventType afterEventType,
-            byte waitStates)
+        private byte ReadFromPortInternal(byte portLo, byte portHi)
         {
-            if (MemoryAccess == null)
-                return memory[address];
-
-            var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, address, 0xFF);
-
-            byte value;
-            if(!beforeEventArgs.CancelMemoryAccess && 
-                (accessMode == MemoryAccessMode.ReadAndWrite || accessMode == MemoryAccessMode.ReadOnly))
-                value = memory[address];
-            else
-                value = beforeEventArgs.Value;
-
-            if(executionContext != null)
-                executionContext.AccummulatedMemoryWaitStates += waitStates;
-
-            var afterEventArgs = FireMemoryAccessEvent(
-                afterEventType, 
-                address,
-                value,
-                beforeEventArgs.LocalUserState,
-                beforeEventArgs.CancelMemoryAccess);
-            return afterEventArgs.Value;
-        }
-
-        private byte ReadFromPort(
-            byte portLo,
-            byte portHi,
-            IIO io,
-            MemoryAccessMode accessMode,
-            MemoryAccessEventType beforeEventType,
-            MemoryAccessEventType afterEventType,
-            byte waitStates)
-        {
-
-            if (MemoryAccess == null)
-                return io[portLo, portHi];
-
-            var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, portLo, 0xFF);
-
-            byte value;
-            if (!beforeEventArgs.CancelMemoryAccess &&
-                (accessMode == MemoryAccessMode.ReadAndWrite || accessMode == MemoryAccessMode.ReadOnly))
-                value = io[portLo, portHi];
-            else
-                value = beforeEventArgs.Value;
-
-            if (executionContext != null)
-                executionContext.AccummulatedMemoryWaitStates += waitStates;
-
-            var afterEventArgs = FireMemoryAccessEvent(
-            afterEventType,
-                portLo,
-                value,
-                beforeEventArgs.LocalUserState,
-                beforeEventArgs.CancelMemoryAccess);
-            return afterEventArgs.Value;
-        }
-
-        MemoryAccessEventArgs FireMemoryAccessEvent(
-            MemoryAccessEventType eventType,
-            ushort address, 
-            byte value, 
-            object localUserState = null,
-            bool cancelMemoryAccess = false)
-        {
-            var eventArgs = new MemoryAccessEventArgs(eventType, address, value, localUserState, cancelMemoryAccess);
-            MemoryAccess?.Invoke(this, eventArgs);
-            return eventArgs;
+            executionContext.PortAccesses.Add((portHi, portLo));
+            return PortsSpace[portLo, portHi];
         }
 
         public void WriteToMemory(ushort address, byte value)
@@ -695,81 +517,14 @@ namespace Konamiman.Z80dotNet
 
         private void WriteToMemoryInternal(ushort address, byte value)
         {
-            WritetoMemory(
-                address,
-                value,
-                Memory,
-                GetMemoryAccessMode(address),
-                MemoryAccessEventType.BeforeMemoryWrite,
-                MemoryAccessEventType.AfterMemoryWrite,
-                GetMemoryWaitStatesForNonM1(address));
+            executionContext.MemoryAccesses.Add(address);
+            Memory[address] = value;
         }
 
-        private void WritetoMemory(
-            ushort address,
-            byte value,
-            IMemory memory,
-            MemoryAccessMode accessMode,
-            MemoryAccessEventType beforeEventType,
-            MemoryAccessEventType afterEventType,
-            byte waitStates)
+        private void WriteToPortInternal(byte portLo, byte portHi, byte value)
         {
-
-            if (MemoryAccess == null)
-            {
-                memory[address] = value;
-                return;
-            }
-
-            var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, address, value);
-
-            if(!beforeEventArgs.CancelMemoryAccess &&
-                (accessMode == MemoryAccessMode.ReadAndWrite || accessMode == MemoryAccessMode.WriteOnly))
-                memory[address] = beforeEventArgs.Value;
-
-            if(executionContext != null)
-                executionContext.AccummulatedMemoryWaitStates += waitStates;
-
-            FireMemoryAccessEvent(
-                afterEventType, 
-                address, 
-                beforeEventArgs.Value, 
-                beforeEventArgs.LocalUserState,
-                beforeEventArgs.CancelMemoryAccess);
-        }
-
-        private void WritetoPort(
-            byte portLo,
-            byte portHi,
-            byte value,
-            IIO io,
-            MemoryAccessMode accessMode,
-            MemoryAccessEventType beforeEventType,
-            MemoryAccessEventType afterEventType,
-            byte waitStates)
-        {
-
-            if (MemoryAccess == null)
-            {
-                io[portLo, portHi] = value;
-                return;
-            }
-
-            var beforeEventArgs = FireMemoryAccessEvent(beforeEventType, portLo, value);
-
-            if (!beforeEventArgs.CancelMemoryAccess &&
-                (accessMode == MemoryAccessMode.ReadAndWrite || accessMode == MemoryAccessMode.WriteOnly))
-                io[portLo, portHi] = beforeEventArgs.Value;
-
-            if (executionContext != null)
-                executionContext.AccummulatedMemoryWaitStates += waitStates;
-
-            FireMemoryAccessEvent(
-                afterEventType,
-                portLo,
-                beforeEventArgs.Value,
-                beforeEventArgs.LocalUserState,
-                beforeEventArgs.CancelMemoryAccess);
+            executionContext.PortAccesses.Add((portHi, portLo));
+            PortsSpace[portLo, portHi] = value;
         }
 
         public byte ReadFromPort(byte portLo, byte portHi)
@@ -777,14 +532,7 @@ namespace Konamiman.Z80dotNet
             FailIfNoExecutionContext();
             FailIfNoInstructionFetchComplete();
 
-            return ReadFromPort(
-                portLo, 
-                portHi,
-                PortsSpace, 
-                GetPortAccessMode(portLo),
-                MemoryAccessEventType.BeforePortRead,
-                MemoryAccessEventType.AfterPortRead,
-                GetPortWaitStates(portLo));
+            return ReadFromPortInternal(portLo, portHi);
         }
 
         public void WriteToPort(byte portLo, byte portHi, byte value)
@@ -792,15 +540,7 @@ namespace Konamiman.Z80dotNet
             FailIfNoExecutionContext();
             FailIfNoInstructionFetchComplete();
 
-            WritetoPort(
-                portLo,
-                portHi,
-                value,
-                PortsSpace,
-                GetPortAccessMode(portLo),
-                MemoryAccessEventType.BeforePortWrite,
-                MemoryAccessEventType.AfterPortWrite,
-                GetPortWaitStates(portLo));
+            WriteToPortInternal(portLo, portHi, value);
         }
 
         public void SetInterruptMode(byte interruptMode)

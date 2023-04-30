@@ -103,8 +103,8 @@ namespace ZXBasicStudio.Controls
 
             renderer = new ZXVideoRenderer();
             machine = new Spectrum48k(new byte[][] { rom }, renderer);
-
             */
+
 
             System.Resources.ResourceManager resources = new System.Resources.ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
 
@@ -129,7 +129,9 @@ namespace ZXBasicStudio.Controls
             InitializeComponent();
             emuKeyb.KeyPressed += EmuKeyb_KeyPressed;
             btnKeyb.Click += BtnKeyb_Click;
+
         }
+
         private void BtnKeyb_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (btnKeyb.Content?.ToString() == "<")
@@ -317,6 +319,7 @@ namespace ZXBasicStudio.Controls
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
 
+        /*
         public void BeginFloat()
         {
             floatStatus = new FloatingStatus
@@ -352,6 +355,7 @@ namespace ZXBasicStudio.Controls
                 });
             });
         }
+        */
 
         public void RefreshScreen()
         {

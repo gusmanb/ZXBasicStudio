@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static CoreSpectrum.Hardware.Ay8912;
@@ -23,6 +24,17 @@ namespace CoreSpectrum.Hardware
         bool _disableMapping = false;
 
         byte[] _ayRegs = new byte[18];
+
+        //SimpleContentionSource contention = new SimpleContentionSource(true);
+        AccurateContentionSource contention = new AccurateContentionSource(true);
+
+        internal override IContentionSource ContentionSource
+        {
+            get
+            {
+                return contention;
+            }
+        }
 
         public ULA128k(int CpuClock, int AudioSamplingFrequency, IVideoRenderer Renderer, Memory128k Memory) : base(CpuClock, AudioSamplingFrequency, Renderer) 
         { 
@@ -108,5 +120,6 @@ namespace CoreSpectrum.Hardware
 
             return ULASamplesGenerated;
         }
+
     }
 }

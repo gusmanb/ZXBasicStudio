@@ -12,6 +12,8 @@ namespace CoreSpectrum.Hardware
     public class Memory128k : ISpectrumMemory
     {
 
+        public bool ESCUPE = false;
+
         const int MEMORY_TYPE_ROM = 0;
         const int MEMORY_TYPE_RAM = 1;
 
@@ -61,15 +63,34 @@ namespace CoreSpectrum.Hardware
         {
             get
             {
+                
+
                 MemoryIndex idx;
                 Map.GetMemoryIndex(address, out idx);
+
+                if (ESCUPE)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Lectura en memoria {address.ToString("X4")}: {compositeMemory[idx.MemoryType][idx.Segment][idx.Offset].ToString("X2")}");
+                }
+
                 return compositeMemory[idx.MemoryType][idx.Segment][idx.Offset];
             }
 
             set
             {
+                
+
+                if (address < 16384)
+                    return;
+
                 MemoryIndex idx;
                 Map.GetMemoryIndex(address, out idx);
+
+                if (ESCUPE)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Escritura en memoria {address.ToString("X4")}: {compositeMemory[idx.MemoryType][idx.Segment][idx.Offset].ToString("X2")}");
+                }
+
                 compositeMemory[idx.MemoryType][idx.Segment][idx.Offset] = value;
             }
         }

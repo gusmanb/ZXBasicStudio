@@ -3,7 +3,7 @@ namespace Konamiman.Z80dotNet
     /// <summary>
     /// Event triggered by the <see cref="IZ80Processor"/> class before an instruction is fetched.
     /// </summary>
-    public class BeforeInstructionFetchEventArgs : ProcessorEventArgs
+    public class BeforeInstructionFetchEventArgs : System.EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the class.

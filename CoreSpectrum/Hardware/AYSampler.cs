@@ -68,6 +68,8 @@ namespace CoreSpectrum.Hardware
                 {
                     ayemu_set_reg(_ay, _samples[readPos].Register, _samples[readPos].Value);
                     readPos++;
+                    if(readPos >= _samples.Length)
+                        readPos = 0;
                 }
             }
 

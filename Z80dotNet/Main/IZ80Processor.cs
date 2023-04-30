@@ -1,4 +1,5 @@
 ﻿using Main.Dependencies_Interfaces;
+using Main.EventArgs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -196,46 +197,46 @@ namespace Konamiman.Z80dotNet
         /// </summary>
         IMemory Memory { get; set; }
 
-        /// <summary>
-        /// Sets the mode of a portion of the visible memory.
-        /// </summary>
-        /// <param name="startAddress">First memory address that will be set</param>
-        /// <param name="length">Length of the memory portion that will be set</param>
-        /// <param name="mode">New memory mode</param>
-        /// <exception cref="System.ArgumentException"><c>startAddress</c> is less than 0, 
-        /// or <c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
-        void SetMemoryAccessMode(ushort startAddress, int length, MemoryAccessMode mode);
+        ///// <summary>
+        ///// Sets the mode of a portion of the visible memory.
+        ///// </summary>
+        ///// <param name="startAddress">First memory address that will be set</param>
+        ///// <param name="length">Length of the memory portion that will be set</param>
+        ///// <param name="mode">New memory mode</param>
+        ///// <exception cref="System.ArgumentException"><c>startAddress</c> is less than 0, 
+        ///// or <c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
+        //void SetMemoryAccessMode(ushort startAddress, int length, MemoryAccessMode mode);
 
-        /// <summary>
-        /// Gets the access mode of a memory address.
-        /// </summary>
-        /// <param name="address">The address to check</param>
-        /// <returns>The current memory access mode for the address</returns>
-        /// <exception cref="System.ArgumentException"><c>address</c> is greater than 65536</exception>
-        MemoryAccessMode GetMemoryAccessMode(ushort address);
+        ///// <summary>
+        ///// Gets the access mode of a memory address.
+        ///// </summary>
+        ///// <param name="address">The address to check</param>
+        ///// <returns>The current memory access mode for the address</returns>
+        ///// <exception cref="System.ArgumentException"><c>address</c> is greater than 65536</exception>
+        //MemoryAccessMode GetMemoryAccessMode(ushort address);
 
         /// <summary>
         /// Gets or sets the visible ports space for the processor.
         /// </summary>
         IIO PortsSpace { get; set; }
 
-        /// <summary>
-        /// Sets the access mode of a portion of the visible ports space.
-        /// </summary>
-        /// <param name="startPort">First port that will be set</param>
-        /// <param name="length">Length of the mports space that will be set</param>
-        /// <param name="mode">New memory mode</param>
-        /// <exception cref="System.ArgumentException"><c>startAddress</c> is less than 0, 
-        /// or <c>startAddress</c> + <c>length</c> goes beyond 255.</exception>
-        void SetPortsSpaceAccessMode(byte startPort, int length, MemoryAccessMode mode);
+        ///// <summary>
+        ///// Sets the access mode of a portion of the visible ports space.
+        ///// </summary>
+        ///// <param name="startPort">First port that will be set</param>
+        ///// <param name="length">Length of the mports space that will be set</param>
+        ///// <param name="mode">New memory mode</param>
+        ///// <exception cref="System.ArgumentException"><c>startAddress</c> is less than 0, 
+        ///// or <c>startAddress</c> + <c>length</c> goes beyond 255.</exception>
+        //void SetPortsSpaceAccessMode(byte startPort, int length, MemoryAccessMode mode);
 
-        /// <summary>
-        /// Gets the access mode of a port.
-        /// </summary>
-        /// <param name="portNumber">The port number to check</param>
-        /// <returns>The current memory access mode for the port</returns>
-        /// <exception cref="System.ArgumentException"><c>portNumber</c> is greater than 255.</exception>
-        MemoryAccessMode GetPortAccessMode(ushort portNumber);
+        ///// <summary>
+        ///// Gets the access mode of a port.
+        ///// </summary>
+        ///// <param name="portNumber">The port number to check</param>
+        ///// <returns>The current memory access mode for the port</returns>
+        ///// <exception cref="System.ArgumentException"><c>portNumber</c> is greater than 255.</exception>
+        //MemoryAccessMode GetPortAccessMode(ushort portNumber);
 
         /// <summary>
         /// Registers a new interrupt source.
@@ -310,58 +311,58 @@ namespace Konamiman.Z80dotNet
         ///// </remarks>
         //bool AutoStopOnRetWithStackEmpty { get; set; }
 
-        /// <summary>
-        /// Sets the wait states that will be simulated when accessing the visible memory
-        /// during the M1 cycle for a given address range.
-        /// </summary>
-        /// <param name="startAddress">First memory address that will be configured</param>
-        /// <param name="length">Length of the memory portion that will be configured</param>
-        /// <param name="waitStates">New wait states</param>
-        /// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
-        void SetMemoryWaitStatesForM1(ushort startAddress, int length, byte waitStates);
+        ///// <summary>
+        ///// Sets the wait states that will be simulated when accessing the visible memory
+        ///// during the M1 cycle for a given address range.
+        ///// </summary>
+        ///// <param name="startAddress">First memory address that will be configured</param>
+        ///// <param name="length">Length of the memory portion that will be configured</param>
+        ///// <param name="waitStates">New wait states</param>
+        ///// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
+        //void SetMemoryWaitStatesForM1(ushort startAddress, int length, byte waitStates);
 
-        /// <summary>
-        /// Obtains the wait states that will be simulated when accessing the visible memory
-        /// during the M1 cycle for a given address. 
-        /// </summary>
-        /// <param name="address">Address to het the wait states for</param>
-        /// <returns>Current wait states during M1 for the specified address</returns>
-        byte GetMemoryWaitStatesForM1(ushort address);
+        ///// <summary>
+        ///// Obtains the wait states that will be simulated when accessing the visible memory
+        ///// during the M1 cycle for a given address. 
+        ///// </summary>
+        ///// <param name="address">Address to het the wait states for</param>
+        ///// <returns>Current wait states during M1 for the specified address</returns>
+        //byte GetMemoryWaitStatesForM1(ushort address);
 
-        /// <summary>
-        /// Sets the wait states that will be simulated when accessing the visible memory
-        /// outside the M1 cycle for a given address range.
-        /// </summary>
-        /// <param name="startAddress">First memory address that will be configured</param>
-        /// <param name="length">Length of the memory portion that will be configured</param>
-        /// <param name="waitStates">New wait states</param>
-        /// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
-        void SetMemoryWaitStatesForNonM1(ushort startAddress, int length, byte waitStates);
+        ///// <summary>
+        ///// Sets the wait states that will be simulated when accessing the visible memory
+        ///// outside the M1 cycle for a given address range.
+        ///// </summary>
+        ///// <param name="startAddress">First memory address that will be configured</param>
+        ///// <param name="length">Length of the memory portion that will be configured</param>
+        ///// <param name="waitStates">New wait states</param>
+        ///// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
+        //void SetMemoryWaitStatesForNonM1(ushort startAddress, int length, byte waitStates);
 
-        /// <summary>
-        /// Obtains the wait states that will be simulated when accessing the visible memory
-        /// outside the M1 cycle for a given address. 
-        /// </summary>
-        /// <param name="address">Address to het the wait states for</param>
-        /// <returns>Current wait states outside M1 for the specified address</returns>
-        byte GetMemoryWaitStatesForNonM1(ushort address);
+        ///// <summary>
+        ///// Obtains the wait states that will be simulated when accessing the visible memory
+        ///// outside the M1 cycle for a given address. 
+        ///// </summary>
+        ///// <param name="address">Address to het the wait states for</param>
+        ///// <returns>Current wait states outside M1 for the specified address</returns>
+        //byte GetMemoryWaitStatesForNonM1(ushort address);
 
-        /// <summary>
-        /// Sets the wait states that will be simulated when accessing the I/O ports.
-        /// </summary>
-        /// <param name="startPort">First port that will be configured</param>
-        /// <param name="length">Length of the port range that will be configured</param>
-        /// <param name="waitStates">New wait states</param>
-        /// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 255.</exception>
-        void SetPortWaitStates(ushort startPort, int length, byte waitStates);
+        ///// <summary>
+        ///// Sets the wait states that will be simulated when accessing the I/O ports.
+        ///// </summary>
+        ///// <param name="startPort">First port that will be configured</param>
+        ///// <param name="length">Length of the port range that will be configured</param>
+        ///// <param name="waitStates">New wait states</param>
+        ///// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 255.</exception>
+        //void SetPortWaitStates(ushort startPort, int length, byte waitStates);
 
-        /// <summary>
-        /// Obtains the wait states that will be simulated when accessing the I/O ports
-        /// for a given port. 
-        /// </summary>
-        /// <param name="portNumber">Port number to het the wait states for</param>
-        /// <returns>Current wait states for the specified port</returns>
-        byte GetPortWaitStates(ushort portNumber);
+        ///// <summary>
+        ///// Obtains the wait states that will be simulated when accessing the I/O ports
+        ///// for a given port. 
+        ///// </summary>
+        ///// <param name="portNumber">Port number to het the wait states for</param>
+        ///// <returns>Current wait states for the specified port</returns>
+        //byte GetPortWaitStates(ushort portNumber);
 
         /// <summary>
         /// Gets or set the instruction executor.
@@ -384,22 +385,24 @@ namespace Konamiman.Z80dotNet
         /// <summary>
         /// Memory access event. Is is triggered before and after each memory and port read and write.
         /// </summary>
-        event EventHandler<MemoryAccessEventArgs> MemoryAccess;
+        //event EventHandler<MemoryAccessEventArgs> MemoryAccess;
 
         /// <summary>
         /// Pre-instruction fetch event. It is triggered before the next instruction is fetched.
         /// </summary>
         event EventHandler<BeforeInstructionFetchEventArgs> BeforeInstructionFetch;
 
+        event EventHandler<InstructionWaitStatesEventArgs> InstructionWaitStates;
+
         /// <summary>
         /// Pre-instruction execution event. It is triggered before an instruction is executed.
         /// </summary>
-        event EventHandler<BeforeInstructionExecutionEventArgs> BeforeInstructionExecution;
+        //event EventHandler<BeforeInstructionExecutionEventArgs> BeforeInstructionExecution;
 
         /// <summary>
         /// Post-instruction execution event. It is triggered after an instruction is executed.
         /// </summary>
-        event EventHandler<AfterInstructionExecutionEventArgs> AfterInstructionExecution;
+        //event EventHandler<AfterInstructionExecutionEventArgs> AfterInstructionExecution;
 
         #endregion
 

@@ -14,7 +14,9 @@ namespace CoreSpectrum.Hardware
             CpuClock = 3546900,
             ScansPerFrame = 311,
             TStatesPerScan = 228,
-            FirstScan = 63
+            FirstScan = 63,
+            IrqCycles = 32
+
         };
 
         public Spectrum128k(byte[][] RomSet, IVideoRenderer Renderer) : base(RomSet, Renderer) { }

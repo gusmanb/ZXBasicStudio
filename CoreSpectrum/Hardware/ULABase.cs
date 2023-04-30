@@ -4,6 +4,7 @@ using Konamiman.Z80dotNet;
 using Main.Dependencies_Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,11 +72,15 @@ namespace CoreSpectrum.Hardware
         private bool _screenIrq;
         protected byte _mic;
         protected byte _ear;
+        protected ulong _tStates;
+        protected ulong _irqStates;
+
         private bool _newFrame;
         protected byte[] keybSegments = new byte[] { 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, 0xbf, };
 
         public event EventHandler? NmiInterruptPulse;
         public abstract byte this[byte portLo, byte portHi] { get; set; }
+        internal abstract IContentionSource ContentionSource { get; }
         public virtual bool IntLineIsActive
         {
             get
@@ -101,7 +106,20 @@ namespace CoreSpectrum.Hardware
             }
         }
         public virtual byte? ValueOnDataBus => 255;
-        public virtual ulong TStates { get; set; }
+        public virtual ulong TStates 
+        { 
+            get 
+            { 
+                return _tStates; 
+            } 
+            set 
+            { 
+                _tStates = value; 
+
+                if (_screenIrq && _tStates > _irqStates) 
+                    _screenIrq = false; 
+            } 
+        }
         /// <summary>
         /// Audio input
         /// </summary>
@@ -157,6 +175,10 @@ namespace CoreSpectrum.Hardware
             var info = keyInfos[Key];
             keybSegments[info.Row] = (byte)(keybSegments[info.Row] | info.BitValue);
         }
+        public virtual void ClearIRQ()
+        {
+            _screenIrq = false;
+        }
         public virtual void ScanLine(Span<byte> VideoMemory, byte FirstScan, int ScansPerFrame)
         {
             _renderer.RenderLine(VideoMemory, FirstScan, Border, FlashInvert, _currentLine++);
@@ -165,10 +187,11 @@ namespace CoreSpectrum.Hardware
             {
                 _currentLine = 0;
                 _screenIrq = true;
+                _irqStates = _tStates + 32;
                 _newFrame = true;
                 _flashFrames++;
 
-                if (_flashFrames >= 25)
+                if (_flashFrames >= 16)
                 {
                     _flashFrames = 0;
                     FlashInvert = !FlashInvert;
