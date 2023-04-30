@@ -2,11 +2,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Threading;
-using DocumentEditors.ZXGraphics.neg;
-using Common;
+using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using System;
+using ZXBasicStudio.Common;
 
-namespace DocumentEditors.ZXGraphics
+namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
     public partial class PreviewControl : UserControl
     {

@@ -1,7 +1,9 @@
 # ZXGraphics
-Graphic editor by DuefectuCorp and HashIron
+Graphic editor by DuefectuCorp
 
 ## Credits
+- Tap export module
+  - @HashIron
 - Icons from [SVG REPO](https://www.svgrepo.com/)
   - <a href="https://github.com/blivesta/flexicon?ref=svgrepo.com" target="_blank">Blivesta</a> in MIT License
   - <a href="https://github.com/KDE/krita?ref=svgrepo.com" target="_blank">Kde</a> in GPL License

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DocumentEditors.ZXGraphics.neg
+namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
 {
     /// <summary>
     /// Defines a pattern for char, gdu, sprite or tile

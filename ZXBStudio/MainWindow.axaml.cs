@@ -36,7 +36,7 @@ using ZXBasicStudio.Classes;
 using ZXBasicStudio.Controls;
 using ZXBasicStudio.Controls.DockSystem;
 using ZXBasicStudio.Dialogs;
-using DocumentEditors;
+using ZXBasicStudio.DocumentEditors;
 
 namespace ZXBasicStudio
 {
@@ -45,7 +45,7 @@ namespace ZXBasicStudio
         //TODO: Añadir lista de proyectos recientes al menú
 
         List<ZXTextEditor> openEditors = new List<ZXTextEditor>();
-        List<DocumentEditors.ZXGraphics.Main> openZXGraphics = new List<DocumentEditors.ZXGraphics.Main>();
+        List<DocumentEditors.ZXGraphics.FontGDU> openZXGraphics = new List<DocumentEditors.ZXGraphics.FontGDU>();
         ObservableCollection<TabItem> editTabs = new ObservableCollection<TabItem>();
 
         ZXProgram? loadedProgram;
@@ -163,6 +163,13 @@ namespace ZXBasicStudio
                 bp.Tag = zLine;
                 romLines.Add(zLine);
                 romBreakpoints.Add(bp);
+            }
+
+
+            // Initializes common tools
+            {
+                var common = new Common.UI();
+                common.Initialize(this, this.Icon);
             }
 
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom);
@@ -314,9 +321,9 @@ namespace ZXBasicStudio
                 }
                 openEditors.Remove(editor);
             }
-            else if (tipo == typeof(DocumentEditors.ZXGraphics.Main))
+            else if (tipo == typeof(DocumentEditors.ZXGraphics.FontGDU))
             {
-                var editor = tab.Content as DocumentEditors.ZXGraphics.Main;
+                var editor = tab.Content as DocumentEditors.ZXGraphics.FontGDU;
 
                 if (editor == null)
                 {
@@ -385,9 +392,9 @@ namespace ZXBasicStudio
                     return;
                 }
             }
-            else if (tipo == typeof(DocumentEditors.ZXGraphics.Main))
+            else if (tipo == typeof(DocumentEditors.ZXGraphics.FontGDU))
             {
-                var editor = activeTab.Content as DocumentEditors.ZXGraphics.Main;
+                var editor = activeTab.Content as DocumentEditors.ZXGraphics.FontGDU;
 
                 if (editor == null)
                     return;
@@ -629,7 +636,7 @@ namespace ZXBasicStudio
                 }
 
                 ZXTextEditor editor = null;
-                DocumentEditors.ZXGraphics.Main graphicsEditor = null;
+                DocumentEditors.ZXGraphics.FontGDU graphicsEditor = null;
 
                 if (file.IsZXAssembler() || file == ZXConstants.DISASSEMBLY_DOC || file == ZXConstants.ROM_DOC)
                     editor = new ZXAssemblerEditor(file);
@@ -639,7 +646,7 @@ namespace ZXBasicStudio
                     editor = new ZXTextEditor(file);
                 else if (file.IsZXGraphics())
                 {
-                    graphicsEditor = new DocumentEditors.ZXGraphics.Main();
+                    graphicsEditor = new DocumentEditors.ZXGraphics.FontGDU();
                     graphicsEditor.Initialize(file);
                 }
                 else
@@ -716,9 +723,9 @@ namespace ZXBasicStudio
                     return;
                 tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
             }
-            else if (tipo == typeof(DocumentEditors.ZXGraphics.Main))
+            else if (tipo == typeof(DocumentEditors.ZXGraphics.FontGDU))
             {
-                var editor = (DocumentEditors.ZXGraphics.Main?)sender;
+                var editor = (DocumentEditors.ZXGraphics.FontGDU?)sender;
                 if (editor == null)
                     return;
                 var tab = editor.Parent as TabItem;
@@ -741,9 +748,9 @@ namespace ZXBasicStudio
                     return;
                 tab.Tag = tab.Tag?.ToString() + "*";
             }
-            else if (tipo == typeof(DocumentEditors.ZXGraphics.Main))
+            else if (tipo == typeof(DocumentEditors.ZXGraphics.FontGDU))
             {
-                var editor = (DocumentEditors.ZXGraphics.Main?)sender;
+                var editor = (DocumentEditors.ZXGraphics.FontGDU?)sender;
                 if (editor == null)
                     return;
                 var tab = editor.Parent as TabItem;

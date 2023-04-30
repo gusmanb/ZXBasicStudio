@@ -1,11 +1,11 @@
-﻿using DocumentEditors.ZXGraphics.dat;
-using DocumentEditors.ZXGraphics.neg;
+﻿using ZXBasicStudio.DocumentEditors.ZXGraphics.dat;
+using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace DocumentEditors.ZXGraphics.log
+namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
 
     /// <summary>
@@ -91,7 +91,7 @@ namespace DocumentEditors.ZXGraphics.log
         /// <returns>Array of byte with data or null if error</returns>
         public static byte[] GetFileData(string fileName)
         {
-            return dataLayer.GetFileData(fileName);
+            return dataLayer.ReadFileData(fileName);
         }
 
 
@@ -185,14 +185,18 @@ namespace DocumentEditors.ZXGraphics.log
                     }
                 }
 
-                File.WriteAllBytes(fileType.FileName, data);
-                return true;
+                return dataLayer.WriteFileData(fileType.FileName, data);
             }
             catch (Exception ex)
             {
                 LastError = "ERROR saving file to disk: " + ex.Message + ex.StackTrace;
                 return false;
             }
+        }
+
+        public static byte[] Files_CreateData(FileTypeConfig fileType)
+        {
+            return dataLayer.Files_CreateData(fileType);
         }
     }
 }

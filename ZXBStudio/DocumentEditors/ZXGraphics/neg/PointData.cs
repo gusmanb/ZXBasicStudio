@@ -1,4 +1,4 @@
-﻿namespace DocumentEditors.ZXGraphics.neg
+﻿namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
 {
     /// <summary>
     /// Defines a point into the GDU/Font/Sprite/Tile data

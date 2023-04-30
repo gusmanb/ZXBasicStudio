@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="DocumentEditors.ZXGraphics.PreviewControl">
+             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.PreviewControl">
   <Grid Name="grdMain" Grid.Column="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*">
     <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">First</TextBlock>
     <NumericUpDown Name="txtPreviewFirst" Grid.Column="1" Grid.Row="0" Minimum="0" Increment="1" Value="0"></NumericUpDown>

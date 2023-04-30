@@ -3,9 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:svg="using:Avalonia.Svg.Skia"
-             xmlns:local="using:DocumentEditors.ZXGraphics"
+             xmlns:local="using:ZXBasicStudio.DocumentEditors.ZXGraphics"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="DocumentEditors.ZXGraphics.Main">
+             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.FontGDU">
   <UserControl.Styles>
     <Style Selector="Button.toolbar">
       <Setter Property="Background" Value="#fff0f0f0" />
@@ -79,12 +79,14 @@
         <NumericUpDown Name="txtEditorWidth" Minimum="1" Increment="1" Maximum="256" Value="1" Margin="2,0,16,0" VerticalAlignment="Center" />
         <TextBlock VerticalAlignment="Center">Height</TextBlock>
         <NumericUpDown Name="txtEditorHeight" Minimum="1" Increment="1" Maximum="256" Value="1" Margin="2,0,16,0" VerticalAlignment="Center"/>
+        <!--
         <TextBlock>Paper</TextBlock>
         <TextBlock>Ink</TextBlock>
         <TextBlock>Bright</TextBlock>
+        -->
       </WrapPanel>
 
-      <StackPanel Spacing="4" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5" Margin="10">
+      <WrapPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5" Margin="10">
         <Button Classes="toolbar" Name="btnClear" ToolTip.Tip="Clear active patterns">
           <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Cancel.svg"></svg:Svg>
         </Button>
@@ -131,7 +133,7 @@
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
-        <Button Classes="toolbar_hMirror" Name="btnMovetLeft" ToolTip.Tip="Move pattern to left">
+        <Button Classes="toolbar_hMirror" Name="btnMoveLeft" ToolTip.Tip="Move pattern to left">
           <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/MoveRight.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar" Name="btnMoveRight" ToolTip.Tip="Move pattern to right">
@@ -148,6 +150,7 @@
         <Button Classes="toolbar" Name="btnInvert" ToolTip.Tip="Invert pattern">
           <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Invert.svg"></svg:Svg>
         </Button>
+        <!-- TODO: Not implemented
         <Button Classes="toolbar" Name="btnMask" ToolTip.Tip="Mask pattern">
           <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Mask.svg"></svg:Svg>
         </Button>
@@ -156,7 +159,8 @@
         <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Export pattern">
           <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Export.svg"></svg:Svg>
         </Button>
-      </StackPanel>
+        -->
+      </WrapPanel>
 
       <local:EditorControl Name="ctrEditor" Grid.Row="2"/>
     </Grid>

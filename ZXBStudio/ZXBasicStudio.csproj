@@ -314,7 +314,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bufdio\Bufdio.csproj" />
-    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\CoreSpectrum\CoreSpectrum.csproj" />
   </ItemGroup>
 
@@ -343,8 +342,8 @@
     <Compile Update="DocumentEditors\ZXGraphics\EditorControl.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="DocumentEditors\ZXGraphics\Main.axaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
+    <Compile Update="DocumentEditors\ZXGraphics\FontGDU.axaml.cs">
+      <DependentUpon>FontGDU.axaml</DependentUpon>
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\PatternControl.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>

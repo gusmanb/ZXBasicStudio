@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
-using DocumentEditors.ZXGraphics.neg;
+using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using System;
 
-namespace DocumentEditors.ZXGraphics
+namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
     public partial class PatternControl : UserControl
     {
