@@ -77,5 +77,35 @@
         </LinearGradientBrush>
       </Setter>
     </Style>
+    <Style Selector="Button.toolbar">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="ToggleButton.toolbar">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="Button.toolbar:disabled">
+      <Setter Property="Background" Value="#ff606060" />
+      <Setter Property="BorderBrush" Value="#ff606060" />
+    </Style>
+    <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#ffb0b0b0" />
+    </Style>
+    <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#ff606060" />
+    </Style>
+    <Style Selector="ComboBox.toolbar">
+      <Setter Property="Margin" Value="0"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="Padding" Value="5"></Setter>
+    </Style>
   </Application.Styles>
 </Application>

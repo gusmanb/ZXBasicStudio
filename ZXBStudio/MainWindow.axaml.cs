@@ -67,6 +67,9 @@ namespace ZXBasicStudio
 
         private bool skipLayout;
 
+        ZXTapePlayer _player;
+        ZXDockingControl _playerDock;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -133,6 +136,8 @@ namespace ZXBasicStudio
             btnTurbo.Click += TurboModeEmulator;
             btnBorderless.Click += Borderless;
             btnDirectScreen.Click += DirectScreen;
+            btnTape.Click += ShowTapePlayer;
+            btnPowerOn.Click += PowerOn;
             #endregion
 
             #region Attach Breakpoint manager events
@@ -150,9 +155,33 @@ namespace ZXBasicStudio
 
             regView.Registers = emu.Registers;
             memView.Initialize(emu.Memory);
-            CreateRomBreakpoints();           
+            CreateRomBreakpoints();
 
-            ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom);
+            _player = new ZXTapePlayer();
+            _player.Datacorder = emu.Datacorder;
+            _playerDock = new ZXDockingControl();
+            _playerDock.DockedControl = _player;
+            _playerDock.CanClose = true;
+            _playerDock.Title = "Tape player";
+            _playerDock.DesiredFloatingSize = new Size(230, 270);
+            _playerDock.Name = "TapePlayerDock";
+            ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom, new[] { _playerDock });
+
+        }
+
+        private void PowerOn(object? sender, RoutedEventArgs e)
+        {
+            CheckSpectrumModel();
+            emu.Start();
+            EmulatorInfo.IsRunning = true;
+        }
+
+        private void ShowTapePlayer(object? sender, RoutedEventArgs e)
+        {
+            if (!_player.IsAttachedToVisualTree())
+                ZXFloatController.MakeFloating(_playerDock);
+
+            _player.Datacorder = emu.Datacorder;
         }
 
         #region File manipulation
@@ -955,6 +984,7 @@ namespace ZXBasicStudio
                 emu.SetModel(sModel);
                 CreateRomBreakpoints();
                 CloseDocumentByFile(ZXConstants.DISASSEMBLY_DOC);
+                _player.Datacorder = emu.Datacorder;
             }
         }
 

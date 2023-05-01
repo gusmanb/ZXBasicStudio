@@ -148,6 +148,13 @@ namespace ZXBasicStudio.Controls.DockSystem
 
                             SelectTab((ZXTabDockingButton)sender);  
                         };
+                        btn.Close += (sender, e) =>
+                        {
+                            if (sender == null)
+                                return;
+
+                            CloseTab((ZXTabDockingButton)sender);
+                        };
                         dockControl.TabMode = true;
                         tabButtons.Children?.Insert(idx, btn);
                         SelectTab(btn);
@@ -222,6 +229,15 @@ namespace ZXBasicStudio.Controls.DockSystem
                 
             }
         }
+
+        private void CloseTab(ZXTabDockingButton Button)
+        {
+            if (Button.AssociatedControl == null)
+                return;
+
+            Remove(Button.AssociatedControl);
+        }
+
         public void AddToStart(ZXDockingControl Element)
         {
             BeginAdd(Element);

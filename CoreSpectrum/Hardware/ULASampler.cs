@@ -33,7 +33,7 @@ namespace CoreSpectrum.Hardware
             SAMPLE_RATE = SampleRate;
             CPU_CLOCK = CpuClock;
             SAMPLE_T_STATES = CPU_CLOCK / (double)SAMPLE_RATE;
-            audioOutSpkLevels = new float[] { 0, AMPLITUDE / 3, AMPLITUDE / 1.5f, AMPLITUDE };
+            audioOutSpkLevels = new float[] { 0, AMPLITUDE / 3, AMPLITUDE / 1.5f, AMPLITUDE, AMPLITUDE, AMPLITUDE, AMPLITUDE };
         }
 
         public int GetSamples(ulong TStates, float[] Buffer)

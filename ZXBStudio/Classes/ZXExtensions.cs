@@ -12,9 +12,11 @@ namespace ZXBasicStudio.Classes
         static string[] basicFiles = new string[] { ".bas", ".zxbas", ".zxb" };
         static string[] asmFiles = new string[] { ".asm", ".zxasm", ".zxa", ".z80asm" };
         static string[] configFiles = new string[] { ".zbs" };
+        static string[] tapeFiles = new string[] { ".tap", ".tzx" };
         public static string[] ZXBasicFiles { get { return basicFiles; } }
         public static string[] ZXAssemblerFiles { get { return asmFiles; } }
         public static string[] ZXConfigFiles { get { return configFiles; } }
+        public static string[] ZXTapeFiles { get { return tapeFiles; } }
         public static bool IsZXBasic(this string fileName)
         {
             var ext = Path.GetExtension(fileName).ToLower();

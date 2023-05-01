@@ -12,6 +12,7 @@ namespace ZXBasicStudio.Controls.DockSystem
         public static StyledProperty<Control?> DockedControlProperty = StyledProperty<Control?>.Register<ZXDockingControl, Control?>("DockedControl");
         public static StyledProperty<bool> CanCloseProperty = StyledProperty<bool>.Register<ZXDockingControl, bool>("CanClose", false);
         public static StyledProperty<bool> TabModeProperty = StyledProperty<bool>.Register<ZXDockingControl, bool>("TabMode", false);
+        public static StyledProperty<Size?> DesiredFloatingSizeProperty = StyledProperty<Size?>.Register<ZXDockingControl, Size?>("DesiredFloatingSize", null);
         public string Title
         {
             get => GetValue(TitleProperty);
@@ -31,6 +32,11 @@ namespace ZXBasicStudio.Controls.DockSystem
         {
             get => GetValue(TabModeProperty);
             set => SetValue(TabModeProperty, value);
+        }
+        public Size? DesiredFloatingSize
+        {
+            get => GetValue(DesiredFloatingSizeProperty);
+            set => SetValue(DesiredFloatingSizeProperty, value);
         }
 
         public event EventHandler<CloseEventArgs>? Closing;
@@ -69,9 +75,9 @@ namespace ZXBasicStudio.Controls.DockSystem
 
                 if (args.Cancel)
                     return;
-
-                (this.Parent as IZXDockingContainer)?.Remove(this);
             }
+
+            (this.Parent as IZXDockingContainer)?.Remove(this);
         }
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {

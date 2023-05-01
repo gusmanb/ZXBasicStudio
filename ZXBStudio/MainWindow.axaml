@@ -25,36 +25,6 @@
         </Template>
       </Setter>
     </Style>
-    <Style Selector="Button.toolbar">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-    </Style>
-    <Style Selector="ToggleButton.toolbar">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-    </Style>
-    <Style Selector="Button.toolbar:disabled">
-      <Setter Property="Background" Value="#ff606060" />
-      <Setter Property="BorderBrush" Value="#ff606060" />
-    </Style>
-    <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#ffb0b0b0" />
-    </Style>
-    <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#ff606060" />
-    </Style>
-    <Style Selector="ComboBox">
-      <Setter Property="Margin" Value="0"></Setter>
-      <Setter Property="CornerRadius" Value="5"></Setter>
-      <Setter Property="Height" Value="32"></Setter>
-      <Setter Property="Padding" Value="5"></Setter>
-    </Style>
   </Window.Styles>
   <Grid Grid.Row="1" RowDefinitions="Auto,Auto,2*,4,*" ColumnDefinitions="0.6*,4,2*,4,*" Name="grdMain">
     <Menu Grid.ColumnSpan="5" Background="#ff303030">
@@ -138,11 +108,14 @@
         <svg:Svg Path="/Svg/circle-xmark-solid.svg"></svg:Svg>
       </Button>
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
-      <ComboBox Grid.Row="1" Grid.Column="2" Name="cbModel" Width="110" SelectedIndex="0">
+      <ComboBox Classes="toolbar" Grid.Row="1" Grid.Column="2" Name="cbModel" Width="110" SelectedIndex="0">
         <ComboBoxItem>Spectrum 48k</ComboBoxItem>
         <ComboBoxItem>Spectrum 128k</ComboBoxItem>
         <ComboBoxItem>Spectrum +2</ComboBoxItem>
       </ComboBox>
+      <Button Classes="toolbar" Name="btnPowerOn" IsEnabled="{Binding !EmulatorInfo.IsRunning}" ToolTip.Tip="Run emulator">
+        <svg:Svg Path="/Svg/power-off-solid.svg"></svg:Svg>
+      </Button>
       <Button Classes="toolbar" Name="btnRun" IsEnabled="{Binding EmulatorInfo.CanRun}" ToolTip.Tip="Build and run (F5)">
         <svg:Svg Path="/Svg/play-solid.svg"></svg:Svg>
       </Button>
@@ -164,8 +137,11 @@
       <Button Classes="toolbar" Name="btnStop" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Stop (F11)">
         <svg:Svg Path="/Svg/stop-solid.svg"></svg:Svg>
       </Button>
-      <Button Classes="toolbar" Name="btnTurbo" IsEnabled="{Binding EmulatorInfo.CanPause}" ToolTip.Tip="Turbo mode (F12)">
+      <Button Classes="toolbar" Name="btnTurbo" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Turbo mode (F12)">
         <svg:Svg Path="/Svg/truck-fast-solid.svg"></svg:Svg>
+      </Button>
+      <Button Classes="toolbar" Name="btnTape" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Turbo mode (F12)">
+        <svg:Svg Path="/Svg/cassette-solid.svg"></svg:Svg>
       </Button>
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
       <ToggleButton Classes="toolbar" Name="btnBorderless" ToolTip.Tip="Borderless mode">
@@ -174,23 +150,6 @@
       <ToggleButton Classes="toolbar" Name="btnDirectScreen" ToolTip.Tip="Direct screen mode">
         <svg:Svg Path="/Svg/display-lines-solid.svg"></svg:Svg>
       </ToggleButton>
-      <!--
-      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
-      <Button Classes="toolbar" Name="btnFullLayout" ToolTip.Tip="Code mode">
-        <svg:Svg Path="/Svg/layout-full-solid.svg"></svg:Svg>
-      </Button>
-      <Button Classes="toolbar" Name="btnExplorerLayout" ToolTip.Tip="Project mode">
-        <svg:Svg Path="/Svg/layout-explorer-solid.svg"></svg:Svg>
-      </Button>
-      <Button Classes="toolbar" Name="btnDebugLayout" ToolTip.Tip="Project mode">
-        <svg:Svg Path="/Svg/layout-debug-solid.svg"></svg:Svg>
-      </Button>
-      <Button Classes="toolbar" Name="btnPlayLayout" ToolTip.Tip="Project mode">
-        <svg:Svg Path="/Svg/layout-play-solid.svg"></svg:Svg>
-      </Button>
-      <Button Classes="toolbar" Name="btnToolsLayout" ToolTip.Tip="Full mode">
-        <svg:Svg Path="/Svg/layout-alltools-solid.svg"></svg:Svg>
-      </Button>-->
     </StackPanel>
     <zxd:ZXDockingContainer Grid.Column="0" Grid.Row="2" Grid.RowSpan="3" Name="dockLeft" RowDefinitions="*">
       <zxd:ZXDockingControl Title="Project explorer" Name="projDock">

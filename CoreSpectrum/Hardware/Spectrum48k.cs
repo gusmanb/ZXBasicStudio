@@ -55,6 +55,9 @@ namespace CoreSpectrum.Hardware
             {
                 if (chunk.Bank != 0)
                     return false;
+
+                if (chunk.Data.Length + chunk.Address > 0xFFFF)
+                    return false;
             }
 
             _injecting = true;

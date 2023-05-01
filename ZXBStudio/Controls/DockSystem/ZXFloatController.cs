@@ -18,7 +18,7 @@ namespace ZXBasicStudio.Controls.DockSystem
         public static ZXFloatingWindow MakeFloating(ZXDockingControl Control)
         {
             ZXFloatingWindow window = new ZXFloatingWindow();
-            var size = Control.Bounds.Size;
+            var size = Control.DesiredFloatingSize ?? Control.Bounds.Size;
             window.Width = size.Width;
             window.Height = size.Height;
             window.Closing += Window_Closing;

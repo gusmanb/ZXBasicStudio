@@ -40,6 +40,7 @@ namespace ZXBasicStudio.Controls.DockSystem
             set => SetValue(TitleProperty, value);
         }
         public event EventHandler<EventArgs>? Click;
+        public event EventHandler<EventArgs>? Close;
         public ZXTabDockingButton()
         {
             DataContext = this;
@@ -58,6 +59,13 @@ namespace ZXBasicStudio.Controls.DockSystem
                 }
             });
             mnuFloat.Click += MnuFloat_Click;
+            btnClose.Click += BtnClose_Click;
+        }
+
+        private void BtnClose_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (Close != null)
+                Close(this, EventArgs.Empty);
         }
 
         private void MnuFloat_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

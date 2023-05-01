@@ -78,6 +78,12 @@ namespace CoreSpectrum.Hardware
         {
             Stop();
 
+            foreach (var chunk in Image.Chunks)
+            {
+                if (chunk.Data.Length + chunk.Address > 0xFFFF)
+                    return false;
+            }
+
             _injecting = true;
             _injectImage = Image;
             _on48mode = false;

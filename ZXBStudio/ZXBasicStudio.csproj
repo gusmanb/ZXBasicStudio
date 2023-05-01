@@ -39,10 +39,12 @@
     <None Remove="Fonts\NimbusSanL-BolIta.ttf" />
     <None Remove="Fonts\NimbusSanL-Reg.ttf" />
     <None Remove="Fonts\NimbusSanL-RegIta.ttf" />
+    <None Remove="Svg\backward-solid.svg" />
     <None Remove="Svg\box-open-solid.svg" />
     <None Remove="Svg\box-solid.svg" />
     <None Remove="Svg\boxes-stacked-solid.svg" />
     <None Remove="Svg\bug-solid.svg" />
+    <None Remove="Svg\cassette-solid.svg" />
     <None Remove="Svg\circle-minus-solid.svg" />
     <None Remove="Svg\circle-xmark-solid.svg" />
     <None Remove="Svg\clock-rotate-left-solid.svg" />
@@ -54,6 +56,7 @@
     <None Remove="Svg\diagram-project-solid.svg" />
     <None Remove="Svg\display-lines-solid.svg" />
     <None Remove="Svg\dumpster-solid.svg" />
+    <None Remove="Svg\eject-solid.svg" />
     <None Remove="Svg\file-arrow-down-solid.svg" />
     <None Remove="Svg\file-circle-minus-solid.svg" />
     <None Remove="Svg\file-circle-plus-solid.svg" />
@@ -91,10 +94,12 @@
     <None Remove="Svg\trash-can-regular.svg" />
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
+    <None Remove="Svg\White\backward-solid.svg" />
     <None Remove="Svg\White\box-open-solid.svg" />
     <None Remove="Svg\White\box-solid.svg" />
     <None Remove="Svg\White\boxes-stacked-solid.svg" />
     <None Remove="Svg\White\bug-solid.svg" />
+    <None Remove="Svg\White\cassette-solid.svg" />
     <None Remove="Svg\White\circle-minus-solid.svg" />
     <None Remove="Svg\White\circle-xmark-solid.svg" />
     <None Remove="Svg\White\clock-rotate-left-solid.svg" />
@@ -106,6 +111,7 @@
     <None Remove="Svg\White\diagram-project-solid.svg" />
     <None Remove="Svg\White\display-lines-solid.svg" />
     <None Remove="Svg\White\dumpster-solid.svg" />
+    <None Remove="Svg\White\eject-solid.svg" />
     <None Remove="Svg\White\file-arrow-down-solid.svg" />
     <None Remove="Svg\White\file-circle-minus-solid.svg" />
     <None Remove="Svg\White\file-circle-plus-solid.svg" />
@@ -157,10 +163,12 @@
     <AvaloniaResource Include="Fonts\NimbusSanL-BolIta.ttf" />
     <AvaloniaResource Include="Fonts\NimbusSanL-Reg.ttf" />
     <AvaloniaResource Include="Fonts\NimbusSanL-RegIta.ttf" />
+    <AvaloniaResource Include="Svg\backward-solid.svg" />
     <AvaloniaResource Include="Svg\box-open-solid.svg" />
     <AvaloniaResource Include="Svg\box-solid.svg" />
     <AvaloniaResource Include="Svg\boxes-stacked-solid.svg" />
     <AvaloniaResource Include="Svg\bug-solid.svg" />
+    <AvaloniaResource Include="Svg\cassette-solid.svg" />
     <AvaloniaResource Include="Svg\circle-minus-solid.svg" />
     <AvaloniaResource Include="Svg\circle-xmark-solid.svg" />
     <AvaloniaResource Include="Svg\clock-rotate-left-solid.svg" />
@@ -172,6 +180,7 @@
     <AvaloniaResource Include="Svg\diagram-project-solid.svg" />
     <AvaloniaResource Include="Svg\display-lines-solid.svg" />
     <AvaloniaResource Include="Svg\dumpster-solid.svg" />
+    <AvaloniaResource Include="Svg\eject-solid.svg" />
     <AvaloniaResource Include="Svg\file-arrow-down-solid.svg" />
     <AvaloniaResource Include="Svg\file-circle-minus-solid.svg" />
     <AvaloniaResource Include="Svg\file-circle-plus-solid.svg" />
@@ -209,10 +218,12 @@
     <AvaloniaResource Include="Svg\trash-can-regular.svg" />
     <AvaloniaResource Include="Svg\trash-solid.svg" />
     <AvaloniaResource Include="Svg\truck-fast-solid.svg" />
+    <AvaloniaResource Include="Svg\White\backward-solid.svg" />
     <AvaloniaResource Include="Svg\White\box-open-solid.svg" />
     <AvaloniaResource Include="Svg\White\box-solid.svg" />
     <AvaloniaResource Include="Svg\White\boxes-stacked-solid.svg" />
     <AvaloniaResource Include="Svg\White\bug-solid.svg" />
+    <AvaloniaResource Include="Svg\White\cassette-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-minus-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-xmark-solid.svg" />
     <AvaloniaResource Include="Svg\White\clock-rotate-left-solid.svg" />
@@ -224,6 +235,7 @@
     <AvaloniaResource Include="Svg\White\diagram-project-solid.svg" />
     <AvaloniaResource Include="Svg\White\display-lines-solid.svg" />
     <AvaloniaResource Include="Svg\White\dumpster-solid.svg" />
+    <AvaloniaResource Include="Svg\White\eject-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-arrow-down-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-circle-minus-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-circle-plus-solid.svg" />
