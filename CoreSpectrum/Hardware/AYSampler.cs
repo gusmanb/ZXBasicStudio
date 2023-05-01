@@ -77,6 +77,7 @@ namespace CoreSpectrum.Hardware
             writePos = 0;
             cTicks = TStates;
             rest = 0;
+            nextChange = 0;
         }
 
         private float NextSample()
