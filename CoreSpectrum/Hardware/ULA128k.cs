@@ -36,7 +36,7 @@ namespace CoreSpectrum.Hardware
             }
         }
 
-        public ULA128k(int CpuClock, int AudioSamplingFrequency, IVideoRenderer Renderer, Memory128k Memory) : base(CpuClock, AudioSamplingFrequency, Renderer) 
+        public ULA128k(int CpuClock, int AudioSamplingFrequency, Memory128k Memory) : base(CpuClock, AudioSamplingFrequency) 
         { 
             _mem = Memory;
             _aySampler = new AYSampler(AudioSamplingFrequency, CpuClock);

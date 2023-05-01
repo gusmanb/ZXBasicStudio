@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CoreSpectrum.Hardware
 {
-    public abstract class MachineBase
+    public abstract class SpectrumBase: IDisposable
     {
         #region Variables
 
@@ -23,7 +23,6 @@ namespace CoreSpectrum.Hardware
         protected readonly ULABase _ula;
         protected readonly TapePlayer _player;
         protected readonly MachineTimmings _timmings;
-        protected readonly IVideoRenderer _renderer;
 
         protected bool _pause;
         protected bool _stop = true;
@@ -40,11 +39,13 @@ namespace CoreSpectrum.Hardware
         
         protected readonly List<ISynchronizedExecution> _syncExecs = new List<ISynchronizedExecution>();
 
+        protected bool _threadAlive;
+
         #endregion
 
         #region Events
 
-        public event EventHandler<SpectrumFrameArgs>? FrameRendered;
+        public event EventHandler<EventArgs>? FrameRendered;
         public event EventHandler<BreakPointEventArgs>? BreakpointHit;
         public abstract event EventHandler? ProgramReady;
 
@@ -63,15 +64,14 @@ namespace CoreSpectrum.Hardware
 
         #endregion
 
-        protected MachineBase(byte[][] RomSet, IVideoRenderer Renderer)
+        protected SpectrumBase(byte[][] RomSet)
         {
 
-            var hardware = GetHardware(RomSet, Renderer);
+            var hardware = GetHardware(RomSet);
 
             _timmings = hardware.Timmings;
             _memory = hardware.Memory;
             _ula = hardware.ULA;
-            _renderer = Renderer;
             _player = new TapePlayer();
             _player.AudioChanged += TapePlayer_AudioChanged;
 
@@ -110,13 +110,14 @@ namespace CoreSpectrum.Hardware
 
         #region Machine initialization
 
-        protected abstract MachineHardware GetHardware(byte[][] RomSet, IVideoRenderer Renderer);
+        protected abstract MachineHardware GetHardware(byte[][] RomSet);
 
         #endregion
 
         #region Machine execution
         protected virtual void SpectrumCycle(object? State)
         {
+            _threadAlive = true;
             _sw.Restart();
 
             long start = _sw.ElapsedTicks;
@@ -133,7 +134,10 @@ namespace CoreSpectrum.Hardware
                         Thread.Sleep(1);
 
                     if (_stop)
+                    {
+                        _threadAlive = false;
                         return;
+                    }
 
                     _nextFrame = _sw.ElapsedTicks;
                 }
@@ -142,7 +146,7 @@ namespace CoreSpectrum.Hardware
             }
 
             _sw.Stop();
-
+            _threadAlive = false;
         }
 
         protected virtual void NextInstruction()
@@ -167,7 +171,7 @@ namespace CoreSpectrum.Hardware
             if (_ula.NewFrame && (!_turbo || _renderOnturbo))
             {
                 if (FrameRendered != null)
-                    FrameRendered(this, new SpectrumFrameArgs(_renderer));
+                    FrameRendered(this, EventArgs.Empty);
 
                 if (!_turbo)
                 {
@@ -194,7 +198,7 @@ namespace CoreSpectrum.Hardware
             _nextFrame = 0;
             _sw.Stop();
 
-            _memory.Clear();
+            _memory.ClearRAM();
             _ula.Reset();
             _z80.Restart();
             
@@ -205,7 +209,7 @@ namespace CoreSpectrum.Hardware
                 th.Start();
             }
             else
-                Task.Run(() => SpectrumCycle(null));
+                ThreadPool.QueueUserWorkItem(SpectrumCycle);
 
             foreach(var exec in _syncExecs)
                 exec.Start();
@@ -217,6 +221,9 @@ namespace CoreSpectrum.Hardware
 
             foreach (var exec in _syncExecs)
                 exec.Stop();
+
+            while (_threadAlive)
+                Thread.Sleep(0);
         }
 
         public virtual void Pause()
@@ -383,6 +390,20 @@ namespace CoreSpectrum.Hardware
         
         }
         #endregion
+
+        protected abstract void Disposal();
+
+        public virtual void Dispose()
+        {
+            Stop();
+            FrameRendered = null;
+            BreakpointHit = null;
+            _syncExecs.Clear();
+            _sw.Stop();
+            _z80.UnregisterAllInterruptSources();
+            _z80.UnregisterAllTStatesTargets();
+            Disposal();
+        }
     }
 
     #region Machine information

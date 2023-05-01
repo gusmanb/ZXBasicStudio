@@ -36,7 +36,7 @@ namespace ZXBasicStudio.Classes
 
         public ZXVideoRenderer() : base(palette, false) { }
 
-        public void DumpScreenMemory(MachineBase ZXMachine) 
+        public void DumpScreenMemory(SpectrumBase ZXMachine) 
         {
             var mem = ZXMachine.Memory.GetVideoMemory();
 

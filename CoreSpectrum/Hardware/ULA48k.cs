@@ -12,7 +12,7 @@ namespace CoreSpectrum.Hardware
 {
     public class ULA48k : ULABase
     {
-        SimpleContentionSource contention = new SimpleContentionSource(false);
+        AccurateContentionSource contention = new AccurateContentionSource(false);
 
         internal override IContentionSource ContentionSource
         {
@@ -22,7 +22,7 @@ namespace CoreSpectrum.Hardware
             }
         }
 
-        public ULA48k(int CpuClock, int AudioSamplingFrequency, IVideoRenderer Renderer) : base(CpuClock, AudioSamplingFrequency, Renderer) { }
+        public ULA48k(int CpuClock, int AudioSamplingFrequency) : base(CpuClock, AudioSamplingFrequency) { }
         public override byte this[byte portLo, byte portHi]
         {
             get

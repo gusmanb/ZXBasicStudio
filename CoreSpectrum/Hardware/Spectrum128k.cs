@@ -9,10 +9,17 @@ using System.Threading.Tasks;
 
 namespace CoreSpectrum.Hardware
 {
-    public class Spectrum128k : MachineBase
+    public class Spectrum128k : SpectrumBase
     {
-        const ushort INJECT_PC = 0x12ac;
-        const ushort INJECT_MODE_PC = 0x2675;
+        /// <summary>
+        /// PC safe for switching to 48k ROM
+        /// </summary>
+        ushort _resetPC;
+
+        /// <summary>
+        /// PC safe for injection (after switching to 48k mode)
+        /// </summary>
+        ushort _injectPC;
 
         private static readonly MachineTimmings Timmings128k = new MachineTimmings
         {
@@ -30,15 +37,19 @@ namespace CoreSpectrum.Hardware
 
         public override event EventHandler? ProgramReady;
 
-        public Spectrum128k(byte[][] RomSet, IVideoRenderer Renderer) : base(RomSet, Renderer) { }
+        public Spectrum128k(byte[][] RomSet, ushort ResetAddress, ushort InjectAddress) : base(RomSet) 
+        {
+            _resetPC = ResetAddress;
+            _injectPC = InjectAddress;
+        }
 
-        protected override MachineHardware GetHardware(byte[][] RomSet, IVideoRenderer Renderer)
+        protected override MachineHardware GetHardware(byte[][] RomSet)
         {
             if (RomSet == null || RomSet.Length != 2 || RomSet[0].Length != 16 * 1024 || RomSet[1].Length != 16 * 1024)
                 throw new ArgumentException("Spectrum 128k needs two 16Kb ROMs.");
 
             var memory = new Memory128k(RomSet[0], RomSet[1]);
-            var ula = new ULA128k(Timmings128k.CpuClock, 44100, Renderer, memory);
+            var ula = new ULA128k(Timmings128k.CpuClock, 44100, memory);
             
             MachineHardware hardware = new MachineHardware
             {
@@ -67,8 +78,6 @@ namespace CoreSpectrum.Hardware
         {
             Stop();
 
-            //(_memory as Memory128k).Map.SetActiveRom(1);
-
             _injecting = true;
             _injectImage = Image;
             _on48mode = false;
@@ -82,7 +91,7 @@ namespace CoreSpectrum.Hardware
         {
             if (_injecting)
             {
-                if (_z80.Registers.PC == INJECT_PC && _on48mode)
+                if (_z80.Registers.PC == _injectPC && _on48mode)
                 {
                     if (_injectImage != null)
                     {
@@ -96,8 +105,8 @@ namespace CoreSpectrum.Hardware
 
                         mem.Map.SetActiveBank(_injectImage.InitialBank);
                         _z80.Registers.PC = _injectImage.Org;
-                        var sp = (ushort)0xFFFF;
-                        byte[] retAddr = BitConverter.GetBytes(INJECT_PC);
+                        var sp = 0xFFFF;
+                        byte[] retAddr = BitConverter.GetBytes(_injectPC);
                         sp -= 2;
                         _z80.Registers.SP = unchecked((short)sp);
                         _memory.SetContents(sp, retAddr);
@@ -110,7 +119,7 @@ namespace CoreSpectrum.Hardware
                     _injectImage = null;
                     _on48mode = false;
                 }
-                else if (_z80.Registers.PC == INJECT_MODE_PC)
+                else if (_z80.Registers.PC == _resetPC)
                 {
                     
                     var mem = (Memory128k)_memory;
@@ -120,12 +129,17 @@ namespace CoreSpectrum.Hardware
                     mem.Map.SetActiveBank(0);
                     mem.Map.SetActiveScreen(0);
                     _z80.Registers.PC = 0;
-                    _z80.Registers.SP = -1;
                     _on48mode = true;
                 }
             }
 
             base.z80_BeforeInstructionFetch(sender, e);
+        }
+
+        protected override void Disposal()
+        {
+            ProgramReady = null;
+            _injectImage = null;
         }
     }
 }

@@ -119,6 +119,11 @@
     <None Remove="Svg\White\forward-step-solid.svg" />
     <None Remove="Svg\White\gears-solid.svg" />
     <None Remove="Svg\White\hashtag-solid.svg" />
+    <None Remove="Svg\White\layout-alltools-solid.svg" />
+    <None Remove="Svg\White\layout-debug-solid.svg" />
+    <None Remove="Svg\White\layout-explorer-solid.svg" />
+    <None Remove="Svg\White\layout-full-solid.svg" />
+    <None Remove="Svg\White\layout-play-solid.svg" />
     <None Remove="Svg\White\list-ol-solid.svg" />
     <None Remove="Svg\White\magnifying-glass-location-solid.svg" />
     <None Remove="Svg\White\maximize-solid.svg" />
@@ -232,6 +237,11 @@
     <AvaloniaResource Include="Svg\White\forward-step-solid.svg" />
     <AvaloniaResource Include="Svg\White\gears-solid.svg" />
     <AvaloniaResource Include="Svg\White\hashtag-solid.svg" />
+    <AvaloniaResource Include="Svg\White\layout-alltools-solid.svg" />
+    <AvaloniaResource Include="Svg\White\layout-debug-solid.svg" />
+    <AvaloniaResource Include="Svg\White\layout-explorer-solid.svg" />
+    <AvaloniaResource Include="Svg\White\layout-full-solid.svg" />
+    <AvaloniaResource Include="Svg\White\layout-play-solid.svg" />
     <AvaloniaResource Include="Svg\White\list-ol-solid.svg" />
     <AvaloniaResource Include="Svg\White\magnifying-glass-location-solid.svg" />
     <AvaloniaResource Include="Svg\White\maximize-solid.svg" />

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CoreSpectrum.Hardware
 {
-    public abstract class ULABase : IIO, IZ80InterruptSource, ITStatesTarget
+    public abstract class ULABase : IIO, IZ80InterruptSource, ITStatesTarget, ISpectrumAudio
     {
         protected readonly Dictionary<SpectrumKeys, KeyInfo> keyInfos = new Dictionary<SpectrumKeys, KeyInfo>
         {
@@ -65,7 +65,7 @@ namespace CoreSpectrum.Hardware
         };
 
         internal readonly ULASampler _sampler;
-        protected readonly IVideoRenderer _renderer;
+        protected IVideoRenderer? _renderer;
 
         private int _currentLine = 0;
         private int _flashFrames = 0;
@@ -159,11 +159,12 @@ namespace CoreSpectrum.Hardware
         }
         public virtual byte Border { get; protected set; }
         public virtual bool FlashInvert { get; protected set; }
+        public virtual IVideoRenderer? Renderer { get { return _renderer; } set { _renderer = value; } }
+
         internal virtual bool Turbo { get; set; }
-        protected ULABase(int CpuClock, int AudioSamplingFrequency, IVideoRenderer renderer)
+        protected ULABase(int CpuClock, int AudioSamplingFrequency)
         {
             _sampler = new ULASampler(AudioSamplingFrequency, CpuClock);
-            _renderer = renderer;
         }
         public virtual void PressKey(SpectrumKeys Key)
         {
@@ -181,7 +182,10 @@ namespace CoreSpectrum.Hardware
         }
         public virtual void ScanLine(Span<byte> VideoMemory, byte FirstScan, int ScansPerFrame)
         {
-            _renderer.RenderLine(VideoMemory, FirstScan, Border, FlashInvert, _currentLine++);
+            if(_renderer != null)
+                _renderer.RenderLine(VideoMemory, FirstScan, Border, FlashInvert, _currentLine);
+
+            _currentLine++;
 
             if (_currentLine == ScansPerFrame)
             {

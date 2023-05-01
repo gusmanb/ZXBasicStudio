@@ -108,6 +108,15 @@ ReconstructedROM ProcessROMListing(string[] ROMLines)
 
     byte[] binary = File.ReadAllBytes("composite.bin");
 
+    var dupes = addresses.GroupBy(a => a.Address).Where(g => g.Count() > 1);
+
+    foreach (var dupe in dupes)
+    {
+        var remove = dupe.OrderByDescending(a => a.Address).Skip(1).ToArray();
+        foreach(var line in remove)
+            addresses.Remove(line);
+    }
+
     return new ReconstructedROM { Binary = binary, Map = addresses.ToArray() };
 
 }

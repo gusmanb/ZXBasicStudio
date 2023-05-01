@@ -49,6 +49,12 @@
     <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#ff606060" />
     </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="Margin" Value="0"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="Padding" Value="5"></Setter>
+    </Style>
   </Window.Styles>
   <Grid Grid.Row="1" RowDefinitions="Auto,Auto,2*,4,*" ColumnDefinitions="0.6*,4,2*,4,*" Name="grdMain">
     <Menu Grid.ColumnSpan="5" Background="#ff303030">
@@ -87,9 +93,16 @@
         <MenuItem Header="Dump memory" Name="mnuDumpMem" IsEnabled="{Binding EmulatorInfo.CanStep}" Icon="{SvgImage /Svg/White/dumpster-solid.svg}"></MenuItem>
         <MenuItem Header="Dump registers" Name="mnuDumpRegs" IsEnabled="{Binding EmulatorInfo.CanStep}" Icon="{SvgImage /Svg/White/dumpster-solid.svg}"></MenuItem>
         <Separator></Separator>
-        <MenuItem Header="Restore layout" Name="mnuRestoreLayout" Icon="{SvgImage /Svg/White/clock-rotate-left-solid.svg}"></MenuItem>
-        <Separator></Separator>
         <MenuItem Header="Options..." Name="mnuGlobalOptions" Icon="{SvgImage /Svg/White/gears-solid.svg}"></MenuItem>
+      </MenuItem>
+      <MenuItem Header="Views">
+        <MenuItem Header="Code view" Name="mnuCodeView" Icon="{SvgImage /Svg/White/layout-full-solid.svg}"></MenuItem>
+        <MenuItem Header="Project view" Name="mnuProjectView" Icon="{SvgImage /Svg/White/layout-explorer-solid.svg}"></MenuItem>
+        <MenuItem Header="Debug view" Name="mnuDebugView" Icon="{SvgImage /Svg/White/layout-debug-solid.svg}"></MenuItem>
+        <MenuItem Header="Play view" Name="mnuPlayView" Icon="{SvgImage /Svg/White/layout-play-solid.svg}"></MenuItem>
+        <MenuItem Header="All tools view" Name="mnuAllToolsView" Icon="{SvgImage /Svg/White/layout-alltools-solid.svg}"></MenuItem>
+        <Separator></Separator>
+        <MenuItem Header="Restore layout" Name="mnuRestoreLayout" Icon="{SvgImage /Svg/White/clock-rotate-left-solid.svg}"></MenuItem>
       </MenuItem>
     </Menu>
     <StackPanel Spacing="4" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5" Margin="10">
@@ -125,6 +138,11 @@
         <svg:Svg Path="/Svg/circle-xmark-solid.svg"></svg:Svg>
       </Button>
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <ComboBox Grid.Row="1" Grid.Column="2" Name="cbModel" Width="110" SelectedIndex="0">
+        <ComboBoxItem>Spectrum 48k</ComboBoxItem>
+        <ComboBoxItem>Spectrum 128k</ComboBoxItem>
+        <ComboBoxItem>Spectrum +2</ComboBoxItem>
+      </ComboBox>
       <Button Classes="toolbar" Name="btnRun" IsEnabled="{Binding EmulatorInfo.CanRun}" ToolTip.Tip="Build and run (F5)">
         <svg:Svg Path="/Svg/play-solid.svg"></svg:Svg>
       </Button>
@@ -156,6 +174,7 @@
       <ToggleButton Classes="toolbar" Name="btnDirectScreen" ToolTip.Tip="Direct screen mode">
         <svg:Svg Path="/Svg/display-lines-solid.svg"></svg:Svg>
       </ToggleButton>
+      <!--
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
       <Button Classes="toolbar" Name="btnFullLayout" ToolTip.Tip="Code mode">
         <svg:Svg Path="/Svg/layout-full-solid.svg"></svg:Svg>
@@ -171,7 +190,7 @@
       </Button>
       <Button Classes="toolbar" Name="btnToolsLayout" ToolTip.Tip="Full mode">
         <svg:Svg Path="/Svg/layout-alltools-solid.svg"></svg:Svg>
-      </Button>
+      </Button>-->
     </StackPanel>
     <zxd:ZXDockingContainer Grid.Column="0" Grid.Row="2" Grid.RowSpan="3" Name="dockLeft" RowDefinitions="*">
       <zxd:ZXDockingControl Title="Project explorer" Name="projDock">

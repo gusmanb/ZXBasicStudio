@@ -16,14 +16,15 @@ using ZXBasicStudio.Controls;
 
 namespace ZXBasicStudio.Classes
 {
-    public class ZXEmulatorAudio : ISynchronizedExecution
+    public class ZXEmulatorAudio : ISynchronizedExecution, IDisposable
     {
 
         const int TIMER_TICK = 10;
         const int SAMPLE_RATE = 44100;
         const double LATENCY = 0.1f; //In s
 
-        ULABase _ula;
+        ISpectrumAudio? _audioSource;
+
         object _locker = new object();
         bool _pause = false;
         bool _turbo = false;
@@ -33,14 +34,22 @@ namespace ZXBasicStudio.Classes
         Timer? _audioTimer;
         IAudioEngine? _engine;
 
-        public ZXEmulatorAudio(ULABase ULA) 
+        public ISpectrumAudio? AudioSource
         {
-            _ula = ULA;
+            get { return _audioSource; }
+            set
+            {
+                lock (_locker)
+                    _audioSource = value;
+            }
+        }
 
+        public ZXEmulatorAudio() 
+        {
             System.Resources.ResourceManager resources = new System.Resources.ResourceManager("ZXBasicStudio.Resources.PortAudio", typeof(ZXEmulator).Assembly);
 
-            string libName;
-            byte[] lib = null;
+            string? libName;
+            byte[]? lib = null;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
@@ -58,6 +67,9 @@ namespace ZXBasicStudio.Classes
                 lib = resources.GetObject("lib_win") as byte[];
             }
 
+            if (libName == null || lib == null)
+                throw new InvalidProgramException("Missing required resources!");
+
             if (!File.Exists(libName))
                 File.WriteAllBytes(libName, lib);
 
@@ -71,17 +83,14 @@ namespace ZXBasicStudio.Classes
             catch { ZXOptions.Current.AudioDisabled = true; }
         }
 
-
-
-
         private void TimerCallback(object? args)
         {
             lock (_locker)
             {
-                if (ZXOptions.Current.AudioDisabled || _pause || _turbo || _stop)
+                if (ZXOptions.Current.AudioDisabled || _pause || _turbo || _stop || _audioSource == null)
                     return;
 
-                int samples = _ula.GetSamples(_buffer);
+                int samples = _audioSource.GetSamples(_buffer);
 
                 if (samples != 0)
                 {
@@ -216,6 +225,11 @@ namespace ZXBasicStudio.Classes
                     _audioTimer.Change((int)(LATENCY * 1000), Timeout.Infinite);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            Stop();
         }
     }
 }

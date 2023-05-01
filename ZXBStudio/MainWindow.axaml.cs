@@ -29,11 +29,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Classes.ZXMachineDefinitions;
 using ZXBasicStudio.Controls;
 using ZXBasicStudio.Controls.DockSystem;
 using ZXBasicStudio.Dialogs;
@@ -54,7 +56,6 @@ namespace ZXBasicStudio
         List<Breakpoint> userBreakpoints = new List<Breakpoint>();
         List<ZXCodeLine> romLines = new List<ZXCodeLine>();
         Breakpoint? currentBp;
-        string romDisassembly;
         public ObservableCollection<TabItem> EditItems { get; set; }
 
         public FileInfoProvider FileInfo { get; set; } = new FileInfoProvider();
@@ -103,6 +104,12 @@ namespace ZXBasicStudio
             mnuDumpRegs.Click += DumpRegisters;
             mnuTurbo.Click += TurboModeEmulator;
             mnuRestoreLayout.Click += RestoreLayout;
+            mnuCodeView.Click += FullLayout;
+            mnuProjectView.Click += ExplorerLayout;
+            mnuAllToolsView.Click += ToolsLayout;
+            mnuDebugView.Click += DebugLayout;
+            mnuPlayView.Click += PlayLayout;
+
             #endregion
 
             #region Attach toolbar events
@@ -126,11 +133,6 @@ namespace ZXBasicStudio
             btnTurbo.Click += TurboModeEmulator;
             btnBorderless.Click += Borderless;
             btnDirectScreen.Click += DirectScreen;
-            btnFullLayout.Click += FullLayout;
-            btnExplorerLayout.Click += ExplorerLayout;
-            btnToolsLayout.Click += ToolsLayout;
-            btnDebugLayout.Click += DebugLayout;
-            btnPlayLayout.Click += PlayLayout;
             #endregion
 
             #region Attach Breakpoint manager events
@@ -148,21 +150,7 @@ namespace ZXBasicStudio
 
             regView.Registers = emu.Registers;
             memView.Initialize(emu.Memory);
-            System.Resources.ResourceManager resources = new System.Resources.ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
-
-            romDisassembly = resources.GetObject("48k_asm") as string;
-            string romMapB = resources.GetObject("48k_map") as string;
-
-            var romMap = JsonConvert.DeserializeObject<RomLine[]>(romMapB);
-
-            foreach (var codeLine in romMap)
-            {
-                Breakpoint bp = new Breakpoint { Address = codeLine.Address };
-                var zLine = new ZXCodeLine(ZXFileType.Assembler, ZXConstants.ROM_DOC, codeLine.Line, codeLine.Address);
-                bp.Tag = zLine;
-                romLines.Add(zLine);
-                romBreakpoints.Add(bp);
-            }
+            CreateRomBreakpoints();           
 
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom);
         }
@@ -372,23 +360,6 @@ namespace ZXBasicStudio
 
         private async void OpenProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            /*
-            if (!EmulatorInfo.IsRunning)
-            {
-                emu.Start();
-                EmulatorInfo.IsRunning = true;
-                EmulatorInfo.CanPause = true;
-            }
-            else
-            {
-                //var tape = TZXFile.Load("AWM.tzx");
-                var tape = TAPFile.Load("fitrisb.tap");
-                emu.Datacorder.InsertTape(tape);
-                emu.Datacorder.Play();
-            }
-            return;
-            */
-
             if(FileInfo.ProjectLoaded)
             {
                 if (openEditors.Any(e => e.Modified))
@@ -603,6 +574,30 @@ namespace ZXBasicStudio
                 return;
             tab.Tag = tab.Tag?.ToString() + "*";
         }
+
+        private async Task CloseDocumentByFile(string File)
+        {
+            var disEdit = openEditors.FirstOrDefault(ef => ef.FileName == File);
+
+            if (disEdit != null)
+            {
+                if (disEdit.Modified)
+                {
+                    var res = await ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
+
+                    if (!res)
+                        return;
+                }
+
+                var tab = editTabs.First(t => t.Content == disEdit);
+                openEditors.Remove(disEdit);
+                editTabs.Remove(tab);
+
+                if (openEditors.Count == 0)
+                    FileInfo.FileLoaded = false;
+            }
+        }
+
         #endregion
 
         #region Emulator control
@@ -795,7 +790,7 @@ namespace ZXBasicStudio
                         if (edit != null)
                         {
                             if (string.IsNullOrWhiteSpace(edit.Text))
-                                edit.Text = romDisassembly;
+                                edit.Text = emu.ModelDefinition?.RomDissasembly;
 
                             edit.BreakLine = disLine.LineNumber + 1;
                         }
@@ -946,7 +941,46 @@ namespace ZXBasicStudio
                 }
             }
         }
-        
+        private void CheckSpectrumModel()
+        {
+            var model = cbModel.SelectedIndex;
+
+            if (model == -1)
+                throw new ArgumentException("Unknown spectrum model!");
+
+            ZXSpectrumModel sModel = (ZXSpectrumModel)model;
+
+            if (emu.ModelDefinition?.Model != sModel)
+            {
+                emu.SetModel(sModel);
+                CreateRomBreakpoints();
+                CloseDocumentByFile(ZXConstants.DISASSEMBLY_DOC);
+            }
+        }
+
+        private void CreateRomBreakpoints()
+        {
+            if(emu.ModelDefinition == null)
+                throw new ArgumentException("Unknown spectrum model!");
+
+            romLines.Clear();
+            romBreakpoints.Clear();
+
+            foreach (var codeLine in emu.ModelDefinition.RomDissasemblyMap)
+            {
+                Breakpoint bp = new Breakpoint { Address = codeLine.Address };
+                var zLine = new ZXCodeLine(ZXFileType.Assembler, ZXConstants.ROM_DOC, codeLine.Line, codeLine.Address);
+                bp.Tag = zLine;
+                romLines.Add(zLine);
+                romBreakpoints.Add(bp);
+            }
+
+            var userBps = userBreakpoints.Where(bp => ((ZXCodeLine)bp.Tag).File == ZXConstants.ROM_DOC).ToArray();
+
+            foreach(var bp in userBps) 
+                userBreakpoints.Remove(bp);
+        }
+
         #endregion
 
         #region Build actions
@@ -997,6 +1031,7 @@ namespace ZXBasicStudio
             Cleanup();
             EmulatorInfo.CanDebug = false;
             EmulatorInfo.CanRun = false;
+            CheckSpectrumModel();
 
             Task.Run(() => {
                 var program = ZXProjectBuilder.Build(peExplorer.RootPath, outLog.Writer);
@@ -1055,6 +1090,8 @@ namespace ZXBasicStudio
             BlockEditors();
             EmulatorInfo.CanDebug = false;
             EmulatorInfo.CanRun = false;
+            CheckSpectrumModel();
+
             Task.Run(() => {
                 var program = ZXProjectBuilder.BuildDebug(peExplorer.RootPath, outLog.Writer);
 
@@ -1086,7 +1123,7 @@ namespace ZXBasicStudio
 
                         if (rom != null)
                         {
-                            rom.Text = romDisassembly;
+                            rom.Text = emu.ModelDefinition?.RomDissasembly;
                             rom.InvalidateArrange();
                             rom.InvalidateMeasure();
                             rom.InvalidateVisual();

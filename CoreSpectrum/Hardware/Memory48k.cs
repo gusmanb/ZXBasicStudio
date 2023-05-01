@@ -20,6 +20,7 @@ namespace CoreSpectrum.Hardware
             { 
                 if (address < 16384) 
                     return;
+
                 memory[address] = value; 
             }
         }
@@ -54,9 +55,9 @@ namespace CoreSpectrum.Hardware
             return new Span<byte>(memory, 0x4000, 6912);
         }
 
-        public void Clear()
+        public void ClearRAM()
         {
-            Array.Fill<byte>(memory, 0x00);
+            Array.Fill<byte>(memory, 0x00, 16384, 48 * 1024);
         }
     }
 }

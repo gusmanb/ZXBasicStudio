@@ -151,7 +151,7 @@ namespace CoreSpectrum.Hardware
             return new Span<byte>(compositeMemory[MEMORY_TYPE_RAM][map.ActiveScreenPage], 0, 6912);
         }
 
-        public void Clear()
+        public void ClearRAM()
         {
             foreach (var mem in memoryPages)
                 Array.Fill<byte>(mem, 0x00);

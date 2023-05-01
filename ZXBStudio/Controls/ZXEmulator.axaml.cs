@@ -26,21 +26,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tmds.DBus;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Classes.ZXMachineDefinitions;
 
 namespace ZXBasicStudio.Controls
 {
     public partial class ZXEmulator : UserControl
     {
-        private static readonly byte BRIGHT = 0xff, NORM = 0xd7;
-
         ZXVideoRenderer renderer;
-
         ZXEmulatorAudio audio;
 
-        MachineBase machine;
+        SpectrumBase machine;
 
-        byte[]? programToInject = null;
-        ushort address = 0;
         public bool Running { get { return machine.Running; } }
         public bool Paused { get { return machine.Paused; } }
         public bool Borderless 
@@ -80,6 +76,7 @@ namespace ZXBasicStudio.Controls
             } 
         }
         public bool DirectMode { get; set; }
+        public ZXSpectrumModelDefinition? ModelDefinition { get; private set; }
         public IZ80Registers Registers { get { return machine.Z80.Registers; } }
         public ISpectrumMemory Memory { get { return machine.Memory; } }
 
@@ -90,48 +87,20 @@ namespace ZXBasicStudio.Controls
         #region Events
 
         public event EventHandler<BreakpointEventArgs>? Breakpoint;
-        public event EventHandler? ProgramReady 
-        {
-            add { machine.ProgramReady += value; }
-            remove { machine.ProgramReady -= value; }
-        }
+        public event EventHandler? ProgramReady;
         public event EventHandler<ExceptionEventArgs>? ExceptionTrapped;
 
         #endregion
 
         public ZXEmulator()
         {
-
-            /*
-            System.Resources.ResourceManager resources = new System.Resources. ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
-
-            var rom = resources.GetObject("48k_rom") as byte[];
-
-            if (rom == null)
-                throw new InvalidProgramException("Missing ROM resource!");
-
             renderer = new ZXVideoRenderer();
-            machine = new Spectrum48k(new byte[][] { rom }, renderer);
-            */
+            audio = new ZXEmulatorAudio();
+            SetModel(ZXSpectrumModel.Spectrum48k);
 
+            if(machine == null)
+                throw new ArgumentException("Unknown Spectrum model!");
 
-            System.Resources.ResourceManager resources = new System.Resources.ResourceManager("ZXBasicStudio.Resources.ZXSpectrum", typeof(ZXEmulator).Assembly);
-
-            var rom0 = resources.GetObject("Plus2_0_rom") as byte[];
-
-            if (rom0 == null)
-                throw new InvalidProgramException("Missing ROM resource!");
-
-            var rom1 = resources.GetObject("Plus2_1_rom") as byte[];
-
-            if (rom1 == null)
-                throw new InvalidProgramException("Missing ROM resource!");
-
-            renderer = new ZXVideoRenderer();
-            machine = new Spectrum128k(new byte[][] { rom0, rom1 }, renderer);
-            
-
-            audio = new ZXEmulatorAudio(machine.ULA);
             machine.RegisterSynchronized(audio);
             machine.FrameRendered += Machine_FrameRendered;
             machine.BreakpointHit += Machine_BreakpointHit;
@@ -139,6 +108,38 @@ namespace ZXBasicStudio.Controls
             emuKeyb.KeyPressed += EmuKeyb_KeyPressed;
             btnKeyb.Click += BtnKeyb_Click;
 
+        }
+
+        public void SetModel(ZXSpectrumModel Model)
+        {
+            SpectrumBase speccy;
+
+            ModelDefinition = ZXSpectrumModelDefinitions.GetDefinition(Model);
+
+            if (ModelDefinition == null)
+                throw new ArgumentException("Unknown Spectrum model!");
+
+            if (Model == ZXSpectrumModel.Spectrum48k)
+                speccy = new Spectrum48k(ModelDefinition.RomSet, ModelDefinition.InjectAddress);
+            else
+                speccy = new Spectrum128k(ModelDefinition.RomSet, ModelDefinition.ResetAddress, ModelDefinition.InjectAddress);
+
+            if (machine != null)
+                machine.Dispose();
+
+            machine = speccy;
+            machine.RegisterSynchronized(audio);
+            machine.ULA.Renderer = renderer;
+            machine.FrameRendered += Machine_FrameRendered;
+            machine.BreakpointHit += Machine_BreakpointHit;
+            machine.ProgramReady += Machine_ProgramReady;
+            audio.AudioSource = machine.ULA;
+        }
+
+        private void Machine_ProgramReady(object? sender, EventArgs e)
+        {
+            if(ProgramReady != null)
+                ProgramReady(this, EventArgs.Empty);
         }
 
         private void BtnKeyb_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -402,7 +403,7 @@ namespace ZXBasicStudio.Controls
             emuScr.IsRunning = true;
         }
 
-        private void Machine_FrameRendered(object? sender, SpectrumFrameArgs e)
+        private void Machine_FrameRendered(object? sender, EventArgs e)
         {
             try
             {
@@ -434,4 +435,5 @@ namespace ZXBasicStudio.Controls
         } 
     }
     #endregion
+
 }

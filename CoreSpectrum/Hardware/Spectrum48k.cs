@@ -1,19 +1,14 @@
-﻿using CoreSpectrum.Interfaces;
-using CoreSpectrum.SupportClasses;
+﻿using CoreSpectrum.SupportClasses;
 using Konamiman.Z80dotNet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CoreSpectrum.Hardware
 {
-    public class Spectrum48k : MachineBase
+    public class Spectrum48k : SpectrumBase
     {
-        const ushort INJECT_PC = 0x12ac;
+        /// <summary>
+        /// PC safe for program injection
+        /// </summary>
+        ushort _injectPC;
         private static readonly MachineTimmings Timmings48k = new MachineTimmings 
         { 
             CpuClock = 3500000,
@@ -28,15 +23,18 @@ namespace CoreSpectrum.Hardware
 
         public override event EventHandler? ProgramReady;
 
-        public Spectrum48k(byte[][] RomSet, IVideoRenderer Renderer) : base(RomSet, Renderer) { }
+        public Spectrum48k(byte[][] RomSet, ushort InjectionAddress) : base(RomSet) 
+        {
+            _injectPC = InjectionAddress;
+        }
 
-        protected override MachineHardware GetHardware(byte[][] RomSet, IVideoRenderer Renderer)
+        protected override MachineHardware GetHardware(byte[][] RomSet)
         {
 
             if (RomSet == null || RomSet.Length != 1 || RomSet[0].Length != 16 * 1024)
                 throw new ArgumentException("Spectrum 48k needs a 16Kb ROM.");
 
-            var ula = new ULA48k(Timmings48k.CpuClock, 44100, Renderer);
+            var ula = new ULA48k(Timmings48k.CpuClock, 44100);
             var memory = new Memory48k(RomSet);
 
             MachineHardware hardware = new MachineHardware
@@ -71,23 +69,28 @@ namespace CoreSpectrum.Hardware
         {
             if (_injecting)
             {
-                if (_z80.Registers.PC == INJECT_PC)
+                if (_z80.Registers.PC == _injectPC)
                 {
                     if (_injectImage != null)
                     {
-
+                        //Fill memory with chunks
                         foreach (var chunk in _injectImage.Chunks)
                             _memory.SetContents(chunk.Address, chunk.Data);
 
+                        //PC at our program
                         _z80.Registers.PC = _injectImage.Org;
 
-                        var sp = (ushort)_z80.Registers.SP;
-                        byte[] retAddr = BitConverter.GetBytes(INJECT_PC);
+                        //Clear stack and store RET address (to return to 48k basic)
+                        var sp = 0xFFFF;
+
+                        byte[] retAddr = BitConverter.GetBytes(_injectPC);
                         sp -= 2;
+
                         _z80.Registers.SP = unchecked((short)sp);
                         _memory.SetContents(sp, retAddr);
 
-                        if(ProgramReady != null)
+                        //Notify that the program is ready
+                        if (ProgramReady != null)
                             ProgramReady(this, EventArgs.Empty);
                     }
 
@@ -97,6 +100,11 @@ namespace CoreSpectrum.Hardware
             }
 
             base.z80_BeforeInstructionFetch(sender, e);
+        }
+
+        protected override void Disposal()
+        {
+            ProgramReady = null;
         }
     }
 }
