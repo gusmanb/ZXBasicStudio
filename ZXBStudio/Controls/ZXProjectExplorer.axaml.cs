@@ -328,6 +328,7 @@ namespace ZXBasicStudio.Controls
             static Bitmap bmpFile;
             static Bitmap bmpConfig;
             static Bitmap bmpFolder;
+            static Bitmap[] bmpZXGraphics;
 
             public static readonly StyledProperty<ObservableCollection<ExplorerNode>> ChildNodesProperty = StyledProperty<ObservableCollection<ExplorerNode>>.Register<ExplorerNode, ObservableCollection<ExplorerNode>>("ChildNodes");
             public static readonly StyledProperty<string> TextProperty = StyledProperty<string>.Register<ExplorerNode, string>("Text");
@@ -340,6 +341,17 @@ namespace ZXBasicStudio.Controls
                 bmpFile = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/unknFile.png")));
                 bmpConfig = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/cfgFile.png")));
                 bmpFolder = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/folder.png")));
+
+                bmpZXGraphics = new Bitmap[]
+                {
+                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_gdu.png"))),
+                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_fnt.png"))),
+                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_spr.png"))),
+                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_til.png"))),
+                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_map.png"))),
+                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_config.png")))
+
+                };
             }
 
             ZXProjectExplorer explorer;
@@ -379,6 +391,10 @@ namespace ZXBasicStudio.Controls
                         Image = bmpAsm;
                     else if (Path.IsZXConfig())
                         Image = bmpConfig;
+                    else if (Path.IsZXGraphics())
+                    {
+                        Image = bmpZXGraphics[Path.GetZXGraphicsSubType()];
+                    }
                     else
                         Image = bmpFile;
                 }
