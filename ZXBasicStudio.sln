@@ -15,7 +15,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bufdio", "Bufdio\Bufdio.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main", "Z80dotNet\Main\Main.csproj", "{3EFA2E44-4D1E-4212-B6BB-9F34CD228772}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rom128Reconstructor", "Rom128Reconstructor\Rom128Reconstructor.csproj", "{8B15A1B8-5C8A-4F81-A50B-834687EEE040}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rom128Reconstructor", "Rom128Reconstructor\Rom128Reconstructor.csproj", "{8B15A1B8-5C8A-4F81-A50B-834687EEE040}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Docs", "_Docs", "{CE16D74E-1FFB-481A-9CD7-B04168262FE5}"
+	ProjectSection(SolutionItems) = preProject
+		_Docs\ZXGraphics.md = _Docs\ZXGraphics.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

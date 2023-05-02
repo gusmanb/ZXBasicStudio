@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.PreviewControl">
+  <Grid Margin="10" Name="grdMain" Grid.Column="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*">
+    <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">First</TextBlock>
+    <NumericUpDown Name="txtPreviewFirst" Grid.Column="1" Grid.Row="0" Minimum="0" Increment="1" Value="0"></NumericUpDown>
+
+    <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">Frames</TextBlock>
+    <NumericUpDown Name="txtPreviewFrames" Grid.Column="1" Grid.Row="1" Minimum="1" Increment="1" Value="1"></NumericUpDown>
+
+    <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">Width</TextBlock>
+    <NumericUpDown Name="txtPreviewWidth" Grid.Column="1" Grid.Row="2" Minimum="1" Increment="1" Value="1"></NumericUpDown>
+
+    <TextBlock Grid.Column="0" Grid.Row="3" VerticalAlignment="Center">Height</TextBlock>
+    <NumericUpDown Name="txtPreviewHeigth" Grid.Column="1" Grid.Row="3" Minimum="1" Increment="1" Value="1"></NumericUpDown>
+    
+    <TextBlock Grid.Column="0" Grid.Row="4" VerticalAlignment="Center">Speed</TextBlock>
+    <ComboBox Name="cmbSpeed" Grid.Column="1" Grid.Row="4">
+      <ComboBoxItem>1 fps (1000ms)</ComboBoxItem>
+      <ComboBoxItem IsSelected="True">2 fps (500ms)</ComboBoxItem>
+      <ComboBoxItem>4 fps (250ms)</ComboBoxItem>
+      <ComboBoxItem>5 fps (200ms)</ComboBoxItem>
+      <ComboBoxItem>8 fps (125ms)</ComboBoxItem>
+      <ComboBoxItem>10 fps (100ms)</ComboBoxItem>
+      <ComboBoxItem>15 fps (66ms)</ComboBoxItem>
+      <ComboBoxItem>20 fps (50ms)</ComboBoxItem>
+    </ComboBox>
+
+    <TextBlock Grid.Column="0" Grid.Row="5" VerticalAlignment="Center">Zoom</TextBlock>
+    <ComboBox Name="cmbZoom" Grid.Column="1" Grid.Row="5">
+      <ComboBoxItem>1x</ComboBoxItem>
+      <ComboBoxItem>2x</ComboBoxItem>
+      <ComboBoxItem>4x</ComboBoxItem>
+    </ComboBox>
+
+    <Border Name="brdPreview" BorderBrush="White" BorderThickness="1" Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="6"
+            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,8,0,0">
+      <Canvas Name="cnvPreview" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#c0c0c0"/>
+    </Border>
+  </Grid>
+</UserControl>

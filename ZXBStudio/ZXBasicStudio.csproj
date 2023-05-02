@@ -35,6 +35,25 @@
     <None Remove="Assets\unknFile.png" />
     <None Remove="Assets\zxbFile.png" />
     <None Remove="Assets\zxbs.ico" />
+    <None Remove="Assets\zxGraphics_config.png" />
+    <None Remove="Assets\zxGraphics_fnt.png" />
+    <None Remove="Assets\zxGraphics_gdu.png" />
+    <None Remove="Assets\zxGraphics_map.png" />
+    <None Remove="Assets\zxGraphics_spr.png" />
+    <None Remove="Assets\zxGraphics_til.png" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\Cancel.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\Copy.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\Cut.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\Export.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\HMirror.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\Invert.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\Mask.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\MoveRight.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\Paste.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\RotateLeft.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\RotateRight.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\ShiftRight.svg" />
+    <None Remove="DocumentEditors\ZXGraphics\Images\VMirror.svg" />
     <None Remove="Fonts\NimbusSanL-Bol.ttf" />
     <None Remove="Fonts\NimbusSanL-BolIta.ttf" />
     <None Remove="Fonts\NimbusSanL-Reg.ttf" />
@@ -148,6 +167,25 @@
     <AvaloniaResource Include="Assets\unknFile.png" />
     <AvaloniaResource Include="Assets\zxbFile.png" />
     <AvaloniaResource Include="Assets\zxbs.ico" />
+    <AvaloniaResource Include="Assets\zxGraphics_config.png" />
+    <AvaloniaResource Include="Assets\zxGraphics_fnt.png" />
+    <AvaloniaResource Include="Assets\zxGraphics_gdu.png" />
+    <AvaloniaResource Include="Assets\zxGraphics_map.png" />
+    <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
+    <AvaloniaResource Include="Assets\zxGraphics_til.png" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Export.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Mask.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\MoveRight.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Invert.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\ShiftRight.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\RotateRight.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\RotateLeft.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\VMirror.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\HMirror.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Paste.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Cancel.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Copy.svg" />
+    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Cut.svg" />
     <AvaloniaResource Include="Fonts\NimbusSanL-Bol.ttf" />
     <AvaloniaResource Include="Fonts\NimbusSanL-BolIta.ttf" />
     <AvaloniaResource Include="Fonts\NimbusSanL-Reg.ttf" />
@@ -269,7 +307,7 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0-preview5" />
     <PackageReference Include="MessageBox.Avalonia" Version="2.3.1-prev5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3-beta1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
   </ItemGroup>
@@ -300,6 +338,18 @@
     </Compile>
     <Compile Update="Dialogs\ZXOptionsDialog.axaml.cs">
       <DependentUpon>ZXOptionsDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\EditorControl.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\FontGDU.axaml.cs">
+      <DependentUpon>FontGDU.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\PatternControl.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\PreviewControl.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>
 
