@@ -15,6 +15,7 @@ namespace ZXBasicStudio.Controls.DockSystem
     public class ZXDockingContainer : Grid, IZXDockingContainer
     {
         public static StyledProperty<ZXStackOrientation> StackOrientationProperty = StyledProperty<ZXStackOrientation>.Register<ZXDockingContainer, ZXStackOrientation>("StackOrientation", ZXStackOrientation.Vertical);
+        public static StyledProperty<string?> DockingGroupProperty = StyledProperty<string?>.Register<ZXDockingContainer, string?>("DockingGroup", null);
 
         public event EventHandler? DockingControlsChanged;
 
@@ -32,7 +33,11 @@ namespace ZXBasicStudio.Controls.DockSystem
                 ReorderContent();
             }
         }
-
+        public string? DockingGroup 
+        {
+            get => GetValue(DockingGroupProperty);
+            set => SetValue(DockingGroupProperty, value);
+        }
         public IEnumerable<ZXDockingControl> DockingControls { get { return Children.Where(c => c is ZXDockingControl).Cast<ZXDockingControl>(); } }
 
         Panel dropTargetPanel;
@@ -64,7 +69,7 @@ namespace ZXBasicStudio.Controls.DockSystem
 
                 var dragged = e.Data.Get("DockedControl") as ZXDockingControl;
 
-                if (dragged == null)
+                if (dragged == null || dragged.DockingGroup != DockingGroup)
                     return;
 
                 if (Children.Count == 0 || (Children.Count == 1 && Children[0] == dropTargetPanel))
@@ -523,25 +528,13 @@ namespace ZXBasicStudio.Controls.DockSystem
                 
             }
         }
-        /*
-        private void ControlDragged(object? sender, PointerEventArgs e) 
-        {
-            var point = e.GetCurrentPoint(sender as Visual);
-            if (point.Properties.IsLeftButtonPressed)
-            {
-                DataObject dobj = new DataObject();
-                dobj.Set("DockedControl", sender);
-
-                DragDrop.DoDragDrop(e, dobj, DragDropEffects.Move);
-            }
-        }*/
         private void CheckDrag(object? sender, DragEventArgs e)
         {
             if (e.Data?.Contains("DockedControl") ?? false)
             {
                 var control = e.Data.Get("DockedControl") as ZXDockingControl;
 
-                if (control == null)
+                if (control == null || control.DockingGroup != DockingGroup)
                 {
                     if (dropTargetPanel.Parent != null)
                         Children.Remove(dropTargetPanel);

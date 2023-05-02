@@ -12,12 +12,18 @@ namespace ZXBasicStudio.Controls.DockSystem
     public partial class ZXTabDockingContainer : UserControl, IZXDockingContainer
     {
         public static StyledProperty<ZXTabDockingButtonPosition> TabsPositionProperty = StyledProperty<ZXTabDockingButtonPosition>.Register<ZXTabDockingContainer, ZXTabDockingButtonPosition>("TabsPosition", ZXTabDockingButtonPosition.Top);
+        public static StyledProperty<string?> DockingGroupProperty = StyledProperty<string?>.Register<ZXTabDockingContainer, string?>("DockingGroup", null);
 
         public event EventHandler? DockingControlsChanged;
         public ZXTabDockingButtonPosition TabsPosition
         {
             get => GetValue(TabsPositionProperty);
             set => SetValue(TabsPositionProperty, value);
+        }
+        public string? DockingGroup
+        {
+            get => GetValue(DockingGroupProperty);
+            set => SetValue(DockingGroupProperty, value);
         }
         public Avalonia.Controls.Controls DockedControls { get; private set; }
         public IEnumerable<ZXDockingControl> DockingControls { get { return DockedControls.Where(c => c is ZXDockingControl).Cast<ZXDockingControl>(); } }
@@ -49,7 +55,7 @@ namespace ZXBasicStudio.Controls.DockSystem
 
                 var dragged = e.Data.Get("DockedControl") as ZXDockingControl;
 
-                if (dragged == null)
+                if (dragged == null || dragged.DockingGroup != DockingGroup)
                     return;
 
                 AddToEnd(dragged);
@@ -84,7 +90,7 @@ namespace ZXBasicStudio.Controls.DockSystem
             {
                 var control = e.Data.Get("DockedControl") as ZXDockingControl;
 
-                if (control == null)
+                if (control == null || control.DockingGroup != DockingGroup)
                 {
                     dropTargetPanel.IsVisible = false;
                     e.DragEffects = DragDropEffects.None;
@@ -292,6 +298,16 @@ namespace ZXBasicStudio.Controls.DockSystem
     public class ZXTabDockingInnerContainer : Panel, IZXDockingContainer
     {
         internal ZXTabDockingContainer? mainContainer;
+
+        public string? DockingGroup
+        {
+            get => mainContainer?.DockingGroup;
+            set 
+            {
+                if(mainContainer != null)
+                    mainContainer.DockingGroup = value;
+            }
+        }
 
         public IEnumerable<ZXDockingControl> DockingControls
         {

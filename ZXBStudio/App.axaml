@@ -107,5 +107,59 @@
       <Setter Property="Height" Value="32"></Setter>
       <Setter Property="Padding" Value="5"></Setter>
     </Style>
+
+
+
+    <Style Selector="TextBlock.dialog">
+      <Setter Property="Foreground" Value="#ffffffff"></Setter>
+      <Setter Property="Margin" Value="5"></Setter>
+    </Style>
+    <Style Selector="TextBox.dialog">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="MaxWidth" Value="140"></Setter>
+    </Style>
+    <Style Selector="Button.dialog">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+    </Style>
+    <Style Selector="ComboBox.dialog">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="Padding" Value="5"></Setter>
+    </Style>
+
+    <Style Selector="NumericUpDown.dialog">
+      <Setter Property="Margin" Value="0"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Padding" Value="5,7,0,0"></Setter>
+      <Setter Property="VerticalAlignment" Value="Center"></Setter>
+      <Setter Property="BorderThickness" Value="0"></Setter>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+    </Style>
+    <Style Selector="NumericUpDown.dialog /template/ ContentPresenter#PART_TextBox">
+      <Setter Property="Margin" Value="0"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Padding" Value="10"></Setter>
+      <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+      <Setter Property="BorderThickness" Value="0"></Setter>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+    </Style>
+    <Style Selector="NumericUpDown.dialog TextBox">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="MaxWidth" Value="140"></Setter>
+    </Style>
+    <Style Selector="Border.numericborder">
+      <Setter Property="BorderBrush" Value="#ff909090" ></Setter>
+      <Setter Property="BorderThickness" Value="2" ></Setter>
+      <Setter Property="CornerRadius" Value="5" ></Setter>
+      <Setter Property="Padding" Value="-1" ></Setter>
+      <Setter Property="Margin" Value="5,0,5,0"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+    </Style>
   </Application.Styles>
 </Application>
