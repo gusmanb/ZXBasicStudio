@@ -131,20 +131,21 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 // Create patterns if not exist
                 patterns = new PatternControl[fileType.NumerOfPatterns];
-                int x = 0;
-                int y = 0;
+                //int x = 0;
+                //int y = 0;
                 for (int n = 0; n < fileType.NumerOfPatterns; n++)
                 {
-                    var ctrl = new PatternControl();                    
-                    cnvPatterns.Children.Add(ctrl);
-                    Canvas.SetTop(ctrl, y);
-                    Canvas.SetLeft(ctrl, x);
-                    x = x + 36;
-                    if (x > 139)
-                    {
-                        x = 0;
-                        y = y + 56;
-                    }
+                    var ctrl = new PatternControl();
+                    //cnvPatterns.Children.Add(ctrl);
+                    //Canvas.SetTop(ctrl, y);
+                    //Canvas.SetLeft(ctrl, x);
+                    //x = x + 36;
+                    //if (x > 139)
+                    //{
+                    //    x = 0;
+                    //    y = y + 56;
+                    //}
+                    wpPatterns.Children.Add(ctrl);
                     patterns[n] = ctrl;
                 }
                 patterns[0].IsSelected = true;
@@ -184,7 +185,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 patterns[n].Refresh();
             }
 
-            cnvPatterns.Height = (fileType.NumerOfPatterns / 4) * 60;
+            //cnvPatterns.Height = (fileType.NumerOfPatterns / 4) * 60;
 
             ctrEditor.Initialize(0, GetPattern, SetPattern);
         }

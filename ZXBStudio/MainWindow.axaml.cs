@@ -250,9 +250,11 @@ namespace ZXBasicStudio
                                 await ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
                                 return;
                             }
-                            File.Move(path, Path.Combine(dir, newName));
                             editor.FileName = Path.Combine(dir, newName);
                         }
+
+                        File.Move(path, Path.Combine(dir, newName));
+                        
                     }
                     else
                     {
@@ -265,9 +267,9 @@ namespace ZXBasicStudio
                                 await ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
                                 return;
                             }
-                            File.Move(path, Path.Combine(dir, newName));
                             editor.FileName = Path.Combine(dir, newName);
                         }
+                        File.Move(path, Path.Combine(dir, newName));
                     }
                 }
                 else
