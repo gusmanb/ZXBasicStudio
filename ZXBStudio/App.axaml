@@ -107,9 +107,6 @@
       <Setter Property="Height" Value="32"></Setter>
       <Setter Property="Padding" Value="5"></Setter>
     </Style>
-
-
-
     <Style Selector="TextBlock.dialog">
       <Setter Property="Foreground" Value="#ffffffff"></Setter>
       <Setter Property="Margin" Value="5"></Setter>

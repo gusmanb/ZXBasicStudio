@@ -59,6 +59,7 @@
     <None Remove="Fonts\NimbusSanL-Reg.ttf" />
     <None Remove="Fonts\NimbusSanL-RegIta.ttf" />
     <None Remove="Svg\backward-solid.svg" />
+    <None Remove="Svg\backward-step-solid.svg" />
     <None Remove="Svg\box-open-solid.svg" />
     <None Remove="Svg\box-solid.svg" />
     <None Remove="Svg\boxes-stacked-solid.svg" />
@@ -114,6 +115,7 @@
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
     <None Remove="Svg\White\backward-solid.svg" />
+    <None Remove="Svg\White\backward-step-solid.svg" />
     <None Remove="Svg\White\box-open-solid.svg" />
     <None Remove="Svg\White\box-solid.svg" />
     <None Remove="Svg\White\boxes-stacked-solid.svg" />
@@ -202,6 +204,7 @@
     <AvaloniaResource Include="Fonts\NimbusSanL-Reg.ttf" />
     <AvaloniaResource Include="Fonts\NimbusSanL-RegIta.ttf" />
     <AvaloniaResource Include="Svg\backward-solid.svg" />
+    <AvaloniaResource Include="Svg\backward-step-solid.svg" />
     <AvaloniaResource Include="Svg\box-open-solid.svg" />
     <AvaloniaResource Include="Svg\box-solid.svg" />
     <AvaloniaResource Include="Svg\boxes-stacked-solid.svg" />
@@ -257,6 +260,7 @@
     <AvaloniaResource Include="Svg\trash-solid.svg" />
     <AvaloniaResource Include="Svg\truck-fast-solid.svg" />
     <AvaloniaResource Include="Svg\White\backward-solid.svg" />
+    <AvaloniaResource Include="Svg\White\backward-step-solid.svg" />
     <AvaloniaResource Include="Svg\White\box-open-solid.svg" />
     <AvaloniaResource Include="Svg\White\box-solid.svg" />
     <AvaloniaResource Include="Svg\White\boxes-stacked-solid.svg" />

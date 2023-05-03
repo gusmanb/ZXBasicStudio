@@ -158,8 +158,10 @@
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
     </zxd:ZXDockingContainer>
+    <zxd:ZXCollapseButton CollapseDirection="Left" Grid.Column="1" Grid.Row="2"></zxd:ZXCollapseButton>
     <GridSplitter Classes="vertical" Grid.Column="1" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns" />
     <TabControl Grid.Column="2" Grid.Row="2" Name="tcEditors" Items="{Binding EditItems}" />
+    <zxd:ZXCollapseButton CollapseDirection="Right" GridColumn="4" Grid.Column="3" Grid.Row="2"></zxd:ZXCollapseButton>
     <GridSplitter Classes="vertical" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns"></GridSplitter>
     <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,*" Grid.RowSpan="3" Name="dockRight">
       <zxd:ZXDockingControl Title="Variables" Name="varsDock">

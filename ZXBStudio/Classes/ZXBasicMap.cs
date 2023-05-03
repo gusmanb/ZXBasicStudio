@@ -19,7 +19,7 @@ namespace ZXBasicStudio.Classes
 
         static Regex regMulti = new Regex("(\\s|^|[^a-zA-Z0-9])(_)(\\s|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-        static Regex regDim = new Regex("(^|\\s+)dim\\s+(.*?)((\\s+as\\s+([a-zA-Z]+))|\\n|$|:)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        static Regex regDim = new Regex("(^|\\s+)dim\\s+(.*?)((\\s+as\\s+([a-zA-Z\\$]+))|\\n|$|:)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         static Regex regParam = new Regex("(byval|byref)?\\s*?([^\\ \\(]+)(\\s*?\\(\\))?(\\s*as\\s*([a-zA-Z]+))?", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
@@ -175,7 +175,7 @@ namespace ZXBasicStudio.Classes
                             ParseInputParameters(funcMatch.Groups[3].Value, currentFunction.InputParameters);
 
                         if (funcMatch.Groups[5].Success)
-                            currentFunction.ReturnType = StorageFromString(funcMatch.Groups[5].Value);
+                            currentFunction.ReturnType = StorageFromString(funcMatch.Groups[5].Value, currentFunction.Name);
                         else
                             currentFunction.ReturnType = ZXVariableStorage.F;
 
@@ -197,7 +197,7 @@ namespace ZXBasicStudio.Classes
                         string varName = varNameDef.Substring(0, varNameDef.IndexOf("(")).Trim();
                         string[] dims = varNameDef.Substring(varNameDef.IndexOf("(") + 1).Replace(")", "").Split(",", StringSplitOptions.RemoveEmptyEntries);
 
-                        ZXBasicVariable varArr = new ZXBasicVariable { Name = varName, IsArray = true, Dimensions = dims.Select(d => GetDimensionSize(d)).ToArray(), Storage = StorageFromString(dimMatch.Groups[5].Value) };
+                        ZXBasicVariable varArr = new ZXBasicVariable { Name = varName, IsArray = true, Dimensions = dims.Select(d => GetDimensionSize(d)).ToArray(), Storage = StorageFromString(dimMatch.Groups[5].Value, varName) };
 
                         if (currentSub != null)
                             currentSub.LocalVariables.Add(varArr);
@@ -209,11 +209,10 @@ namespace ZXBasicStudio.Classes
                     else
                     {
                         string[] varNames = dimMatch.Groups[2].Value.Split(",", StringSplitOptions.RemoveEmptyEntries);
-                        var storage = StorageFromString(dimMatch.Groups[5].Value);
 
                         foreach (var vName in varNames)
                         {
-
+                            var storage = StorageFromString(dimMatch.Groups[5].Value, vName);
                             ZXBasicVariable var = new ZXBasicVariable { Name = vName.Trim(), IsArray = false, Storage = storage };
                             if (currentSub != null)
                                 currentSub.LocalVariables.Add(var);
@@ -307,7 +306,7 @@ namespace ZXBasicStudio.Classes
                     bParam.ByRef = false;
 
                 if (mParam.Groups[5].Success)
-                    bParam.Storage = StorageFromString(mParam.Groups[5].Value);
+                    bParam.Storage = StorageFromString(mParam.Groups[5].Value, bParam.Name);
                 else
                     bParam.Storage = ZXVariableStorage.F;
 
@@ -347,7 +346,7 @@ namespace ZXBasicStudio.Classes
             }
         }
 
-        private static ZXVariableStorage StorageFromString(string? Value)
+        private static ZXVariableStorage StorageFromString(string? Value, string VariableName)
         {
             string? strStorage = Value?.Trim().ToLower();
 
@@ -370,7 +369,7 @@ namespace ZXBasicStudio.Classes
                 case "string":
                     return ZXVariableStorage.STR;
                 default:
-                    return ZXVariableStorage.F;
+                    return VariableName.EndsWith("$") ? ZXVariableStorage.STR : ZXVariableStorage.F;
             }
         }
 
