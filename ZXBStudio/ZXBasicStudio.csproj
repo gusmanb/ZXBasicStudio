@@ -186,19 +186,19 @@
     <AvaloniaResource Include="Assets\zxGraphics_map.png" />
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Export.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Mask.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\MoveRight.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Invert.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\ShiftRight.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\RotateRight.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\RotateLeft.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\VMirror.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\HMirror.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Paste.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Cancel.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Copy.svg" />
-    <AvaloniaResource Include="DocumentEditors\ZXGraphics\Images\Cut.svg" />
+    <AvaloniaResource Include="Svg\Export.svg" />
+    <AvaloniaResource Include="Svg\Mask.svg" />
+    <AvaloniaResource Include="Svg\MoveRight.svg" />
+    <AvaloniaResource Include="Svg\Invert.svg" />
+    <AvaloniaResource Include="Svg\ShiftRight.svg" />
+    <AvaloniaResource Include="Svg\RotateRight.svg" />
+    <AvaloniaResource Include="Svg\RotateLeft.svg" />
+    <AvaloniaResource Include="Svg\VMirror.svg" />
+    <AvaloniaResource Include="Svg\HMirror.svg" />
+    <AvaloniaResource Include="Svg\Paste.svg" />
+    <AvaloniaResource Include="Svg\Cancel.svg" />
+    <AvaloniaResource Include="Svg\Copy.svg" />
+    <AvaloniaResource Include="Svg\Cut.svg" />
     <AvaloniaResource Include="Fonts\NimbusSanL-Bol.ttf" />
     <AvaloniaResource Include="Fonts\NimbusSanL-BolIta.ttf" />
     <AvaloniaResource Include="Fonts\NimbusSanL-Reg.ttf" />
@@ -389,6 +389,7 @@
     <Folder Include="DebuggingTools\TStates\Classes\" />
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
+    <Folder Include="DocumentEditors\ZXGraphics\Images\" />
     <Folder Include="LanguageDefinitions\" />
   </ItemGroup>
 </Project>

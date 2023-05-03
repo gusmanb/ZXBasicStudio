@@ -64,76 +64,76 @@
     <Grid Grid.Column="2" Grid.Row="1" RowDefinitions="Auto,*,Auto">
       <WrapPanel Orientation="Horizontal" Grid.ColumnSpan="5" Margin="10" Background="#ff202020" Height="NaN">
         <Button Classes="toolbar" Name="btnClear" ToolTip.Tip="Clear active patterns">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Cancel.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/Cancel.svg"></svg:Svg>
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
         <Button Classes="toolbar" Name="btnCut" ToolTip.Tip="Cut active patterns to clipboard">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Cut.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/Cut.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar" Name="btnCopy" ToolTip.Tip="Copy active patterns to clipboard">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Copy.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/Copy.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar" Name="btnPaste" ToolTip.Tip="Paste from clipboard to active patterns">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Paste.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/Paste.svg"></svg:Svg>
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
         <Button Classes="toolbar" Name="btnHMirror" ToolTip.Tip="Horizontal mirror">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/HMirror.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/HMirror.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar_r90" Name="btnVMirror" ToolTip.Tip="Vertical mirror">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/VMirror.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/VMirror.svg"></svg:Svg>
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
         <Button Classes="toolbar" Name="btnRotateLeft" ToolTip.Tip="Rotate pattern to left">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/RotateLeft.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/RotateLeft.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar" Name="btnRotateRight" ToolTip.Tip="Rotate pattern to right">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/RotateRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/RotateRight.svg"></svg:Svg>
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
         <Button Classes="toolbar_hMirror" Name="btnShiftLeft" ToolTip.Tip="Shift pattern to left (pixels that exit from the left reappear from the right)">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/ShiftRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/ShiftRight.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar" Name="btnShiftRight" ToolTip.Tip="Shift pattern to right (pixels that exit from the right reappear from the left)">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/ShiftRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/ShiftRight.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar_r270" Name="btnShiftUp" ToolTip.Tip="Shift pattern up (pixels that exit from the top reappear from the bottom)">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/ShiftRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/ShiftRight.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar_r90" Name="btnShiftDown" ToolTip.Tip="Shift pattern down (pixels that exit from the bottom reappear from the top)">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/ShiftRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/ShiftRight.svg"></svg:Svg>
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
         <Button Classes="toolbar_hMirror" Name="btnMoveLeft" ToolTip.Tip="Move pattern to left">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/MoveRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/MoveRight.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar" Name="btnMoveRight" ToolTip.Tip="Move pattern to right">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/MoveRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/MoveRight.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar_r270" Name="btnMoveUp" ToolTip.Tip="Move pattern up ">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/MoveRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/MoveRight.svg"></svg:Svg>
         </Button>
         <Button Classes="toolbar_r90" Name="btnMoveDown" ToolTip.Tip="Move pattern down">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/MoveRight.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/MoveRight.svg"></svg:Svg>
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
         <Button Classes="toolbar" Name="btnInvert" ToolTip.Tip="Invert pattern">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Invert.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/Invert.svg"></svg:Svg>
         </Button>
         <!-- TODO: Not implemented
         <Button Classes="toolbar" Name="btnMask" ToolTip.Tip="Mask pattern">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Mask.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/Mask.svg"></svg:Svg>
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
         <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Export pattern">
-          <svg:Svg Path="/DocumentEditors/ZXGraphics/Images/Export.svg"></svg:Svg>
+          <svg:Svg Path="/Svg/Export.svg"></svg:Svg>
         </Button>
         -->
       </WrapPanel>

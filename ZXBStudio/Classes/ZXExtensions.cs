@@ -9,10 +9,27 @@ namespace ZXBasicStudio.Classes
 {
     public static class ZXExtensions
     {
+        public const string ZX_GRAPHICS_GDU = ".gdu";
+        public const string ZX_GRAPHICS_UDG = ".gdu";
+        public const string ZX_GRAPHICS_FNT = ".gdu";
+        public const string ZX_GRAPHICS_SPR = ".gdu";
+        public const string ZX_GRAPHICS_TIL = ".gdu";
+        public const string ZX_GRAPHICS_MAP = ".gdu";
+        public const string ZX_GRAPHICS_GFCG = ".gdu";
+
         static string[] basicFiles = new string[] { ".bas", ".zxbas", ".zxb" };
         static string[] asmFiles = new string[] { ".asm", ".zxasm", ".zxa", ".z80asm" };
         static string[] configFiles = new string[] { ".zbs" };
-        static string[] graphicFiles = new string[] { ".gdu", ".fnt", ".spr", ".til", ".map", ".gcfg" };
+        static string[] graphicFiles = new string[] 
+        { 
+            ZX_GRAPHICS_GDU, 
+            ZX_GRAPHICS_UDG, 
+            ZX_GRAPHICS_FNT, 
+            ZX_GRAPHICS_SPR, 
+            ZX_GRAPHICS_TIL,
+            ZX_GRAPHICS_MAP,
+            ZX_GRAPHICS_GFCG
+        };
 
         static string[] tapeFiles = new string[] { ".tap", ".tzx" };
         public static string[] ZXBasicFiles { get { return basicFiles; } }
