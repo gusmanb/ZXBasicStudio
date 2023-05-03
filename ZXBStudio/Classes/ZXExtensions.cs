@@ -10,12 +10,12 @@ namespace ZXBasicStudio.Classes
     public static class ZXExtensions
     {
         public const string ZX_GRAPHICS_GDU = ".gdu";
-        public const string ZX_GRAPHICS_UDG = ".gdu";
-        public const string ZX_GRAPHICS_FNT = ".gdu";
-        public const string ZX_GRAPHICS_SPR = ".gdu";
-        public const string ZX_GRAPHICS_TIL = ".gdu";
-        public const string ZX_GRAPHICS_MAP = ".gdu";
-        public const string ZX_GRAPHICS_GFCG = ".gdu";
+        public const string ZX_GRAPHICS_UDG = ".udg";
+        public const string ZX_GRAPHICS_FNT = ".fnt";
+        public const string ZX_GRAPHICS_SPR = ".spr";
+        public const string ZX_GRAPHICS_TIL = ".til";
+        public const string ZX_GRAPHICS_MAP = ".map";
+        public const string ZX_GRAPHICS_GCFG = ".gcfg";
 
         static string[] basicFiles = new string[] { ".bas", ".zxbas", ".zxb" };
         static string[] asmFiles = new string[] { ".asm", ".zxasm", ".zxa", ".z80asm" };
@@ -23,12 +23,12 @@ namespace ZXBasicStudio.Classes
         static string[] graphicFiles = new string[] 
         { 
             ZX_GRAPHICS_GDU, 
-            ZX_GRAPHICS_UDG, 
-            ZX_GRAPHICS_FNT, 
-            ZX_GRAPHICS_SPR, 
+            ZX_GRAPHICS_UDG,
+            ZX_GRAPHICS_FNT,
+            ZX_GRAPHICS_SPR,
             ZX_GRAPHICS_TIL,
             ZX_GRAPHICS_MAP,
-            ZX_GRAPHICS_GFCG
+            ZX_GRAPHICS_GCFG
         };
 
         static string[] tapeFiles = new string[] { ".tap", ".tzx" };

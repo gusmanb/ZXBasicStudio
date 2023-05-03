@@ -41,19 +41,6 @@
     <None Remove="Assets\zxGraphics_map.png" />
     <None Remove="Assets\zxGraphics_spr.png" />
     <None Remove="Assets\zxGraphics_til.png" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\Cancel.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\Copy.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\Cut.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\Export.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\HMirror.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\Invert.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\Mask.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\MoveRight.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\Paste.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\RotateLeft.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\RotateRight.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\ShiftRight.svg" />
-    <None Remove="DocumentEditors\ZXGraphics\Images\VMirror.svg" />
     <None Remove="Fonts\NimbusSanL-Bol.ttf" />
     <None Remove="Fonts\NimbusSanL-BolIta.ttf" />
     <None Remove="Fonts\NimbusSanL-Reg.ttf" />
@@ -389,7 +376,6 @@
     <Folder Include="DebuggingTools\TStates\Classes\" />
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
-    <Folder Include="DocumentEditors\ZXGraphics\Images\" />
     <Folder Include="LanguageDefinitions\" />
   </ItemGroup>
 </Project>
