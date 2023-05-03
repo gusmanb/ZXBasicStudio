@@ -1878,6 +1878,14 @@ namespace ZXBasicStudio
 
         public void OnNext(RawInputEventArgs value)
         {
+            Debug.Print(value.ToString());
+
+            if (value is RawTextInputEventArgs)
+            {
+                RawTextInputEventArgs args = (RawTextInputEventArgs)value;
+                Debug.Print(args.Text);
+            }
+
             if (value is RawKeyEventArgs)
             {
                 RawKeyEventArgs args = (RawKeyEventArgs)value;

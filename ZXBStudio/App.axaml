@@ -85,6 +85,7 @@
       <Setter Property="Height" Value="32" />
       <Setter Property="Padding" Value="4" />
       <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Focusable" Value="False"></Setter>
     </Style>
     <Style Selector="ToggleButton.toolbar">
       <Setter Property="Background" Value="#fff0f0f0" />
@@ -92,6 +93,7 @@
       <Setter Property="Height" Value="32" />
       <Setter Property="Padding" Value="4" />
       <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Focusable" Value="False"></Setter>
     </Style>
     <Style Selector="Button.toolbar:disabled">
       <Setter Property="Background" Value="#ff606060" />
