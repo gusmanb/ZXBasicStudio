@@ -145,7 +145,7 @@
       <Button Classes="toolbar" Name="btnTurbo" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Turbo mode (F12)">
         <svg:Svg Path="/Svg/truck-fast-solid.svg"></svg:Svg>
       </Button>
-      <Button Classes="toolbar" Name="btnTape" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Turbo mode (F12)">
+      <Button Classes="toolbar" Name="btnTape" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Tape player">
         <svg:Svg Path="/Svg/cassette-solid.svg"></svg:Svg>
       </Button>
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>

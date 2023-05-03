@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
 
-namespace ZXBasicStudio.Controls
+namespace ZXBasicStudio.Emulator.Controls
 {
     public partial class ZXTapePlayer : UserControl
     {
