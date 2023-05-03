@@ -346,13 +346,13 @@
     <Compile Update="Controls\DockSystem\ZXFloatingWindow.axaml.cs">
       <DependentUpon>ZXFloatingWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Controls\ZXKeyView.axaml.cs">
+    <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Controls\ZXRegisterView.axaml.cs">
+    <Compile Update="DebuggingTools\Registers\Controls\ZXRegisterView.axaml.cs">
       <DependentUpon>ZXRegisterView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Controls\ZXRegistersView.axaml.cs">
+    <Compile Update="DebuggingTools\Registers\Controls\ZXRegistersView.axaml.cs">
       <DependentUpon>ZXRegistersView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Dialogs\ZXBuildSettingsDialog.axaml.cs">
@@ -380,5 +380,15 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Controls\ZXOutputLog.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DebuggingTools\Memory\Classes\" />
+    <Folder Include="DebuggingTools\Registers\Classes\" />
+    <Folder Include="DebuggingTools\TStates\Binding\" />
+    <Folder Include="DebuggingTools\TStates\Classes\" />
+    <Folder Include="DebuggingTools\Variables\Classes\" />
+    <Folder Include="DebuggingTools\Variables\Binding\" />
+    <Folder Include="LanguageDefinitions\" />
   </ItemGroup>
 </Project>

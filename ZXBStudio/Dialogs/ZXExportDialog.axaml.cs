@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using System.IO;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Extensions;
 
 namespace ZXBasicStudio.Dialogs
 {
@@ -42,7 +43,7 @@ namespace ZXBasicStudio.Dialogs
         {
             if (string.IsNullOrWhiteSpace(txtPath.Text))
             {
-                await ShowError("No output file", "Output file has not been selected, cannot export the program.");
+                await this.ShowError("No output file", "Output file has not been selected, cannot export the program.");
                 return;
             }
 
@@ -71,7 +72,7 @@ namespace ZXBasicStudio.Dialogs
                 if (ext != ".tzx" && ext != ".tap" && ext != ".bin")
                 {
                     txtPath.Text = "";
-                    await ShowError("Invalid file type", "Choose a .tap, .tzx or .bin file.");
+                    await this.ShowError("Invalid file type", "Choose a .tap, .tzx or .bin file.");
                     txtPath.Text = "";
                     return;
                 }

@@ -3,7 +3,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:zxc="using:ZXBasicStudio.Controls"
+        xmlns:zxe="using:ZXBasicStudio.Emulator.Controls"
         xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
+        xmlns:zxdtv="using:ZXBasicStudio.DebuggingTools.Variables.Controls"
+        xmlns:zxdtr="using:ZXBasicStudio.DebuggingTools.Registers.Controls"
+        xmlns:zxdtm="using:ZXBasicStudio.DebuggingTools.Memory.Controls"
+        xmlns:zxdtt="using:ZXBasicStudio.DebuggingTools.TStates.Controls"
         xmlns:wnd="using:ZXBasicStudio.Classes"
         xmlns:svg="using:Avalonia.Svg.Skia"
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
@@ -166,19 +171,19 @@
     <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,*" Grid.RowSpan="3" Name="dockRight">
       <zxd:ZXDockingControl Title="Variables" Name="varsDock">
         <zxd:ZXDockingControl.DockedControl>
-          <zxc:ZXVariablesView Name="varsView"></zxc:ZXVariablesView>
+          <zxdtv:ZXVariablesView Name="varsView"></zxdtv:ZXVariablesView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
       <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
       <zxd:ZXDockingControl Title="T-States" Grid.Row="2" Name="tstatesDock">
         <zxd:ZXDockingControl.DockedControl>
-          <zxc:ZXTStatesView Name="statesView"></zxc:ZXTStatesView>
+          <zxdtt:ZXTStatesView Name="statesView"></zxdtt:ZXTStatesView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
       <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
       <zxd:ZXDockingControl Title="Registers" Grid.Row="4" Name="regsDock">
         <zxd:ZXDockingControl.DockedControl>
-          <zxc:ZXRegistersView Name="regView" AllowEdit="{Binding EmulatorInfo.CanStep}"></zxc:ZXRegistersView>
+          <zxdtr:ZXRegistersView Name="regView" AllowEdit="{Binding EmulatorInfo.CanStep}"></zxdtr:ZXRegistersView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
     </zxd:ZXDockingContainer>
@@ -187,7 +192,7 @@
       <zxd:ZXTabDockingContainer.DockedControls>
         <zxd:ZXDockingControl Title="Memory viewer" Name="memDock">
           <zxd:ZXDockingControl.DockedControl>
-            <zxc:ZXMemoryBlockView Name="memView" Background="#202020"></zxc:ZXMemoryBlockView>
+            <zxdtm:ZXMemoryBlockView Name="memView" Background="#202020"></zxdtm:ZXMemoryBlockView>
           </zxd:ZXDockingControl.DockedControl>
         </zxd:ZXDockingControl>
         <zxd:ZXDockingControl Title="Output" Name="outDock">
@@ -197,7 +202,7 @@
         </zxd:ZXDockingControl>
         <zxd:ZXDockingControl Title="Emulator" Name="emuDock">
           <zxd:ZXDockingControl.DockedControl>
-            <zxc:ZXEmulator Name="emu" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></zxc:ZXEmulator>
+            <zxe:ZXEmulator Name="emu" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></zxe:ZXEmulator>
           </zxd:ZXDockingControl.DockedControl>
         </zxd:ZXDockingControl>
       </zxd:ZXTabDockingContainer.DockedControls>

@@ -11,6 +11,7 @@ using ZXBasicStudio.Common;
 using Avalonia.Input;
 using System.Text;
 using System.Security.Cryptography;
+using ZXBasicStudio.Extensions;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -377,7 +378,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             if (ItemsWidth != ItemsHeight)
             {
-                Common.UI.ShowError("Can't do this!", "Only square graphics can be rotated, i.e. with the same width as height.");
+                Window.GetTopLevel(this)?.ShowError("Can't do this!", "Only square graphics can be rotated, i.e. with the same width as height.");
                 return;
             }
 
@@ -407,7 +408,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             if (ItemsWidth != ItemsHeight)
             {
-                Common.UI.ShowError("Can't do this!", "Only square graphics can be rotated, i.e. with the same width as height.");
+                Window.GetTopLevel(this)?.ShowError("Can't do this!", "Only square graphics can be rotated, i.e. with the same width as height.");
                 return;
             }
 

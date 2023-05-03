@@ -34,12 +34,16 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.BuildSystem;
 using ZXBasicStudio.Classes;
-using ZXBasicStudio.Classes.ZXMachineDefinitions;
 using ZXBasicStudio.Controls;
 using ZXBasicStudio.Controls.DockSystem;
 using ZXBasicStudio.Dialogs;
 using ZXBasicStudio.DocumentEditors;
+using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
+using ZXBasicStudio.Emulator.Classes;
+using ZXBasicStudio.Emulator.Controls;
+using ZXBasicStudio.Extensions;
 
 namespace ZXBasicStudio
 {
@@ -153,7 +157,7 @@ namespace ZXBasicStudio
             emu.ExceptionTrapped += Emu_ExceptionTrapped;
             #endregion
 
-            InputManager.Instance.PreProcess.Subscribe(this);
+            InputManager.Instance?.PreProcess.Subscribe(this);
 
             regView.Registers = emu.Registers;
             memView.Initialize(emu.Memory);
@@ -167,11 +171,7 @@ namespace ZXBasicStudio
             _playerDock.Title = "Tape player";
             _playerDock.DesiredFloatingSize = new Size(230, 270);
             _playerDock.Name = "TapePlayerDock";
-            // Initializes common tools
-            {
-                var common = new Common.UI();
-                common.Initialize(this, this.Icon);
-            }
+
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom, new[] { _playerDock });
 
         }
@@ -208,9 +208,9 @@ namespace ZXBasicStudio
             bool isFile = File.Exists(path);
             bool confirm = false;
             if (isFile)
-                confirm = await ShowConfirm("Delete file", $"Are you sure you want to delete the file \"{Path.GetFileName(path)}\"?");
+                confirm = await this.ShowConfirm("Delete file", $"Are you sure you want to delete the file \"{Path.GetFileName(path)}\"?");
             else
-                confirm = await ShowConfirm("Delete folder", $"Are you sure you want to delete the folder \"{Path.GetFileName(path)}\" and all its content?");
+                confirm = await this.ShowConfirm("Delete folder", $"Are you sure you want to delete the folder \"{Path.GetFileName(path)}\" and all its content?");
 
             if (!confirm)
                 return;
@@ -223,7 +223,7 @@ namespace ZXBasicStudio
             }
             catch (Exception ex)
             {
-                await ShowError("Delete error", $"Unexpected error trying to delete the {(isFile ? "file" : "directory")}: {ex.Message} - {ex.StackTrace}");
+                await this.ShowError("Delete error", $"Unexpected error trying to delete the {(isFile ? "file" : "directory")}: {ex.Message} - {ex.StackTrace}");
             }
         }
 
@@ -239,15 +239,15 @@ namespace ZXBasicStudio
                 (openEditors.Any(e => e.FileName.ToLower().StartsWith(path.ToLower())) ||
                     openZXGraphics.Any(e => e.FileName.ToLower().StartsWith(path.ToLower()))))
             {
-                await ShowError("Open documents", "There are open documents in the selected folder, close any document in the folder before renaming it.");
+                await this.ShowError("Open documents", "There are open documents in the selected folder, close any document in the folder before renaming it.");
                 return;
             }
 
             string? newName = null;
             if (isFile)
-                newName = await ShowInput("Rename file", "Select the new name for the file", "File name", Path.GetFileName(path));
+                newName = await this.ShowInput("Rename file", "Select the new name for the file", "File name", Path.GetFileName(path));
             else
-                newName = await ShowInput("Rename folder", "Select the new name for the folder", "Folder name", Path.GetFileName(path));
+                newName = await this.ShowInput("Rename folder", "Select the new name for the folder", "Folder name", Path.GetFileName(path));
 
             if (newName == null)
                 return;
@@ -264,7 +264,7 @@ namespace ZXBasicStudio
                             if (editor.Modified)
                             {
                                 // TODO: Renombrando un archivo modificado
-                                await ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
+                                await this.ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
                                 return;
                             }
                             editor.FileName = Path.Combine(dir, newName);
@@ -281,7 +281,7 @@ namespace ZXBasicStudio
                             if (editor.Modified)
                             {
                                 // TODO: Renombrando un archivo modificado
-                                await ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
+                                await this.ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
                                 return;
                             }
                             editor.FileName = Path.Combine(dir, newName);
@@ -296,7 +296,7 @@ namespace ZXBasicStudio
             }
             catch (Exception ex)
             {
-                await ShowError("Rename error", $"Unexpected error trying to rename the {(isFile ? "file" : "directory")}: {ex.Message} - {ex.StackTrace}");
+                await this.ShowError("Rename error", $"Unexpected error trying to rename the {(isFile ? "file" : "directory")}: {ex.Message} - {ex.StackTrace}");
             }
         }
 
@@ -323,7 +323,7 @@ namespace ZXBasicStudio
                     return;
             }
 
-            var tipo = tab.Content.GetType();
+            var tipo = tab.Content?.GetType();
             if (tipo == typeof(ZXTextEditor))
             {
                 var editor = tab.Content as ZXTextEditor;
@@ -333,7 +333,7 @@ namespace ZXBasicStudio
 
                 if (editor.Modified)
                 {
-                    var res = await ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
+                    var res = await this.ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
 
                     if (!res)
                         return;
@@ -350,7 +350,7 @@ namespace ZXBasicStudio
                 }
                 if (editor.Modified)
                 {
-                    var res = await ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
+                    var res = await this.ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
                     if (!res)
                     {
                         return;
@@ -369,7 +369,7 @@ namespace ZXBasicStudio
         {
             if (openEditors.Any(e => e.Modified) || openZXGraphics.Any(d => d.Modified))
             {
-                var resConfirm = await ShowConfirm("Modified documents", "Some documents have been modified but not saved, if you close the project all the changes will be lost, are you sure you want to close the project?");
+                var resConfirm = await this.ShowConfirm("Modified documents", "Some documents have been modified but not saved, if you close the project all the changes will be lost, are you sure you want to close the project?");
 
                 if (!resConfirm)
                     return;
@@ -407,7 +407,7 @@ namespace ZXBasicStudio
 
                 if (!editor.SaveDocument())
                 {
-                    await ShowError("Error", "Cannot save the file, check if another program is blocking it.");
+                    await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
                     return;
                 }
             }
@@ -420,7 +420,7 @@ namespace ZXBasicStudio
 
                 if (!editor.SaveDocument())
                 {
-                    await ShowError("Error", "Cannot save the file, check if another program is blocking it.");
+                    await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
                     return;
                 }
             }
@@ -492,7 +492,7 @@ namespace ZXBasicStudio
             {
                 if (openEditors.Any(e => e.Modified))
                 {
-                    var resConfirm = await ShowConfirm("Warning!", "There are unsaved documents, opening a new project will discard the changes, are you sure you want to open a new project?");
+                    var resConfirm = await this.ShowConfirm("Warning!", "There are unsaved documents, opening a new project will discard the changes, are you sure you want to open a new project?");
 
                     if (!resConfirm)
                         return;
@@ -528,7 +528,7 @@ namespace ZXBasicStudio
             if (File.Exists(path))
                 path = Path.GetDirectoryName(path);
 
-            var fileName = await ShowInput("New file", "Enter the name of the file to be created.", "File:");
+            var fileName = await this.ShowInput("New file", "Enter the name of the file to be created.", "File:");
 
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
@@ -540,7 +540,7 @@ namespace ZXBasicStudio
             }
             catch (Exception ex)
             {
-                await ShowError("Create error", $"Unexpected error trying to create the file: {ex.Message} - {ex.StackTrace}");
+                await this.ShowError("Create error", $"Unexpected error trying to create the file: {ex.Message} - {ex.StackTrace}");
                 return;
             }
             OpenFile(finalPath);
@@ -558,7 +558,7 @@ namespace ZXBasicStudio
             if (File.Exists(path))
                 path = Path.GetDirectoryName(path);
 
-            var fileName = await ShowInput("New folder", "Enter the name of the folder to be created.", "Folder:");
+            var fileName = await this.ShowInput("New folder", "Enter the name of the folder to be created.", "Folder:");
 
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
@@ -571,7 +571,7 @@ namespace ZXBasicStudio
             }
             catch (Exception ex)
             {
-                await ShowError("Create error", $"Unexpected error trying to create the directory: {ex.Message} - {ex.StackTrace}");
+                await this.ShowError("Create error", $"Unexpected error trying to create the directory: {ex.Message} - {ex.StackTrace}");
             }
         }
 
@@ -580,14 +580,14 @@ namespace ZXBasicStudio
 
             if (openEditors.Any(e => e.Modified))
             {
-                var resConfirm = await ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
+                var resConfirm = await this.ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
 
                 if (!resConfirm)
                     return;
             }
             if (openZXGraphics.Any(e => e.Modified))
             {
-                var resConfirm = await ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
+                var resConfirm = await this.ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
 
                 if (!resConfirm)
                     return;
@@ -617,7 +617,7 @@ namespace ZXBasicStudio
             }
             catch (Exception ex)
             {
-                await ShowError("Create error", $"Unexpected error trying to create the project settings file: {ex.Message} - {ex.StackTrace}");
+                await this.ShowError("Create error", $"Unexpected error trying to create the project settings file: {ex.Message} - {ex.StackTrace}");
                 return;
             }
             peExplorer.OpenProjectFolder(selFolder);
@@ -726,7 +726,7 @@ namespace ZXBasicStudio
                     return null;
                 }
             }
-            catch (Exception ex) { ShowError("Error loading file.", $"Error loading file {file}: {ex.Message} {ex.StackTrace}").RunSynchronously(); return null; }
+            catch (Exception ex) { this.ShowError("Error loading file.", $"Error loading file {file}: {ex.Message} {ex.StackTrace}").RunSynchronously(); return null; }
         }
 
         private void EditorDocumentSaved(object? sender, System.EventArgs e)
@@ -788,7 +788,7 @@ namespace ZXBasicStudio
             {
                 if (disEdit.Modified)
                 {
-                    var res = await ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
+                    var res = await this.ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
 
                     if (!res)
                         return;
@@ -1193,13 +1193,13 @@ namespace ZXBasicStudio
         {
             if (string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbcPath) || string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbasmPath))
             {
-                await ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
+                await this.ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
                 return;
             }
 
             if (!SaveAllFiles())
             {
-                await ShowError("Error saving files.", "One or more of the modified files cannot be saved, try to save them manually and check that none are open in another software.");
+                await this.ShowError("Error saving files.", "One or more of the modified files cannot be saved, try to save them manually and check that none are open in another software.");
                 return;
             }
             outDock.Select();
@@ -1223,13 +1223,13 @@ namespace ZXBasicStudio
         {
             if (string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbcPath) || string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbasmPath))
             {
-                await ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
+                await this.ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
                 return;
             }
 
             if (!SaveAllFiles())
             {
-                await ShowError("Error saving files.", "One or more of the modified files cannot be saved, try to save them manually and check that none are open in another software.");
+                await this.ShowError("Error saving files.", "One or more of the modified files cannot be saved, try to save them manually and check that none are open in another software.");
                 return;
             }
             outDock.Select();
@@ -1282,13 +1282,13 @@ namespace ZXBasicStudio
         {
             if (string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbcPath) || string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbasmPath))
             {
-                await ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
+                await this.ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
                 return;
             }
 
             if (!SaveAllFiles())
             {
-                await ShowError("Error saving files.", "One or more of the modified files cannot be saved, try to save them manually and check that none are open in another software.");
+                await this.ShowError("Error saving files.", "One or more of the modified files cannot be saved, try to save them manually and check that none are open in another software.");
                 return;
             }
             outDock.Select();
@@ -1367,7 +1367,7 @@ namespace ZXBasicStudio
         {
             if (string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbcPath) || string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbasmPath))
             {
-                await ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
+                await this.ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
                 return;
             }
 
@@ -1393,7 +1393,7 @@ namespace ZXBasicStudio
 
             if (!SaveAllFiles())
             {
-                await ShowError("Error saving files.", "One or more of the modified files cannot be saved, try to save them manually and check that none are open in another software.");
+                await this.ShowError("Error saving files.", "One or more of the modified files cannot be saved, try to save them manually and check that none are open in another software.");
                 return;
             }
 
@@ -1442,7 +1442,7 @@ namespace ZXBasicStudio
                 }
                 catch (Exception ex)
                 {
-                    await ShowError("Error saving file", $"Unexpected error trying to save the configuration file: {ex.Message} - {ex.StackTrace}");
+                    await this.ShowError("Error saving file", $"Unexpected error trying to save the configuration file: {ex.Message} - {ex.StackTrace}");
                 }
             }
         }
@@ -1573,13 +1573,13 @@ namespace ZXBasicStudio
 
         private async void RestoreLayout(object? sender, RoutedEventArgs e)
         {
-            if (!(await ShowConfirm("Restore layout", "Are you sure you want to restore the layout to its initial configuration?")))
+            if (!(await this.ShowConfirm("Restore layout", "Are you sure you want to restore the layout to its initial configuration?")))
                 return;
 
             ZXLayoutPersister.ResetLayout();
             skipLayout = true;
 
-            await ShowInfo("Restore layout", "Layout has been reset, restart the application to apply the changes.");
+            await this.ShowInfo("Restore layout", "Layout has been reset, restart the application to apply the changes.");
         }
 
         private void PlayLayout(object? sender, RoutedEventArgs e)
@@ -1637,7 +1637,7 @@ namespace ZXBasicStudio
 
             if (ext != ".json" && ext != ".csv")
             {
-                await ShowError("Invalid file", "Select a .json or .csv file.");
+                await this.ShowError("Invalid file", "Select a .json or .csv file.");
                 return;
             }
 
@@ -1686,7 +1686,7 @@ namespace ZXBasicStudio
                 }
                 catch (Exception ex)
                 {
-                    await ShowError("Error saving file", $"Unexpected error trying to save the register dump file: {ex.Message} - {ex.StackTrace}");
+                    await this.ShowError("Error saving file", $"Unexpected error trying to save the register dump file: {ex.Message} - {ex.StackTrace}");
                 }
             }
             else
@@ -1732,7 +1732,7 @@ namespace ZXBasicStudio
                 }
                 catch (Exception ex)
                 {
-                    await ShowError("Error saving file", $"Unexpected error trying to save the regsiter dump file: {ex.Message} - {ex.StackTrace}");
+                    await this.ShowError("Error saving file", $"Unexpected error trying to save the regsiter dump file: {ex.Message} - {ex.StackTrace}");
 
                 }
             }

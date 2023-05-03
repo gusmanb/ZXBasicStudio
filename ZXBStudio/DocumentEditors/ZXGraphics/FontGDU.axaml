@@ -53,7 +53,7 @@
       <zxd:ZXDockingControl Name="dockPatterns" Title="Patterns" DockingGroup="ZXGraphics" DesiredFloatingSize="">
         <zxd:ZXDockingControl.DockedControl>
           <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <WrapPanel Orientation="Horizontal" Name="wpPatterns" Height="NaN" MinWidth="40" Background="#202020"/>
+            <WrapPanel Orientation="Horizontal" Name="wpPatterns" Height="NaN" MinWidth="40" Background="#282828"/>
           </ScrollViewer>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>

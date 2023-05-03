@@ -121,7 +121,12 @@ namespace ZXBasicStudio.Controls
                 return;
             }
 
-            var select = await (Window.GetTopLevel(this) as Window).StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+            var provider = Window.GetTopLevel(this)?.StorageProvider;
+
+            if (provider == null)
+                return;
+
+            var select = await provider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
             {
                 AllowMultiple = false,
                 Title = "Select tape...",
