@@ -87,6 +87,7 @@ namespace ZXBasicStudio.Classes
             }
         }
 
+        /*
         protected async Task ShowError(string Title, string Text)
         {
             var box = MessageBoxManager.GetMessageBoxStandardWindow(Title, Text, icon: MessageBox.Avalonia.Enums.Icon.Error);
@@ -140,6 +141,7 @@ namespace ZXBasicStudio.Classes
 
             return result.Message;
         }
+        */
 
         protected override void OnClosing(WindowClosingEventArgs e)
         {

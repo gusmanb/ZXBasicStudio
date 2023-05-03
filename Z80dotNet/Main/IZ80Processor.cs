@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Main.Dependencies_Interfaces;
+using Main.EventArgs;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Konamiman.Z80dotNet
 {
@@ -62,14 +65,14 @@ namespace Konamiman.Z80dotNet
         /// <param name="userState">If this value is not null, it will be copied to the
         /// <see cref="IZ80Processor.UserState"/> property.
         /// </param>
-        void Start(object userState = null);
+        //void Start(object userState = null);
 
         /// <summary>
         /// Sets the processor in running state without first doing a reset, thus preserving the state of all the registers.
         /// This method cannot be invoked from an event handler.
         /// </summary>
         /// <exception cref="InvalidOperationException">The method is invoked from within an event handler.</exception>
-        void Continue();
+        //void Continue();
 
         /// <summary>
         /// Resets all registers to its initial state. The running state of the processor is not modified.
@@ -83,6 +86,11 @@ namespace Konamiman.Z80dotNet
         /// will be effective after the current instruction execution finishes.
         /// </para>
         void Reset();
+
+        /// <summary>
+        /// Does a full restart of the Z80 as if it were newly created.
+        /// </summary>
+        void Restart();
 
         /// <summary>
         /// Executes the next instruction as pointed by the PC register, and then returns.
@@ -144,12 +152,12 @@ namespace Konamiman.Z80dotNet
         /// Obtains the reason for the processor not being in the running state,
         /// that is, what triggered the last stop.
         /// </summary>
-        StopReason StopReason { get; }
+        //StopReason StopReason { get; }
 
         /// <summary>
         /// Obtains the current processor execution state.
         /// </summary>
-        ProcessorState State { get; }
+        //ProcessorState State { get; }
 
         /// <summary>
         /// Contains an user-defined state object. This property exists for the client code convenience
@@ -194,46 +202,46 @@ namespace Konamiman.Z80dotNet
         /// </summary>
         IMemory Memory { get; set; }
 
-        /// <summary>
-        /// Sets the mode of a portion of the visible memory.
-        /// </summary>
-        /// <param name="startAddress">First memory address that will be set</param>
-        /// <param name="length">Length of the memory portion that will be set</param>
-        /// <param name="mode">New memory mode</param>
-        /// <exception cref="System.ArgumentException"><c>startAddress</c> is less than 0, 
-        /// or <c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
-        void SetMemoryAccessMode(ushort startAddress, int length, MemoryAccessMode mode);
+        ///// <summary>
+        ///// Sets the mode of a portion of the visible memory.
+        ///// </summary>
+        ///// <param name="startAddress">First memory address that will be set</param>
+        ///// <param name="length">Length of the memory portion that will be set</param>
+        ///// <param name="mode">New memory mode</param>
+        ///// <exception cref="System.ArgumentException"><c>startAddress</c> is less than 0, 
+        ///// or <c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
+        //void SetMemoryAccessMode(ushort startAddress, int length, MemoryAccessMode mode);
 
-        /// <summary>
-        /// Gets the access mode of a memory address.
-        /// </summary>
-        /// <param name="address">The address to check</param>
-        /// <returns>The current memory access mode for the address</returns>
-        /// <exception cref="System.ArgumentException"><c>address</c> is greater than 65536</exception>
-        MemoryAccessMode GetMemoryAccessMode(ushort address);
+        ///// <summary>
+        ///// Gets the access mode of a memory address.
+        ///// </summary>
+        ///// <param name="address">The address to check</param>
+        ///// <returns>The current memory access mode for the address</returns>
+        ///// <exception cref="System.ArgumentException"><c>address</c> is greater than 65536</exception>
+        //MemoryAccessMode GetMemoryAccessMode(ushort address);
 
         /// <summary>
         /// Gets or sets the visible ports space for the processor.
         /// </summary>
         IIO PortsSpace { get; set; }
 
-        /// <summary>
-        /// Sets the access mode of a portion of the visible ports space.
-        /// </summary>
-        /// <param name="startPort">First port that will be set</param>
-        /// <param name="length">Length of the mports space that will be set</param>
-        /// <param name="mode">New memory mode</param>
-        /// <exception cref="System.ArgumentException"><c>startAddress</c> is less than 0, 
-        /// or <c>startAddress</c> + <c>length</c> goes beyond 255.</exception>
-        void SetPortsSpaceAccessMode(byte startPort, int length, MemoryAccessMode mode);
+        ///// <summary>
+        ///// Sets the access mode of a portion of the visible ports space.
+        ///// </summary>
+        ///// <param name="startPort">First port that will be set</param>
+        ///// <param name="length">Length of the mports space that will be set</param>
+        ///// <param name="mode">New memory mode</param>
+        ///// <exception cref="System.ArgumentException"><c>startAddress</c> is less than 0, 
+        ///// or <c>startAddress</c> + <c>length</c> goes beyond 255.</exception>
+        //void SetPortsSpaceAccessMode(byte startPort, int length, MemoryAccessMode mode);
 
-        /// <summary>
-        /// Gets the access mode of a port.
-        /// </summary>
-        /// <param name="portNumber">The port number to check</param>
-        /// <returns>The current memory access mode for the port</returns>
-        /// <exception cref="System.ArgumentException"><c>portNumber</c> is greater than 255.</exception>
-        MemoryAccessMode GetPortAccessMode(ushort portNumber);
+        ///// <summary>
+        ///// Gets the access mode of a port.
+        ///// </summary>
+        ///// <param name="portNumber">The port number to check</param>
+        ///// <returns>The current memory access mode for the port</returns>
+        ///// <exception cref="System.ArgumentException"><c>portNumber</c> is greater than 255.</exception>
+        //MemoryAccessMode GetPortAccessMode(ushort portNumber);
 
         /// <summary>
         /// Registers a new interrupt source.
@@ -261,101 +269,105 @@ namespace Konamiman.Z80dotNet
         /// </remarks>
         void UnregisterAllInterruptSources();
 
+        public void RegisterTStatesTarget(ITStatesTarget target);
+        public void UnregisterAllTStatesTargets();
+        IEnumerable<ITStatesTarget> GetRegisteredTStatesTarget();
+
         #endregion
 
         #region Configuration
 
-        /// <summary>
-        /// Gets or sets the clock frequency in MegaHertzs. 
-        /// This value cannot be changed while the processor is running or in single instruction execution mode.
-        /// </summary>
-        /// <exception cref="System.ArgumentException">The product of <see cref="IZ80Processor.ClockSpeedFactor"/>
-        /// by the new value gives a number that is smaller than 0.001 or greater than 100.</exception>
-        /// <exception cref="System.InvalidOperationException">The procesor is running or in single instruction execution mode.</exception>
-        decimal ClockFrequencyInMHz { get; set; }
+        ///// <summary>
+        ///// Gets or sets the clock frequency in MegaHertzs. 
+        ///// This value cannot be changed while the processor is running or in single instruction execution mode.
+        ///// </summary>
+        ///// <exception cref="System.ArgumentException">The product of <see cref="IZ80Processor.ClockSpeedFactor"/>
+        ///// by the new value gives a number that is smaller than 0.001 or greater than 100.</exception>
+        ///// <exception cref="System.InvalidOperationException">The procesor is running or in single instruction execution mode.</exception>
+        //decimal ClockFrequencyInMHz { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value that is multiplied by the clock frequency to obtain the effective
-        /// clock frequency simulated by the processor.
-        /// </summary>
-        /// <exception cref="System.ArgumentException">The product of <see cref="IZ80Processor.ClockFrequencyInMHz"/>
-        /// by the new value gives a number that is smaller than 0.001 or greater than 100.</exception>
-        decimal ClockSpeedFactor { get; set; }
+        ///// <summary>
+        ///// Gets or sets a value that is multiplied by the clock frequency to obtain the effective
+        ///// clock frequency simulated by the processor.
+        ///// </summary>
+        ///// <exception cref="System.ArgumentException">The product of <see cref="IZ80Processor.ClockFrequencyInMHz"/>
+        ///// by the new value gives a number that is smaller than 0.001 or greater than 100.</exception>
+        //decimal ClockSpeedFactor { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value that indicates whether the processor should stop automatically or not when a HALT
-        /// instruction is executed with interrupts disabled.
-        /// </summary>
-        bool AutoStopOnDiPlusHalt { get; set; }
+        ///// <summary>
+        ///// Gets or sets a value that indicates whether the processor should stop automatically or not when a HALT
+        ///// instruction is executed with interrupts disabled.
+        ///// </summary>
+        //bool AutoStopOnDiPlusHalt { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value that indicates whether the processor should stop automatically when a RET
-        /// instruction is executed and the stack is empty.
-        /// </summary>
-        /// <remarks>
-        /// <para>"The stack is empty" means that the SP register has the value
-        /// it had when the <see cref="IZ80Processor.Start"/> method
-        /// was executed, or the value set by the last execution of a <c>LD SP,xx</c> instruction.
-        /// </para>
-        /// <para>
-        /// This setting is useful for testing simple programs, so that the processor stops automatically
-        /// as soon as the program finishes with a RET.
-        /// </para>
-        /// </remarks>
-        bool AutoStopOnRetWithStackEmpty { get; set; }
+        ///// <summary>
+        ///// Gets or sets a value that indicates whether the processor should stop automatically when a RET
+        ///// instruction is executed and the stack is empty.
+        ///// </summary>
+        ///// <remarks>
+        ///// <para>"The stack is empty" means that the SP register has the value
+        ///// it had when the <see cref="IZ80Processor.Start"/> method
+        ///// was executed, or the value set by the last execution of a <c>LD SP,xx</c> instruction.
+        ///// </para>
+        ///// <para>
+        ///// This setting is useful for testing simple programs, so that the processor stops automatically
+        ///// as soon as the program finishes with a RET.
+        ///// </para>
+        ///// </remarks>
+        //bool AutoStopOnRetWithStackEmpty { get; set; }
 
-        /// <summary>
-        /// Sets the wait states that will be simulated when accessing the visible memory
-        /// during the M1 cycle for a given address range.
-        /// </summary>
-        /// <param name="startAddress">First memory address that will be configured</param>
-        /// <param name="length">Length of the memory portion that will be configured</param>
-        /// <param name="waitStates">New wait states</param>
-        /// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
-        void SetMemoryWaitStatesForM1(ushort startAddress, int length, byte waitStates);
+        ///// <summary>
+        ///// Sets the wait states that will be simulated when accessing the visible memory
+        ///// during the M1 cycle for a given address range.
+        ///// </summary>
+        ///// <param name="startAddress">First memory address that will be configured</param>
+        ///// <param name="length">Length of the memory portion that will be configured</param>
+        ///// <param name="waitStates">New wait states</param>
+        ///// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
+        //void SetMemoryWaitStatesForM1(ushort startAddress, int length, byte waitStates);
 
-        /// <summary>
-        /// Obtains the wait states that will be simulated when accessing the visible memory
-        /// during the M1 cycle for a given address. 
-        /// </summary>
-        /// <param name="address">Address to het the wait states for</param>
-        /// <returns>Current wait states during M1 for the specified address</returns>
-        byte GetMemoryWaitStatesForM1(ushort address);
+        ///// <summary>
+        ///// Obtains the wait states that will be simulated when accessing the visible memory
+        ///// during the M1 cycle for a given address. 
+        ///// </summary>
+        ///// <param name="address">Address to het the wait states for</param>
+        ///// <returns>Current wait states during M1 for the specified address</returns>
+        //byte GetMemoryWaitStatesForM1(ushort address);
 
-        /// <summary>
-        /// Sets the wait states that will be simulated when accessing the visible memory
-        /// outside the M1 cycle for a given address range.
-        /// </summary>
-        /// <param name="startAddress">First memory address that will be configured</param>
-        /// <param name="length">Length of the memory portion that will be configured</param>
-        /// <param name="waitStates">New wait states</param>
-        /// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
-        void SetMemoryWaitStatesForNonM1(ushort startAddress, int length, byte waitStates);
+        ///// <summary>
+        ///// Sets the wait states that will be simulated when accessing the visible memory
+        ///// outside the M1 cycle for a given address range.
+        ///// </summary>
+        ///// <param name="startAddress">First memory address that will be configured</param>
+        ///// <param name="length">Length of the memory portion that will be configured</param>
+        ///// <param name="waitStates">New wait states</param>
+        ///// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 65535.</exception>
+        //void SetMemoryWaitStatesForNonM1(ushort startAddress, int length, byte waitStates);
 
-        /// <summary>
-        /// Obtains the wait states that will be simulated when accessing the visible memory
-        /// outside the M1 cycle for a given address. 
-        /// </summary>
-        /// <param name="address">Address to het the wait states for</param>
-        /// <returns>Current wait states outside M1 for the specified address</returns>
-        byte GetMemoryWaitStatesForNonM1(ushort address);
+        ///// <summary>
+        ///// Obtains the wait states that will be simulated when accessing the visible memory
+        ///// outside the M1 cycle for a given address. 
+        ///// </summary>
+        ///// <param name="address">Address to het the wait states for</param>
+        ///// <returns>Current wait states outside M1 for the specified address</returns>
+        //byte GetMemoryWaitStatesForNonM1(ushort address);
 
-        /// <summary>
-        /// Sets the wait states that will be simulated when accessing the I/O ports.
-        /// </summary>
-        /// <param name="startPort">First port that will be configured</param>
-        /// <param name="length">Length of the port range that will be configured</param>
-        /// <param name="waitStates">New wait states</param>
-        /// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 255.</exception>
-        void SetPortWaitStates(ushort startPort, int length, byte waitStates);
+        ///// <summary>
+        ///// Sets the wait states that will be simulated when accessing the I/O ports.
+        ///// </summary>
+        ///// <param name="startPort">First port that will be configured</param>
+        ///// <param name="length">Length of the port range that will be configured</param>
+        ///// <param name="waitStates">New wait states</param>
+        ///// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> goes beyond 255.</exception>
+        //void SetPortWaitStates(ushort startPort, int length, byte waitStates);
 
-        /// <summary>
-        /// Obtains the wait states that will be simulated when accessing the I/O ports
-        /// for a given port. 
-        /// </summary>
-        /// <param name="portNumber">Port number to het the wait states for</param>
-        /// <returns>Current wait states for the specified port</returns>
-        byte GetPortWaitStates(ushort portNumber);
+        ///// <summary>
+        ///// Obtains the wait states that will be simulated when accessing the I/O ports
+        ///// for a given port. 
+        ///// </summary>
+        ///// <param name="portNumber">Port number to het the wait states for</param>
+        ///// <returns>Current wait states for the specified port</returns>
+        //byte GetPortWaitStates(ushort portNumber);
 
         /// <summary>
         /// Gets or set the instruction executor.
@@ -369,7 +381,7 @@ namespace Konamiman.Z80dotNet
         /// </remarks>
         /// This property can be set to _null_, in this case no clock syncrhonization will be performed
         /// and the simulation will run at the maximum speed that the host system can provide.
-        IClockSynchronizer ClockSynchronizer { get; set; }
+        //IClockSynchronizer ClockSynchronizer { get; set; }
 
         #endregion
 
@@ -378,22 +390,24 @@ namespace Konamiman.Z80dotNet
         /// <summary>
         /// Memory access event. Is is triggered before and after each memory and port read and write.
         /// </summary>
-        event EventHandler<MemoryAccessEventArgs> MemoryAccess;
+        //event EventHandler<MemoryAccessEventArgs> MemoryAccess;
 
         /// <summary>
         /// Pre-instruction fetch event. It is triggered before the next instruction is fetched.
         /// </summary>
         event EventHandler<BeforeInstructionFetchEventArgs> BeforeInstructionFetch;
 
+        event EventHandler<InstructionWaitStatesEventArgs> InstructionWaitStates;
+
         /// <summary>
         /// Pre-instruction execution event. It is triggered before an instruction is executed.
         /// </summary>
-        event EventHandler<BeforeInstructionExecutionEventArgs> BeforeInstructionExecution;
+        //event EventHandler<BeforeInstructionExecutionEventArgs> BeforeInstructionExecution;
 
         /// <summary>
         /// Post-instruction execution event. It is triggered after an instruction is executed.
         /// </summary>
-        event EventHandler<AfterInstructionExecutionEventArgs> AfterInstructionExecution;
+        //event EventHandler<AfterInstructionExecutionEventArgs> AfterInstructionExecution;
 
         #endregion
 

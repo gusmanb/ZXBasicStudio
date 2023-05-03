@@ -7,7 +7,7 @@
     <Style Selector="TextBlock">
       <Setter Property="Foreground" Value="#FFFFFF"></Setter>
     </Style>
-    <StyleInclude Source="avares://AvaloniaEdit/AvaloniaEdit.xaml" />
+    <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml" />
     <Style Selector="Window">
       <Setter Property="Background" Value="#ff202020"></Setter>
     </Style>
@@ -60,22 +60,110 @@
       <Setter Property="FontWeight" Value="Medium" />
     </Style>
     <Style Selector="GridSplitter.vertical">
-      <Setter Property="Background">
+      <!--<Setter Property="Background">
         <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
           <GradientStop Offset="0" Color="#707070" />
           <GradientStop Offset="0.5" Color="#202020" />
           <GradientStop Offset="1" Color="#707070" />
         </LinearGradientBrush>
-      </Setter>
+      </Setter>-->
+      <Setter Property="Background" Value="#505050" />
     </Style>
     <Style Selector="GridSplitter.horizontal">
-      <Setter Property="Background">
+      <!--<Setter Property="Background">
         <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
           <GradientStop Offset="0" Color="#707070" />
           <GradientStop Offset="0.5" Color="#202020" />
           <GradientStop Offset="1" Color="#707070" />
         </LinearGradientBrush>
-      </Setter>
+      </Setter>-->
+      <Setter Property="Background" Value="#505050" />
+    </Style>
+    <Style Selector="Button.toolbar">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="ToggleButton.toolbar">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="Button.toolbar:disabled">
+      <Setter Property="Background" Value="#ff606060" />
+      <Setter Property="BorderBrush" Value="#ff606060" />
+    </Style>
+    <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#ffb0b0b0" />
+    </Style>
+    <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#ff606060" />
+    </Style>
+    <Style Selector="ComboBox.toolbar">
+      <Setter Property="Margin" Value="0"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="Padding" Value="5"></Setter>
+    </Style>
+    <Style Selector="TextBlock.dialog">
+      <Setter Property="Foreground" Value="#ffffffff"></Setter>
+      <Setter Property="Margin" Value="5"></Setter>
+    </Style>
+    <Style Selector="TextBox.dialog">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="MaxWidth" Value="140"></Setter>
+    </Style>
+    <Style Selector="Button.dialog">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+    </Style>
+    <Style Selector="ComboBox.dialog">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="Padding" Value="5"></Setter>
+    </Style>
+
+    <Style Selector="NumericUpDown.dialog">
+      <Setter Property="Margin" Value="0"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Padding" Value="5,7,0,0"></Setter>
+      <Setter Property="VerticalAlignment" Value="Center"></Setter>
+      <Setter Property="BorderThickness" Value="0"></Setter>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+    </Style>
+    <!--
+    <Style Selector="NumericUpDown.dialog /template/ ContentPresenter#PART_TextBox">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Padding" Value="10"></Setter>
+      <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="BorderThickness" Value="0"></Setter>
+      <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+      <Setter Property="MaxWidth" Value="140"></Setter>
+    </Style>-->
+
+    <Style Selector="NumericUpDown.dialog TextBox">
+      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+      <Setter Property="MaxWidth" Value="140"></Setter>
+      <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+    </Style>
+    <Style Selector="Border.numericborder">
+      <Setter Property="BorderBrush" Value="#ff909090" ></Setter>
+      <Setter Property="BorderThickness" Value="2" ></Setter>
+      <Setter Property="CornerRadius" Value="5" ></Setter>
+      <Setter Property="Padding" Value="-1" ></Setter>
+      <Setter Property="Margin" Value="5,0,5,0"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
     </Style>
   </Application.Styles>
 </Application>

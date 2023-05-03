@@ -3,16 +3,15 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ZXBasicStudio.Common;
-using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using Avalonia.Input;
 using System.Text;
 using System.Security.Cryptography;
+using ZXBasicStudio.Extensions;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -379,7 +378,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             if (ItemsWidth != ItemsHeight)
             {
-                Common.UI.ShowError("Can't do this!", "Only square graphics can be rotated, i.e. with the same width as height.");
+                Window.GetTopLevel(this)?.ShowError("Can't do this!", "Only square graphics can be rotated, i.e. with the same width as height.");
                 return;
             }
 
@@ -409,7 +408,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             if (ItemsWidth != ItemsHeight)
             {
-                Common.UI.ShowError("Can't do this!", "Only square graphics can be rotated, i.e. with the same width as height.");
+                Window.GetTopLevel(this)?.ShowError("Can't do this!", "Only square graphics can be rotated, i.e. with the same width as height.");
                 return;
             }
 

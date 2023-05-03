@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ZXBasicStudio.Classes;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
@@ -49,32 +50,33 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
             switch (ext)
             {
-                case ".gdu":
+                case ZXExtensions.ZX_GRAPHICS_UDG:
+                case ZXExtensions.ZX_GRAPHICS_GDU:
                     ftc.FileType = FileTypes.GDU;
                     ftc.FirstIndex = 64;    // CHAR A
                     ftc.NumerOfPatterns = 21;
                     break;
-                case ".fnt":
+                case ZXExtensions.ZX_GRAPHICS_FNT:
                     ftc.FileType = FileTypes.Font;
                     ftc.FirstIndex = 32;    // SPACE
                     ftc.NumerOfPatterns = 96;
                     break;
-                case ".spr":
+                case ZXExtensions.ZX_GRAPHICS_SPR:
                     ftc.FileType = FileTypes.Sprite;
                     ftc.FirstIndex = 0;
                     ftc.NumerOfPatterns = 256;
                     break;
-                case ".til":
+                case ZXExtensions.ZX_GRAPHICS_TIL:
                     ftc.FileType = FileTypes.Tile;
                     ftc.FirstIndex = 0;
                     ftc.NumerOfPatterns = 256;
                     break;
-                case ".map":
+                case ZXExtensions.ZX_GRAPHICS_MAP:
                     ftc.FileType = FileTypes.Map;
                     ftc.FirstIndex = 0;
                     ftc.NumerOfPatterns = 0;
                     break;
-                case ".gcfg":
+                case ZXExtensions.ZX_GRAPHICS_GCFG:
                     ftc.FileType = FileTypes.Config;
                     ftc.FirstIndex = 0;
                     ftc.NumerOfPatterns = 256;

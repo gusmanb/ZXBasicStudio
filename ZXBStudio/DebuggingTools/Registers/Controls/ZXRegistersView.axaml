@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:zxc="using:ZXBasicStudio.DebuggingTools.Registers.Controls"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="384"
+             x:Class="ZXBasicStudio.DebuggingTools.Registers.Controls.ZXRegistersView">
+  <UserControl.Styles>
+    <Style Selector="TextBox">
+      <Setter Property="Foreground" Value="#FFFFFFFF" />
+      <Setter Property="Margin" Value="0" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+      <Setter Property="BorderBrush" Value="#FF000000" />
+      <Setter Property="IsReadOnly" Value="True" />
+      <Setter Property="Background" Value="#FF606060" />
+    </Style>
+    <Style Selector="TextBox.header">
+      <Setter Property="Background" Value="#FF303030" />
+    </Style>
+  </UserControl.Styles>
+  <TabControl BorderThickness="0">
+    <TabItem Header="16 bit">
+        <StackPanel Orientation="Vertical">
+          <Grid Background="#FF909090" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*,*,*">
+            <TextBox Classes="header">Reg</TextBox>
+            <TextBox Classes="header" Grid.Column="1">Hex</TextBox>
+            <TextBox Classes="header" Grid.Column="2">Signed</TextBox>
+            <TextBox Classes="header" Grid.Column="3">Unsigned</TextBox>
+          </Grid>
+          <zxc:ZXRegisterView Name="RegAF"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegBC"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegDE"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegHL"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegIX"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegIY"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegPC"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegSP"></zxc:ZXRegisterView>
+        </StackPanel>
+    </TabItem>
+    <TabItem Header="8 bit">
+        <StackPanel Orientation="Vertical">
+          <Grid Background="#FF909090" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*,*,*">
+            <TextBox Classes="header">Reg</TextBox>
+            <TextBox Classes="header" Grid.Column="1">Hex</TextBox>
+            <TextBox Classes="header" Grid.Column="2">Signed</TextBox>
+            <TextBox Classes="header" Grid.Column="3">Unsigned</TextBox>
+          </Grid>
+          <zxc:ZXRegisterView Name="RegA"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegF"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegB"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegC"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegD"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegE"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegH"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegL"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegIXH"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegIXL"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegIYH"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegIYL"></zxc:ZXRegisterView>
+        </StackPanel>
+    </TabItem>
+    <TabItem Header="16 bit ex">
+        <StackPanel Orientation="Vertical">
+          <Grid Background="#FF909090" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*,*,*">
+            <TextBox Classes="header">Reg</TextBox>
+            <TextBox Classes="header" Grid.Column="1">Hex</TextBox>
+            <TextBox Classes="header" Grid.Column="2">Signed</TextBox>
+            <TextBox Classes="header" Grid.Column="3">Unsigned</TextBox>
+          </Grid>
+          <zxc:ZXRegisterView Name="RegAFx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegBCx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegDEx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegHLx"></zxc:ZXRegisterView>
+        </StackPanel>
+    </TabItem>
+    <TabItem Header="8 bit ex">
+        <StackPanel Orientation="Vertical">
+          <Grid Background="#FF909090" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*,*,*">
+            <TextBox Classes="header">Reg</TextBox>
+            <TextBox Classes="header" Grid.Column="1">Hex</TextBox>
+            <TextBox Classes="header" Grid.Column="2">Signed</TextBox>
+            <TextBox Classes="header" Grid.Column="3">Unsigned</TextBox>
+          </Grid>
+          <zxc:ZXRegisterView Name="RegAx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegFx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegBx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegCx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegDx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegEx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegHx"></zxc:ZXRegisterView>
+          <zxc:ZXRegisterView Name="RegLx"></zxc:ZXRegisterView>
+        </StackPanel>
+    </TabItem>
+  </TabControl>
+</UserControl>

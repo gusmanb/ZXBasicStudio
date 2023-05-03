@@ -10,58 +10,11 @@
         Icon="/Assets/zxbs.ico"
         x:Class="ZXBasicStudio.Dialogs.ZXBuildSettingsDialog"
         Title="Build settings" WindowStartupLocation="CenterOwner">
-  <wnd:ZXWindowBase.Styles>
-    <Style Selector="TextBlock">
-      <Setter Property="Foreground" Value="#ffffffff"></Setter>
-      <Setter Property="Margin" Value="5"></Setter>
-    </Style>
-    <Style Selector="TextBox">
-      <Setter Property="Margin" Value="5"></Setter>
-      <Setter Property="CornerRadius" Value="5"></Setter>
-      <Setter Property="Height" Value="32"></Setter>
-      <Setter Property="MaxWidth" Value="140"></Setter>
-    </Style>
-    <Style Selector="Button">
-      <Setter Property="Margin" Value="5"></Setter>
-      <Setter Property="CornerRadius" Value="5"></Setter>
-    </Style>
-    <Style Selector="ComboBox">
-      <Setter Property="Margin" Value="5"></Setter>
-      <Setter Property="CornerRadius" Value="5"></Setter>
-      <Setter Property="Height" Value="32"></Setter>
-      <Setter Property="Padding" Value="0"></Setter>
-    </Style>
-
-    <Style Selector="NumericUpDown">
-      <Setter Property="Margin" Value="0"></Setter>
-      <Setter Property="CornerRadius" Value="5"></Setter>
-      <Setter Property="Padding" Value="5,7,0,0"></Setter>
-      <Setter Property="VerticalAlignment" Value="Center"></Setter>
-      <Setter Property="BorderThickness" Value="0"></Setter>
-      <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-    </Style>
-    <Style Selector="NumericUpDown /template/ ContentPresenter#PART_TextBox">
-      <Setter Property="Margin" Value="0"></Setter>
-      <Setter Property="CornerRadius" Value="5"></Setter>
-      <Setter Property="Padding" Value="10"></Setter>
-      <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
-      <Setter Property="BorderThickness" Value="0"></Setter>
-      <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-    </Style>
-    <!--
-    <Style Selector="ComboBox">
-      <Setter Property="Foreground" Value="#ffffff"></Setter>
-    </Style>
-    <Style Selector="ComboBoxItem">
-      <Setter Property="Foreground" Value="#ff000000"></Setter>
-      <Setter Property="" Value="#ff000000"></Setter>
-    </Style>-->
-  </wnd:ZXWindowBase.Styles>
   <Grid ColumnDefinitions="*,5*,8*,2*" RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,2*">
-    <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Main file:</TextBlock>
-    <TextBox Grid.Row="0" Grid.Column="2" Name="txtFile"></TextBox>
-    <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Optimization:</TextBlock>
-    <ComboBox Grid.Row="1" Grid.Column="2" Name="cbOptimization">
+    <TextBlock Classes="dialog" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Main file:</TextBlock>
+    <TextBox Classes="dialog" Grid.Row="0" Grid.Column="2" Name="txtFile"></TextBox>
+    <TextBlock Classes="dialog" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Optimization:</TextBlock>
+    <ComboBox Classes="dialog" Grid.Row="1" Grid.Column="2" Name="cbOptimization">
       <ComboBoxItem>0</ComboBoxItem>
       <ComboBoxItem>1</ComboBoxItem>
       <ComboBoxItem>2</ComboBoxItem>
@@ -71,43 +24,43 @@
       <ComboBoxItem>6</ComboBoxItem>
       <ComboBoxItem>7</ComboBoxItem>
     </ComboBox>
-    <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Origin:</TextBlock>
+    <TextBlock Classes="dialog" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Origin:</TextBlock>
     <Border Height="32" Grid.Row="2" Grid.Column="2" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,0,5,0">
-      <NumericUpDown VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="32768" FormatString="####" Minimum="0" Maximum="65535" Name="nudOrg"></NumericUpDown>
+      <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="32768" FormatString="####" Minimum="0" Maximum="65535" Name="nudOrg"></NumericUpDown>
     </Border>
-    <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Array base:</TextBlock>
-    <ComboBox Grid.Row="3" Grid.Column="2" Name="cbArrayBase">
+    <TextBlock Classes="dialog" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Array base:</TextBlock>
+    <ComboBox Classes="dialog" Grid.Row="3" Grid.Column="2" Name="cbArrayBase">
       <ComboBoxItem>0</ComboBoxItem>
       <ComboBoxItem>1</ComboBoxItem>
     </ComboBox>
-    <TextBlock Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">String base:</TextBlock>
-    <ComboBox Grid.Row="4" Grid.Column="2"  Name="cbStringBase">
+    <TextBlock Classes="dialog" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">String base:</TextBlock>
+    <ComboBox Classes="dialog" Grid.Row="4" Grid.Column="2"  Name="cbStringBase">
       <ComboBoxItem>0</ComboBoxItem>
       <ComboBoxItem>1</ComboBoxItem>
     </ComboBox>
-    <TextBlock Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Sinclair mode:</TextBlock>
-    <CheckBox Grid.Row="5" Grid.Column="2"  Name="ckSinclair"></CheckBox>
-    <TextBlock Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Heap size:</TextBlock>
+    <TextBlock Classes="dialog" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Sinclair mode:</TextBlock>
+    <CheckBox Classes="dialog" Grid.Row="5" Grid.Column="2"  Name="ckSinclair"></CheckBox>
+    <TextBlock Classes="dialog" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Heap size:</TextBlock>
     <Border Height="32" Grid.Row="6" Grid.Column="2" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,0,5,0">
-      <NumericUpDown VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="4768" FormatString="####" Minimum="0" Maximum="32768" Name="nudHeap"></NumericUpDown>
+      <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="4768" FormatString="####" Minimum="0" Maximum="32768" Name="nudHeap"></NumericUpDown>
     </Border>
-    <TextBlock Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Strict bool:</TextBlock>
+    <TextBlock Classes="dialog" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Strict bool:</TextBlock>
     <CheckBox Grid.Row="7" Grid.Column="2"  Name="ckStrictBool"></CheckBox>
-    <TextBlock Grid.Row="8" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Enable break:</TextBlock>
+    <TextBlock Classes="dialog" Grid.Row="8" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Enable break:</TextBlock>
     <CheckBox Grid.Row="8" Grid.Column="2"  Name="ckBreak"></CheckBox>
-    <TextBlock Grid.Row="9" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Explicit:</TextBlock>
+    <TextBlock Classes="dialog" Grid.Row="9" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Explicit:</TextBlock>
     <CheckBox Grid.Row="9" Grid.Column="2"  Name="ckExplicit"></CheckBox>
-    <TextBlock Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Defines:</TextBlock>
-    <TextBox Grid.Row="10" Grid.Column="2" Name="txtDefines"></TextBox>
-    <TextBlock Grid.Row="11" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Ignore case:</TextBlock>
+    <TextBlock Classes="dialog" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Defines:</TextBlock>
+    <TextBox Classes="dialog" Grid.Row="10" Grid.Column="2" Name="txtDefines"></TextBox>
+    <TextBlock Classes="dialog" Grid.Row="11" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Ignore case:</TextBlock>
     <CheckBox Grid.Row="11" Grid.Column="2"  Name="ckCase"></CheckBox>
-    <TextBlock Grid.Row="12" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Strict:</TextBlock>
+    <TextBlock Classes="dialog" Grid.Row="12" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Strict:</TextBlock>
     <CheckBox Grid.Row="12" Grid.Column="2"  Name="ckStrict"></CheckBox>
-    <TextBlock Grid.Row="13" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Headerless:</TextBlock>
+    <TextBlock Classes="dialog" Grid.Row="13" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Headerless:</TextBlock>
     <CheckBox Grid.Row="13" Grid.Column="2"  Name="ckHeaderless"></CheckBox>
     <StackPanel Margin="10,15,10,15" Grid.Row="14" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right">
-      <Button VerticalAlignment="Bottom" Padding="7" Name="btnCancel">Cancel</Button>
-      <Button VerticalAlignment="Bottom" Padding="7" Name="btnAccept">Accept</Button>
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnCancel">Cancel</Button>
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnAccept">Accept</Button>
     </StackPanel>
   </Grid>
 </wnd:ZXWindowBase>

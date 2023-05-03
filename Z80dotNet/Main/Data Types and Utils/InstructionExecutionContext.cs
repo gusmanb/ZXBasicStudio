@@ -11,6 +11,8 @@ namespace Konamiman.Z80dotNet
         {
             StopReason = StopReason.NotApplicable;
             OpcodeBytes = new List<byte>();
+            MemoryAccesses = new List<ushort>();
+            PortAccesses = new List<(byte PortHi, byte PortLo)>();
         }
 
         public StopReason StopReason
@@ -30,11 +32,13 @@ namespace Konamiman.Z80dotNet
         public void StartNewInstruction()
         {
             OpcodeBytes.Clear();
+            MemoryAccesses.Clear();
+            PortAccesses.Clear();
             FetchComplete = false;
-            LocalUserStateFromPreviousEvent = null;
-            AccummulatedMemoryWaitStates = 0;
             PeekedOpcode = null;
             IsEiOrDiInstruction = false;
+            StopReason = StopReason.NotApplicable;
+            FetchCycles = 0;
         }
 
         public bool ExecutingBeforeInstructionEvent
@@ -85,18 +89,6 @@ namespace Konamiman.Z80dotNet
             set;
         }
 
-        public object LocalUserStateFromPreviousEvent
-        {
-            get;
-            set;
-        }
-
-        public int AccummulatedMemoryWaitStates
-        {
-            get; 
-            set;
-        }
-
         public byte? PeekedOpcode
         {
             get; 
@@ -104,6 +96,24 @@ namespace Konamiman.Z80dotNet
         }
 
         public ushort AddressOfPeekedOpcode
+        {
+            get;
+            set;
+        }
+
+        public int FetchCycles
+        {
+            get; 
+            set;
+        }
+
+        public List<ushort> MemoryAccesses
+        {
+            get; 
+            set;
+        }
+
+        public List<(byte PortHi, byte PortLo)> PortAccesses
         {
             get;
             set;

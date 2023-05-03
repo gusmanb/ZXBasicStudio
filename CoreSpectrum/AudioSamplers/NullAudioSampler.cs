@@ -9,7 +9,7 @@ namespace CoreSpectrum.AudioSamplers
 {
     public class NullAudioSampler : IAudioSampler
     {
-        public void AddSample(ulong Sample)
+        public void AddSample(ulong TStates, byte Value)
         {
             
         }

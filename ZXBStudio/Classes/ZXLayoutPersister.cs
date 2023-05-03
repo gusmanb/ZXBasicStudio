@@ -75,7 +75,7 @@ namespace ZXBasicStudio.Classes
             catch { }
         }
 
-        public static void RestoreLayout(Grid MainGrid, ZXDockingContainer LeftDock, ZXDockingContainer RightDock, ZXTabDockingContainer BottomDock)
+        public static void RestoreLayout(Grid MainGrid, ZXDockingContainer LeftDock, ZXDockingContainer RightDock, ZXTabDockingContainer BottomDock, ZXDockingControl[] StandaloneControls)
         {
             try
             {
@@ -94,6 +94,8 @@ namespace ZXBasicStudio.Classes
                 MainGrid.ColumnDefinitions = new ColumnDefinitions(layout.MainColumns);
 
                 List<ZXDockingControl> controls = new List<ZXDockingControl>();
+
+                controls.AddRange(StandaloneControls);
 
                 var leftControls = LeftDock.Children?.Where(c => c is ZXDockingControl).Cast<ZXDockingControl>().ToArray();
                 if (leftControls != null)

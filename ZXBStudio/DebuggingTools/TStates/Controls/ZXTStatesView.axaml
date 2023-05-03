@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="64"
+             x:Class="ZXBasicStudio.DebuggingTools.TStates.Controls.ZXTStatesView">
+  <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+    <Border BorderThickness="0,0,1,0" BorderBrush="#000" Background="#303030">
+      <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Total</TextBlock>
+    </Border>
+    <Border Grid.Column="1" BorderThickness="1,0,0,0" BorderBrush="#000" Background="#303030">
+      <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Step</TextBlock>
+    </Border>
+    <Border Grid.Row="1" Background="#606060" BorderThickness="0,0,1,0" BorderBrush="#000">
+      <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Name="tbTotal">--</TextBlock>
+    </Border>
+    <Border Grid.Row="1" Grid.Column="1" Background="#606060" BorderThickness="1,0,0,0" BorderBrush="#000">
+      <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" Name="tbStep">--</TextBlock>
+    </Border>
+  </Grid>
+</UserControl>

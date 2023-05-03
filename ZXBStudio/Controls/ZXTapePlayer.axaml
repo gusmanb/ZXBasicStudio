@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="220" d:DesignHeight="250"
+             x:Class="ZXBasicStudio.Controls.ZXTapePlayer">
+  <Grid ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="16,*,16,16,48">
+    <TextBlock Grid.Row="0" Grid.ColumnSpan="6" Margin="5,0,5,0" Name="txtTape" TextTrimming="CharacterEllipsis">Insert tape...</TextBlock>
+    <ListBox Grid.Row="1" Grid.ColumnSpan="6" Margin="5" Name="lstBlocks" />
+    <TextBlock Grid.Row="2" Grid.ColumnSpan="6" Margin="5,0,5,0" Name="txtState">Stopped.</TextBlock>
+    <TextBlock Grid.Row="3" Grid.ColumnSpan="6" Margin="5,0,5,0" Name="txtTime">--:-- / --:--</TextBlock>
+    <Button HorizontalAlignment="Stretch" Width="NaN" Grid.Row="4" Grid.Column="0" Classes="toolbar" Name="btnPlay" IsEnabled="{Binding EmulatorInfo.CanRun}" ToolTip.Tip="Build and run (F5)">
+      <Svg Path="/Svg/play-solid.svg"></Svg>
+    </Button>
+    <Button HorizontalAlignment="Stretch" Width="NaN" Grid.Row="4" Grid.Column="1" Classes="toolbar" Name="btnPause"  IsEnabled="{Binding EmulatorInfo.CanPause}" ToolTip.Tip="Pause (F7)">
+      <Svg Path="/Svg/pause-solid.svg"></Svg>
+    </Button>
+    <Button HorizontalAlignment="Stretch" Width="NaN" Grid.Row="4" Grid.Column="2" Classes="toolbar" Name="btnRew" IsEnabled="{Binding EmulatorInfo.CanResume}" ToolTip.Tip="Resume (F8)">
+      <Svg Path="/Svg/backward-solid.svg"></Svg>
+    </Button>
+    <Button HorizontalAlignment="Stretch" Width="NaN" Grid.Row="4" Grid.Column="3" Classes="toolbar" Name="btnFfw" IsEnabled="{Binding EmulatorInfo.CanStep}" ToolTip.Tip="Next assembler instruction (F9)">
+      <Svg Path="/Svg/forward-solid.svg"></Svg>
+    </Button>
+    <Button HorizontalAlignment="Stretch" Width="NaN" Grid.Row="4" Grid.Column="4" Classes="toolbar" Name="btnStop" IsEnabled="{Binding EmulatorInfo.CanStep}" ToolTip.Tip="Next basic instruction (F10)">
+      <Svg Path="/Svg/stop-solid.svg"></Svg>
+    </Button>
+    <Button HorizontalAlignment="Stretch" Width="NaN" Grid.Row="4" Grid.Column="5" Classes="toolbar" Name="btnEject" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Stop (F11)">
+      <Svg Path="/Svg/eject-solid.svg"></Svg>
+    </Button>
+  </Grid>
+</UserControl>

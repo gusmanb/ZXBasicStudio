@@ -15,11 +15,8 @@ namespace Konamiman.Z80dotNet
         {
             FetchFinished();
 
-            var portNumber = Registers.C;
-            var upperPart = Registers.B;
-            var address = Registers.HL;
-            var value = ProcessorAgent.ReadFromPort(portNumber, upperPart);
-            ProcessorAgent.WriteToMemory((ushort)address, value);
+            var value = ProcessorAgent.ReadFromPort(Registers.C, Registers.B);
+            ProcessorAgent.WriteToMemory((ushort)Registers.HL, value);
 
             Registers.HL++;
             var counter = Registers.B;
@@ -41,11 +38,8 @@ namespace Konamiman.Z80dotNet
         {
             FetchFinished();
 
-            var portNumber = Registers.C;
-            var upperPart = Registers.B;
-            var address = Registers.HL;
-            var value = ProcessorAgent.ReadFromPort(portNumber, upperPart);
-            ProcessorAgent.WriteToMemory((ushort)address, value);
+            var value = ProcessorAgent.ReadFromPort(Registers.C, Registers.B);
+            ProcessorAgent.WriteToMemory((ushort)Registers.HL, value);
 
             Registers.HL--;
             var counter = Registers.B;
@@ -67,11 +61,8 @@ namespace Konamiman.Z80dotNet
         {
             FetchFinished();
 
-            var portNumber = Registers.C;
-            var upperPart = Registers.B;
-            var address = Registers.HL;
-            var value = ProcessorAgent.ReadFromPort(portNumber, upperPart);
-            ProcessorAgent.WriteToMemory((ushort)address, value);
+            var value = ProcessorAgent.ReadFromPort(Registers.C, Registers.B);
+            ProcessorAgent.WriteToMemory((ushort)Registers.HL, value);
 
             Registers.HL++;
             var counter = Registers.B;
@@ -97,11 +88,8 @@ namespace Konamiman.Z80dotNet
         {
             FetchFinished();
 
-            var portNumber = Registers.C;
-            var upperPart = Registers.B;
-            var address = Registers.HL;
-            var value = ProcessorAgent.ReadFromPort(portNumber, upperPart);
-            ProcessorAgent.WriteToMemory((ushort)address, value);
+            var value = ProcessorAgent.ReadFromPort(Registers.C, Registers.B);
+            ProcessorAgent.WriteToMemory((ushort)Registers.HL, value);
 
             Registers.HL--;
             var counter = Registers.B;
@@ -127,11 +115,8 @@ namespace Konamiman.Z80dotNet
         {
             FetchFinished();
 
-            var portNumber = Registers.C;
-            var upperPart = Registers.B;
-            var address = Registers.HL;
-            var value = ProcessorAgent.ReadFromMemory((ushort)address);
-            ProcessorAgent.WriteToPort(portNumber, upperPart, value);
+            var value = ProcessorAgent.ReadFromMemory((ushort)Registers.HL);
+            ProcessorAgent.WriteToPort(Registers.C, Registers.B, value);
 
             Registers.HL++;
             var counter = Registers.B;
@@ -153,11 +138,8 @@ namespace Konamiman.Z80dotNet
         {
             FetchFinished();
 
-            var portNumber = Registers.C;
-            var upperPart = Registers.B;
-            var address = Registers.HL;
-            var value = ProcessorAgent.ReadFromMemory((ushort)address);
-            ProcessorAgent.WriteToPort(portNumber, upperPart, value);
+            var value = ProcessorAgent.ReadFromMemory((ushort)Registers.HL);
+            ProcessorAgent.WriteToPort(Registers.C, Registers.B, value);
 
             Registers.HL--;
             var counter = Registers.B;
@@ -179,11 +161,8 @@ namespace Konamiman.Z80dotNet
         {
             FetchFinished();
 
-            var portNumber = Registers.C;
-            var upperPart = Registers.B;
-            var address = Registers.HL;
-            var value = ProcessorAgent.ReadFromMemory((ushort)address);
-            ProcessorAgent.WriteToPort(portNumber, upperPart, value);
+            var value = ProcessorAgent.ReadFromMemory((ushort)Registers.HL);
+            ProcessorAgent.WriteToPort(Registers.C, Registers.B, value);
 
             Registers.HL++;
             var counter = Registers.B;
@@ -209,11 +188,8 @@ namespace Konamiman.Z80dotNet
         {
             FetchFinished();
 
-            var portNumber = Registers.C;
-            var upperPart = Registers.B;
-            var address = Registers.HL;
-            var value = ProcessorAgent.ReadFromMemory((ushort)address);
-            ProcessorAgent.WriteToPort(portNumber, upperPart, value);
+            var value = ProcessorAgent.ReadFromMemory((ushort)Registers.HL);
+            ProcessorAgent.WriteToPort(Registers.C, Registers.B, value);
 
             Registers.HL--;
             var counter = Registers.B;

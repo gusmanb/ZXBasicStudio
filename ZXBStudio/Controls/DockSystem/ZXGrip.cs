@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ZXBasicStudio.Controls.DockSystem
 {
-    public class ZXGrip : Border
+    public class ZXGrip : UserControl
     {
         public static StyledProperty<double> DotRadiusProperty = StyledProperty<double>.Register<ZXGrip, double>("DotRadius", 1);
         public static StyledProperty<double> DotSpacingProperty = StyledProperty<double>.Register<ZXGrip, double>("DotSpacing", 5);
@@ -30,7 +30,7 @@ namespace ZXBasicStudio.Controls.DockSystem
             get => GetValue(DotColorProperty);
             set => SetValue(DotColorProperty, value);
         }
-
+        
         public override void Render(DrawingContext context)
         {
             base.Render(context);
@@ -44,5 +44,6 @@ namespace ZXBasicStudio.Controls.DockSystem
                 }
             }
         }
+        
     }
 }
