@@ -26,6 +26,7 @@
 using System;
 using System.Text;
 using System.Diagnostics;
+using System.IO;
 
 namespace ZXBasicStudio.Common
 {
