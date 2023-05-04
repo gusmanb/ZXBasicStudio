@@ -402,6 +402,7 @@ namespace CoreSpectrum.Hardware
             _sw.Stop();
             _z80.UnregisterAllInterruptSources();
             _z80.UnregisterAllTStatesTargets();
+            ClearSynchronized();
             Disposal();
         }
     }

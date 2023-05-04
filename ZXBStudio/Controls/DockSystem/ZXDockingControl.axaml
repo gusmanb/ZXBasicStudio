@@ -7,7 +7,7 @@
              x:Class="ZXBasicStudio.Controls.DockSystem.ZXDockingControl"
              Background="#282828">
   <Grid RowDefinitions="Auto,*">
-    <zxd:ZXGrip Background="Transparent" DotColor="#1b1b1b" DotRadius="1" DotSpacing="5" Name="grip" IsVisible="{Binding !TabMode}">
+    <zxd:ZXGrip Background="Transparent" DotColor="#bbbbbb" DotRadius="0.5" DotMargin="0,7,7,6" DotSpacing="4,3" Name="grip" IsVisible="{Binding !TabMode}">
       <Grid ColumnDefinitions="Auto,*,Auto">
         <TextBlock Background="{Binding Background}" HorizontalAlignment="Left" VerticalAlignment="Center"  Padding="10,2,10,2" Name="titleBlock">Title</TextBlock>
         <Button Name="btnClose" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" Padding="4,-2,4,0" CornerRadius="3" FontWeight="ExtraBlack" IsVisible="{Binding CanClose}">x</Button>

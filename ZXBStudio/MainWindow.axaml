@@ -149,6 +149,9 @@
         <svg:Svg Path="/Svg/cassette-solid.svg"></svg:Svg>
       </Button>
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <ToggleButton Classes="toolbar" Name="btnMapKeyboard" ToolTip.Tip="Borderless mode">
+        <svg:Svg Path="/Svg/keyboard-regular.svg"></svg:Svg>
+      </ToggleButton>
       <ToggleButton Classes="toolbar" Name="btnBorderless" ToolTip.Tip="Borderless mode">
         <svg:Svg Path="/Svg/maximize-solid.svg"></svg:Svg>
       </ToggleButton>

@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Input.Raw;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -34,8 +35,8 @@ namespace ZXBasicStudio.Emulator.Controls
     {
         ZXVideoRenderer renderer;
         ZXEmulatorAudio audio;
-
         SpectrumBase machine;
+        ZXEmulatorKeyboardMapper mapper;
 
         public bool Running { get { return machine.Running; } }
         public bool Paused { get { return machine.Paused; } }
@@ -84,6 +85,8 @@ namespace ZXBasicStudio.Emulator.Controls
 
         public ulong TStates { get { return machine.Z80.TStatesElapsedSinceReset; } }
 
+        public bool EnableKeyMapping { get { return mapper.Active; } set { mapper.Active = value; } }
+
         #region Events
 
         public event EventHandler<BreakpointEventArgs>? Breakpoint;
@@ -96,6 +99,7 @@ namespace ZXBasicStudio.Emulator.Controls
         {
             renderer = new ZXVideoRenderer();
             audio = new ZXEmulatorAudio();
+            mapper = new ZXEmulatorKeyboardMapper();
             SetModel(ZXSpectrumModel.Spectrum48k);
 
             if(machine == null)
@@ -129,11 +133,13 @@ namespace ZXBasicStudio.Emulator.Controls
 
             machine = speccy;
             machine.RegisterSynchronized(audio);
+            machine.RegisterSynchronized(mapper);
             machine.ULA.Renderer = renderer;
             machine.FrameRendered += Machine_FrameRendered;
             machine.BreakpointHit += Machine_BreakpointHit;
             machine.ProgramReady += Machine_ProgramReady;
             audio.AudioSource = machine.ULA;
+            mapper.Emulator = machine;
         }
 
         private void Machine_ProgramReady(object? sender, EventArgs e)
@@ -413,6 +419,58 @@ namespace ZXBasicStudio.Emulator.Controls
                 emuScr.RenderFrame(renderer.VideoBuffer);
             }
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
+        }
+
+        public void ProcessRawInput(RawInputEventArgs value)
+        {
+            if (mapper.Active)
+                mapper.ProcessInput(value);
+            else
+            {
+                if (value is RawKeyEventArgs)
+                {
+                    RawKeyEventArgs args = (RawKeyEventArgs)value;
+
+                    try
+                    {
+                        switch (args.Key)
+                        {
+                            case Key.LeftShift:
+                            case Key.RightShift:
+
+                                if (args.Type == RawKeyEventType.KeyUp)
+                                    SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Caps);
+                                else
+                                    SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Caps);
+                                break;
+                            case Key.LeftCtrl:
+                            case Key.RightCtrl:
+                                if (args.Type == RawKeyEventType.KeyUp)
+                                    SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Sym);
+                                else
+                                    SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Sym);
+                                break;
+                            case Key.Enter:
+                                if (args.Type == RawKeyEventType.KeyUp)
+                                    SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Enter);
+                                else
+                                    SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Enter);
+                                break;
+                            default:
+                                if (Enum.TryParse<SpectrumKeys>(args.Key.ToString(), true, out var key))
+                                {
+                                    if (args.Type == RawKeyEventType.KeyUp)
+                                        SendKeyUp(key);
+                                    else
+                                        SendKeyDown(key);
+                                }
+                                break;
+                        }
+                    }
+                    catch { }
+
+                }
+            }
         }
     }
 

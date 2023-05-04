@@ -144,6 +144,7 @@ namespace ZXBasicStudio
             btnDirectScreen.Click += DirectScreen;
             btnTape.Click += ShowTapePlayer;
             btnPowerOn.Click += PowerOn;
+            btnMapKeyboard.Click += BtnMapKeyboard_Click;
             #endregion
 
             #region Attach Breakpoint manager events
@@ -174,6 +175,11 @@ namespace ZXBasicStudio
 
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom, new[] { _playerDock });
 
+        }
+
+        private void BtnMapKeyboard_Click(object? sender, RoutedEventArgs e)
+        {
+            emu.EnableKeyMapping = btnMapKeyboard.IsChecked ?? false;
         }
 
         private void PowerOn(object? sender, RoutedEventArgs e)
@@ -1878,68 +1884,14 @@ namespace ZXBasicStudio
 
         public void OnNext(RawInputEventArgs value)
         {
-            Debug.Print(value.ToString());
-
-            if (value is RawTextInputEventArgs)
-            {
-                RawTextInputEventArgs args = (RawTextInputEventArgs)value;
-                Debug.Print(args.Text);
-            }
-
+            if (EmulatorInfo.IsRunning)
+                emu.ProcessRawInput(value);
+            
             if (value is RawKeyEventArgs)
             {
                 RawKeyEventArgs args = (RawKeyEventArgs)value;
 
-                if (EmulatorInfo.IsRunning)
-                {
-                    if (args.Key == Key.Enter && args.Modifiers == RawInputModifiers.Alt)
-                    {
-
-                        if (args.Type == RawKeyEventType.KeyUp)
-                            SwapFullScreen();
-
-                        return;
-                    }
-
-                    try
-                    {
-                        switch (args.Key)
-                        {
-                            case Key.LeftShift:
-                            case Key.RightShift:
-
-                                if (args.Type == RawKeyEventType.KeyUp)
-                                    emu.SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Caps);
-                                else
-                                    emu.SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Caps);
-                                break;
-                            case Key.LeftCtrl:
-                            case Key.RightCtrl:
-                                if (args.Type == RawKeyEventType.KeyUp)
-                                    emu.SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Sym);
-                                else
-                                    emu.SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Sym);
-                                break;
-                            case Key.Enter:
-                                if (args.Type == RawKeyEventType.KeyUp)
-                                    emu.SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Enter);
-                                else
-                                    emu.SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Enter);
-                                break;
-                            default:
-                                if (Enum.TryParse<SpectrumKeys>(args.Key.ToString(), true, out var key))
-                                {
-                                    if (args.Type == RawKeyEventType.KeyUp)
-                                        emu.SendKeyUp(key);
-                                    else
-                                        emu.SendKeyDown(key);
-                                }
-                                break;
-                        }
-                    }
-                    catch { }
-
-                }
+                
 
                 if (args.Type != RawKeyEventType.KeyUp)
                     return;
