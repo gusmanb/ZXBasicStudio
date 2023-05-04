@@ -12,15 +12,15 @@
 // Uso: 
 //   generateTAP(tFileTap file)
 //
-//   donde,
-//   * data: Bloque de bytes a cargar en memoria del ZX Spectrum
-//   * start_address: Dirección a partir de la cual se carga el bloque de bytes
-//   * block_name: Nombre para el bloque de datos (tipico nombre que aparece en la carga al lado de byte: xxxxxxxxxx ). Max. 10 caracteres
+//   donde, tFileTap es un tipo estructural.
+//   * data: Bloque de bytes a insertar en el TAP
+//   * startAddress: Dirección a partir de la cual se carga el bloque de bytes
+//   * blockName: Nombre para el bloque de datos (tipico nombre que aparece en la carga al lado de byte: xxxxxxxxxx ). Max. 10 caracteres
+//   * blockSize: Tamaño del bloque de bytes a insertar en el TAP 
 //
-// Primera versión: v1.0
+// Primera versión: v0.1
 //
 // Historial de bugs
-//
 
 
 using System;
