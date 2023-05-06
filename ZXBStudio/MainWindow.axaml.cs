@@ -1883,10 +1883,17 @@ namespace ZXBasicStudio
             {
                 RawKeyEventArgs args = (RawKeyEventArgs)value;
 
-                
-
                 if (args.Type != RawKeyEventType.KeyUp)
                     return;
+
+                if (EmulatorInfo.IsRunning)
+                {
+                    if (args.Key == Key.Enter && args.Modifiers == RawInputModifiers.Alt)
+                    {
+                        SwapFullScreen();
+                        return;
+                    }
+                }
 
                 switch (args.Key)
                 {
