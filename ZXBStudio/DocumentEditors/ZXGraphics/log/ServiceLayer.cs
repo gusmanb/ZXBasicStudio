@@ -196,6 +196,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             }
         }
 
+
+        /// <summary>
+        /// Create defalt data for .gdu or .fnt files
+        /// </summary>
+        /// <param name="fileType">File type</param>
+        /// <returns>Array of bytes with the data or null if the type is unsuported</returns>
         public static byte[] Files_CreateData(FileTypeConfig fileType)
         {
             return dataLayer.Files_CreateData(fileType);

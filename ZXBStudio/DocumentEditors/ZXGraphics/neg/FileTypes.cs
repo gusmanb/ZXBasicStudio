@@ -11,11 +11,29 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
     /// </summary>
     public enum FileTypes
     {
+        /// <summary>
+        /// GDU or UDG
+        /// </summary>
         GDU = 0,
+        /// <summary>
+        /// Estándar font
+        /// </summary>
         Font = 1,
+        /// <summary>
+        ///  Sprite format
+        /// </summary>
         Sprite = 2,
+        /// <summary>
+        /// Tiles format
+        /// </summary>
         Tile = 3,
+        /// <summary>
+        /// Maping data
+        /// </summary>
         Map = 4,
+        /// <summary>
+        /// Config data... (not used yet)
+        /// </summary>
         Config = 5
     }
 }

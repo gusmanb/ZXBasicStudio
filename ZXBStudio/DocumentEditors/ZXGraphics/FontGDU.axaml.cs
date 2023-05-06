@@ -8,11 +8,24 @@ using ZXBasicStudio.Common;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
+    /// <summary>
+    /// Editor for GDUs and Fonts
+    /// </summary>
     public partial class FontGDU : UserControl
     {
+        /// <summary>
+        /// Dpcument modified event
+        /// </summary>
         public event EventHandler? DocumentModified;
+
+        /// <summary>
+        /// Document saved event
+        /// </summary>
         public event EventHandler? DocumentSaved;
 
+        /// <summary>
+        /// True if the document was modified
+        /// </summary>
         public bool Modified {
             get
             {
@@ -29,6 +42,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
         private bool _Modified;
 
+        /// <summary>
+        /// Filename of the actual document
+        /// </summary>
         public string FileName 
         {
             get
@@ -41,11 +57,29 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             } 
         }
 
+        /// <summary>
+        /// File type of the actual document
+        /// </summary>
         private FileTypeConfig fileType = null;
+
+        /// <summary>
+        /// Binary data of the actual doocument
+        /// </summary>
         private byte[] fileData = null;
+
+        /// <summary>
+        /// Patterns of the actual document
+        /// </summary>
         private PatternControl[] patterns = null;
+
+        /// <summary>
+        /// last zoom value
+        /// </summary>
         private int lastZoom = 0;
 
+        /// <summary>
+        /// Zooms values
+        /// </summary>
         private int[] zooms = new int[]
         {
             1,2,4,8,16,24,32,48,64
@@ -116,7 +150,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnMoveDown.Tapped += BtnMoveDown_Tapped;
             btnMoveLeft.Tapped += BtnMoveLeft_Tapped;
             btnInvert.Tapped += BtnInvert_Tapped;
-            //btnMask.Tapped += BtnMask_Tapped;
+            btnMask.Tapped += BtnMask_Tapped;
 
             return true;
         }
@@ -136,15 +170,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 for (int n = 0; n < fileType.NumerOfPatterns; n++)
                 {
                     var ctrl = new PatternControl();
-                    //cnvPatterns.Children.Add(ctrl);
-                    //Canvas.SetTop(ctrl, y);
-                    //Canvas.SetLeft(ctrl, x);
-                    //x = x + 36;
-                    //if (x > 139)
-                    //{
-                    //    x = 0;
-                    //    y = y + 56;
-                    //}
                     wpPatterns.Children.Add(ctrl);
                     patterns[n] = ctrl;
                 }
@@ -184,9 +209,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 patterns[n].Initialize(p,Pattern_Click);
                 patterns[n].Refresh();
             }
-
-            //cnvPatterns.Height = (fileType.NumerOfPatterns / 4) * 60;
-
             ctrEditor.Initialize(0, GetPattern, SetPattern);
         }
 
@@ -207,6 +229,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        /// <summary>
+        /// Zoom changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SldZoom_PropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
         {
             int z = (int)sldZoom.Value;
@@ -222,6 +249,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        /// <summary>
+        /// Height changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TxtEditorHeight_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
         {
             int h = txtEditorHeight.Text.ToInteger();
@@ -229,6 +261,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        /// <summary>
+        /// Width changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TxtEditorWidth_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
         {
             int w = txtEditorWidth.Text.ToInteger();
@@ -237,6 +274,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
 
 
+        /// <summary>
+        /// Get pattern from his id
+        /// </summary>
+        /// <param name="id">Id of the pattern to recover</param>
+        /// <returns>Pattern or null if no pattern</returns>
         private Pattern GetPattern(int id)
         {
             var pat = patterns.FirstOrDefault(d => d.Pattern.Id == id);
@@ -248,6 +290,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        /// <summary>
+        /// Set pattern
+        /// </summary>
+        /// <param name="id">Id of the pattern to set</param>
+        /// <param name="pattern">Pattern to set</param>
         private void SetPattern(int id,Pattern pattern)
         {
             Modified = true;
@@ -261,6 +308,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
 
 
+        /// <summary>
+        /// Save the actual document to disk
+        /// </summary>
+        /// <returns>True if ook or false if error</returns>
         public bool SaveDocument()
         {
             if(!ServiceLayer.Files_Save_GDUorFont(fileType, patterns?.Select(d=>d.Pattern)))
@@ -276,108 +327,193 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         #region ToolBar
 
+        /// <summary>
+        /// Clear click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnClear_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.Clear();
         }
 
-
+        /// <summary>
+        /// Cut click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnCut_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.Cut();
         }
 
 
+        //Copy click
         private void BtnCopy_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.Copy();
         }
 
 
+        /// <summary>
+        /// Paste click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnPaste_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.Paste();
         }
 
 
+        /// <summary>
+        /// Horizontal mirror click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnHMirror_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.HorizontalMirror();
         }
 
 
+        /// <summary>
+        /// Vertical mirror click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnVMirror_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.VerticalMirror();
         }
 
 
+        /// <summary>
+        /// Rotate left
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnRotateLeft_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {            
             this.ctrEditor.RotateLeft();
         }
 
 
+        /// <summary>
+        /// Rotate right
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnRotateRight_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.RotateRight();
         }
 
 
+        /// <summary>
+        /// Shift up
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnShiftUp_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.ShiftUp();
         }
 
 
+        /// <summary>
+        /// Shift right
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnShiftRight_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.ShiftRight();
         }
 
 
+        /// <summary>
+        /// Shift down
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnShiftDown_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.ShiftDown();
         }
 
 
+        /// <summary>
+        /// Shift left
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnShiftLeft_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.ShiftLeft();
         }
 
 
+        /// <summary>
+        /// Move up
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnMoveUp_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.MoveUp();
         }
 
 
+        /// <summary>
+        /// Move right
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnMoveRight_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.MoveRight();
         }
 
 
+        /// <summary>
+        /// Move down
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnMoveDown_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.MoveDown();
         }
 
 
+        /// <summary>
+        /// Move left
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnMoveLeft_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.MoveLeft();
         }
 
 
+        /// <summary>
+        /// Invert
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnInvert_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.Invert();
         }
 
 
+        /// <summary>
+        /// Mask
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnMask_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             this.ctrEditor.Mask();

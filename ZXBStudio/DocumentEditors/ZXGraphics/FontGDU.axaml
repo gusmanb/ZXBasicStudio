@@ -47,7 +47,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid Name="grdMain" ColumnDefinitions="*,4,2*,4,*" Margin="0,8,0,0">
+  <Grid Name="grdMain" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">
 
     <zxd:ZXDockingContainer Name="dockLeft" DockingGroup="ZXGraphics" RowDefinitions="*">
       <zxd:ZXDockingControl Name="dockPatterns" Title="Patterns" DockingGroup="ZXGraphics" DesiredFloatingSize="">
@@ -126,12 +126,12 @@
         <Button Classes="toolbar" Name="btnInvert" ToolTip.Tip="Invert pattern">
           <svg:Svg Path="/Svg/Invert.svg"></svg:Svg>
         </Button>
-        <!-- TODO: Not implemented
         <Button Classes="toolbar" Name="btnMask" ToolTip.Tip="Mask pattern">
           <svg:Svg Path="/Svg/Mask.svg"></svg:Svg>
         </Button>
         <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
+        <!-- TODO: Not implemented
         <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Export pattern">
           <svg:Svg Path="/Svg/Export.svg"></svg:Svg>
         </Button>
