@@ -21,29 +21,66 @@ using System.Reflection.Metadata;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Breakpoints;
+using ZXBasicStudio.DocumentModel.Classes;
+using AvaloniaEdit;
 
 namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 {
-    public partial class ZXTextEditor : UserControl
+    public partial class ZXTextEditor : ZXDocumentEditorBase, IObserver<AvaloniaPropertyChangedEventArgs>
     {
-        BreakPointMargin? bpMargin;
-        protected virtual LanguageDefinitionBase? langDef { get { return null; } }
-        protected virtual IBrush? SearchMarkerBrush { get { return null; } }
-        protected virtual AbstractFoldingStrategy? FoldingStrategy { get { return null; } }
-
-        protected virtual Regex? RegCancelBreakpoint { get { return null; } }
-        protected virtual char? CommentChar { get { return null; } }
-
-        DispatcherTimer? updateFoldingsTimer;
-        protected FoldingManager? fManager;
-
+        #region Constants
         const int FONT_MAX_SIZE = 64;
         const int FONT_MIN_SIZE = 7;
+        #endregion
 
-        public event EventHandler? DocumentModified;
-        public event EventHandler? DocumentSaved;
+        #region Protected properties
+        protected virtual bool allowsBreakpoints { get { return false; } }
+        protected virtual LanguageDefinitionBase? langDef { get { return null; } }
+        protected virtual IBrush? searchMarkerBrush { get { return null; } }
+        protected virtual AbstractFoldingStrategy? foldingStrategy { get { return null; } }
+        protected virtual Regex? regCancelBreakpoint { get { return null; } }
+        protected virtual char? commentChar { get { return null; } }
+        #endregion
 
+        #region Private variables
+        BreakPointMargin? bpMargin;
+        DispatcherTimer? updateFoldingsTimer;
+        bool firstRender = false;
         PausedLineBackgroundRender? blRender;
+        FoldingManager? fManager;
+        string _docPath;
+        string _docName;
+        #endregion
+
+        #region Events
+        public override event EventHandler? DocumentRestored;
+        public override event EventHandler? DocumentModified;
+        public override event EventHandler? DocumentSaved;
+        public override event EventHandler? RequestSaveDocument;
+        #endregion
+
+        #region ZXDocumentBase properties
+        public override string DocumentName => _docName;
+        public override string DocumentPath => _docPath;
+        public override bool Modified
+        { 
+            get 
+            { 
+                if (_docPath == ZXConstants.DISASSEMBLY_DOC || _docPath == ZXConstants.ROM_DOC) 
+                    return false; 
+                
+                return editor?.IsModified ?? false; 
+            } 
+        }
+        #endregion
+
+        #region Text editor properties
+        public bool Readonly { get { return editor.IsReadOnly; } set { editor.IsReadOnly = value; } }
+        public string? Text { get { return editor.Document?.Text; } set { if (editor.Document != null) editor.Document.Text = value; } }
+        public new double FontSize { get { return editor.FontSize; } set { editor.FontSize = value; } }
+        #endregion
+
+        #region Debugging properties
         public int? BreakLine
         {
             get { return blRender?.Line; }
@@ -60,23 +97,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                     editor.ScrollTo(value.Value + 1, 1);
                 }
             }
-        }        
+        }
+        #endregion
 
-        public bool Modified { get; set; }
-        
-        public bool Readonly { get { return editor.IsReadOnly; } set { editor.IsReadOnly = value; } }
-
-        string _fileName;
-        public string FileName { get { return _fileName; } set { UpdateFileName(_fileName, value); _fileName = value; } }
-        
-        public string? Text { get { return editor.Document?.Text; } set { if(editor.Document != null) editor.Document.Text = value; } }
-
-        public new double FontSize { get { return editor.FontSize; } set { editor.FontSize = value; } }
-
+        #region Constructors
         public ZXTextEditor() : this("Untitled")
         { 
         }
-        public ZXTextEditor(string FileName)
+        public ZXTextEditor(string DocumentPath)
         {
             InitializeComponent();
 
@@ -95,6 +123,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             {
                 using var xr = langDef.AsReader;
                 editor.SyntaxHighlighting = HighlightingLoader.Load(xr, HighlightingManager.Instance);
+            }
+
+            if (allowsBreakpoints)
+            {
                 bpMargin = new BreakPointMargin(editor);
                 bpMargin.BreakpointAdded += BpMargin_BreakpointAdded;
                 bpMargin.BreakpointRemoved += BpMargin_BreakpointRemoved;
@@ -102,35 +134,31 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 editor.TextArea.TextView.BackgroundRenderers.Add(blRender);
                 editor.TextArea.LeftMargins[0] = bpMargin;
             }
-            _fileName = FileName;
-            UpdateFileName(null, _fileName);
-            editor.TextChanged += Editor_TextChanged;
+
+            _docPath = DocumentPath;
+            _docName = Path.GetFileName(DocumentPath);
+
+            UpdateFileName(null, _docPath);
+            editor.GetPropertyChangedObservable(TextEditor.IsModifiedProperty).Subscribe(this);
             editor.TemplateApplied += Editor_TemplateApplied;
 
             editor.Options.ConvertTabsToSpaces = true;
             editor.Options.EnableTextDragDrop = true;
             editor.Options.EnableRectangularSelection = true;
 
-            var breaks = BreakpointManager.BreakPoints(FileName);
+            var breaks = BreakpointManager.BreakPoints(DocumentPath);
 
             foreach (var bp in breaks)
                 bpMargin?.Breakpoints.Add(bp);
         }
+        #endregion
 
-        public void FocusText()
-        {
-            editor.TextArea.Focus();
-            editor.TextArea.Caret.BringCaretToView();
-        }
-
+        #region Editor event handling
         private void Editor_TemplateApplied(object? sender, Avalonia.Controls.Primitives.TemplateAppliedEventArgs e)
         {
-            if(SearchMarkerBrush != null)
-                editor.SearchPanel.SetSearchResultsBrush(SearchMarkerBrush);
+            if (searchMarkerBrush != null)
+                editor.SearchPanel.SetSearchResultsBrush(searchMarkerBrush);
         }
-
-        bool firstRender = false;
-
         private void TextArea_LayoutUpdated(object? sender, EventArgs e)
         {
             if (!firstRender)
@@ -146,69 +174,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         }
         private void TextArea_KeyUp(object? sender, Avalonia.Input.KeyEventArgs e)
         {
-            if (e.Key == Avalonia.Input.Key.S && e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
-                SaveDocument();
-        }
-        private void Editor_TextChanged(object? sender, EventArgs e)
-        {
-            if (FileName == ZXConstants.DISASSEMBLY_DOC || FileName == ZXConstants.ROM_DOC)
-                return;
-
-            if (!Modified)
-            {
-                Modified = true;
-                if(DocumentModified != null)
-                    DocumentModified(this, EventArgs.Empty);
-            }
-
-            if (updateFoldingsTimer != null)
-            {
-                updateFoldingsTimer.IsEnabled = false;
-                updateFoldingsTimer.IsEnabled = true;
-            }
-
-        }
-        private void UpdateFileName(string? OldName, string NewName)
-        {
-            if (fManager != null)
-            {
-                FoldingManager.Uninstall(fManager);
-                fManager = null;
-            }
-
-            if (updateFoldingsTimer != null)
-            {
-                updateFoldingsTimer.Stop();
-                updateFoldingsTimer = null;
-            }
-
-            if (!string.IsNullOrWhiteSpace(OldName) && OldName != "Untitled")
-                BreakpointManager.UpdateFileName(OldName, NewName);
-
-            if (!string.IsNullOrWhiteSpace(NewName) && NewName != "Untitled" && NewName != ZXConstants.DISASSEMBLY_DOC && NewName != ZXConstants.ROM_DOC)
-                editor.Document = new AvaloniaEdit.Document.TextDocument(File.ReadAllText(NewName));
-            else
-                editor.Document = new AvaloniaEdit.Document.TextDocument();
-
-            if (NewName == ZXConstants.DISASSEMBLY_DOC || NewName == ZXConstants.ROM_DOC)
-                editor.IsReadOnly = true;
-
-            if (FoldingStrategy != null)
-            {
-                fManager = FoldingManager.Install(editor.TextArea);
-                updateFoldingsTimer = new DispatcherTimer();
-                updateFoldingsTimer.Interval = TimeSpan.FromSeconds(2);
-                updateFoldingsTimer.Tick += UpdateFoldingsTimer_Tick;
-                updateFoldingsTimer.IsEnabled = true;
-            }
-        }
-        private void UpdateFoldingsTimer_Tick(object? sender, EventArgs e)
-        {
-            if (updateFoldingsTimer == null || fManager == null || FoldingStrategy == null)
-                return;
-
-            updateFoldingsTimer.IsEnabled = false;
-            FoldingStrategy.UpdateFoldings(fManager, editor.Document);
+            if (e.Key == Avalonia.Input.Key.S && e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control) && RequestSaveDocument != null)
+                RequestSaveDocument(this, EventArgs.Empty);
         }
         private void Editor_PointerWheelChanged(object? sender, Avalonia.Input.PointerWheelEventArgs e)
         {
@@ -219,59 +186,22 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             }
 
         }
-        public void UpdateFontSize(bool increase)
-        {
-            double currentSize = editor.FontSize;
+        #endregion
 
-            if (increase)
-            {
-                if (currentSize < FONT_MAX_SIZE)
-                {
-                    double newSize = Math.Min(FONT_MAX_SIZE, currentSize + 1);
-                    editor.FontSize = newSize;
-                }
-            }
-            else
-            {
-                if (currentSize > FONT_MIN_SIZE)
-                {
-                    double newSize = Math.Max(FONT_MIN_SIZE, currentSize - 1);
-                    editor.FontSize = newSize;
-                }
-            }
-        }
-        public bool SaveDocument()
-        {
-
-            if (FileName == ZXConstants.DISASSEMBLY_DOC || FileName == ZXConstants.ROM_DOC)
-                return false;
-
-            try
-            {
-                File.WriteAllText(_fileName, editor.Document.Text);
-            }
-            catch { return false; }
-
-            Modified = false;
-            
-            if(DocumentSaved != null)
-                DocumentSaved(this, EventArgs.Empty);
-
-            return true;
-        }
+        #region Breakpoint management
         private void BpMargin_BreakpointRemoved(object? sender, BreakPointMargin.BreakpointEventArgs e)
         {
-            if (FileName == "Untitled")
+            if (DocumentName == "Untitled")
             {
                 e.Cancel = true;
                 return;
             }
 
-            BreakpointManager.RemoveBreakpoint(_fileName, e.BreakPoint);
+            BreakpointManager.RemoveBreakpoint(_docPath, e.BreakPoint);
         }
         private void BpMargin_BreakpointAdded(object? sender, BreakPointMargin.BreakpointEventArgs e)
         {
-            if (FileName == "Untitled")
+            if (DocumentName == "Untitled")
             {
                 e.Cancel = true;
                 return;
@@ -283,16 +213,76 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             if (string.IsNullOrWhiteSpace(text))
                 e.Cancel = true;
 
-            if (RegCancelBreakpoint != null && RegCancelBreakpoint.IsMatch(text))
+            if (regCancelBreakpoint != null && regCancelBreakpoint.IsMatch(text))
                 e.Cancel = true;
 
-            e.BreakPoint.File = _fileName;
+            e.BreakPoint.File = _docPath;
             BreakpointManager.AddBreakpoint(e.BreakPoint);
-            
+
         }
+        public void ClearBreakpoints()
+        {
+            bpMargin?.Breakpoints.Clear();
+            InvalidateVisual();
+            bpMargin?.InvalidateVisual();
+        }
+        #endregion
+
+        #region ZXDocumentBase functions
+
+        public override bool SaveDocument(TextWriter OutputLog)
+        {
+            try
+            {
+                if (_docPath == ZXConstants.DISASSEMBLY_DOC || _docPath == ZXConstants.ROM_DOC)
+                {
+                    OutputLog.WriteLine($"This file cannot be saved.");
+                    return false;
+                }
+
+                using (var str = File.Create(_docPath))
+                    editor.Save(str);
+
+                OutputLog.WriteLine($"File {_docPath} saved successfully.");
+
+                return true;
+            }
+            catch(Exception ex) 
+            {
+                OutputLog.WriteLine($"Error saving file {_docPath}: {ex.Message}");
+                return false;
+            }
+        }
+        public override bool RenameDocument(string NewName, TextWriter OutputLog)
+        {
+            try 
+            {
+                UpdateFileName(_docPath, NewName);
+                return true;
+            }
+            catch(Exception ex) 
+            {
+                OutputLog.WriteLine($"Error internally updating the document name: {ex.Message}");
+                return false;
+            }
+        }
+        public override bool CloseDocument(TextWriter OutputLog, bool ForceClose)
+        {
+            return true;
+        }
+
+        #endregion
+
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
+        }
+
+        #region Text editor functions
+        public void FocusText()
+        {
+            editor.TextArea.Focus();
+            editor.TextArea.Caret.BringCaretToView();
         }
         public void Collapse()
         {
@@ -312,7 +302,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         }
         public void CommentSelection()
         {
-            if (editor.IsReadOnly || CommentChar == null || editor.TextArea.Selection == null)
+            if (editor.IsReadOnly || commentChar == null || editor.TextArea.Selection == null)
                 return;
             
             TextDocument document = editor.TextArea.Document;
@@ -321,7 +311,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             {
                 var caretPos = editor.TextArea.Caret.Position;
                 var line = document.GetLineByNumber(caretPos.Line);
-                document.Insert(line.Offset, $"{CommentChar}");
+                document.Insert(line.Offset, $"{commentChar}");
             }
             else
             {
@@ -333,18 +323,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                     int lineEnd = document.GetLineByOffset(segment.EndOffset).LineNumber;
                     for (int i = lineStart; i <= lineEnd; i++)
                     {
-                        document.Insert(document.GetLineByNumber(i).Offset, $"{CommentChar}");
+                        document.Insert(document.GetLineByNumber(i).Offset, $"{commentChar}");
                     }
                 }
             }
         }
         public void UncommentSelection()
         {
-            if (editor.IsReadOnly || CommentChar == null || editor.TextArea.Selection == null)
+            if (editor.IsReadOnly || commentChar == null || editor.TextArea.Selection == null)
                 return;
 
             TextDocument document = editor.TextArea.Document;
-            Regex regComment = new Regex($"^(\\s*?)({CommentChar})");
+            Regex regComment = new Regex($"^(\\s*?)({commentChar})");
 
             IEnumerable<SelectionSegment> selectionSegments = editor.TextArea.Selection.Segments;
             if (editor.TextArea.Selection.Length == 0)
@@ -371,11 +361,102 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 }
             }
         }
-        public void ClearBreakpoints()
+        private void UpdateFileName(string? OldName, string NewName)
         {
-            bpMargin?.Breakpoints.Clear();
-            InvalidateVisual();
-            bpMargin?.InvalidateVisual();
+            if (fManager != null)
+            {
+                FoldingManager.Uninstall(fManager);
+                fManager = null;
+            }
+
+            if (updateFoldingsTimer != null)
+            {
+                updateFoldingsTimer.Stop();
+                updateFoldingsTimer = null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(OldName) && OldName != "Untitled")
+                BreakpointManager.UpdateFileName(OldName, NewName);
+
+            if (!string.IsNullOrWhiteSpace(NewName) && NewName != "Untitled" && NewName != ZXConstants.DISASSEMBLY_DOC && NewName != ZXConstants.ROM_DOC)
+                editor.Document = new AvaloniaEdit.Document.TextDocument(File.ReadAllText(NewName));
+            else
+                editor.Document = new AvaloniaEdit.Document.TextDocument();
+
+            if (NewName == ZXConstants.DISASSEMBLY_DOC || NewName == ZXConstants.ROM_DOC)
+                editor.IsReadOnly = true;
+
+            if (foldingStrategy != null)
+            {
+                fManager = FoldingManager.Install(editor.TextArea);
+                updateFoldingsTimer = new DispatcherTimer();
+                updateFoldingsTimer.Interval = TimeSpan.FromSeconds(2);
+                updateFoldingsTimer.Tick += UpdateFoldingsTimer_Tick;
+                updateFoldingsTimer.IsEnabled = true;
+            }
+
+            _docPath = NewName;
+            _docName = Path.GetFileName(NewName);
         }
+        private void UpdateFoldingsTimer_Tick(object? sender, EventArgs e)
+        {
+            if (updateFoldingsTimer == null || fManager == null || foldingStrategy == null)
+                return;
+
+            updateFoldingsTimer.IsEnabled = false;
+            foldingStrategy.UpdateFoldings(fManager, editor.Document);
+        }
+        public void UpdateFontSize(bool increase)
+        {
+            double currentSize = editor.FontSize;
+
+            if (increase)
+            {
+                if (currentSize < FONT_MAX_SIZE)
+                {
+                    double newSize = Math.Min(FONT_MAX_SIZE, currentSize + 1);
+                    editor.FontSize = newSize;
+                }
+            }
+            else
+            {
+                if (currentSize > FONT_MIN_SIZE)
+                {
+                    double newSize = Math.Max(FONT_MIN_SIZE, currentSize - 1);
+                    editor.FontSize = newSize;
+                }
+            }
+        }
+        #endregion
+
+        #region IObserver implementation for modified document notifications
+        public void OnCompleted()
+        {
+            
+        }
+
+        public void OnError(Exception error)
+        {
+            
+        }
+
+        public void OnNext(AvaloniaPropertyChangedEventArgs value)
+        {
+            if (_docPath == ZXConstants.DISASSEMBLY_DOC || _docPath == ZXConstants.ROM_DOC)
+                return;
+
+            if (value.NewValue != null && (bool)value.NewValue == true)
+            {
+                if (DocumentModified != null)
+                    DocumentModified(this, EventArgs.Empty);
+            }
+            else if (value.NewValue != null && (bool)value.NewValue == false)
+            {
+                if (DocumentRestored != null)
+                    DocumentRestored(this, EventArgs.Empty);
+            }
+
+        }
+        #endregion
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using Avalonia.Svg.Skia;
 using System;
 using System.Collections.Generic;
@@ -27,12 +28,21 @@ namespace ZXBasicStudio.DocumentModel.Interfaces
         /// Appearance of the document.
         /// Used in the document creation dialog.
         /// </summary>
-        Avalonia.Svg.Skia.Svg DocumentAspect { get; }
+        Avalonia.Svg.Skia.Svg? DocumentAspect { get; }
         /// <summary>
         /// Icon of the document.
         /// Used in the project explorer.
         /// </summary>
-        Image DocumentIcon { get; }
+        Bitmap DocumentIcon { get; }
+        /// <summary>
+        /// If true the document can be created and the IZXDocumentFactory must support this functionality.
+        /// Also, if supported, the DocumentAspect must be provided.
+        /// </summary>
+        bool CanCreate { get; }
+        /// <summary>
+        /// If true the document can be edited and an implementation of the IZXDocumentEditor must be provided by the factory
+        /// </summary>
+        bool CanEdit { get; }
         /// <summary>
         /// Factory for the document.
         /// </summary>

@@ -38,6 +38,7 @@
     <None Remove="Assets\folder.png" />
     <None Remove="Assets\LogoBig.png" />
     <None Remove="Assets\logoSmall.png" />
+    <None Remove="Assets\txtFile.png" />
     <None Remove="Assets\unknFile.png" />
     <None Remove="Assets\zxbFile.png" />
     <None Remove="Assets\zxbs.ico" />
@@ -69,6 +70,9 @@
     <None Remove="Svg\diagram-project-plus-solid.svg" />
     <None Remove="Svg\diagram-project-solid.svg" />
     <None Remove="Svg\display-lines-solid.svg" />
+    <None Remove="Svg\Documents\file-text.svg" />
+    <None Remove="Svg\Documents\file-zxasm.svg" />
+    <None Remove="Svg\Documents\file-zxbasic.svg" />
     <None Remove="Svg\dumpster-solid.svg" />
     <None Remove="Svg\eject-solid.svg" />
     <None Remove="Svg\file-arrow-down-solid.svg" />
@@ -173,6 +177,7 @@
     <AvaloniaResource Include="Assets\folder.png" />
     <AvaloniaResource Include="Assets\LogoBig.png" />
     <AvaloniaResource Include="Assets\logoSmall.png" />
+    <AvaloniaResource Include="Assets\txtFile.png" />
     <AvaloniaResource Include="Assets\unknFile.png" />
     <AvaloniaResource Include="Assets\zxbFile.png" />
     <AvaloniaResource Include="Assets\zxbs.ico" />
@@ -183,6 +188,9 @@
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\Documents\file-text.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxbasic.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxasm.svg" />
     <AvaloniaResource Include="Svg\Export.svg" />
     <AvaloniaResource Include="Svg\keyboard-regular.svg" />
     <AvaloniaResource Include="Svg\Mask.svg" />
@@ -388,5 +396,6 @@
     <Folder Include="DebuggingTools\TStates\Classes\" />
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
+    <Folder Include="IntegratedDocumentTypes\CodeDocuments\Assembler\" />
   </ItemGroup>
 </Project>

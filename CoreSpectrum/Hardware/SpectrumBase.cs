@@ -218,6 +218,7 @@ namespace CoreSpectrum.Hardware
         public virtual void Stop()
         {
             _stop = true;
+            _pause = false;
 
             foreach (var exec in _syncExecs)
                 exec.Stop();

@@ -41,6 +41,7 @@ using ZXBasicStudio.Controls.DockSystem;
 using ZXBasicStudio.Dialogs;
 using ZXBasicStudio.DocumentEditors;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
+using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.Emulator.Classes;
 using ZXBasicStudio.Emulator.Controls;
 using ZXBasicStudio.Extensions;
@@ -51,6 +52,7 @@ namespace ZXBasicStudio
     {
         //TODO: Añadir lista de proyectos recientes al menú
 
+        
         List<ZXTextEditor> openEditors = new List<ZXTextEditor>();
         List<DocumentEditors.ZXGraphics.FontGDU> openZXGraphics = new List<DocumentEditors.ZXGraphics.FontGDU>();
         ObservableCollection<TabItem> editTabs = new ObservableCollection<TabItem>();
@@ -281,7 +283,7 @@ namespace ZXBasicStudio
                     }
                     else
                     {
-                        var editor = openEditors.FirstOrDefault(d => d.FileName == path);
+                        var editor = openEditors.FirstOrDefault(d => dDocumentPath == path);
                         if (editor != null)
                         {
                             if (editor.Modified)
@@ -408,7 +410,7 @@ namespace ZXBasicStudio
                 if (editor == null)
                     return;
 
-                if (!editor.SaveDocument())
+                if (!editor.SaveDocument(outLog.Writer))
                 {
                     await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
                     return;
@@ -439,7 +441,7 @@ namespace ZXBasicStudio
             foreach (var edit in openEditors)
             {
                 if (edit.Modified)
-                    if (!edit.SaveDocument())
+                    if (!edit.SaveDocument(outLog.Writer))
                         return false;
             }
             foreach (var edit in openZXGraphics)
@@ -637,7 +639,7 @@ namespace ZXBasicStudio
         ZXTextEditor? OpenFile(string file)
         {
             {
-                var opened = openEditors.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
+                var opened = openEditors.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.DocumentPath));
                 if (opened != null)
                 {
                     var tab = editTabs.First(t => t.Content == opened);
@@ -780,7 +782,7 @@ namespace ZXBasicStudio
 
         private async Task CloseDocumentByFile(string File)
         {
-            var disEdit = openEditors.FirstOrDefault(ef => ef.FileName == File);
+            var disEdit = openEditors.FirstOrDefault(ef => ef.DocumentPath == File);
 
             if (disEdit != null)
             {
@@ -1244,7 +1246,7 @@ namespace ZXBasicStudio
                 if (program != null)
                 {
                     loadedProgram = program;
-                    var disas = openEditors.FirstOrDefault(e => e.FileName == ZXConstants.DISASSEMBLY_DOC);
+                    var disas = openEditors.FirstOrDefault(e => e.DocumentPath == ZXConstants.DISASSEMBLY_DOC);
 
                     Dispatcher.UIThread.InvokeAsync(() =>
                     {
@@ -1846,7 +1848,7 @@ namespace ZXBasicStudio
         {
             foreach (var edit in openEditors)
             {
-                if (edit.FileName != ZXConstants.DISASSEMBLY_DOC && edit.FileName != ZXConstants.ROM_DOC)
+                if (edit.DocumentPath != ZXConstants.DISASSEMBLY_DOC && edit.DocumentPath != ZXConstants.ROM_DOC)
                     edit.Readonly = false;
             }
         }

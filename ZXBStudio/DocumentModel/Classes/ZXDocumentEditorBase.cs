@@ -11,16 +11,24 @@ namespace ZXBasicStudio.DocumentModel.Classes
     /// <summary>
     /// Base class for all the document editors.
     /// </summary>
-    public abstract class ZXDocumentEditorBase : Control
+    public abstract class ZXDocumentEditorBase : UserControl
     {
         /// <summary>
         /// Event rised when the document is modified
         /// </summary>
         public abstract event EventHandler? DocumentModified;
         /// <summary>
-        /// Event rised when the document is saved internally
+        /// Event rised when the document is restored to its initial state (changes have been undone)
+        /// </summary>
+        public abstract event EventHandler? DocumentRestored;
+        /// <summary>
+        /// Event rised when the document is saved
         /// </summary>
         public abstract event EventHandler? DocumentSaved;
+        /// <summary>
+        /// Event rised when the editor wants to save the document (for example if the user uses a shortcut that is handled by the editor)
+        /// </summary>
+        public abstract event EventHandler? RequestSaveDocument;
         /// <summary>
         /// Visible name of the document, used to show it in the document tabs
         /// </summary>
@@ -40,10 +48,10 @@ namespace ZXBasicStudio.DocumentModel.Classes
         /// <returns>True if the document was saved successfully, false in other case</returns>
         public abstract bool SaveDocument(TextWriter OutputLog);
         /// <summary>
-        /// Requests the editor to rename the document
+        /// Requests the editor to rename the document, only for internal purposes, the file itself will be renamed by the IDE
         /// </summary>
         /// <param name="OutputLog">TextWriter used to show logs to the user</param>
-        /// <param name="NewName">New name of the document, this may be a full path or just a file name, if the name is a full path the file is being moved, else only its name is changed. DocumentName and DocumentPath MUST be synchronized with it.</param>
+        /// <param name="NewName">New name of the document, this will always be the full path of the document. DocumentName and DocumentPath MUST be synchronized with it.</param>
         /// <returns>True if the document was renamed successfully, false in other case</returns>
         public abstract bool RenameDocument(string NewName, TextWriter OutputLog);
         /// <summary>
