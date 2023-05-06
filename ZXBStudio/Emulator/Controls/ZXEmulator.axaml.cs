@@ -105,9 +105,6 @@ namespace ZXBasicStudio.Emulator.Controls
             if(machine == null)
                 throw new ArgumentException("Unknown Spectrum model!");
 
-            machine.RegisterSynchronized(audio);
-            machine.FrameRendered += Machine_FrameRendered;
-            machine.BreakpointHit += Machine_BreakpointHit;
             InitializeComponent();
             emuKeyb.KeyPressed += EmuKeyb_KeyPressed;
             btnKeyb.Click += BtnKeyb_Click;

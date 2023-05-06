@@ -24,11 +24,11 @@ namespace CoreSpectrum.Hardware
         protected readonly TapePlayer _player;
         protected readonly MachineTimmings _timmings;
 
-        protected bool _pause;
-        protected bool _stop = true;
-        protected bool _turbo;
-        protected bool _renderOnturbo;
-        protected int _scanCycles;
+        protected volatile bool _pause;
+        protected volatile bool _stop = true;
+        protected volatile bool _turbo;
+        protected volatile bool _renderOnturbo;
+        protected volatile int _scanCycles;
         protected double _nextFrame;
         protected Stopwatch _sw = new Stopwatch();
 
@@ -40,6 +40,8 @@ namespace CoreSpectrum.Hardware
         protected readonly List<ISynchronizedExecution> _syncExecs = new List<ISynchronizedExecution>();
 
         protected bool _threadAlive;
+
+        private object locker = new object();
 
         #endregion
 
@@ -142,7 +144,8 @@ namespace CoreSpectrum.Hardware
                     _nextFrame = _sw.ElapsedTicks;
                 }
 
-                NextInstruction();
+                lock(locker)
+                    NextInstruction();
             }
 
             _sw.Stop();
@@ -191,108 +194,133 @@ namespace CoreSpectrum.Hardware
 
         public virtual void Start(bool backgroundThread = false)
         {
-            _pause = false;
-            _stop = false;
-            _turbo = false;
-            _scanCycles = 0;
-            _nextFrame = 0;
-            _sw.Stop();
-
-            _memory.ClearRAM();
-            _ula.Reset();
-            _z80.Restart();
-            
-
-            if (!backgroundThread)
+            lock (locker)
             {
-                Thread th = new Thread(SpectrumCycle);
-                th.Start();
-            }
-            else
-                ThreadPool.QueueUserWorkItem(SpectrumCycle);
+                _pause = false;
+                _stop = false;
+                _turbo = false;
+                _scanCycles = 0;
+                _nextFrame = 0;
+                _sw.Stop();
 
-            foreach(var exec in _syncExecs)
-                exec.Start();
+                _memory.ClearRAM();
+                _ula.Reset();
+                _z80.Restart();
+
+
+                if (!backgroundThread)
+                {
+                    Thread th = new Thread(SpectrumCycle);
+                    th.Start();
+                }
+                else
+                    ThreadPool.QueueUserWorkItem(SpectrumCycle);
+
+                foreach (var exec in _syncExecs)
+                    exec.Start();
+            }
         }
 
         public virtual void Stop()
         {
-            _stop = true;
+            lock (locker)
+            {
+                _stop = true;
 
-            foreach (var exec in _syncExecs)
-                exec.Stop();
+                foreach (var exec in _syncExecs)
+                    exec.Stop();
 
-            while (_threadAlive)
-                Thread.Sleep(0);
+                while (_threadAlive)
+                    Thread.Sleep(0);
+            }
         }
 
         public virtual void Pause()
         {
-            if (_stop)
-                return;
+            lock (locker)
+            {
 
-            _pause = true;
+                if (_stop)
+                    return;
 
-            foreach (var exec in _syncExecs)
-                exec.Pause();
+                _pause = true;
+
+                foreach (var exec in _syncExecs)
+                    exec.Pause();
+            }
         }
 
         public virtual void Resume()
         {
-            if (_stop)
-                return;
+            lock (locker)
+            {
 
-            _ula.ResetAudio();
+                if (_stop)
+                    return;
 
-            _pause = false;
+                _ula.ResetAudio();
 
-            foreach (var exec in _syncExecs)
-                exec.Resume();
+                _pause = false;
+
+                foreach (var exec in _syncExecs)
+                    exec.Resume();
+            }
         }
 
         public virtual void Reset()
         {
-            _z80.Reset();
+            lock (locker)
+            {
+                System.Diagnostics.Debug.WriteLine("Reset");
 
-            foreach (var exec in _syncExecs)
-                exec.Reset();
+                _z80.Reset();
+
+                foreach (var exec in _syncExecs)
+                    exec.Reset();
+            }
         }
 
         public virtual void Turbo(bool Enable, bool RenderOnTurbo = false)
         {
-            if (Enable)
+            lock (locker)
             {
-                _turbo = true;
-                _renderOnturbo = RenderOnTurbo;
-                _ula.Turbo = true;
-            }
-            else
-            {
-                bool paused = _pause;
-
-                if (!paused && !_stop)
+                if (Enable)
                 {
-                    Pause();
-                    Thread.Sleep(10);
+                    _turbo = true;
+                    _renderOnturbo = RenderOnTurbo;
+                    _ula.Turbo = true;
+                }
+                else
+                {
+                    bool paused = _pause;
+
+                    if (!paused && !_stop)
+                    {
+                        Pause();
+                        Thread.Sleep(10);
+                    }
+
+                    _turbo = false;
+                    _ula.Turbo = false;
+
+                    if (!paused && !_stop)
+                        Resume();
                 }
 
-                _turbo = false;
-                _ula.Turbo = false;
-
-                if (!paused && !_stop)
-                    Resume();
+                foreach (var exec in _syncExecs)
+                    exec.Turbo(Enable);
             }
-
-            foreach (var exec in _syncExecs)
-                exec.Turbo(Enable);
         }
 
         public virtual void Step()
         {
-            NextInstruction();
+            lock (locker)
+            {
+                NextInstruction();
 
-            foreach (var exec in _syncExecs)
-                exec.Step();
+                foreach (var exec in _syncExecs)
+                    exec.Step();
+            }
         }
 
         public abstract bool InjectProgram(ProgramImage Image);
@@ -351,7 +379,6 @@ namespace CoreSpectrum.Hardware
             {
                 var args = new BreakPointEventArgs(bp);
                 BreakpointHit(this, args);
-
                 if (args.StopExecution)
                     e.ExecutionStopper.Stop(true);
             }
