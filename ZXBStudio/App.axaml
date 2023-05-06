@@ -54,7 +54,7 @@
 
     </Style>
     <Style Selector="AvalonEdit|TextEditor">
-      <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace" />
+      <Setter Property="FontFamily" Value="avares://ZXBasicStudio/Fonts#Fira Code" />
       <Setter Property="Foreground" Value="#D4D4D4" />
       <Setter Property="Background" Value="#ff202020" />
       <Setter Property="FontWeight" Value="Medium" />
@@ -126,7 +126,7 @@
       <Setter Property="CornerRadius" Value="5"></Setter>
     </Style>
     <Style Selector="ComboBox.dialog">
-      <Setter Property="Margin" Value="5"></Setter>
+      <Setter Property="Margin" Value="0"></Setter>
       <Setter Property="CornerRadius" Value="5"></Setter>
       <Setter Property="Height" Value="32"></Setter>
       <Setter Property="Padding" Value="5"></Setter>

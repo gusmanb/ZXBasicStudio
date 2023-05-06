@@ -47,6 +47,7 @@
     <None Remove="Assets\zxGraphics_map.png" />
     <None Remove="Assets\zxGraphics_spr.png" />
     <None Remove="Assets\zxGraphics_til.png" />
+    <None Remove="Fonts\FiraCode-Regular.ttf" />
     <None Remove="Fonts\NimbusSanL-Bol.ttf" />
     <None Remove="Fonts\NimbusSanL-BolIta.ttf" />
     <None Remove="Fonts\NimbusSanL-Reg.ttf" />
@@ -181,6 +182,7 @@
     <AvaloniaResource Include="Assets\zxGraphics_map.png" />
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
+    <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
     <AvaloniaResource Include="Svg\Export.svg" />
     <AvaloniaResource Include="Svg\keyboard-regular.svg" />
     <AvaloniaResource Include="Svg\Mask.svg" />

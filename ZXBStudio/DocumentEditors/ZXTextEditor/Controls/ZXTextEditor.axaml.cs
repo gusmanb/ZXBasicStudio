@@ -107,6 +107,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             editor.TextChanged += Editor_TextChanged;
             editor.TemplateApplied += Editor_TemplateApplied;
 
+            editor.Options.ConvertTabsToSpaces = true;
+            editor.Options.EnableTextDragDrop = true;
+            editor.Options.EnableRectangularSelection = true;
+
             var breaks = BreakpointManager.BreakPoints(FileName);
 
             foreach (var bp in breaks)
@@ -247,7 +251,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 File.WriteAllText(_fileName, editor.Document.Text);
             }
             catch { return false; }
-            
+
             Modified = false;
             
             if(DocumentSaved != null)

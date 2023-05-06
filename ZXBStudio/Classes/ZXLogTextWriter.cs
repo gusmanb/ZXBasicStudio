@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace ZXBasicStudio.Classes
 {
-    public class LogTextWriter : TextWriter
+    public class ZXLogTextWriter : TextWriter
     {
         TextBlock target;
         ScrollViewer scroll;
 
-        public LogTextWriter(TextBlock Target, ScrollViewer Scroller) 
+        public ZXLogTextWriter(TextBlock Target, ScrollViewer Scroller) 
         {
             this.target = Target;
             this.scroll = Scroller;

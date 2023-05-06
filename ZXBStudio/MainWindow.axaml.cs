@@ -329,8 +329,7 @@ namespace ZXBasicStudio
                     return;
             }
 
-            var tipo = tab.Content?.GetType();
-            if (tipo == typeof(ZXTextEditor))
+            if (tab.Content is ZXTextEditor)
             {
                 var editor = tab.Content as ZXTextEditor;
 
@@ -346,7 +345,7 @@ namespace ZXBasicStudio
                 }
                 openEditors.Remove(editor);
             }
-            else if (tipo == typeof(DocumentEditors.ZXGraphics.FontGDU))
+            else if (tab.Content is DocumentEditors.ZXGraphics.FontGDU)
             {
                 var editor = tab.Content as DocumentEditors.ZXGraphics.FontGDU;
 
@@ -402,9 +401,7 @@ namespace ZXBasicStudio
             if (activeTab == null)
                 return;
 
-            var tipo = activeTab.Content.GetType();
-
-            if (tipo == typeof(ZXTextEditor))
+            if (activeTab.Content is ZXTextEditor)
             {
                 var editor = activeTab.Content as ZXTextEditor;
 
@@ -417,7 +414,7 @@ namespace ZXBasicStudio
                     return;
                 }
             }
-            else if (tipo == typeof(DocumentEditors.ZXGraphics.FontGDU))
+            else if (activeTab.Content is DocumentEditors.ZXGraphics.FontGDU)
             {
                 var editor = activeTab.Content as DocumentEditors.ZXGraphics.FontGDU;
 
@@ -639,106 +636,102 @@ namespace ZXBasicStudio
 
         ZXTextEditor? OpenFile(string file)
         {
-            try
             {
+                var opened = openEditors.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
+                if (opened != null)
                 {
-                    var opened = openEditors.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
-                    if (opened != null)
-                    {
-                        var tab = editTabs.First(t => t.Content == opened);
-                        tab.IsSelected = true;
-                        return opened;
-                    }
+                    var tab = editTabs.First(t => t.Content == opened);
+                    tab.IsSelected = true;
+                    return opened;
                 }
+            }
+            {
+                var opened = openZXGraphics.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
+                if (opened != null)
                 {
-                    var opened = openZXGraphics.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
-                    if (opened != null)
-                    {
-                        var tab = editTabs.First(t => t.Content == opened);
-                        tab.IsSelected = true;
-                        return null;
-                    }
-                }
-
-                ZXTextEditor editor = null;
-                DocumentEditors.ZXGraphics.FontGDU graphicsEditor = null;
-
-                if (file.IsZXAssembler() || file == ZXConstants.DISASSEMBLY_DOC || file == ZXConstants.ROM_DOC)
-                    editor = new ZXAssemblerEditor(file);
-                else if (file.IsZXBasic())
-                    editor = new ZXBasicEditor(file);
-                else if (file.IsZXConfig())
-                    editor = new ZXTextEditor(file);
-                else if (file.IsZXGraphics())
-                {
-                    graphicsEditor = new DocumentEditors.ZXGraphics.FontGDU();
-                    graphicsEditor.Initialize(file);
-                }
-                else
-                    return null;
-
-                if (editor != null)
-                {
-                    TabItem tItem = new TabItem();
-                    tItem.Classes.Add("closeTab");
-                    tItem.Tag = Path.GetFileName(file);
-                    tItem.Content = editor;
-                    editTabs.Add(tItem);
-                    openEditors.Add(editor);
-
-                    tItem.IsSelected = true;
-                    editor.DocumentModified += EditorDocumentModified;
-                    editor.DocumentSaved += EditorDocumentSaved;
-                    FileInfo.FileLoaded = true;
-                    peExplorer.SelectPath(file);
-
-                    if (EmulatorInfo.IsRunning && !EmulatorInfo.IsPaused)
-                        editor.Readonly = true;
-                    else if (EmulatorInfo.IsRunning && EmulatorInfo.IsPaused)
-                    {
-                        var bp = basicBreakpoints.FirstOrDefault(bp => bp.Address == emu.Registers.PC);
-
-                        if (bp != null)
-                        {
-                            var line = bp.Tag as ZXCodeLine;
-                            if (line != null)
-                            {
-                                if (line.File == file)
-                                    editor.BreakLine = line.LineNumber + 1;
-                            }
-                        }
-                    }
-                    return editor;
-                }
-                else if (graphicsEditor != null)
-                {
-                    TabItem tItem = new TabItem();
-                    tItem.Classes.Add("closeTab");
-                    tItem.Tag = Path.GetFileName(file);
-                    tItem.Content = graphicsEditor;
-                    editTabs.Add(tItem);
-                    openZXGraphics.Add(graphicsEditor);
-
-                    tItem.IsSelected = true;
-                    graphicsEditor.DocumentModified += EditorDocumentModified;
-                    graphicsEditor.DocumentSaved += EditorDocumentSaved;
-                    FileInfo.FileLoaded = true;
-                    peExplorer.SelectPath(file);
-
-                    return null;
-                }
-                else
-                {
+                    var tab = editTabs.First(t => t.Content == opened);
+                    tab.IsSelected = true;
                     return null;
                 }
             }
-            catch (Exception ex) { this.ShowError("Error loading file.", $"Error loading file {file}: {ex.Message} {ex.StackTrace}").RunSynchronously(); return null; }
+
+            ZXTextEditor editor = null;
+            DocumentEditors.ZXGraphics.FontGDU graphicsEditor = null;
+
+            if (file.IsZXAssembler() || file == ZXConstants.DISASSEMBLY_DOC || file == ZXConstants.ROM_DOC)
+                editor = new ZXAssemblerEditor(file);
+            else if (file.IsZXBasic())
+                editor = new ZXBasicEditor(file);
+            else if (file.IsZXConfig())
+                editor = new ZXTextEditor(file);
+            else if (file.IsZXGraphics())
+            {
+                graphicsEditor = new DocumentEditors.ZXGraphics.FontGDU();
+                graphicsEditor.Initialize(file);
+            }
+            else
+                return null;
+
+            if (editor != null)
+            {
+                TabItem tItem = new TabItem();
+                tItem.Classes.Add("closeTab");
+                tItem.Tag = Path.GetFileName(file);
+                tItem.Content = editor;
+                editTabs.Add(tItem);
+                openEditors.Add(editor);
+
+                tItem.IsSelected = true;
+                editor.DocumentModified += EditorDocumentModified;
+                editor.DocumentSaved += EditorDocumentSaved;
+                FileInfo.FileLoaded = true;
+                peExplorer.SelectPath(file);
+
+                if (EmulatorInfo.IsRunning && !EmulatorInfo.IsPaused)
+                    editor.Readonly = true;
+                else if (EmulatorInfo.IsRunning && EmulatorInfo.IsPaused)
+                {
+                    var bp = basicBreakpoints.FirstOrDefault(bp => bp.Address == emu.Registers.PC);
+
+                    if (bp != null)
+                    {
+                        var line = bp.Tag as ZXCodeLine;
+                        if (line != null)
+                        {
+                            if (line.File == file)
+                                editor.BreakLine = line.LineNumber + 1;
+                        }
+                    }
+                }
+                return editor;
+            }
+            else if (graphicsEditor != null)
+            {
+                TabItem tItem = new TabItem();
+                tItem.Classes.Add("closeTab");
+                tItem.Tag = Path.GetFileName(file);
+                tItem.Content = graphicsEditor;
+                editTabs.Add(tItem);
+                openZXGraphics.Add(graphicsEditor);
+
+                tItem.IsSelected = true;
+                graphicsEditor.DocumentModified += EditorDocumentModified;
+                graphicsEditor.DocumentSaved += EditorDocumentSaved;
+                FileInfo.FileLoaded = true;
+                peExplorer.SelectPath(file);
+
+                return null;
+            }
+            else
+            {
+                return null;
+            }
+
         }
 
         private void EditorDocumentSaved(object? sender, System.EventArgs e)
         {
-            var tipo = sender?.GetType();
-            if (tipo == typeof(ZXTextEditor))
+            if (sender is ZXTextEditor)
             {
                 var editor = (ZXTextEditor?)sender;
                 if (editor == null)
@@ -748,7 +741,7 @@ namespace ZXBasicStudio
                     return;
                 tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
             }
-            else if (tipo == typeof(DocumentEditors.ZXGraphics.FontGDU))
+            else if (sender is DocumentEditors.ZXGraphics.FontGDU)
             {
                 var editor = (DocumentEditors.ZXGraphics.FontGDU?)sender;
                 if (editor == null)
@@ -762,8 +755,7 @@ namespace ZXBasicStudio
 
         private void EditorDocumentModified(object? sender, System.EventArgs e)
         {
-            var tipo = sender?.GetType();
-            if (tipo == typeof(ZXTextEditor))
+            if (sender is ZXTextEditor)
             {
                 var editor = (ZXTextEditor?)sender;
                 if (editor == null)
@@ -773,7 +765,7 @@ namespace ZXBasicStudio
                     return;
                 tab.Tag = tab.Tag?.ToString() + "*";
             }
-            else if (tipo == typeof(DocumentEditors.ZXGraphics.FontGDU))
+            else if (sender is DocumentEditors.ZXGraphics.FontGDU)
             {
                 var editor = (DocumentEditors.ZXGraphics.FontGDU?)sender;
                 if (editor == null)
