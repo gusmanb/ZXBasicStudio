@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text.Classes
+namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
 {
     public class ZXTextDocument : IZXDocumentType
     {

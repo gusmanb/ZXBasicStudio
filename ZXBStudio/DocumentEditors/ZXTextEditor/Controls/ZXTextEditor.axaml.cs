@@ -234,6 +234,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         {
             try
             {
+                if (!Modified)
+                    return true;
+
                 if (_docPath == ZXConstants.DISASSEMBLY_DOC || _docPath == ZXConstants.ROM_DOC)
                 {
                     OutputLog.WriteLine($"This file cannot be saved.");
@@ -244,6 +247,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                     editor.Save(str);
 
                 OutputLog.WriteLine($"File {_docPath} saved successfully.");
+
+                if (DocumentSaved != null)
+                    DocumentSaved(this, EventArgs.Empty);
 
                 return true;
             }
@@ -271,12 +277,21 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             return true;
         }
 
-        #endregion
-
-        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        public override void Dispose()
         {
-            base.OnAttachedToVisualTree(e);
+            DocumentSaved = null;
+            DocumentRestored = null;
+            DocumentModified = null;
+            RequestSaveDocument = null;
+            fManager = null;
+            updateFoldingsTimer?.Stop();
+            updateFoldingsTimer = null;
+            blRender = null;
+            bpMargin?.Dispose();
+            bpMargin = null;
         }
+
+        #endregion
 
         #region Text editor functions
         public void FocusText()

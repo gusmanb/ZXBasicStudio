@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Avalonia.Platform.Storage;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
 
 namespace ZXBasicStudio.DocumentModel.Classes
 {
@@ -19,6 +22,9 @@ namespace ZXBasicStudio.DocumentModel.Classes
         {
             //Add internal document types
             _docTypes.Add(new ZXBasicDocument());
+            _docTypes.Add(new ZXAssemblerDocument());
+            _docTypes.Add(new ZXTextDocument());
+            _docTypes.Add(new ZXConfigurationDocument());
             //TODO: Load external document types
         }
 
@@ -56,6 +62,16 @@ namespace ZXBasicStudio.DocumentModel.Classes
         public static IZXDocumentBuilder? GetDocumentBuilder(string Document) 
         {
             return GetDocumentType(Document)?.DocumentBuilder;
+        }
+
+        public static FilePickerFileType[] GetDocumentFilters()
+        {
+            List<FilePickerFileType> filters = new List<FilePickerFileType>();
+
+            foreach (var doc in _docTypes)
+                filters.Add(new FilePickerFileType(doc.DocumentDescription) { Patterns = doc.DocumentExtensions });
+
+            return filters.ToArray();
         }
     }
 }

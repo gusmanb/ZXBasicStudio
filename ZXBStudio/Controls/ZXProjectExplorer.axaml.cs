@@ -14,6 +14,7 @@ using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentModel.Classes;
 
 namespace ZXBasicStudio.Controls
 {
@@ -312,9 +313,6 @@ namespace ZXBasicStudio.Controls
             var files = System.IO.Directory.GetFiles(Folder);
             foreach (var file in files) 
             {
-                var name = System.IO.Path.GetFileName(file);
-                if (name.Contains(".compiletemp."))
-                    continue;
                 ExplorerNode node = new ExplorerNode(file, this);
                 nodes.Add(node);
             }
@@ -323,12 +321,8 @@ namespace ZXBasicStudio.Controls
         public class ExplorerNode : AvaloniaObject
         {
 
-            static Bitmap bmpZxb;
-            static Bitmap bmpAsm;
             static Bitmap bmpFile;
-            static Bitmap bmpConfig;
             static Bitmap bmpFolder;
-            static Bitmap[] bmpZXGraphics;
 
             public static readonly StyledProperty<ObservableCollection<ExplorerNode>> ChildNodesProperty = StyledProperty<ObservableCollection<ExplorerNode>>.Register<ExplorerNode, ObservableCollection<ExplorerNode>>("ChildNodes");
             public static readonly StyledProperty<string> TextProperty = StyledProperty<string>.Register<ExplorerNode, string>("Text");
@@ -336,22 +330,8 @@ namespace ZXBasicStudio.Controls
             static ExplorerNode()
             {
                 var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-                bmpZxb = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxbFile.png")));
-                bmpAsm = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/asmFile.png")));
                 bmpFile = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/unknFile.png")));
-                bmpConfig = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/cfgFile.png")));
                 bmpFolder = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/folder.png")));
-
-                bmpZXGraphics = new Bitmap[]
-                {
-                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_gdu.png"))),
-                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_fnt.png"))),
-                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_spr.png"))),
-                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_til.png"))),
-                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_map.png"))),
-                    new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_config.png")))
-
-                };
             }
 
             ZXProjectExplorer explorer;
@@ -385,16 +365,11 @@ namespace ZXBasicStudio.Controls
                 Text = System.IO.Path.GetFileName(NewPath);
                 if (System.IO.File.Exists(Path))
                 {
-                    if (Path.IsZXBasic())
-                        Image = bmpZxb;
-                    else if (Path.IsZXAssembler())
-                        Image = bmpAsm;
-                    else if (Path.IsZXConfig())
-                        Image = bmpConfig;
-                    else if (Path.IsZXGraphics())
-                    {
-                        Image = bmpZXGraphics[Path.GetZXGraphicsSubType()];
-                    }
+
+                    var docType = ZXDocumentProvider.GetDocumentType(Path);
+
+                    if (docType != null)
+                        Image = docType.DocumentIcon;
                     else
                         Image = bmpFile;
                 }

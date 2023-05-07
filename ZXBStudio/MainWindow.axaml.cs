@@ -52,9 +52,12 @@ namespace ZXBasicStudio
     {
         //TODO: Añadir lista de proyectos recientes al menú
 
-        
-        List<ZXTextEditor> openEditors = new List<ZXTextEditor>();
-        List<DocumentEditors.ZXGraphics.FontGDU> openZXGraphics = new List<DocumentEditors.ZXGraphics.FontGDU>();
+
+        //List<ZXTextEditor> openEditors = new List<ZXTextEditor>();
+        //List<DocumentEditors.ZXGraphics.FontGDU> openZXGraphics = new List<DocumentEditors.ZXGraphics.FontGDU>();
+
+
+        List<ZXDocumentEditorBase> openDocuments = new List<ZXDocumentEditorBase>();
         ObservableCollection<TabItem> editTabs = new ObservableCollection<TabItem>();
 
         ZXProgram? loadedProgram;
@@ -243,9 +246,8 @@ namespace ZXBasicStudio
 
             bool isFile = File.Exists(path);
 
-            if (!isFile &&
-                (openEditors.Any(e => e.DocumentPath.ToLower().StartsWith(path.ToLower())) ||
-                    openZXGraphics.Any(e => e.FileName.ToLower().StartsWith(path.ToLower()))))
+            //TODO: Check better, it might match a floder wich has a partial name of other folder
+            if (!isFile && openDocuments.Any(e => e.DocumentPath.ToLower().StartsWith(path.ToLower())))
             {
                 await this.ShowError("Open documents", "There are open documents in the selected folder, close any document in the folder before renaming it.");
                 return;
@@ -264,42 +266,20 @@ namespace ZXBasicStudio
                 if (isFile)
                 {
                     var dir = Path.GetDirectoryName(path);
-                    if (path.IsZXGraphics())
+                    var document = openDocuments.FirstOrDefault(d => d.DocumentPath == path);
+                    if (document != null)
                     {
-                        var editor = openZXGraphics.FirstOrDefault(d => d.FileName == path);
-                        if (editor != null)
+                        if (document.Modified)
                         {
-                            if (editor.Modified)
-                            {
-                                // TODO: Renombrando un archivo modificado
-                                await this.ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
-                                return;
-                            }
-                            editor.FileName = Path.Combine(dir, newName);
+                            // TODO: Renombrando un archivo modificado
+                            await this.ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
+                            return;
                         }
-
-                        File.Move(path, Path.Combine(dir, newName));
-                        
+                        document.RenameDocument(Path.Combine(dir ?? "", newName), outLog.Writer);
                     }
-                    else
-                    {
-                        var editor = openEditors.FirstOrDefault(d => d.DocumentPath == path);
-                        if (editor != null)
-                        {
-                            if (editor.Modified)
-                            {
-                                // TODO: Renombrando un archivo modificado
-                                await this.ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
-                                return;
-                            }
-                            editor.RenameDocument(Path.Combine(dir, newName), outLog.Writer);
-                        }
-                        File.Move(path, Path.Combine(dir, newName));
-                    }
-                }
-                else
-                {
-                    Directory.Move(path, Path.Combine(Path.GetDirectoryName(path), newName));
+                    
+                    File.Move(path, Path.Combine(dir ?? "", newName));
+                    
                 }
             }
             catch (Exception ex)
@@ -331,50 +311,48 @@ namespace ZXBasicStudio
                     return;
             }
 
-            if (tab.Content is ZXTextEditor)
+            if (tab.Content is ZXDocumentEditorBase)
             {
-                var editor = tab.Content as ZXTextEditor;
+                var document = tab.Content as ZXDocumentEditorBase;
 
-                if (editor == null)
+                if (document == null)
                     return;
 
-                if (editor.Modified)
+                if (document.Modified)
                 {
                     var res = await this.ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
 
                     if (!res)
                         return;
-                }
-                openEditors.Remove(editor);
-            }
-            else if (tab.Content is DocumentEditors.ZXGraphics.FontGDU)
-            {
-                var editor = tab.Content as DocumentEditors.ZXGraphics.FontGDU;
 
-                if (editor == null)
-                {
-                    return;
+                    document.CloseDocument(outLog.Writer, true);
                 }
-                if (editor.Modified)
+                else
                 {
-                    var res = await this.ShowConfirm("Modified", "This document has been modified, if you close it now you will lose the changes, are you sure you want to close it?");
-                    if (!res)
+                    if (!document.CloseDocument(outLog.Writer, false))
                     {
-                        return;
+                        var res = await this.ShowConfirm("Close error", "There was an error closing the document, do you want to force it? (more info on the output log).");
+
+                        if (!res)
+                            return;
+
+                        document.CloseDocument(outLog.Writer, true);
                     }
                 }
-                openZXGraphics.Remove(editor);
-            }
 
+                openDocuments.Remove(document);
+                document.Dispose();
+            }
+            
             editTabs.Remove(tab);
 
-            if (openEditors.Count == 0 && openZXGraphics.Count == 0)
+            if (openDocuments.Count == 0)
                 FileInfo.FileLoaded = false;
         }
 
         private async void CloseProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (openEditors.Any(e => e.Modified) || openZXGraphics.Any(d => d.Modified))
+            if (openDocuments.Any(e => e.Modified))
             {
                 var resConfirm = await this.ShowConfirm("Modified documents", "Some documents have been modified but not saved, if you close the project all the changes will be lost, are you sure you want to close the project?");
 
@@ -382,8 +360,9 @@ namespace ZXBasicStudio
                     return;
             }
 
-            openEditors.Clear();
-            openZXGraphics.Clear();
+            foreach (var doc in openDocuments)
+                doc.CloseDocument(outLog.Writer, true);
+
             editTabs.Clear();
             peExplorer.OpenProjectFolder(null);
             FileInfo.FileLoaded = false;
@@ -438,27 +417,17 @@ namespace ZXBasicStudio
 
         private bool SaveAllFiles()
         {
-            foreach (var edit in openEditors)
+            foreach (var edit in openDocuments)
             {
                 if (edit.Modified)
                     if (!edit.SaveDocument(outLog.Writer))
                         return false;
             }
-            foreach (var edit in openZXGraphics)
-            {
-                if (edit.Modified)
-                {
-                    if (!edit.SaveDocument())
-                    {
-                        return false;
-                    }
-                }
-            }
-
+            
             return true;
         }
 
-        private void OpenFile(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private async void OpenFile(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             var path = peExplorer.SelectedPath;
 
@@ -468,59 +437,58 @@ namespace ZXBasicStudio
             if (!File.Exists(path))
                 return;
 
-            OpenFile(path);
+            await OpenFile(path);
         }
 
         private async void OpenNewFile(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            var dlg = new OpenFileDialog();
-            var basicFilter = new FileDialogFilter { Name = "ZX Basic file" };
-            basicFilter.Extensions.AddRange(ZXExtensions.ZXBasicFiles);
-            var asmFilter = new FileDialogFilter { Name = "ZX Assembler file" };
-            asmFilter.Extensions.AddRange(ZXExtensions.ZXAssemblerFiles);
-            var zxGraphicsFiler = new FileDialogFilter { Name = "ZXGraphics file" };
-            dlg.Filters.Add(basicFilter);
-            dlg.Filters.Add(asmFilter);
-            dlg.Filters.Add(zxGraphicsFiler);
-            dlg.AllowMultiple = false;
-            var file = (await dlg.ShowAsync(this))?.FirstOrDefault();
 
-            if (file == null)
+            var opts = new FilePickerOpenOptions();
+            opts.FileTypeFilter = ZXDocumentProvider.GetDocumentFilters();
+            opts.AllowMultiple = false;
+            opts.Title = "Open file...";
+
+            var result = await this.StorageProvider.OpenFilePickerAsync(opts);
+
+            if (result == null || result.Count == 0)
                 return;
 
-            OpenFile(file);
+            await OpenFile(result[0].Path.LocalPath);
         }
 
         private async void OpenProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (FileInfo.ProjectLoaded)
             {
-                if (openEditors.Any(e => e.Modified))
+                if (openDocuments.Any(e => e.Modified))
                 {
                     var resConfirm = await this.ShowConfirm("Warning!", "There are unsaved documents, opening a new project will discard the changes, are you sure you want to open a new project?");
 
                     if (!resConfirm)
                         return;
+
+                    foreach (var doc in openDocuments)
+                        doc.CloseDocument(outLog.Writer, true);
                 }
             }
 
-            var openDlg = new OpenFolderDialog();
+            FolderPickerOpenOptions opts = new FolderPickerOpenOptions { AllowMultiple = false, Title = "Open project" };
+            var res = await this.StorageProvider.OpenFolderPickerAsync(opts);
 
-            var res = await openDlg.ShowAsync(this);
+            if (res == null || res.Count == 0)
+                return;
 
-            if (!string.IsNullOrWhiteSpace(res))
-            {
-                Cleanup();
-                BreakpointManager.ClearBreakpoints();
-                peExplorer.OpenProjectFolder(res);
-                editTabs.Clear();
-                openEditors.Clear();
-                FileInfo.ProjectLoaded = true;
-                FileInfo.FileLoaded = false;
-                FileInfo.FileSystemObjectSelected = false;
-                EmulatorInfo.CanRun = true;
-                EmulatorInfo.CanDebug = true;
-            }
+            Cleanup();
+            BreakpointManager.ClearBreakpoints();
+            peExplorer.OpenProjectFolder(res[0].Path.LocalPath);
+            editTabs.Clear();
+            openDocuments.Clear();
+            FileInfo.ProjectLoaded = true;
+            FileInfo.FileLoaded = false;
+            FileInfo.FileSystemObjectSelected = false;
+            EmulatorInfo.CanRun = true;
+            EmulatorInfo.CanDebug = true;
+
         }
 
         private async void CreateFile(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -538,7 +506,7 @@ namespace ZXBasicStudio
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
 
-            var finalPath = Path.Combine(path, fileName);
+            var finalPath = Path.Combine(path ?? "", fileName);
             try
             {
                 File.Create(finalPath).Dispose();
@@ -548,7 +516,7 @@ namespace ZXBasicStudio
                 await this.ShowError("Create error", $"Unexpected error trying to create the file: {ex.Message} - {ex.StackTrace}");
                 return;
             }
-            OpenFile(finalPath);
+            await OpenFile(finalPath);
             await Task.Delay(100);
             peExplorer.SelectPath(finalPath);
         }
@@ -568,7 +536,7 @@ namespace ZXBasicStudio
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
 
-            var finalPath = Path.Combine(path, fileName);
+            var finalPath = Path.Combine(path ?? "", fileName);
 
             try
             {
@@ -583,19 +551,15 @@ namespace ZXBasicStudio
         private async void CreateProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
 
-            if (openEditors.Any(e => e.Modified))
+            if (openDocuments.Any(e => e.Modified))
             {
                 var resConfirm = await this.ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
 
                 if (!resConfirm)
                     return;
-            }
-            if (openZXGraphics.Any(e => e.Modified))
-            {
-                var resConfirm = await this.ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
 
-                if (!resConfirm)
-                    return;
+                foreach (var doc in openDocuments)
+                    doc.CloseDocument(outLog.Writer, true);
             }
 
             var fld = await StorageProvider.OpenFolderPickerAsync(new Avalonia.Platform.Storage.FolderPickerOpenOptions { AllowMultiple = false, Title = "Select project's folder." });
@@ -627,8 +591,7 @@ namespace ZXBasicStudio
             }
             peExplorer.OpenProjectFolder(selFolder);
             editTabs.Clear();
-            openEditors.Clear();
-            openZXGraphics.Clear();
+            openDocuments.Clear();
             FileInfo.ProjectLoaded = true;
             FileInfo.FileLoaded = false;
             FileInfo.FileSystemObjectSelected = false;
@@ -636,61 +599,55 @@ namespace ZXBasicStudio
             EmulatorInfo.CanRun = true;
         }
 
-        ZXTextEditor? OpenFile(string file)
+        async Task<ZXDocumentEditorBase?> OpenFile(string file)
         {
+            var opened = openDocuments.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.DocumentPath));
+            if (opened != null)
             {
-                var opened = openEditors.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.DocumentPath));
-                if (opened != null)
-                {
-                    var tab = editTabs.First(t => t.Content == opened);
-                    tab.IsSelected = true;
-                    return opened;
-                }
-            }
-            {
-                var opened = openZXGraphics.FirstOrDefault(ef => Path.GetFullPath(file) == Path.GetFullPath(ef.FileName));
-                if (opened != null)
-                {
-                    var tab = editTabs.First(t => t.Content == opened);
-                    tab.IsSelected = true;
-                    return null;
-                }
+                var tab = editTabs.First(t => t.Content == opened);
+                tab.IsSelected = true;
+                return opened;
             }
 
-            ZXTextEditor editor = null;
-            DocumentEditors.ZXGraphics.FontGDU graphicsEditor = null;
+            var docType = ZXDocumentProvider.GetDocumentType(file);
 
-            if (file.IsZXAssembler() || file == ZXConstants.DISASSEMBLY_DOC || file == ZXConstants.ROM_DOC)
-                editor = new ZXAssemblerEditor(file);
-            else if (file.IsZXBasic())
-                editor = new ZXBasicEditor(file);
-            else if (file.IsZXConfig())
-                editor = new ZXTextEditor(file);
-            else if (file.IsZXGraphics())
+            if (docType == null || !docType.CanEdit)
             {
-                graphicsEditor = new DocumentEditors.ZXGraphics.FontGDU();
-                graphicsEditor.Initialize(file);
-            }
-            else
+                await this.ShowError("Cannot open file", "The specified file is not editable by ZX Basic Studio. Operation aborted.");
                 return null;
+            }
 
-            if (editor != null)
+            ZXDocumentEditorBase? editor = docType.DocumentFactory.CreateEditor(file, outLog.Writer);
+
+            if (editor == null)
             {
-                TabItem tItem = new TabItem();
-                tItem.Classes.Add("closeTab");
-                tItem.Tag = Path.GetFileName(file);
-                tItem.Content = editor;
-                editTabs.Add(tItem);
-                openEditors.Add(editor);
+                await this.ShowError("Cannot open file", "Error opening document, check the output log for more information.");
+                return null;
+            }
 
-                tItem.IsSelected = true;
-                editor.DocumentModified += EditorDocumentModified;
-                editor.DocumentSaved += EditorDocumentSaved;
-                FileInfo.FileLoaded = true;
-                peExplorer.SelectPath(file);
+
+            TabItem tItem = new TabItem();
+            tItem.Classes.Add("closeTab");
+            tItem.Tag = Path.GetFileName(file);
+            tItem.Content = editor;
+            editTabs.Add(tItem);
+            openDocuments.Add(editor);
+
+            tItem.IsSelected = true;
+            editor.DocumentModified += EditorDocumentModified;
+            editor.DocumentSaved += EditorDocumentSaved;
+            editor.DocumentRestored += EditorDocumentRestored;
+            editor.RequestSaveDocument += EditorRequestSaveDocument;
+
+            FileInfo.FileLoaded = true;
+            peExplorer.SelectPath(file);
+
+            if (editor is ZXTextEditor)
+            {
+                var txtEdit = (ZXTextEditor)editor;
 
                 if (EmulatorInfo.IsRunning && !EmulatorInfo.IsPaused)
-                    editor.Readonly = true;
+                    txtEdit.Readonly = true;
                 else if (EmulatorInfo.IsRunning && EmulatorInfo.IsPaused)
                 {
                     var bp = basicBreakpoints.FirstOrDefault(bp => bp.Address == emu.Registers.PC);
@@ -701,88 +658,77 @@ namespace ZXBasicStudio
                         if (line != null)
                         {
                             if (line.File == file)
-                                editor.BreakLine = line.LineNumber + 1;
+                                txtEdit.BreakLine = line.LineNumber + 1;
                         }
                     }
                 }
-                return editor;
             }
-            else if (graphicsEditor != null)
+
+            return editor;
+
+
+        }
+
+        private async void EditorRequestSaveDocument(object? sender, EventArgs e)
+        {
+            var editor = sender as ZXDocumentEditorBase;
+
+            if (editor == null)
+                return;
+
+            if (!editor.SaveDocument(outLog.Writer))
             {
-                TabItem tItem = new TabItem();
-                tItem.Classes.Add("closeTab");
-                tItem.Tag = Path.GetFileName(file);
-                tItem.Content = graphicsEditor;
-                editTabs.Add(tItem);
-                openZXGraphics.Add(graphicsEditor);
-
-                tItem.IsSelected = true;
-                graphicsEditor.DocumentModified += EditorDocumentModified;
-                graphicsEditor.DocumentSaved += EditorDocumentSaved;
-                FileInfo.FileLoaded = true;
-                peExplorer.SelectPath(file);
-
-                return null;
+                await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
+                return;
             }
-            else
-            {
-                return null;
-            }
+        }
 
+        private void EditorDocumentRestored(object? sender, EventArgs e)
+        {
+            if (sender is not ZXDocumentEditorBase)
+                return;
+
+            var editor = (ZXDocumentEditorBase)sender;
+
+            var tab = editor.Parent as TabItem;
+            if (tab == null)
+                return;
+            tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
         }
 
         private void EditorDocumentSaved(object? sender, System.EventArgs e)
         {
-            if (sender is ZXTextEditor)
-            {
-                var editor = (ZXTextEditor?)sender;
-                if (editor == null)
-                    return;
-                var tab = editor.Parent as TabItem;
-                if (tab == null)
-                    return;
-                tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
-            }
-            else if (sender is DocumentEditors.ZXGraphics.FontGDU)
-            {
-                var editor = (DocumentEditors.ZXGraphics.FontGDU?)sender;
-                if (editor == null)
-                    return;
-                var tab = editor.Parent as TabItem;
-                if (tab == null)
-                    return;
-                tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
-            }
+
+            if (sender is not ZXDocumentEditorBase)
+                return;
+
+            var editor = (ZXDocumentEditorBase)sender;
+
+            var tab = editor.Parent as TabItem;
+            if (tab == null)
+                return;
+            tab.Tag = tab.Tag?.ToString()?.Replace("*", "");
+
         }
 
         private void EditorDocumentModified(object? sender, System.EventArgs e)
         {
-            if (sender is ZXTextEditor)
-            {
-                var editor = (ZXTextEditor?)sender;
-                if (editor == null)
-                    return;
-                var tab = editor.Parent as TabItem;
-                if (tab == null)
-                    return;
-                tab.Tag = tab.Tag?.ToString() + "*";
-            }
-            else if (sender is DocumentEditors.ZXGraphics.FontGDU)
-            {
-                var editor = (DocumentEditors.ZXGraphics.FontGDU?)sender;
-                if (editor == null)
-                    return;
-                var tab = editor.Parent as TabItem;
-                if (tab == null)
-                    return;
-                tab.Tag = tab.Tag?.ToString() + "*";
-            }
+            if (sender is not ZXDocumentEditorBase)
+                return;
+
+            var editor = (ZXDocumentEditorBase)sender;
+
+            var tab = editor.Parent as TabItem;
+            if (tab == null)
+                return;
+            tab.Tag = tab.Tag?.ToString() + "*";
+            
         }
 
 
         private async Task CloseDocumentByFile(string File)
         {
-            var disEdit = openEditors.FirstOrDefault(ef => ef.DocumentPath == File);
+            var disEdit = openDocuments.FirstOrDefault(ef => ef.DocumentPath == File);
 
             if (disEdit != null)
             {
@@ -794,11 +740,14 @@ namespace ZXBasicStudio
                         return;
                 }
 
+                disEdit.CloseDocument(outLog.Writer, true);
+                openDocuments.Remove(disEdit);
+                disEdit.Dispose();
+
                 var tab = editTabs.First(t => t.Content == disEdit);
-                openEditors.Remove(disEdit);
                 editTabs.Remove(tab);
 
-                if (openEditors.Count == 0)
+                if (openDocuments.Count == 0)
                     FileInfo.FileLoaded = false;
             }
         }
@@ -879,7 +828,7 @@ namespace ZXBasicStudio
             varsView.EndEdit();
             statesView.Clear();
         }
-        private void PauseEmulator(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private async void PauseEmulator(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             emu.Pause();
             emu.TurboEnabled = false;
@@ -891,7 +840,7 @@ namespace ZXBasicStudio
             if (EmulatorInfo.IsDebugging)
             {
                 ClearBreakLines();
-                currentBp = ShowBreakLines(emu.Registers.PC, true);
+                currentBp = await ShowBreakLines(emu.Registers.PC, true);
                 regView.Update();
                 varsView.BeginEdit();
                 statesView.Update(emu.TStates);
@@ -929,7 +878,9 @@ namespace ZXBasicStudio
         {
             ClearBreakLines();
 
-            foreach (var edit in openEditors)
+            var textEditors = openDocuments.Where(doc => doc is ZXTextEditor).Cast<ZXTextEditor>();
+
+            foreach (var edit in textEditors)
                 edit.BreakLine = null;
 
             if (EmulatorInfo.LoadedBreakpoints != LoadedBreakpoints.Basic)
@@ -953,7 +904,7 @@ namespace ZXBasicStudio
             varsView.EndEdit();
             emu.Resume();
         }
-        private void AssemblerStepEmulator(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private async void AssemblerStepEmulator(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             ClearBreakLines();
 
@@ -971,11 +922,11 @@ namespace ZXBasicStudio
                 var disLine = bp.Tag as ZXCodeLine;
                 if (disLine != null)
                 {
-                    var edit = OpenFile(disLine.File);
+                    var edit = await OpenFile(disLine.File) as ZXTextEditor;
                     if (edit != null)
                     {
                         if (string.IsNullOrWhiteSpace(edit.Text))
-                            edit.Text = loadedProgram.Disassembly.Content;
+                            edit.Text = loadedProgram?.Disassembly?.Content;
 
                         edit.BreakLine = disLine.LineNumber + 1;
                     }
@@ -990,7 +941,7 @@ namespace ZXBasicStudio
                     var disLine = bp.Tag as ZXCodeLine;
                     if (disLine != null)
                     {
-                        var edit = OpenFile(disLine.File);
+                        var edit = await OpenFile(disLine.File) as ZXTextEditor;
                         if (edit != null)
                         {
                             if (string.IsNullOrWhiteSpace(edit.Text))
@@ -1025,19 +976,18 @@ namespace ZXBasicStudio
                     emu.Memory.SetContents(0x4000, mem);
                 }
 
-                if (EmulatorInfo.IsDebugging)
+                if (EmulatorInfo.IsDebugging && loadedProgram?.Variables != null)
                     varsView.Initialize(loadedProgram.Variables, emu.Memory, emu.Registers);
 
                 LoadBreakpoints(LoadedBreakpoints.User);
 
                 EmulatorInfo.IsPaused = false;
                 emu.Resume();
-                //varsView.AllowEdit = false;
             });
         }
         private void Emu_Breakpoint(object? sender, BreakpointEventArgs e)
         {
-            Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 emu.TurboEnabled = false;
                 emu.RefreshScreen();
@@ -1049,7 +999,7 @@ namespace ZXBasicStudio
                 if (line == null)
                     return;
 
-                ShowBreakLines(e.Breakpoint.Address, line.FileType == ZXFileType.Basic);
+                await ShowBreakLines(e.Breakpoint.Address, line.FileType == ZXFileType.Basic);
 
                 EmulatorInfo.CanResume = true;
                 EmulatorInfo.CanStep = true;
@@ -1060,15 +1010,8 @@ namespace ZXBasicStudio
                 varsView.BeginEdit();
                 regView.Update();
                 statesView.Update(emu.TStates);
-
-                try
-                {
-                    outLog.Writer.WriteLine($"Breakpoint: file {Path.GetFileName(line.File)}, line {line.LineNumber + 1}, address {line.Address}");
-                }
-                catch (Exception ex)
-                {
-                    Console.Write("ERROR!");
-                }
+                outLog.Writer.WriteLine($"Breakpoint: file {Path.GetFileName(line.File)}, line {line.LineNumber + 1}, address {line.Address}");
+   
             });
         }
         private void BreakpointManager_BreakPointRemoved(object? sender, System.EventArgs e)
@@ -1094,11 +1037,11 @@ namespace ZXBasicStudio
                 ZXCodeLine? line;
 
                 if (userBp.File == ZXConstants.DISASSEMBLY_DOC)
-                    line = loadedProgram?.DisassemblyMap.Lines.Where(l => l.LineNumber == userBp.Line - 1).FirstOrDefault();
+                    line = loadedProgram?.DisassemblyMap?.Lines.Where(l => l.LineNumber == userBp.Line - 1).FirstOrDefault();
                 else if (userBp.File == ZXConstants.ROM_DOC)
                     line = romLines.Where(l => l.LineNumber == userBp.Line - 1).FirstOrDefault();
                 else
-                    line = loadedProgram?.ProgramMap.Lines
+                    line = loadedProgram?.ProgramMap?.Lines
                         .Where(l => l.LineNumber == userBp.Line - 1 && l.File.ToLower() == userBp.File.ToLower())
                         .FirstOrDefault();
 
@@ -1145,7 +1088,7 @@ namespace ZXBasicStudio
                 }
             }
         }
-        private void CheckSpectrumModel()
+        private async void CheckSpectrumModel()
         {
             var model = cbModel.SelectedIndex;
 
@@ -1158,7 +1101,7 @@ namespace ZXBasicStudio
             {
                 emu.SetModel(sModel);
                 CreateRomBreakpoints();
-                CloseDocumentByFile(ZXConstants.DISASSEMBLY_DOC);
+                await CloseDocumentByFile(ZXConstants.DISASSEMBLY_DOC);
                 _player.Datacorder = emu.Datacorder;
             }
         }
@@ -1180,7 +1123,7 @@ namespace ZXBasicStudio
                 romBreakpoints.Add(bp);
             }
 
-            var userBps = userBreakpoints.Where(bp => ((ZXCodeLine)bp.Tag).File == ZXConstants.ROM_DOC).ToArray();
+            var userBps = userBreakpoints.Where(bp => ((ZXCodeLine?)bp.Tag)?.File == ZXConstants.ROM_DOC).ToArray();
 
             foreach(var bp in userBps) 
                 userBreakpoints.Remove(bp);
@@ -1208,9 +1151,11 @@ namespace ZXBasicStudio
             EmulatorInfo.CanDebug = false;
             EmulatorInfo.CanRun = false;
             BlockEditors();
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
-                ZXProjectBuilder.Build(peExplorer.RootPath, outLog.Writer);
+                if(peExplorer.RootPath != null)
+                    ZXProjectBuilder.Build(peExplorer.RootPath, outLog.Writer);
+
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     UnblockEditors();
@@ -1239,14 +1184,14 @@ namespace ZXBasicStudio
             EmulatorInfo.CanRun = false;
             CheckSpectrumModel();
 
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
-                var program = ZXProjectBuilder.Build(peExplorer.RootPath, outLog.Writer);
+                var program = peExplorer.RootPath == null ? null : ZXProjectBuilder.Build(peExplorer.RootPath, outLog.Writer);
 
                 if (program != null)
                 {
                     loadedProgram = program;
-                    var disas = openEditors.FirstOrDefault(e => e.DocumentPath == ZXConstants.DISASSEMBLY_DOC);
+                    var disas = openDocuments.FirstOrDefault(e => e.DocumentPath == ZXConstants.DISASSEMBLY_DOC) as ZXTextEditor;
 
                     Dispatcher.UIThread.InvokeAsync(() =>
                     {
@@ -1255,8 +1200,11 @@ namespace ZXBasicStudio
                             if (loadedProgram.Disassembly == null)
                             {
                                 var parent = disas.Parent as TabItem;
-                                parent.IsSelected = true;
-                                CloseFile(null, e);
+                                if (parent != null)
+                                {
+                                    parent.IsSelected = true;
+                                    CloseFile(null, e);
+                                }
                             }
                             else
                                 disas.Text = loadedProgram.Disassembly.Content;
@@ -1299,35 +1247,37 @@ namespace ZXBasicStudio
             EmulatorInfo.CanRun = false;
             CheckSpectrumModel();
 
-            Task.Run(() => 
+            _ = Task.Run(() => 
             {
-                var program = ZXProjectBuilder.BuildDebug(peExplorer.RootPath, outLog.Writer);
+                var program = peExplorer.RootPath == null ? null : ZXProjectBuilder.BuildDebug(peExplorer.RootPath, outLog.Writer);
 
                 if (program != null)
                 {
                     basicBreakpoints.Clear();
-                    basicBreakpoints.AddRange(program.ProgramMap.Lines.Select(l => new Breakpoint { Address = l.Address, Temporary = false, Id = ZXConstants.BASIC_BREAKPOINT, Tag = l }).ToList());
+                    if(program.ProgramMap != null)
+                        basicBreakpoints.AddRange(program.ProgramMap.Lines.Select(l => new Breakpoint { Address = l.Address, Temporary = false, Id = ZXConstants.BASIC_BREAKPOINT, Tag = l }).ToList());
 
                     disassemblyBreakpoints.Clear();
-                    disassemblyBreakpoints.AddRange(program.DisassemblyMap.Lines.Select(l => new Breakpoint { Address = l.Address, Temporary = false, Id = ZXConstants.ASSEMBLER_BREAKPOINT, Tag = l }).ToList());
+                    if (program.DisassemblyMap != null)
+                        disassemblyBreakpoints.AddRange(program.DisassemblyMap.Lines.Select(l => new Breakpoint { Address = l.Address, Temporary = false, Id = ZXConstants.ASSEMBLER_BREAKPOINT, Tag = l }).ToList());
 
                     loadedProgram = program;
 
-                    Dispatcher.UIThread.InvokeAsync(() =>
+                    Dispatcher.UIThread.InvokeAsync(async () =>
                     {
                         var currentTab = editTabs.FirstOrDefault(e => e.IsSelected);
 
-                        var disas = OpenFile(ZXConstants.DISASSEMBLY_DOC);
+                        var disas = await OpenFile(ZXConstants.DISASSEMBLY_DOC) as ZXTextEditor;
 
                         if (disas != null)
                         {
-                            disas.Text = loadedProgram.Disassembly.Content;
+                            disas.Text = loadedProgram?.Disassembly?.Content;
                             disas.InvalidateArrange();
                             disas.InvalidateMeasure();
                             disas.InvalidateVisual();
                         }
 
-                        var rom = OpenFile(ZXConstants.ROM_DOC);
+                        var rom = await OpenFile(ZXConstants.ROM_DOC) as ZXTextEditor;
 
                         if (rom != null)
                         {
@@ -1342,11 +1292,6 @@ namespace ZXBasicStudio
 
                         UpdateUserBreakpoints();
 
-                        //if (!EmulatorInfo.IsRunning)
-                        //    emu.Start();
-                        //emu.Pause();
-                        //emu.InjectProgram(program.Org, program.Binary, true);
-                        //emu.Resume();
                         emu.InjectProgram(program.Org, program.Binary, true);
                         emuDock.Select();
                         emu.Focus();
@@ -1407,9 +1352,11 @@ namespace ZXBasicStudio
             BlockEditors();
             EmulatorInfo.CanDebug = false;
             EmulatorInfo.CanRun = false;
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
-                ZXProjectBuilder.Export(peExplorer.RootPath, opts, outLog.Writer);
+                if(peExplorer.RootPath != null)
+                    ZXProjectBuilder.Export(peExplorer.RootPath, opts, outLog.Writer);
+
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     UnblockEditors();
@@ -1429,7 +1376,7 @@ namespace ZXBasicStudio
             if (File.Exists(buildFile))
             {
                 var settings = JsonConvert.DeserializeObject<ZXBuildSettings>(File.ReadAllText(buildFile));
-                dlg.Settings = settings;
+                dlg.Settings = settings ?? new ZXBuildSettings();
             }
             else if (ZXOptions.Current.DefaultBuildSettings != null)
                 dlg.Settings = ZXOptions.Current.DefaultBuildSettings.Clone();
@@ -1452,7 +1399,9 @@ namespace ZXBasicStudio
 
         private void BtnRemoveBreakpoints_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            foreach (var editor in openEditors)
+            var textEditors = openDocuments.Where(doc => doc is ZXTextEditor).Cast<ZXTextEditor>();
+
+            foreach (var editor in textEditors)
                 editor.ClearBreakpoints();
 
             BreakpointManager.ClearBreakpoints();
@@ -1765,7 +1714,7 @@ namespace ZXBasicStudio
             ClearBreakLines();
 
         }
-        private Breakpoint? ShowBreakLines(ushort PC, bool PreferBasic)
+        private async Task<Breakpoint?> ShowBreakLines(ushort PC, bool PreferBasic)
         {
             Breakpoint? returnbp = null;
 
@@ -1776,7 +1725,7 @@ namespace ZXBasicStudio
                 if (rombp != null)
                 {
                     returnbp = rombp;
-                    HighlightBreakpoint(rombp);
+                    await HighlightBreakpoint(rombp);
                 }
 
                 var disbp = disassemblyBreakpoints.LastOrDefault(b => b.Address == PC);
@@ -1784,14 +1733,14 @@ namespace ZXBasicStudio
                 if (disbp != null)
                 {
                     returnbp = disbp;
-                    HighlightBreakpoint(disbp);
+                    await HighlightBreakpoint(disbp);
                 }
                 var basbp = basicBreakpoints.LastOrDefault(b => b.Address == PC);
 
                 if (basbp != null)
                 {
                     returnbp = basbp;
-                    HighlightBreakpoint(basbp);
+                    await HighlightBreakpoint(basbp);
                 }
             }
             else
@@ -1801,7 +1750,7 @@ namespace ZXBasicStudio
                 if (basbp != null)
                 {
                     returnbp = basbp;
-                    HighlightBreakpoint(basbp);
+                    await HighlightBreakpoint(basbp);
                 }
 
                 var rombp = romBreakpoints.LastOrDefault(b => b.Address == PC);
@@ -1809,7 +1758,7 @@ namespace ZXBasicStudio
                 if (rombp != null)
                 {
                     returnbp = rombp;
-                    HighlightBreakpoint(rombp);
+                    await HighlightBreakpoint(rombp);
                 }
 
                 var disbp = disassemblyBreakpoints.LastOrDefault(b => b.Address == PC);
@@ -1817,36 +1766,42 @@ namespace ZXBasicStudio
                 if (disbp != null)
                 {
                     returnbp = disbp;
-                    HighlightBreakpoint(disbp);
+                    await HighlightBreakpoint(disbp);
                 }
             }
 
             return returnbp;
         }
-        private void HighlightBreakpoint(Breakpoint bp)
+        private async Task HighlightBreakpoint(Breakpoint bp)
         {
             var line = bp.Tag as ZXCodeLine;
 
             if (line != null)
             {
-                var edit = OpenFile(line.File);
+                var edit = await OpenFile(line.File) as ZXTextEditor;
                 if (edit != null)
                     edit.BreakLine = line.LineNumber + 1;
             }
         }
         private void ClearBreakLines()
         {
-            foreach (var edit in openEditors)
+            var textEditors = openDocuments.Where(doc => doc is ZXTextEditor).Cast<ZXTextEditor>();
+
+            foreach (var edit in textEditors)
                 edit.BreakLine = null;
         }
         private void BlockEditors()
         {
-            foreach (var edit in openEditors)
+            var textEditors = openDocuments.Where(doc => doc is ZXTextEditor).Cast<ZXTextEditor>();
+
+            foreach (var edit in textEditors)
                 edit.Readonly = true;
         }
         private void UnblockEditors()
         {
-            foreach (var edit in openEditors)
+            var textEditors = openDocuments.Where(doc => doc is ZXTextEditor).Cast<ZXTextEditor>();
+
+            foreach (var edit in textEditors)
             {
                 if (edit.DocumentPath != ZXConstants.DISASSEMBLY_DOC && edit.DocumentPath != ZXConstants.ROM_DOC)
                     edit.Readonly = false;
@@ -1901,43 +1856,43 @@ namespace ZXBasicStudio
                 {
                     case Key.F5:
                         if (EmulatorInfo.CanRun)
-                            BuildAndRun(this, null);
+                            BuildAndRun(this, new RoutedEventArgs());
                         value.Handled = true;
                         break;
                     case Key.F6:
                         if (EmulatorInfo.CanDebug)
-                            BuildAndDebug(this, null);
+                            BuildAndDebug(this, new RoutedEventArgs());
                         value.Handled = true;
                         break;
                     case Key.F7:
                         if (EmulatorInfo.CanPause)
-                            PauseEmulator(this, null);
+                            PauseEmulator(this, new RoutedEventArgs());
                         value.Handled = true;
                         break;
                     case Key.F8:
                         if (EmulatorInfo.CanResume)
-                            ResumeEmulator(this, null);
+                            ResumeEmulator(this, new RoutedEventArgs());
                         value.Handled = true;
                         break;
                     case Key.F9:
                         if (EmulatorInfo.CanStep)
-                            AssemblerStepEmulator(this, null);
+                            AssemblerStepEmulator(this, new RoutedEventArgs());
                         value.Handled = true;
                         break;
                     case Key.F10:
                         if (EmulatorInfo.CanStep)
-                            BasicStepEmulator(this, null);
+                            BasicStepEmulator(this, new RoutedEventArgs());
                         value.Handled = true;
                         break;
                     case Key.F11:
                         if (EmulatorInfo.IsRunning)
-                            StopEmulator(this, null);
+                            StopEmulator(this, new RoutedEventArgs());
                         value.Handled = true;
                         break;
 
                     case Key.F12:
                         if (EmulatorInfo.IsRunning)
-                            TurboModeEmulator(this, null);
+                            TurboModeEmulator(this, new RoutedEventArgs());
                         value.Handled = true;
                         break;
                 }

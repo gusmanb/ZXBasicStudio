@@ -8,7 +8,7 @@ using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text.Classes
+namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
 {
     public class ZXTextDocumentFactory : IZXDocumentFactory
     {

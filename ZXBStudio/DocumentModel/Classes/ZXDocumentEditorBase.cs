@@ -11,7 +11,7 @@ namespace ZXBasicStudio.DocumentModel.Classes
     /// <summary>
     /// Base class for all the document editors.
     /// </summary>
-    public abstract class ZXDocumentEditorBase : UserControl
+    public abstract class ZXDocumentEditorBase : UserControl, IDisposable
     {
         /// <summary>
         /// Event rised when the document is modified
@@ -61,6 +61,9 @@ namespace ZXBasicStudio.DocumentModel.Classes
         /// <param name="ForceClose">If there is any error and this parameter is true the document will be closed forcibly</param>
         /// <returns>True if the document was closed successfully, false in other case</returns>
         public abstract bool CloseDocument(TextWriter OutputLog, bool ForceClose);
-
+        /// <summary>
+        /// IDisposable implementation. All derived classes need to implement it in order to at least clear the event handlers
+        /// </summary>
+        public abstract void Dispose();
     }
 }

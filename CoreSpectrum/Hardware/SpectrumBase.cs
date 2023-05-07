@@ -229,10 +229,10 @@ namespace CoreSpectrum.Hardware
 
                 foreach (var exec in _syncExecs)
                     exec.Stop();
-
-                while (_threadAlive)
-                    Thread.Sleep(0);
             }
+
+            while (_threadAlive)
+                Thread.Sleep(0);
         }
 
         public virtual void Pause()

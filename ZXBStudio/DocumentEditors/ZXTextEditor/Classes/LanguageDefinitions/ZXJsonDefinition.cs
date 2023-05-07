@@ -10,9 +10,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
     {
         const string jsonDefinition = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <SyntaxDefinition name=""Json"" xmlns=""http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"">
-  <Color name=""Digits"" foreground=""#8700FF"" exampleText=""3.14"" />
-  <Color name=""Value"" foreground=""#000CFF"" exampleText=""var text = &quot;Hello, World!&quot;;"" />
-  <Color name=""ParamName"" foreground=""#057500""  exampleText=""var text = &quot;Hello, World!&quot;;"" />
+  <Color name=""Digits"" foreground=""#d670fb"" exampleText=""3.14"" />
+  <Color name=""Value"" foreground=""#569fff"" exampleText=""var text = &quot;Hello, World!&quot;;"" />
+  <Color name=""ParamName"" foreground=""#2ad623""  exampleText=""var text = &quot;Hello, World!&quot;;"" />
   <RuleSet ignoreCase=""false"">
     <Keywords color=""Digits"" >
       <Word>true</Word>
