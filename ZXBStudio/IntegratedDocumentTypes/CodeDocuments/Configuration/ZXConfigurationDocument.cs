@@ -15,13 +15,13 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration
     {
         static readonly string[] _docExtensions = { ".zbs" };
         static readonly string _docDesc = "ZX configuration document";
+        static readonly string _docCat = "General";
         static readonly ZXConfigurationFactory _factory = new ZXConfigurationFactory();
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
-
         public string DocumentDescription => _docDesc;
-
+        public string DocumentCategory => _docCat;
         public Avalonia.Svg.Skia.Svg? DocumentAspect => null;
 
         public Bitmap DocumentIcon

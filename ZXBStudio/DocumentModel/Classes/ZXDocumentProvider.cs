@@ -64,6 +64,10 @@ namespace ZXBasicStudio.DocumentModel.Classes
             return GetDocumentType(Document)?.DocumentBuilder;
         }
 
+        /// <summary>
+        /// Get docuemnt extension filters
+        /// </summary>
+        /// <returns></returns>
         public static FilePickerFileType[] GetDocumentFilters()
         {
             List<FilePickerFileType> filters = new List<FilePickerFileType>();

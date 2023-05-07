@@ -25,6 +25,10 @@ namespace ZXBasicStudio.DocumentModel.Interfaces
         /// </summary>
         string DocumentDescription { get; }
         /// <summary>
+        /// Category of the document, used in the "Create document" dialog
+        /// </summary>
+        string DocumentCategory { get; }
+        /// <summary>
         /// Appearance of the document.
         /// Used in the document creation dialog.
         /// </summary>

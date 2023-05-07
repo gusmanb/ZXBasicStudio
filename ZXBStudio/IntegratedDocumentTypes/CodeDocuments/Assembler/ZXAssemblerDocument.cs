@@ -17,14 +17,14 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
     {
         static readonly string[] _docExtensions = { ".asm", ".zxasm", ".zxa", ".z80asm" };
         static readonly string _docDesc = "ZX Assembler document";
+        static readonly string _docCat = "Code";
         static readonly ZXAssemblerDocumentFactory _factory = new ZXAssemblerDocumentFactory();
         Avalonia.Svg.Skia.Svg? _aspect;
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
-
         public string DocumentDescription => _docDesc;
-
+        public string DocumentCategory => _docCat;
         public Avalonia.Svg.Skia.Svg? DocumentAspect
         {
             get

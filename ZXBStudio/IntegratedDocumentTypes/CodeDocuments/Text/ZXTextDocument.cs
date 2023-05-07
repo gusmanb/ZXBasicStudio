@@ -15,14 +15,14 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
     {
         static readonly string[] _docExtensions = { ".txt" };
         static readonly string _docDesc = "Text document";
+        static readonly string _docCat = "General";
         static readonly ZXTextDocumentFactory _factory = new ZXTextDocumentFactory();
         Avalonia.Svg.Skia.Svg? _aspect;
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
-
         public string DocumentDescription => _docDesc;
-
+        public string DocumentCategory => _docCat;
         public Avalonia.Svg.Skia.Svg? DocumentAspect
         {
             get

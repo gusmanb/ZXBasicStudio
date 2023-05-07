@@ -17,14 +17,14 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
     {
         static readonly string[] _docExtensions = { ".bas", ".zxbas", ".zxb" };
         static readonly string _docDesc = "ZX Basic document";
+        static readonly string _docCat = "Code";
         static readonly ZXBasicDocumentFactory _factory = new ZXBasicDocumentFactory();
         Avalonia.Svg.Skia.Svg? _aspect;
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
-
         public string DocumentDescription => _docDesc;
-
+        public string DocumentCategory => _docCat;
         public Avalonia.Svg.Skia.Svg? DocumentAspect
         {
             get
