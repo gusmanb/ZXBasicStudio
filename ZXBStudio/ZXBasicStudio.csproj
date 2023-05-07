@@ -47,11 +47,13 @@
     <None Remove="Fonts\NimbusSanL-RegIta.ttf" />
     <None Remove="Svg\backward-solid.svg" />
     <None Remove="Svg\backward-step-solid.svg" />
+    <None Remove="Svg\Binary.svg" />
     <None Remove="Svg\box-open-solid.svg" />
     <None Remove="Svg\box-solid.svg" />
     <None Remove="Svg\boxes-stacked-solid.svg" />
     <None Remove="Svg\bug-solid.svg" />
     <None Remove="Svg\cassette-solid.svg" />
+    <None Remove="Svg\cassette.svg" />
     <None Remove="Svg\circle-minus-solid.svg" />
     <None Remove="Svg\circle-xmark-solid.svg" />
     <None Remove="Svg\clock-rotate-left-solid.svg" />
@@ -98,6 +100,9 @@
     <None Remove="Svg\square-plus-solid.svg" />
     <None Remove="Svg\stop-solid.svg" />
     <None Remove="Svg\tag-solid.svg" />
+    <None Remove="Svg\text-asm.svg" />
+    <None Remove="Svg\text-data.svg" />
+    <None Remove="Svg\text-dim.svg" />
     <None Remove="Svg\trash-can-regular.svg" />
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
@@ -173,13 +178,18 @@
     <AvaloniaResource Include="Assets\zxGraphics_map.png" />
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
+    <AvaloniaResource Include="Svg\cassette.svg" />
     <AvaloniaResource Include="Svg\Export.svg" />
+    <AvaloniaResource Include="Svg\binary.svg" />
     <AvaloniaResource Include="Svg\Mask.svg" />
     <AvaloniaResource Include="Svg\MoveRight.svg" />
     <AvaloniaResource Include="Svg\Invert.svg" />
     <AvaloniaResource Include="Svg\ShiftRight.svg" />
     <AvaloniaResource Include="Svg\RotateRight.svg" />
     <AvaloniaResource Include="Svg\RotateLeft.svg" />
+    <AvaloniaResource Include="Svg\text-asm.svg" />
+    <AvaloniaResource Include="Svg\text-data.svg" />
+    <AvaloniaResource Include="Svg\text-dim.svg" />
     <AvaloniaResource Include="Svg\VMirror.svg" />
     <AvaloniaResource Include="Svg\HMirror.svg" />
     <AvaloniaResource Include="Svg\Paste.svg" />
@@ -332,6 +342,12 @@
   <ItemGroup>
     <Compile Update="Controls\DockSystem\ZXFloatingWindow.axaml.cs">
       <DependentUpon>ZXFloatingWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\ExportControls\DataFormat_ExportControl.axaml.cs">
+      <DependentUpon>DataFormat_ExportControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\ExportControls\DimFormat_ExportControl.axaml.cs">
+      <DependentUpon>DimFormat_ExportControl.axaml</DependentUpon>
     </Compile>
     <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>

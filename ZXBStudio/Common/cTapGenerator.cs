@@ -43,7 +43,7 @@ namespace ZXBasicStudio.Common
         }
 
         //Generamos el constructor
-        cTapGenerator()
+        public cTapGenerator()
         {
         }
 

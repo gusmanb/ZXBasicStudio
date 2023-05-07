@@ -875,6 +875,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        /// <summary>
+        /// Create a mask (fills pattern2 from pattern1 data) called recursively
+        /// </summary>
+        /// <param name="x">Coord x</param>
+        /// <param name="y">Coord Y</param>
+        /// <param name="pattern1">Original patterns</param>
+        /// <param name="pattern2">Void pattens</param>
         private void _Mask(int x, int y, ref Pattern[] pattern1, ref Pattern[] pattern2)
         {
             var p1=GetPointValue(x,y, pattern1);

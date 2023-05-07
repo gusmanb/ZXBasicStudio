@@ -137,6 +137,35 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
 
         /// <summary>
+        /// Converts binary data to tap format binary data
+        /// </summary>
+        /// <param name="fileName">ZX Spectrum file name</param>
+        /// <param name="address">address of the binary data on ZX Spectrum</param>
+        /// <param name="data">Data to convert</param>
+        /// <returns>Array of bytes or null if error</returns>
+        public static byte[] Bin2Tap(string fileName, int address, byte[] data)
+        {
+            try
+            {
+                var tapGen = new Common.cTapGenerator();
+                var fileTap = new Common.cTapGenerator.tTapFile()
+                {
+                    blockName = fileName,
+                    blockSize = data.Length,
+                    data = data,
+                    startAddress = address
+                };
+                return tapGen.createTap(fileTap);
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR generating tap file: " + ex.Message + ex.StackTrace;
+                return null;
+            }
+        }
+
+
+        /// <summary>
         /// Save a file of type GDU or Font to disk
         /// </summary>
         /// <param name="fileType">File information</param>
@@ -146,19 +175,40 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         {
             try
             {
+                var data = Files_CreateBinData_GDUorFont(fileType, patterns);
+                return dataLayer.WriteFileData(fileType.FileName, data);
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR saving file to disk: " + ex.Message + ex.StackTrace;
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Creates the binary data for a file of type GDU or Font to disk
+        /// </summary>
+        /// <param name="fileType">File information</param>
+        /// <param name="patterns">Pattens to use</param>
+        /// <returns>Arrfay oof byte with the data ready to save oon disk</returns>
+        public static byte[] Files_CreateBinData_GDUorFont(FileTypeConfig fileType, IEnumerable<Pattern> patterns)
+        {
+            try
+            {
                 if (fileType.FileType != FileTypes.GDU && fileType.FileType != FileTypes.Font)
                 {
-                    return false;
+                    return null;
                 }
 
                 var data = new byte[fileType.NumerOfPatterns * 8];
                 int index = 0;
-                for(int idPattern=0; idPattern < fileType.NumerOfPatterns; idPattern++)
+                for (int idPattern = 0; idPattern < fileType.NumerOfPatterns; idPattern++)
                 {
-                    var pattern=patterns.FirstOrDefault(d=>d.Id==idPattern);
+                    var pattern = patterns.FirstOrDefault(d => d.Id == idPattern);
                     if (pattern == null)
                     {
-                        for(int n=0; n<8; n++)
+                        for (int n = 0; n < 8; n++)
                         {
                             data[index] = 0;
                             index++;
@@ -166,19 +216,19 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     }
                     else
                     {
-                        for(int y=0; y<8; y++)
+                        for (int y = 0; y < 8; y++)
                         {
                             int b = 0;
-                            for(int x=0; x<8; x++)
+                            for (int x = 0; x < 8; x++)
                             {
-                                var p = pattern.Data.FirstOrDefault(d => d.Y == y && d.X==x);
+                                var p = pattern.Data.FirstOrDefault(d => d.Y == y && d.X == x);
                                 if (p == null)
                                 {
                                     continue;
                                 }
                                 if (p.ColorIndex == 1)
                                 {
-                                    b = b | (int)Math.Pow(2,(7-x));
+                                    b = b | (int)Math.Pow(2, (7 - x));
                                 }
                             }
                             data[index] = (byte)b;
@@ -187,11 +237,31 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     }
                 }
 
-                return dataLayer.WriteFileData(fileType.FileName, data);
+                return data;
             }
             catch (Exception ex)
             {
-                LastError = "ERROR saving file to disk: " + ex.Message + ex.StackTrace;
+                LastError = "ERROR generating binary data: " + ex.Message + ex.StackTrace;
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Save binary data to a file
+        /// </summary>
+        /// <param name="fileName">File name with full path</param>
+        /// <param name="data">Data to save</param>
+        /// <returns>True if ok or false if error</returns>
+        public static bool Files_SaveFileData(string fileName, byte[] data)
+        {
+            try
+            {
+                return dataLayer.WriteFileData(fileName, data);
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR saving data: " + ex.Message + ex.StackTrace;
                 return false;
             }
         }
