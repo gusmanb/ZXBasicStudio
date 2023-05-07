@@ -3,14 +3,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wnd="using:ZXBasicStudio.Classes"
-        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="680"
-        MinWidth="300" MaxWidth="300"
-        MinHeight="680" MaxHeight="680" 
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="520"
+        MinWidth="400" MaxWidth="400"
+        MinHeight="520" MaxHeight="520" 
         CanResize="False"
         Icon="/Assets/zxbs.ico"
         x:Class="ZXBasicStudio.Dialogs.ZXBuildSettingsDialog"
         Title="Build settings" WindowStartupLocation="CenterOwner">
-  <Grid ColumnDefinitions="*,5*,8*,2*" RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,2*">
+  <Grid ColumnDefinitions="*,5*,12*,*,*,6*,2*,2*" RowDefinitions="*,*,*,*,*,*,*,*,2*">
     <TextBlock Classes="dialog" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Main file:</TextBlock>
     <TextBox Classes="dialog" Grid.Row="0" Grid.Column="2" Name="txtFile"></TextBox>
     <TextBlock Classes="dialog" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Optimization:</TextBlock>
@@ -38,27 +38,33 @@
       <ComboBoxItem>0</ComboBoxItem>
       <ComboBoxItem>1</ComboBoxItem>
     </ComboBox>
-    <TextBlock Classes="dialog" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Sinclair mode:</TextBlock>
-    <CheckBox Classes="dialog" Grid.Row="5" Grid.Column="2"  Name="ckSinclair"></CheckBox>
-    <TextBlock Classes="dialog" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Heap size:</TextBlock>
-    <Border Height="32" Grid.Row="6" Grid.Column="2" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,0,5,0">
+    <TextBlock Classes="dialog" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Heap size:</TextBlock>
+    <Border Grid.Row="5" Grid.Column="2" Classes="numericborder">
       <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="4768" FormatString="####" Minimum="0" Maximum="32768" Name="nudHeap"></NumericUpDown>
     </Border>
-    <TextBlock Classes="dialog" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Strict bool:</TextBlock>
-    <CheckBox Grid.Row="7" Grid.Column="2"  Name="ckStrictBool"></CheckBox>
-    <TextBlock Classes="dialog" Grid.Row="8" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Enable break:</TextBlock>
-    <CheckBox Grid.Row="8" Grid.Column="2"  Name="ckBreak"></CheckBox>
-    <TextBlock Classes="dialog" Grid.Row="9" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Explicit:</TextBlock>
-    <CheckBox Grid.Row="9" Grid.Column="2"  Name="ckExplicit"></CheckBox>
-    <TextBlock Classes="dialog" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Defines:</TextBlock>
-    <TextBox Classes="dialog" Grid.Row="10" Grid.Column="2" Name="txtDefines"></TextBox>
-    <TextBlock Classes="dialog" Grid.Row="11" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Ignore case:</TextBlock>
-    <CheckBox Grid.Row="11" Grid.Column="2"  Name="ckCase"></CheckBox>
-    <TextBlock Classes="dialog" Grid.Row="12" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Strict:</TextBlock>
-    <CheckBox Grid.Row="12" Grid.Column="2"  Name="ckStrict"></CheckBox>
-    <TextBlock Classes="dialog" Grid.Row="13" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Headerless:</TextBlock>
-    <CheckBox Grid.Row="13" Grid.Column="2"  Name="ckHeaderless"></CheckBox>
-    <StackPanel Margin="10,15,10,15" Grid.Row="14" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right">
+    <TextBlock Classes="dialog" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Defines:</TextBlock>
+    <TextBox Classes="dialog" Grid.Row="6" Grid.Column="2" Name="txtDefines"></TextBox>
+    <TextBlock Classes="dialog" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Next cmd:</TextBlock>
+    <TextBox Classes="dialog" Grid.Row="7" Grid.Column="2" Name="txtNextCommand"></TextBox>
+    
+    <TextBlock Classes="dialog" Grid.Row="0" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Sinclair mode:</TextBlock>
+    <CheckBox Classes="dialog" Grid.Row="0" Grid.Column="6"  Name="ckSinclair"></CheckBox>
+    <TextBlock Classes="dialog" Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Strict bool:</TextBlock>
+    <CheckBox Grid.Row="1" Grid.Column="6"  Name="ckStrictBool"></CheckBox>
+    <TextBlock Classes="dialog" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Enable break:</TextBlock>
+    <CheckBox Grid.Row="2" Grid.Column="6"  Name="ckBreak"></CheckBox>
+    <TextBlock Classes="dialog" Grid.Row="3" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Explicit:</TextBlock>
+    <CheckBox Grid.Row="3" Grid.Column="6"  Name="ckExplicit"></CheckBox>
+    <TextBlock Classes="dialog" Grid.Row="4" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Ignore case:</TextBlock>
+    <CheckBox Grid.Row="4" Grid.Column="6"  Name="ckCase"></CheckBox>
+    <TextBlock Classes="dialog" Grid.Row="5" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Strict:</TextBlock>
+    <CheckBox Grid.Row="5" Grid.Column="6"  Name="ckStrict"></CheckBox>
+    <TextBlock Classes="dialog" Grid.Row="6" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Headerless:</TextBlock>
+    <CheckBox Grid.Row="6" Grid.Column="6"  Name="ckHeaderless"></CheckBox>
+    <TextBlock Classes="dialog" Grid.Row="7" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Next mode:</TextBlock>
+    <CheckBox Grid.Row="7" Grid.Column="6"  Name="ckNext"></CheckBox>
+    
+    <StackPanel Margin="10,15,10,15" Grid.Row="8" Grid.ColumnSpan="8" Orientation="Horizontal" HorizontalAlignment="Right">
       <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnCancel">Cancel</Button>
       <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnAccept">Accept</Button>
     </StackPanel>

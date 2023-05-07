@@ -14,48 +14,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
     {
         static ZXBasicDefinition def = new ZXBasicDefinition();
         static ZXBasicFoldingStrategy strategy = new ZXBasicFoldingStrategy();
-        static Regex regCancel = new Regex("^(\\s*'|((\\s*|_)REM\\s))", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-        protected override LanguageDefinitionBase? langDef
-        {
-            get
-            {
-                return def;
-            }
-        }
+        static Regex regCancel = new Regex("^(\\s*'|((\\s*|_)REM\\s)|^\\s*$)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
-        protected override IBrush? SearchMarkerBrush
-        {
-            get
-            {
-                return Brushes.Red;
-            }
-        }
-
-        protected override AbstractFoldingStrategy? FoldingStrategy
-        {
-            get
-            {
-                return strategy;
-            }
-        }
-
-        protected override char? CommentChar
-        {
-            get
-            {
-                return '\'';
-            }
-        }
-
-        protected override Regex? RegCancelBreakpoint
-        {
-            get
-            {
-                return regCancel;
-            }
-        }
+        protected override LanguageDefinitionBase? langDef => def;
+        protected override IBrush? searchMarkerBrush => Brushes.Red;
+        protected override AbstractFoldingStrategy? foldingStrategy => strategy;
+        protected override char? commentChar => '\'';
+        protected override Regex? regCancelBreakpoint => regCancel;
+        protected override bool allowsBreakpoints => true;
 
         public ZXBasicEditor() : base() { }
-        public ZXBasicEditor(string FileName) : base(FileName) { }
+        public ZXBasicEditor(string DocumentPath) : base(DocumentPath) { }
     }
 }
