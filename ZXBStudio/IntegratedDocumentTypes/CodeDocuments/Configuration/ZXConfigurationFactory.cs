@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
-using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic.Classes;
 
 namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration
 {
@@ -22,7 +21,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration
         {
             var type = ZXDocumentProvider.GetDocumentType(Path);
 
-            if (type is not ZXConfigurationFactory)
+            if (type is not ZXConfigurationDocument)
             {
                 OutputLog.WriteLine($"Document {Path} is not a configuration file, internal document handling error, operation aborted.");
                 return null;

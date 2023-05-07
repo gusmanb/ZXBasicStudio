@@ -13,11 +13,11 @@ using ZXBasicStudio.DocumentModel.Interfaces;
 
 namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
 {
-    public class ZXBasicDocument : IZXDocumentType
+    public class ZXAssemblerDocument : IZXDocumentType
     {
-        static readonly string[] _docExtensions = { ".bas", ".zxbas", ".zxb" };
-        static readonly string _docDesc = "ZX Basic document";
-        static readonly ZXBasicDocumentFactory _factory = new ZXBasicDocumentFactory();
+        static readonly string[] _docExtensions = { ".asm", ".zxasm", ".zxa", ".z80asm" };
+        static readonly string _docDesc = "ZX Assembler document";
+        static readonly ZXAssemblerDocumentFactory _factory = new ZXAssemblerDocumentFactory();
         Avalonia.Svg.Skia.Svg? _aspect;
         Bitmap? _icon;
 
@@ -30,7 +30,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
             get
             {
                 if (_aspect == null)
-                    _aspect = new Avalonia.Svg.Skia.Svg(new Uri("/Svg/Documents/file-zxbasic.svg"));
+                    _aspect = new Avalonia.Svg.Skia.Svg(new Uri("/Svg/Documents/file-zxasm.svg"));
 
                 return _aspect;
             }
@@ -45,9 +45,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
                     var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
 
                     if (assets == null)
-                        throw new AvaloniaInternalException("Cannot create asstes loader");
+                        throw new AvaloniaInternalException("Cannot create assets loader");
 
-                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxbFile.png")));
+                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/asmFile.png")));
                 }
 
                 return _icon;

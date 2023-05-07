@@ -244,7 +244,7 @@ namespace ZXBasicStudio
             bool isFile = File.Exists(path);
 
             if (!isFile &&
-                (openEditors.Any(e => e.FileName.ToLower().StartsWith(path.ToLower())) ||
+                (openEditors.Any(e => e.DocumentPath.ToLower().StartsWith(path.ToLower())) ||
                     openZXGraphics.Any(e => e.FileName.ToLower().StartsWith(path.ToLower()))))
             {
                 await this.ShowError("Open documents", "There are open documents in the selected folder, close any document in the folder before renaming it.");
@@ -283,7 +283,7 @@ namespace ZXBasicStudio
                     }
                     else
                     {
-                        var editor = openEditors.FirstOrDefault(d => dDocumentPath == path);
+                        var editor = openEditors.FirstOrDefault(d => d.DocumentPath == path);
                         if (editor != null)
                         {
                             if (editor.Modified)
@@ -292,7 +292,7 @@ namespace ZXBasicStudio
                                 await this.ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
                                 return;
                             }
-                            editor.FileName = Path.Combine(dir, newName);
+                            editor.RenameDocument(Path.Combine(dir, newName), outLog.Writer);
                         }
                         File.Move(path, Path.Combine(dir, newName));
                     }

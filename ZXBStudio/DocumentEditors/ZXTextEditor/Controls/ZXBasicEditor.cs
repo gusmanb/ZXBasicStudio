@@ -24,6 +24,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         protected override bool allowsBreakpoints => true;
 
         public ZXBasicEditor() : base() { }
-        public ZXBasicEditor(string FileName) : base(FileName) { }
+        public ZXBasicEditor(string DocumentPath) : base(DocumentPath) { }
     }
 }

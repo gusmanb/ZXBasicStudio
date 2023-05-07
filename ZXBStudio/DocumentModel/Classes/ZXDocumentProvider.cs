@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.DocumentModel.Interfaces;
-using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic.Classes;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 
 namespace ZXBasicStudio.DocumentModel.Classes
 {

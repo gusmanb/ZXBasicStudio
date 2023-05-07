@@ -10,15 +10,15 @@ using ZXBasicStudio.DocumentModel.Interfaces;
 
 namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
 {
-    public class ZXBasicDocumentFactory : IZXDocumentFactory
+    public class ZXAssemblerDocumentFactory : IZXDocumentFactory
     {
         public bool CreateDocument(string Path, TextWriter OutputLog)
         {
             var type = ZXDocumentProvider.GetDocumentType(Path);
 
-            if (type is not ZXBasicDocument)
+            if (type is not ZXAssemblerDocument)
             {
-                OutputLog.WriteLine($"Document {Path} is not a basic file, internal document handling error, operation aborted.");
+                OutputLog.WriteLine($"Document {Path} is not an assembler file, internal document handling error, operation aborted.");
                 return false;
             }
 
@@ -44,12 +44,12 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
         {
             var type = ZXDocumentProvider.GetDocumentType(Path);
 
-            if (type is not ZXBasicDocument)
+            if (type is not ZXAssemblerDocument)
             {
-                OutputLog.WriteLine($"Document {Path} is not a basic file, internal document handling error, operation aborted.");
+                OutputLog.WriteLine($"Document {Path} is not an assembler file, internal document handling error, operation aborted.");
                 return null;
             }
-            ZXBasicEditor editor = new ZXBasicEditor(Path);
+            ZXAssemblerEditor editor = new ZXAssemblerEditor(Path);
             return editor;
         }
     }
