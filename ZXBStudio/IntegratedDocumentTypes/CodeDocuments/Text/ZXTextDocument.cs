@@ -13,7 +13,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
 {
     public class ZXTextDocument : IZXDocumentType
     {
-        static readonly string[] _docExtensions = { ".txt" };
+        static readonly string[] _docExtensions = { ".txt", ".md" };
         static readonly string _docName = "Text document";
         static readonly string _docDesc = "Plain text document.";
         static readonly string _docCat = "General";

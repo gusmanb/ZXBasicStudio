@@ -15,7 +15,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
 {
     public class ZXAssemblerDocument : IZXDocumentType
     {
-        static readonly string[] _docExtensions = { ".asm", ".zxasm", ".zxa", ".z80asm" };
+        static readonly string[] _docExtensions = { ".zxasm", ".zxa", ".z80asm", ".asm" };
         static readonly string _docName = "Assembler file";
         static readonly string _docDesc = "Z80 Assembler source code file (with ZXASM-compatible syntax)";
         static readonly string _docCat = "Code";
