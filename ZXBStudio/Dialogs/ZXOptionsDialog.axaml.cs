@@ -95,8 +95,6 @@ namespace ZXBasicStudio.Dialogs
                 return;
             }
 
-            var opts = 
-
             ZXOptions.Current.ZxbcPath = txtZxbc.Text;
             ZXOptions.Current.ZxbasmPath= txtZxbasm.Text;
             ZXOptions.Current.EditorFontSize = (double)(nudFontSize.Value ?? 16);

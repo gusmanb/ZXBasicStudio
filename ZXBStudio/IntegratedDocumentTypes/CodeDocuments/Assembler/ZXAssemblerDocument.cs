@@ -16,25 +16,19 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
     public class ZXAssemblerDocument : IZXDocumentType
     {
         static readonly string[] _docExtensions = { ".asm", ".zxasm", ".zxa", ".z80asm" };
-        static readonly string _docDesc = "ZX Assembler document";
+        static readonly string _docName = "Assembler file";
+        static readonly string _docDesc = "Z80 Assembler source code file (with ZXASM-compatible syntax)";
         static readonly string _docCat = "Code";
+        static readonly string _docAspect = "/Svg/Documents/file-zxasm.svg";
+
         static readonly ZXAssemblerDocumentFactory _factory = new ZXAssemblerDocumentFactory();
-        Avalonia.Svg.Skia.Svg? _aspect;
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
+        public string DocumentName => _docName;
         public string DocumentDescription => _docDesc;
         public string DocumentCategory => _docCat;
-        public Avalonia.Svg.Skia.Svg? DocumentAspect
-        {
-            get
-            {
-                if (_aspect == null)
-                    _aspect = new Avalonia.Svg.Skia.Svg(new Uri("/Svg/Documents/file-zxasm.svg"));
-
-                return _aspect;
-            }
-        }
+        public string? DocumentAspect => _docAspect;
 
         public Bitmap DocumentIcon
         {

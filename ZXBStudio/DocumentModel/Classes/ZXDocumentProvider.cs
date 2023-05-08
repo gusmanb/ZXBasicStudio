@@ -77,5 +77,15 @@ namespace ZXBasicStudio.DocumentModel.Classes
 
             return filters.ToArray();
         }
+
+        public static IEnumerable<IZXDocumentType> GetDocumentsInCategory(string Category)
+        {
+            return _docTypes.Where(d => d.DocumentCategory== Category).OrderBy(d => d.DocumentName);
+        }
+
+        public static IEnumerable<string> GetDocumentCategories()
+        {
+            return _docTypes.Select(d => d.DocumentCategory).Distinct().Order();
+        }
     }
 }

@@ -16,25 +16,19 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
     public class ZXBasicDocument : IZXDocumentType
     {
         static readonly string[] _docExtensions = { ".bas", ".zxbas", ".zxb" };
-        static readonly string _docDesc = "ZX Basic document";
+        static readonly string _docName = "ZX Basic file";
+        static readonly string _docDesc = "ZX Basic source code file.";
         static readonly string _docCat = "Code";
+        static readonly string _docAspect = "/Svg/Documents/file-zxbasic.svg";
         static readonly ZXBasicDocumentFactory _factory = new ZXBasicDocumentFactory();
         Avalonia.Svg.Skia.Svg? _aspect;
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
+        public string DocumentName => _docName;
         public string DocumentDescription => _docDesc;
         public string DocumentCategory => _docCat;
-        public Avalonia.Svg.Skia.Svg? DocumentAspect
-        {
-            get
-            {
-                if (_aspect == null)
-                    _aspect = new Avalonia.Svg.Skia.Svg(new Uri("/Svg/Documents/file-zxbasic.svg"));
-
-                return _aspect;
-            }
-        }
+        public string? DocumentAspect => _docAspect;
 
         public Bitmap DocumentIcon
         {

@@ -20,6 +20,10 @@ namespace ZXBasicStudio.DocumentModel.Interfaces
         /// </summary>
         string[] DocumentExtensions { get; }
         /// <summary>
+        /// Name of the document type
+        /// </summary>
+        string DocumentName { get; }
+        /// <summary>
         /// Human-readable description of the document.
         /// Used in the document creation dialog.
         /// </summary>
@@ -31,8 +35,11 @@ namespace ZXBasicStudio.DocumentModel.Interfaces
         /// <summary>
         /// Appearance of the document.
         /// Used in the document creation dialog.
+        /// This must be the path to a SVG resource
+        /// 
+        /// If the document cannot be created this is not required.
         /// </summary>
-        Avalonia.Svg.Skia.Svg? DocumentAspect { get; }
+        string? DocumentAspect { get; }
         /// <summary>
         /// Icon of the document.
         /// Used in the project explorer.

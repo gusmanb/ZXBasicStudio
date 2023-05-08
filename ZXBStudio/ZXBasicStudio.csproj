@@ -411,6 +411,9 @@
     <Compile Update="Controls\DockSystem\ZXFloatingWindow.axaml.cs">
       <DependentUpon>ZXFloatingWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Dialogs\ZXNewFileDialog.axaml.cs">
+      <DependentUpon>ZXNewFileDialog.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>
     </Compile>

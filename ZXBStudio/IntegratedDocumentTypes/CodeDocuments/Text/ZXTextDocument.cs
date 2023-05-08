@@ -14,25 +14,18 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
     public class ZXTextDocument : IZXDocumentType
     {
         static readonly string[] _docExtensions = { ".txt" };
-        static readonly string _docDesc = "Text document";
+        static readonly string _docName = "Text document";
+        static readonly string _docDesc = "Plain text document.";
         static readonly string _docCat = "General";
+        static readonly string _docAspect = "/Svg/Documents/file-text.svg";
         static readonly ZXTextDocumentFactory _factory = new ZXTextDocumentFactory();
-        Avalonia.Svg.Skia.Svg? _aspect;
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
+        public string DocumentName => _docName;
         public string DocumentDescription => _docDesc;
         public string DocumentCategory => _docCat;
-        public Avalonia.Svg.Skia.Svg? DocumentAspect
-        {
-            get
-            {
-                if (_aspect == null)
-                    _aspect = new Avalonia.Svg.Skia.Svg(new Uri("/Svg/Documents/file-text.svg"));
-
-                return _aspect;
-            }
-        }
+        public string? DocumentAspect => _docAspect;
 
         public Bitmap DocumentIcon
         {
