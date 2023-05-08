@@ -42,6 +42,7 @@ using ZXBasicStudio.Dialogs;
 using ZXBasicStudio.DocumentEditors;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Classes;
+using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.Emulator.Classes;
 using ZXBasicStudio.Emulator.Controls;
 using ZXBasicStudio.Extensions;
@@ -495,29 +496,48 @@ namespace ZXBasicStudio
             var path = peExplorer.SelectedPath;
 
             if (path == null)
-                path = peExplorer.RootPath;
+                path = peExplorer.RootPath ?? "";
 
             if (File.Exists(path))
-                path = Path.GetDirectoryName(path);
+                path = Path.GetDirectoryName(path) ?? "";
 
-            var fileName = await this.ShowInput("New file", "Enter the name of the file to be created.", "File:");
+            var dlg = new ZXNewFileDialog();
+            var result = await dlg.ShowDialog<(IZXDocumentType DocumentType, string Name)?>(this);
 
-            if (string.IsNullOrWhiteSpace(fileName))
+            if (result == null)
                 return;
 
-            var finalPath = Path.Combine(path ?? "", fileName);
-            try
+            var finalName = Path.Combine(path, result.Value.Name);
+
+            if (File.Exists(finalName))
             {
-                File.Create(finalPath).Dispose();
+                if (!await this.ShowConfirm("Existing file", "Warning! File already exists, do you want to overwrite it?"))
+                    return;
+
+                try 
+                {
+                    File.Delete(finalName);
+
+                }
+                catch(Exception ex) 
+                {
+                    await this.ShowError("Error", "Cannot delete existing file, aborting.");
+                    return;
+                }
             }
-            catch (Exception ex)
+
+            var created = result.Value.DocumentType.DocumentFactory.CreateDocument(finalName, outLog.Writer);
+
+            if (!created)
             {
-                await this.ShowError("Create error", $"Unexpected error trying to create the file: {ex.Message} - {ex.StackTrace}");
+                await this.ShowError("Error", "Cannot create file, check the output log for more details");
                 return;
             }
-            await OpenFile(finalPath);
+
+            await OpenFile(finalName);
             await Task.Delay(100);
-            peExplorer.SelectPath(finalPath);
+            peExplorer.SelectPath(finalName);
+
         }
 
         private async void CreateFolder(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

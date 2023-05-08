@@ -164,13 +164,13 @@ namespace ZXBasicStudio.Controls
                     fWatcher.Dispose();
                 fWatcher = null;
                 tbRoot.Text = "No project open";
-                tvExplorer.Items = null;
+                tvExplorer.ItemsSource = null;
                 return;
             }
 
             rootPath = System.IO.Path.GetFullPath(RootFolder);
             _nodes = ScanFolder(RootFolder);
-            tvExplorer.Items = _nodes;
+            tvExplorer.ItemsSource = _nodes;
             tbRoot.Text = "Project " + System.IO.Path.GetFileName(RootFolder);
             
 
@@ -194,7 +194,9 @@ namespace ZXBasicStudio.Controls
             var node = FindNode(Path, _nodes);
 
             if (node != null)
+            {
                 tvExplorer.SelectedItem = node;
+            }
         }
 
         private void FWatcher_Renamed(object sender, RenamedEventArgs e)

@@ -15,7 +15,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
 {
     public class ZXBasicDocument : IZXDocumentType
     {
-        static readonly string[] _docExtensions = { ".bas", ".zxbas", ".zxb" };
+        static readonly string[] _docExtensions = { ".zxbas", ".zxb", ".bas" };
         static readonly string _docName = "ZX Basic file";
         static readonly string _docDesc = "ZX Basic source code file.";
         static readonly string _docCat = "Code";
