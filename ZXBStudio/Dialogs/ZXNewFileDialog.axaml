@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+        Width="640" Height="480"
+        Icon="/Assets/zxbs.ico"
+        x:Class="ZXBasicStudio.Dialogs.ZXNewFileDialog"
+        Title="Create new file..." CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <Grid ColumnDefinitions="16,2*,3*,2*,16" RowDefinitions="16,24,*,64">
+    <TextBlock Grid.Column="1" Grid.Row="1">Categories</TextBlock>
+    <ListBox Grid.Column="1" Grid.Row="2" Name="lstCategories" BorderThickness="0" Margin="5" ItemsSource="{Binding CurrentCategories}"></ListBox>
+    <TextBlock Grid.Column="2" Grid.Row="1">Document types</TextBlock>
+    <ListBox Grid.Column="2" Grid.Row="2" Name="lstDocumentTypes" Margin="5" ItemsSource="{Binding CurrentDocuments}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <Grid ColumnDefinitions="48,*">
+            <Svg Margin="8" Width="48" Height="48" Path="{Binding DocumentAspect}"></Svg>
+            <TextBlock VerticalAlignment="Bottom" Margin="8" Grid.Column="2" Name="txtDocument" Text="{Binding DocumentName}"></TextBlock>
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <TextBlock Grid.Column="3" Grid.Row="2" Margin="5" Text="{Binding CurrentDocumentDescription}" TextWrapping="Wrap"></TextBlock>
+    <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
+      <TextBlock Classes="dialog" VerticalAlignment="Center">Name:</TextBlock>
+      <TextBox Classes="dialog" MaxWidth="Infinity" Width="380" Margin="0"></TextBox>
+    </StackPanel>
+    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="5" Grid.Row="3" Grid.Column="3">
+      <Button Classes="dialog" Margin="5,10,0,10" Padding="5" Width="70">Create file</Button>
+      <Button Classes="dialog" Margin="5,10,0,10" Padding="5" Width="70">Cancel</Button>
+    </StackPanel>
+  </Grid>
+</Window>

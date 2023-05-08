@@ -179,7 +179,6 @@ namespace ZXBasicStudio
             _playerDock.Name = "TapePlayerDock";
 
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom, new[] { _playerDock });
-
         }
 
         private void BtnMapKeyboard_Click(object? sender, RoutedEventArgs e)

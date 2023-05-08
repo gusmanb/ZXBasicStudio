@@ -64,6 +64,10 @@ namespace ZXBasicStudio.DocumentModel.Classes
             return GetDocumentType(Document)?.DocumentBuilder;
         }
 
+        /// <summary>
+        /// Get docuemnt extension filters
+        /// </summary>
+        /// <returns></returns>
         public static FilePickerFileType[] GetDocumentFilters()
         {
             List<FilePickerFileType> filters = new List<FilePickerFileType>();
@@ -72,6 +76,16 @@ namespace ZXBasicStudio.DocumentModel.Classes
                 filters.Add(new FilePickerFileType(doc.DocumentDescription) { Patterns = doc.DocumentExtensions });
 
             return filters.ToArray();
+        }
+
+        public static IEnumerable<IZXDocumentType> GetDocumentsInCategory(string Category)
+        {
+            return _docTypes.Where(d => d.DocumentCategory== Category).OrderBy(d => d.DocumentName);
+        }
+
+        public static IEnumerable<string> GetDocumentCategories()
+        {
+            return _docTypes.Select(d => d.DocumentCategory).Distinct().Order();
         }
     }
 }
