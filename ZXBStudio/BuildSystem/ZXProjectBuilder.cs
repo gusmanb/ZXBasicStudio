@@ -5,10 +5,12 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentModel.Classes;
 
 namespace ZXBasicStudio.BuildSystem
 {
@@ -91,6 +93,9 @@ namespace ZXBasicStudio.BuildSystem
                     OutputLogWritter.WriteLine($"Using main file \"{settings.MainFile}\".");
                 }
 
+                if (!PreBuild(false, Folder, OutputLogWritter))
+                    return null;
+
                 var args = settings.GetSettings();
 
                 OutputLogWritter.WriteLine("Building program...");
@@ -115,6 +120,9 @@ namespace ZXBasicStudio.BuildSystem
                 byte[] binary = File.ReadAllBytes(binFile);
 
                 Cleanup(Folder, binFile);
+
+                if(!PostBuild(false, Folder, OutputLogWritter))
+                    return null;
 
                 ZXProgram program = ZXProgram.CreateReleaseProgram(binary, settings.Origin ?? 32768);
 
@@ -239,6 +247,9 @@ namespace ZXBasicStudio.BuildSystem
                     OutputLogWritter.WriteLine($"Using main file \"{settings.MainFile}\".");
                 }
 
+                if (!PreBuild(true, Folder, OutputLogWritter))
+                    return null;
+
                 var files = ScanFolder(Folder);
 
                 if (files.Count() == 0)
@@ -341,6 +352,9 @@ namespace ZXBasicStudio.BuildSystem
                 Cleanup(Folder, binFile, disFile);
 
                 ushort org = disasFile.FindOrg();
+
+                if (!PostBuild(true, Folder, OutputLogWritter))
+                    return null;
 
                 ZXProgram program = ZXProgram.CreateDebugProgram(files, disasFile, progMap, asmMap, varMap, binary, org);
 
@@ -499,6 +513,39 @@ namespace ZXBasicStudio.BuildSystem
                 files.AddRange(ScanFolder(fDir));
 
             return files;
+        }
+
+        private static bool PreBuild(bool debug, string path, TextWriter outLog)
+        {
+            outLog.WriteLine("Building precompilation documents...");
+            var builders = ZXDocumentProvider.GetPrecompilationDocumentBuilders();
+
+            foreach (var builder in builders)
+            {
+                if (!builder.Build(path, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, outLog))
+                {
+                    outLog.WriteLine("Error on pre-build stage, aborting...");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        private static bool PostBuild(bool debug, string path, TextWriter outLog)
+        {
+            outLog.WriteLine("Building postcompilation documents...");
+            var builders = ZXDocumentProvider.GetPostcompilationDocumentBuilders();
+
+            foreach (var builder in builders)
+            {
+                if (!builder.Build(path, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, outLog))
+                {
+                    outLog.WriteLine("Error on post-build stage, aborting...");
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
