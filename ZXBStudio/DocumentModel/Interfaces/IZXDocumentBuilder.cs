@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZXBasicStudio.DocumentModel.Enums;
+
+namespace ZXBasicStudio.DocumentModel.Interfaces
+{
+    /// <summary>
+    /// Interface for document builders.
+    /// </summary>
+    public interface IZXDocumentBuilder
+    {
+        /// <summary>
+        /// Builds all the documents of the handled type belonging to the project.
+        /// </summary>
+        /// <param name="BuildPath">Path of the project. The document builder must handle all the documents inside the path.</param>
+        /// <param name="BuildType">Type of build, to discriminate debug and release</param>
+        /// <param name="OutputLogWriter">TextWriter used to show logs to the user</param>
+        /// <returns>True if the build was successful, false in other case.</returns>
+        bool Build(string BuildPath, ZXBuildType BuildType, TextWriter OutputLog);
+    }
+}
