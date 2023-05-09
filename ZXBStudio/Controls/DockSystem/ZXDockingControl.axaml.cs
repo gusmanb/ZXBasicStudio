@@ -65,6 +65,18 @@ namespace ZXBasicStudio.Controls.DockSystem
             btnClose.Click += Close;
         }
 
+        protected override void OnGotFocus(GotFocusEventArgs e)
+        {
+            base.OnGotFocus(e);
+            grip.ShowDots = true;
+        }
+
+        protected override void OnLostFocus(RoutedEventArgs e)
+        {
+            base.OnLostFocus(e);
+            grip.ShowDots = false;
+        }
+
         private void MnuFloat_Click(object? sender, RoutedEventArgs e)
         {
             ZXFloatController.MakeFloating(this);

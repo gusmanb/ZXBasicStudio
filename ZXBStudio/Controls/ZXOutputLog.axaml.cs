@@ -5,14 +5,14 @@ namespace ZXBasicStudio.Controls
 {
     public partial class ZXOutputLog : UserControl
     {
-        LogTextWriter _writer;
+        ZXLogTextWriter _writer;
 
-        public LogTextWriter Writer { get { return _writer; } }
+        public ZXLogTextWriter Writer { get { return _writer; } }
 
         public ZXOutputLog()
         {
             InitializeComponent();
-            _writer = new LogTextWriter(tbOutput, scrOutput);
+            _writer = new ZXLogTextWriter(tbOutput, scrOutput);
         }
 
         public void Clear()

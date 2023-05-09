@@ -12,6 +12,12 @@
     <ApplicationIcon>zxbs.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <AvaloniaXaml Remove="LanguageDefinitions\**" />
+    <Compile Remove="LanguageDefinitions\**" />
+    <EmbeddedResource Remove="LanguageDefinitions\**" />
+    <None Remove="LanguageDefinitions\**" />
+  </ItemGroup>
+  <ItemGroup>
     <AvaloniaXaml Remove="Controls\ZXLocalVariablesView.axaml" />
     <AvaloniaXaml Remove="Controls\ZXVariableView.axaml" />
   </ItemGroup>
@@ -32,6 +38,7 @@
     <None Remove="Assets\folder.png" />
     <None Remove="Assets\LogoBig.png" />
     <None Remove="Assets\logoSmall.png" />
+    <None Remove="Assets\txtFile.png" />
     <None Remove="Assets\unknFile.png" />
     <None Remove="Assets\zxbFile.png" />
     <None Remove="Assets\zxbs.ico" />
@@ -41,6 +48,36 @@
     <None Remove="Assets\zxGraphics_map.png" />
     <None Remove="Assets\zxGraphics_spr.png" />
     <None Remove="Assets\zxGraphics_til.png" />
+    <None Remove="Fonts\AlmaMono-Bold.otf" />
+    <None Remove="Fonts\AlmaMono-Heavy.otf" />
+    <None Remove="Fonts\AlmaMono-Light.otf" />
+    <None Remove="Fonts\AlmaMono-Regular.otf" />
+    <None Remove="Fonts\AlmaMono-Thin.otf" />
+    <None Remove="Fonts\BergenMono-Bold.otf" />
+    <None Remove="Fonts\BergenMono-BoldItalic.otf" />
+    <None Remove="Fonts\BergenMono-Italic.otf" />
+    <None Remove="Fonts\BergenMono-Regular.otf" />
+    <None Remove="Fonts\BergenMono-SemiBold.otf" />
+    <None Remove="Fonts\BergenMono-SemiBoldItalic.otf" />
+    <None Remove="Fonts\BPmono.ttf" />
+    <None Remove="Fonts\BPmonoBold.ttf" />
+    <None Remove="Fonts\BPmonoItalics.ttf" />
+    <None Remove="Fonts\CascadiaMono-Bold.otf" />
+    <None Remove="Fonts\CascadiaMono-BoldItalic.otf" />
+    <None Remove="Fonts\CascadiaMono-ExtraLight.otf" />
+    <None Remove="Fonts\CascadiaMono-ExtraLightItalic.otf" />
+    <None Remove="Fonts\CascadiaMono-Italic.otf" />
+    <None Remove="Fonts\CascadiaMono-Light.otf" />
+    <None Remove="Fonts\CascadiaMono-LightItalic.otf" />
+    <None Remove="Fonts\CascadiaMono-Regular.otf" />
+    <None Remove="Fonts\CascadiaMono-SemiBold.otf" />
+    <None Remove="Fonts\CascadiaMono-SemiBoldItalic.otf" />
+    <None Remove="Fonts\CascadiaMono-SemiLight.otf" />
+    <None Remove="Fonts\CascadiaMono-SemiLightItalic.otf" />
+    <None Remove="Fonts\ConsolaMono-Bold.ttf" />
+    <None Remove="Fonts\ConsolaMono.ttf" />
+    <None Remove="Fonts\DroidSansMono.ttf" />
+    <None Remove="Fonts\FiraCode-Regular.ttf" />
     <None Remove="Fonts\NimbusSanL-Bol.ttf" />
     <None Remove="Fonts\NimbusSanL-BolIta.ttf" />
     <None Remove="Fonts\NimbusSanL-Reg.ttf" />
@@ -64,6 +101,9 @@
     <None Remove="Svg\diagram-project-plus-solid.svg" />
     <None Remove="Svg\diagram-project-solid.svg" />
     <None Remove="Svg\display-lines-solid.svg" />
+    <None Remove="Svg\Documents\file-text.svg" />
+    <None Remove="Svg\Documents\file-zxasm.svg" />
+    <None Remove="Svg\Documents\file-zxbasic.svg" />
     <None Remove="Svg\dumpster-solid.svg" />
     <None Remove="Svg\eject-solid.svg" />
     <None Remove="Svg\file-arrow-down-solid.svg" />
@@ -80,6 +120,7 @@
     <None Remove="Svg\forward-step-solid.svg" />
     <None Remove="Svg\gears-solid.svg" />
     <None Remove="Svg\hashtag-solid.svg" />
+    <None Remove="Svg\keyboard-regular.svg" />
     <None Remove="Svg\layout-alltools-solid.svg" />
     <None Remove="Svg\layout-debug-solid.svg" />
     <None Remove="Svg\layout-explorer-solid.svg" />
@@ -138,6 +179,7 @@
     <None Remove="Svg\White\forward-step-solid.svg" />
     <None Remove="Svg\White\gears-solid.svg" />
     <None Remove="Svg\White\hashtag-solid.svg" />
+    <None Remove="Svg\White\keyboard-regular.svg" />
     <None Remove="Svg\White\layout-alltools-solid.svg" />
     <None Remove="Svg\White\layout-debug-solid.svg" />
     <None Remove="Svg\White\layout-explorer-solid.svg" />
@@ -169,6 +211,7 @@
     <AvaloniaResource Include="Assets\folder.png" />
     <AvaloniaResource Include="Assets\LogoBig.png" />
     <AvaloniaResource Include="Assets\logoSmall.png" />
+    <AvaloniaResource Include="Assets\txtFile.png" />
     <AvaloniaResource Include="Assets\unknFile.png" />
     <AvaloniaResource Include="Assets\zxbFile.png" />
     <AvaloniaResource Include="Assets\zxbs.ico" />
@@ -178,8 +221,41 @@
     <AvaloniaResource Include="Assets\zxGraphics_map.png" />
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
-    <AvaloniaResource Include="Svg\cassette.svg" />
+    <AvaloniaResource Include="Fonts\AlmaMono-Bold.otf" />
+    <AvaloniaResource Include="Fonts\AlmaMono-Heavy.otf" />
+    <AvaloniaResource Include="Fonts\AlmaMono-Light.otf" />
+    <AvaloniaResource Include="Fonts\AlmaMono-Regular.otf" />
+    <AvaloniaResource Include="Fonts\AlmaMono-Thin.otf" />
+    <AvaloniaResource Include="Fonts\BergenMono-Bold.otf" />
+    <AvaloniaResource Include="Fonts\BergenMono-BoldItalic.otf" />
+    <AvaloniaResource Include="Fonts\BergenMono-Italic.otf" />
+    <AvaloniaResource Include="Fonts\BergenMono-Regular.otf" />
+    <AvaloniaResource Include="Fonts\BergenMono-SemiBold.otf" />
+    <AvaloniaResource Include="Fonts\BergenMono-SemiBoldItalic.otf" />
+    <AvaloniaResource Include="Fonts\BPmono.ttf" />
+    <AvaloniaResource Include="Fonts\BPmonoBold.ttf" />
+    <AvaloniaResource Include="Fonts\BPmonoItalics.ttf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-Bold.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-BoldItalic.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-ExtraLight.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-ExtraLightItalic.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-Italic.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-Light.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-LightItalic.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-Regular.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-SemiBold.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-SemiBoldItalic.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-SemiLight.otf" />
+    <AvaloniaResource Include="Fonts\CascadiaMono-SemiLightItalic.otf" />
+    <AvaloniaResource Include="Fonts\ConsolaMono-Bold.ttf" />
+    <AvaloniaResource Include="Fonts\ConsolaMono.ttf" />
+    <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
+    <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\Documents\file-text.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxbasic.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxasm.svg" />
     <AvaloniaResource Include="Svg\Export.svg" />
+    <AvaloniaResource Include="Svg\keyboard-regular.svg" />
     <AvaloniaResource Include="Svg\binary.svg" />
     <AvaloniaResource Include="Svg\Mask.svg" />
     <AvaloniaResource Include="Svg\MoveRight.svg" />
@@ -288,6 +364,7 @@
     <AvaloniaResource Include="Svg\White\forward-step-solid.svg" />
     <AvaloniaResource Include="Svg\White\gears-solid.svg" />
     <AvaloniaResource Include="Svg\White\hashtag-solid.svg" />
+    <AvaloniaResource Include="Svg\White\keyboard-regular.svg" />
     <AvaloniaResource Include="Svg\White\layout-alltools-solid.svg" />
     <AvaloniaResource Include="Svg\White\layout-debug-solid.svg" />
     <AvaloniaResource Include="Svg\White\layout-explorer-solid.svg" />
@@ -343,6 +420,9 @@
     <Compile Update="Controls\DockSystem\ZXFloatingWindow.axaml.cs">
       <DependentUpon>ZXFloatingWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Dialogs\ZXNewFileDialog.axaml.cs">
+      <DependentUpon>ZXNewFileDialog.axaml</DependentUpon>
+    </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\ExportControls\DataFormat_ExportControl.axaml.cs">
       <DependentUpon>DataFormat_ExportControl.axaml</DependentUpon>
     </Compile>
@@ -392,6 +472,6 @@
     <Folder Include="DebuggingTools\TStates\Classes\" />
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
-    <Folder Include="LanguageDefinitions\" />
+    <Folder Include="IntegratedDocumentTypes\CodeDocuments\Assembler\" />
   </ItemGroup>
 </Project>
