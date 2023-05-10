@@ -23,6 +23,8 @@ using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Breakpoints;
 using ZXBasicStudio.DocumentModel.Classes;
 using AvaloniaEdit;
+using System.Collections;
+using static AvaloniaEdit.Document.TextDocumentWeakEventManager;
 
 namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 {
@@ -283,12 +285,40 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             DocumentRestored = null;
             DocumentModified = null;
             RequestSaveDocument = null;
+
+            if (fManager != null)
+                FoldingManager.Uninstall(fManager);
+
             fManager = null;
-            updateFoldingsTimer?.Stop();
-            updateFoldingsTimer = null;
+
+            if (updateFoldingsTimer != null)
+            {
+                updateFoldingsTimer.Stop();
+                updateFoldingsTimer.Tick -= UpdateFoldingsTimer_Tick;
+                updateFoldingsTimer = null;
+            }
+
             blRender = null;
-            bpMargin?.Dispose();
-            bpMargin = null;
+
+            if (bpMargin != null)
+            {
+                bpMargin.BreakpointAdded -= BpMargin_BreakpointAdded;
+                bpMargin.BreakpointRemoved -= BpMargin_BreakpointRemoved;
+                bpMargin?.Dispose();
+                bpMargin = null;
+            }
+
+            editor.TextArea.PointerWheelChanged -= Editor_PointerWheelChanged;
+            editor.TextArea.KeyUp -= TextArea_KeyUp;
+            editor.TextArea.LayoutUpdated -= TextArea_LayoutUpdated;
+
+            if (allowsBreakpoints)
+            {
+                editor.Document.Changing -= Document_Changing;
+                editor.Document.Changed -= Document_Changed;
+            }
+
+            editor.TemplateApplied -= Editor_TemplateApplied;
         }
 
         #endregion
@@ -387,12 +417,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             if (updateFoldingsTimer != null)
             {
                 updateFoldingsTimer.Stop();
+                updateFoldingsTimer.Tick -= UpdateFoldingsTimer_Tick;
                 updateFoldingsTimer = null;
             }
 
             if (!string.IsNullOrWhiteSpace(OldName) && OldName != "Untitled")
                 BreakpointManager.UpdateFileName(OldName, NewName);
 
+            if (editor.Document != null && allowsBreakpoints)
+            {
+                editor.Document.Changing -= Document_Changing;
+                editor.Document.Changed -= Document_Changed;
+            }
             if (!string.IsNullOrWhiteSpace(NewName) && NewName != "Untitled" && NewName != ZXConstants.DISASSEMBLY_DOC && NewName != ZXConstants.ROM_DOC)
                 editor.Document = new AvaloniaEdit.Document.TextDocument(File.ReadAllText(NewName));
             else
@@ -412,6 +448,108 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
             _docPath = NewName;
             _docName = Path.GetFileName(NewName);
+
+            if (allowsBreakpoints)
+            {
+                editor.Document.Changing += Document_Changing;
+                editor.Document.Changed += Document_Changed;
+            }
+        }
+        private void Document_Changing(object? sender, DocumentChangeEventArgs e)
+        {
+
+            if (!allowsBreakpoints)
+                return;
+
+            int start = e.OffsetChangeMap[0].Offset;
+            int firstLine = editor.Document.GetLineByOffset(start).LineNumber;
+            bool changed = false;
+
+            if (e.RemovalLength > 0)
+            {
+                
+                int end = start + e.RemovalLength;
+                int linesRemoved = 0;
+                int pos = start;
+                while(pos < end) 
+                {
+                    var line = editor.Document.GetLineByOffset(pos);
+                    if (pos >= line.EndOffset)
+                        firstLine++;
+
+                    
+                    string lineText = editor.Document.GetText(line.Offset, line.Length);
+                    int removalLength = Math.Min(line.EndOffset - pos, end - pos);
+                    string leftText = lineText.Remove(pos - line.Offset, removalLength);
+
+
+                    if (string.IsNullOrWhiteSpace(leftText))
+                        changed |= RemoveBreakpoint(line.LineNumber);
+
+                    pos = line.NextLine?.Offset ?? int.MaxValue;
+
+                    if (pos <= end)
+                        linesRemoved++;
+                }
+
+                if(linesRemoved > 0)
+                    changed |= MoveBreakpoints(firstLine, -linesRemoved);
+            }
+
+            if(changed)
+                bpMargin?.InvalidateVisual();
+        }
+        private void Document_Changed(object? sender, DocumentChangeEventArgs e)
+        {
+            if (!allowsBreakpoints)
+                return;
+
+            int start = e.OffsetChangeMap[0].Offset;
+            var firstLine = editor.Document.GetLineByOffset(start);
+            bool changed = false;
+
+            if (e.InsertionLength > 0 && e.InsertedText.Text.Contains("\n"))
+            {
+                int addedLines = e.InsertedText.Text.Count(c => c == '\n');
+
+                var firstText = editor.Document.GetText(firstLine.Offset, firstLine.Length);
+
+                if(!string.IsNullOrWhiteSpace(firstText))
+                    changed = MoveBreakpoints(firstLine.LineNumber + 1, addedLines);
+                else
+                    changed = MoveBreakpoints(firstLine.LineNumber, addedLines);
+            }
+        }
+        bool RemoveBreakpoint(int LineNumber)
+        {
+            if (bpMargin == null)
+                return false;
+
+            var bp = bpMargin.Breakpoints.Where(b => b.Line == LineNumber).FirstOrDefault();
+            if (bp != null)
+            {
+                bpMargin.Breakpoints.Remove(bp);
+                return true;
+            }
+
+            return false;
+        }
+        bool MoveBreakpoints(int FirstLine, int LineOffset)
+        {
+            if (bpMargin == null)
+                return false;
+
+            var toMove = bpMargin.Breakpoints.Where(b => b.Line >= FirstLine).ToArray();
+
+            if (toMove.Length > 0)
+            {
+                foreach (var b in toMove)
+                    b.Line += LineOffset;
+
+                return true;
+            }
+
+            return false;
         }
         private void UpdateFoldingsTimer_Tick(object? sender, EventArgs e)
         {

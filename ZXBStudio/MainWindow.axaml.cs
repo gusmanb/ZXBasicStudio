@@ -246,7 +246,7 @@ namespace ZXBasicStudio
 
             bool isFile = File.Exists(path);
 
-            //TODO: Check better, it might match a floder wich has a partial name of other folder
+            //TODO: Check better, it might match a folder wich has a partial name of other folder
             if (!isFile && openDocuments.Any(e => e.DocumentPath.ToLower().StartsWith(path.ToLower())))
             {
                 await this.ShowError("Open documents", "There are open documents in the selected folder, close any document in the folder before renaming it.");
@@ -275,10 +275,21 @@ namespace ZXBasicStudio
                             await this.ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
                             return;
                         }
-                        document.RenameDocument(Path.Combine(dir ?? "", newName), outLog.Writer);
+
+                        File.Move(path, Path.Combine(dir ?? "", newName));
+
+                        if (!document.RenameDocument(Path.Combine(dir ?? "", newName), outLog.Writer))
+                        {
+                            await this.ShowError("Error", "Error renaming the file, check the output log for more information.");
+                            File.Move(Path.Combine(dir ?? "", newName), path);
+                            return;
+                        }
+
+                        var tab = editTabs.First(t => t.Content == document);
+                        tab.Tag = newName;
                     }
-                    
-                    File.Move(path, Path.Combine(dir ?? "", newName));
+                    else
+                        File.Move(path, Path.Combine(dir ?? "", newName));
                     
                 }
             }
