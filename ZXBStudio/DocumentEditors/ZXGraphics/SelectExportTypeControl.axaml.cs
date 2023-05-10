@@ -31,6 +31,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     return ExportTypes.None;
                 }
             }
+            set
+            {
+                var option = ExportTypesList.FirstOrDefault(d => d.ExportType == value);
+                lstOptions.SelectedItem = option;
+            }
         }
         private ExportTypes _ExportType = ExportTypes.Bin;
 
@@ -59,7 +64,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 Description = "It is exported as .tap, which allows loading with LOAD \"\" CODE.",
                 ExportType = ExportTypes.Tap,
-                Image = "/Svg/cassette.svg",
+                Image = "/Svg/cassette-solid.svg",
                 Name = ".tap format"
             });
             ExportTypesList.Add(new ExportTypeDescrioptionItem()

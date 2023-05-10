@@ -433,6 +433,9 @@
     <Compile Update="DocumentEditors\ZXGraphics\ExportControls\DimFormat_ExportControl.axaml.cs">
       <DependentUpon>DimFormat_ExportControl.axaml</DependentUpon>
     </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\FontGDUExportDialog.axaml.cs">
+      <DependentUpon>FontGDUExportDialog.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>
     </Compile>

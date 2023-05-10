@@ -614,67 +614,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void BtnExport_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            grdEditor.IsVisible = false;
-            grdExport.IsVisible = true;
-            cmbSelectExportType.Initialize(ExportType_Changed);
+            var dlg = new FontGDUExportDialog();
+            dlg.Initialize(fileType, patterns);
+            dlg.ShowDialog(this.VisualRoot as Window);
         }
 
         #endregion
 
 
-        #region ExportOptions
-
-        private ExportControls.IExportControl exportControl = null;
-
-        private void ExportType_Changed(ExportTypes exportType)
-        {
-            grdExportControl.Children.Clear();
-
-
-            switch (exportType)
-            {
-                case ExportTypes.Bin:
-                    exportControl = new ExportControls.RawData_ExportControl();
-                    break;
-                case ExportTypes.Tap:
-                    exportControl = new ExportControls.TapFormat_ExportControl();
-                    break;
-                case ExportTypes.Asm:
-                    exportControl = new ExportControls.AsmFormat_ExportControl();
-                    break;
-                case ExportTypes.Dim:
-                    exportControl = new ExportControls.DimFormat_ExportControl();
-                    break;
-                case ExportTypes.Data:
-                    exportControl = new ExportControls.DataFormat_ExportControl();
-                    break;
-            }
-
-            if (exportControl == null)
-            {
-                return;
-            }
-
-            grdExportControl.Children.Add((UserControl)exportControl);
-            var data = patterns.Select(d => d.Pattern).ToArray();
-            exportControl.Initialize(fileType, data, Export_Commad);
-        }
-
-
-        private void Export_Commad(string command)
-        {
-            switch (command)
-            {
-                case "CLOSE":
-                    grdEditor.IsVisible = true;
-                    grdExport.IsVisible = false;
-                    break;
-            }
-        }
-
-
-
-
-        #endregion
     }
 }

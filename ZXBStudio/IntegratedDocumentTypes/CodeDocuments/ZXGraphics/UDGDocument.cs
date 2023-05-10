@@ -17,7 +17,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
     {
         static readonly string[] _docExtensions = { ".gdu", ".udg" };
         static readonly string _docName = "UGD file";
-        static readonly string _docDesc = "User Graphics Defined data (21 chars)";
+        static readonly string _docDesc = "User Graphics Defined data (21 chars). Array of 168 bytes to use classical ZX Spectrum UDGs/GDUs.";
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-udg.svg";
 

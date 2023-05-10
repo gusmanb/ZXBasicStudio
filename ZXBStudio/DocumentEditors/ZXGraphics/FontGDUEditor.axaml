@@ -170,13 +170,5 @@
       </zxd:ZXDockingContainer>
 
     </Grid>
-
-    <Grid Name="grdExport" ColumnDefinitions="240,8,*" Margin="0,8,0,0" IsVisible="False" >
-      <StackPanel Orientation="Vertical">
-        <local:SelectExportTypeControl Name="cmbSelectExportType"/>
-      </StackPanel>
-
-      <Grid Name="grdExportControl" Grid.Column="2"/>
-    </Grid>
   </Grid>
 </UserControl>

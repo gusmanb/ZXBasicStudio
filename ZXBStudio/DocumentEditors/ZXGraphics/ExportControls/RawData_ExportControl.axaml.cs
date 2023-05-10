@@ -31,6 +31,19 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls
             this.patterns = patterns;
             this.CallBackCommand = CallBackCommand;
 
+            ExportConfig exportConfig = ServiceLayer.Export_GetConfigFile(fileType.FileName + ".zbs");
+            if (exportConfig == null)
+            {
+                exportConfig = new ExportConfig();
+                exportConfig.ExportType = ExportTypes.Bin;
+                exportConfig.AutoExport = false;
+                exportConfig.ExportFilePath = "";
+                exportConfig.LabelName = "";
+                exportConfig.ZXFileName = "";
+                exportConfig.ZXAddress = 49152;
+
+            }
+
             txtCode.Text = "' Example of use of custom font type\rPOKE (uinteger 23606, @MyFont-256)\rPRINT \"Hello World!\"\rSTOP\r\r' Don't let the execution thread bypass the ASM\r\rMyFont:\rASM\r\tincbin \"MyFont.fnt\"\rEND ASM\r";
             return true;
         }

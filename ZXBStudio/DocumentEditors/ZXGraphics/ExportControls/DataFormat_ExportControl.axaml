@@ -4,39 +4,43 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls.DataFormat_ExportControl">
-  <Grid RowDefinitions="Auto,16,*,16,Auto">
-    <TextBlock FontSize="18" FontWeight="Bold">Tap format - Export options</TextBlock>
+  <Grid RowDefinitions="Auto,*,Auto">
+    <TextBlock FontSize="18" FontWeight="Bold">DATA format - Export options</TextBlock>
 
-    <StackPanel Orientation="Vertical" Grid.Row="2" Spacing="4">
-      <TextBlock Grid.Row="2" TextWrapping="Wrap">
-        The data is placed in traditional DATA commands. This method is not recommended as it consumes more memory than ASM or DIM formats.
-      </TextBlock>
+    <Border BorderBrush="Gray" BorderThickness="0,0,0,1" Padding="0,0,0,4" Grid.Row="1">
+      <ScrollViewer>
+        <StackPanel Orientation="Vertical" Spacing="4">
+          <TextBlock Grid.Row="2" TextWrapping="Wrap">
+            The data is placed in traditional DATA commands. This method is not recommended as it consumes more memory than ASM or DIM formats.
+          </TextBlock>
 
-      <TextBlock FontSize="14" Foreground="Red" Margin="0,32,0,0">
-        Export options
-      </TextBlock>
-      <CheckBox Classes="dialog" Name="chkAuto" IsVisible="False">Auto-export on every compilation (exit with save button)</CheckBox>
-      <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
-        <TextBlock Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Export file path:</TextBlock>
-        <TextBox Classes="dialog" Grid.Column="1" MaxWidth="Infinity" Name="txtOutputFile"></TextBox>
-        <Button Classes="dialog" Grid.Column="2" VerticalAlignment="Center" Name="btnOutputFile">...</Button>
+          <TextBlock FontSize="14" Foreground="Red" Margin="0,16,0,0">
+            Export options
+          </TextBlock>
+          <CheckBox Classes="dialog" Name="chkAuto">Auto-export on every compilation (exit with save button)</CheckBox>
+          <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
+            <TextBlock Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Export file path:</TextBlock>
+            <TextBox Classes="dialog" Grid.Column="1" MaxWidth="Infinity" Name="txtOutputFile"></TextBox>
+            <Button Classes="dialog" Grid.Column="2" VerticalAlignment="Center" Name="btnOutputFile">...</Button>
 
-        <TextBlock Classes="dialog" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right">Label name:</TextBlock>
-        <TextBox Classes="dialog" Grid.Row="1" Grid.Column="1" Name="txtLabelName" MaxLength="10" Width="100" HorizontalAlignment="Left"></TextBox>
-      </Grid>
+            <TextBlock Classes="dialog" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right">Label name:</TextBlock>
+            <TextBox Classes="dialog" Grid.Row="1" Grid.Column="1" Name="txtLabelName" MaxLength="64" Width="100" HorizontalAlignment="Left"></TextBox>
+          </Grid>
 
-      <TextBlock FontSize="14" Foreground="Red" Margin="0,32,0,0">
-        Example of use
-      </TextBlock>
-      <TextBox Name="txtCode" AcceptsReturn="true" AcceptsTab="True" IsReadOnly="True" MaxHeight="200">
-      </TextBox>
-      <Button Name="btnCopy" Classes="dialog" HorizontalAlignment="Right" Width="150">Copy sample to clipboard</Button>
-    </StackPanel>
+          <TextBlock FontSize="14" Foreground="Red" Margin="0,16,0,0">
+            Example of use
+          </TextBlock>
+          <TextBox Name="txtCode" AcceptsReturn="true" AcceptsTab="True" IsReadOnly="True">
+          </TextBox>
+          <Button Name="btnCopy" Classes="dialog" HorizontalAlignment="Right" Width="150">Copy sample to clipboard</Button>
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
 
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="4" Margin="8">
       <Button Name="btnCancel" Classes="dialog">Close</Button>
       <Button Name="btnExport" Classes="dialog">Export</Button>
-      <Button Name="btnSave" Classes="dialog" IsVisible="False">Save options</Button>
+      <Button Name="btnSave" Classes="dialog">Save options</Button>
     </StackPanel>
   </Grid>
 </UserControl>

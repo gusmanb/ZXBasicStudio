@@ -5,6 +5,7 @@ using System.Text;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using Avalonia;
+using ZXBasicStudio.Common;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls
 {
@@ -31,11 +32,22 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls
             this.patterns = patterns;
             this.CallBackCommand = CallBackCommand;
 
-            var fileName = fileType.FileName.Replace(".fnt", ".bas").Replace(".gdu", ".bas").Replace(".udg", ".bas");
-            txtOutputFile.Text = fileName;
+            ExportConfig exportConfig = ServiceLayer.Export_GetConfigFile(fileType.FileName + ".zbs");
+            if (exportConfig == null)
+            {
+                exportConfig = new ExportConfig();
+                exportConfig.ExportType = ExportTypes.Dim;
+                exportConfig.AutoExport = false;
+                exportConfig.ExportFilePath = fileType.FileName.Replace(".fnt", ".bas").Replace(".gdu", ".bas").Replace(".udg", ".bas");
+                exportConfig.LabelName = Path.GetFileName(exportConfig.ExportFilePath).Replace(".bas", "").Replace(" ", "_");
+                exportConfig.ZXFileName = "";
+                exportConfig.ZXAddress = 49152;
 
-            var spName = Path.GetFileName(fileName).Replace(".bas", "").Replace(" ", "_");
-            txtLabelName.Text = spName;
+            }
+
+            chkAuto.IsChecked = exportConfig.AutoExport;
+            txtOutputFile.Text = exportConfig.ExportFilePath;
+            txtLabelName.Text = exportConfig.LabelName;
 
             txtCode.Text = GenerateExample();
 
@@ -137,7 +149,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls
 
         private void BtnSave_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            throw new NotImplementedException();
+            var exportConfig = new ExportConfig()
+            {
+                AutoExport = chkAuto.IsChecked.ToBoolean(),
+                ExportFilePath = txtOutputFile.Text.ToStringNoNull(),
+                ExportType = ExportTypes.Dim,
+                LabelName = txtLabelName.ToStringNoNull(),
+                ZXAddress = 49152,
+                ZXFileName = ""
+            };
+            ServiceLayer.Export_SetConfigFile(fileType.FileName + ".zbs", exportConfig);
+            Export();
+            CallBackCommand?.Invoke("CLOSE");
         }
 
 

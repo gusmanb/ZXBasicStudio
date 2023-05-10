@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Common;
+using System.Runtime;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
@@ -292,6 +294,52 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                 return false;
             }
             return true;
+        }
+
+
+        /// <summary>
+        /// Returns the ExportConfig (.zbs) of a file
+        /// </summary>
+        /// <param name="fileName">Full path and name of the config file</param>
+        /// <returns>ExportConfig object or null if file not exists</returns>
+        public static ExportConfig Export_GetConfigFile(string fileName)
+        {
+            try
+            {
+                var jsonData = dataLayer.Files_GetString(fileName);
+                if (string.IsNullOrEmpty(jsonData))
+                {
+                    return null;
+                }
+
+                ExportConfig exportConfig = jsonData.Deserializar<ExportConfig>();
+                return exportConfig;
+            }
+            catch (Exception ex)
+            {
+                LastError = "Error deserializing \"" + fileName + "\" to ExportConfig";
+                return null;
+            }
+        }
+
+
+        public static bool Export_SetConfigFile(string fileName, ExportConfig exportConfig)
+        {
+            try
+            {
+                if (exportConfig == null)
+                {
+                    return false;
+                }
+
+                var jsonData = exportConfig.Serializar();
+                return dataLayer.Files_SetString(fileName, jsonData);
+            }
+            catch (Exception ex)
+            {
+                LastError = "Error deserializing \"" + fileName + "\" to ExportConfig";
+                return false;
+            }
         }
     }
 }

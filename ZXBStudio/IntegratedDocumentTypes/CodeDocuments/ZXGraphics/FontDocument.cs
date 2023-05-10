@@ -16,8 +16,8 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
     public class FontDocument : IZXDocumentType
     {
         static readonly string[] _docExtensions = { ".fnt" };
-        static readonly string _docName = "Font file";
-        static readonly string _docDesc = "User font (96 chars)";
+        static readonly string _docName = "ZX Font file";
+        static readonly string _docDesc = "User font (96 chars). Array of 768 bytes to use as custom font in ZX Spectrum 48K/128K models";
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-font.svg";
 

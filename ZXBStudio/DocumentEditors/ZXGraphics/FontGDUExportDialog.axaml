@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:ZXBasicStudio.DocumentEditors.ZXGraphics"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+        Width="800" Height="488"
+        Icon="/Assets/zxbs.ico"
+        x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.FontGDUExportDialog"
+        Title="Graphics export options" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  
+  <Grid Name="grdExport" ColumnDefinitions="240,8,*" Margin="0,8,0,0" >
+    <StackPanel Orientation="Vertical">
+      <local:SelectExportTypeControl Name="cmbSelectExportType"/>
+    </StackPanel>
+    <Grid Name="grdExportControl" Grid.Column="2"/>
+  </Grid>
+
+</Window>

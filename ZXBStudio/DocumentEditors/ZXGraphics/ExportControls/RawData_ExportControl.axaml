@@ -4,21 +4,25 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls.RawData_ExportControl">
-  <Grid RowDefinitions="Auto,16,*,16,48">
+  <Grid RowDefinitions="Auto,*,Auto">
     <TextBlock FontSize="18" FontWeight="Bold">Raw data - Export options</TextBlock>
 
-    <StackPanel Orientation="Vertical" Grid.Row="2" Spacing="4">
-      <TextBlock Grid.Row="2" TextWrapping="Wrap">
-        No conversion is performed in this format. Binary data in the file, either .bin or .gdu/.udg, is not converted.
-      </TextBlock>
-      <TextBlock FontSize="14" Foreground="Red" Margin="0,32,0,0">
-        Example of use
-      </TextBlock>
-      <TextBox Name="txtCode" AcceptsReturn="true" AcceptsTab="True" IsReadOnly="True">        
-      </TextBox>
-      <Button Name="btnCopy" Classes="dialog" HorizontalAlignment="Right" Width="150">Copy sample to clipboard</Button>
-    </StackPanel>
-
+    <Border BorderBrush="Gray" BorderThickness="0,0,0,1" Padding="0,0,0,4" Grid.Row="1">
+      <ScrollViewer>
+        <StackPanel Orientation="Vertical" Spacing="4">
+          <TextBlock Grid.Row="2" TextWrapping="Wrap">
+            No conversion is performed in this format. Binary data in the file, either .bin or .gdu/.udg, is not converted.
+          </TextBlock>
+          <TextBlock FontSize="14" Foreground="Red" Margin="0,32,0,0">
+            Example of use
+          </TextBlock>
+          <TextBox Name="txtCode" AcceptsReturn="true" AcceptsTab="True" IsReadOnly="True">
+          </TextBox>
+          <Button Name="btnCopy" Classes="dialog" HorizontalAlignment="Right" Width="150">Copy sample to clipboard</Button>
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+    
     <Grid Grid.Row="4" Margin="8">
       <Button Name="btnClose" HorizontalAlignment="Right">Close</Button>
     </Grid>

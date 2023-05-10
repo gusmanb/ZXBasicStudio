@@ -31,18 +31,29 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls
             this.patterns = patterns;
             this.CallBackCommand = CallBackCommand;
 
-            var fileName = fileType.FileName.Replace(".fnt", ".tap").Replace(".gdu", ".tap").Replace(".udg", ".tap");
-            txtOutputFile.Text = fileName;
-            txtCode.Text = "' Example of use of .tap export format\rLOAD \"\" CODE $c000\rPOKE (uinteger 23606, $c000-256)\rPRINT \"Hello World!\"\rSTOP\r";
-
-            var spName = Path.GetFileName(fileName).Replace(".tap","");
-            if (spName.Length > 10)
+            ExportConfig exportConfig = ServiceLayer.Export_GetConfigFile(fileType.FileName + ".zbs");
+            if (exportConfig == null)
             {
-                spName=spName.Substring(0, 10);
+                exportConfig = new ExportConfig();
+                exportConfig.ExportType = ExportTypes.Dim;
+                exportConfig.AutoExport = false;
+                exportConfig.ExportFilePath = fileType.FileName.Replace(".fnt", ".tap").Replace(".gdu", ".tap").Replace(".udg", ".tap");
+                exportConfig.LabelName = Path.GetFileName(exportConfig.ExportFilePath).Replace(".bas", "").Replace(" ", "_");
+                exportConfig.ZXFileName = "";
+                exportConfig.ZXAddress = 49152;
+                var spName = Path.GetFileName(exportConfig.ZXFileName).Replace(".tap", "");
+                if (spName.Length > 10)
+                {
+                    exportConfig.ZXFileName = spName.Substring(0, 10);
+                }
             }
-            txtZXFile.Text = spName;
 
-            txtMemoryAddr.Text = "49152";
+            chkAuto.IsChecked = exportConfig.AutoExport;
+            txtOutputFile.Text = exportConfig.ExportFilePath;
+            txtZXFile.Text = "";
+            txtMemoryAddr.Text = "";
+            txtZXFile.Text = exportConfig.ZXFileName;
+            txtMemoryAddr.Text = exportConfig.ZXAddress.ToStringNoNull();
 
             return true;
         }
@@ -53,8 +64,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls
             var fileName = txtZXFile.Text;
             var dir = txtMemoryAddr.Text.ToInteger();
 
-            var data=ServiceLayer.Files_CreateBinData_GDUorFont(fileType, patterns);
-            data = ServiceLayer.Bin2Tap(fileName,dir, data);
+            var data = ServiceLayer.Files_CreateBinData_GDUorFont(fileType, patterns);
+            data = ServiceLayer.Bin2Tap(fileName, dir, data);
             ServiceLayer.Files_SaveFileData(txtOutputFile.Text, data);
 
             return true;
@@ -69,7 +80,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.ExportControls
 
         private void BtnSave_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            throw new NotImplementedException();
+            var exportConfig = new ExportConfig()
+            {
+                AutoExport = chkAuto.IsChecked.ToBoolean(),
+                ExportFilePath = txtOutputFile.Text.ToStringNoNull(),
+                ExportType = ExportTypes.Asm,
+                LabelName = "",
+                ZXAddress = txtMemoryAddr.Text.ToInteger(),
+                ZXFileName = txtZXFile.Text
+            };
+            ServiceLayer.Export_SetConfigFile(fileType.FileName + ".zbs", exportConfig);
+            Export();
+            CallBackCommand?.Invoke("CLOSE");
         }
 
 

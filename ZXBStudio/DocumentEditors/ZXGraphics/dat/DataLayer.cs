@@ -125,5 +125,54 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.dat
                 return false;
             }
         }
+
+
+        /// <summary>
+        /// Get (load) the file data in string format
+        /// </summary>
+        /// <param name="fileName">Full path of the file</param>
+        /// <returns>String with all file contents or null is error or not exist</returns>
+        public string Files_GetString(string fileName)
+        {
+            try
+            {
+                if (File.Exists(fileName))
+                {
+                    var data = File.ReadAllText(fileName);
+                    return data;
+                }
+                else
+                {
+                    LastError = "File " + fileName + " not found";
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Set (save) the file data in string format
+        /// </summary>
+        /// <param name="fileName">Full path pf the file</param>
+        /// <param name="data">Data to save</param>
+        /// <returns>True if correct or false if error</returns>
+        public bool Files_SetString(string fileName, string data)
+        {
+            try
+            {
+                File.WriteAllText(fileName, data);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                return false;
+            }
+        }
     }
 }
