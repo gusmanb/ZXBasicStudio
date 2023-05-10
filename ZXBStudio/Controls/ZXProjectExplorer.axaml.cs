@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentModel.Classes;
 
@@ -71,7 +72,7 @@ namespace ZXBasicStudio.Controls
 
         FileSystemWatcher? fWatcher;
 
-        ObservableCollection<ExplorerNode> _nodes;
+        SortableObservableCollection<ExplorerNode> _nodes;
 
         string? rootPath;
         public string? RootPath { get { return rootPath; } }
@@ -208,7 +209,20 @@ namespace ZXBasicStudio.Controls
                 if (node != null)
                 {
                     node.UpdateNode(e.FullPath);
-                    if(tvExplorer.SelectedItem == node)
+
+                    string pathWithoutNode = Path.GetDirectoryName(e.FullPath);
+                    string left = pathWithoutNode.Replace(rootPath, "");
+
+                    if (string.IsNullOrWhiteSpace(left))
+                        _nodes.Sort();
+                    else
+                    {
+                        var parent = FindNode(pathWithoutNode, _nodes);
+                        if (parent != null)
+                            parent.ChildNodes.Sort();
+                    }
+
+                    if (tvExplorer.SelectedItem == node)
                         SelectedPath = e.FullPath;
                 }
             });
@@ -255,7 +269,7 @@ namespace ZXBasicStudio.Controls
             });
         }
 
-        private ExplorerNode? FindNode(string Path, ObservableCollection<ExplorerNode> Nodes)
+        private ExplorerNode? FindNode(string Path, SortableObservableCollection<ExplorerNode> Nodes)
         {
             foreach (var node in Nodes)
             {
@@ -302,9 +316,9 @@ namespace ZXBasicStudio.Controls
                 item.IsExpanded = !item.IsExpanded;
         }
 
-        private ObservableCollection<ExplorerNode> ScanFolder(string Folder)
+        private SortableObservableCollection<ExplorerNode> ScanFolder(string Folder)
         {
-            ObservableCollection<ExplorerNode> nodes = new ObservableCollection<ExplorerNode>();
+            SortableObservableCollection<ExplorerNode> nodes = new SortableObservableCollection<ExplorerNode> { SortingSelector = node => $"{(node.IsFile ? "0000-0001" : "0000-0000")} - {node.Text}" };
             var folders = System.IO.Directory.GetDirectories(Folder);
             foreach (var folder in folders) 
             {
@@ -326,9 +340,10 @@ namespace ZXBasicStudio.Controls
             static Bitmap bmpFile;
             static Bitmap bmpFolder;
 
-            public static readonly StyledProperty<ObservableCollection<ExplorerNode>> ChildNodesProperty = StyledProperty<ObservableCollection<ExplorerNode>>.Register<ExplorerNode, ObservableCollection<ExplorerNode>>("ChildNodes");
+            public static readonly StyledProperty<SortableObservableCollection<ExplorerNode>> ChildNodesProperty = StyledProperty<SortableObservableCollection<ExplorerNode>>.Register<ExplorerNode, SortableObservableCollection<ExplorerNode>>("ChildNodes");
             public static readonly StyledProperty<string> TextProperty = StyledProperty<string>.Register<ExplorerNode, string>("Text");
             public static readonly StyledProperty<Bitmap> ImageProperty = StyledProperty<Bitmap>.Register<ExplorerNode, Bitmap>("Image");
+
             static ExplorerNode()
             {
                 var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
@@ -337,12 +352,13 @@ namespace ZXBasicStudio.Controls
             }
 
             ZXProjectExplorer explorer;
-            public ObservableCollection<ExplorerNode> ChildNodes 
+            public SortableObservableCollection<ExplorerNode> ChildNodes 
             { 
-                get { return GetValue<ObservableCollection<ExplorerNode>>(ChildNodesProperty); }
+                get { return GetValue<SortableObservableCollection<ExplorerNode>>(ChildNodesProperty); }
                 set { SetValue(ChildNodesProperty, value); }
             }
-            public bool IsFile { get { return System.IO.File.Exists(Path);   } }
+            bool _isFile;
+            public bool IsFile { get { return _isFile;   } }
             public string Path { get; set; }
             public string Text 
             { 
@@ -358,7 +374,7 @@ namespace ZXBasicStudio.Controls
             {
                 
                 this.explorer = explorer;
-                ChildNodes = new ObservableCollection<ExplorerNode>();
+                ChildNodes = new SortableObservableCollection<ExplorerNode> { SortingSelector = node => $"{ (node.IsFile ? "0000-0001" : "0000-0000") } - {node.Text}" };
                 UpdateNode(path);
             }
             public void UpdateNode(string NewPath)
@@ -374,6 +390,8 @@ namespace ZXBasicStudio.Controls
                         Image = docType.DocumentIcon;
                     else
                         Image = bmpFile;
+
+                    _isFile = true;
                 }
                 else if (System.IO.Directory.Exists(Path))
                 {
@@ -382,7 +400,10 @@ namespace ZXBasicStudio.Controls
                 else
                 {
                     Image = bmpFile;
+                    _isFile = true;
                 }
+
+
             }
 
             
