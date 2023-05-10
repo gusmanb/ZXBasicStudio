@@ -7,7 +7,7 @@
              xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              Background="#ff202020"
-             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.FontGDU">
+             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.FontGDUEditor">
   <UserControl.Styles>
     <Style Selector="Button.toolbar_r90">
       <Setter Property="Background" Value="#fff0f0f0" />

@@ -44,10 +44,10 @@
     <None Remove="Assets\zxbs.ico" />
     <None Remove="Assets\zxGraphics_config.png" />
     <None Remove="Assets\zxGraphics_fnt.png" />
-    <None Remove="Assets\zxGraphics_gdu.png" />
     <None Remove="Assets\zxGraphics_map.png" />
     <None Remove="Assets\zxGraphics_spr.png" />
     <None Remove="Assets\zxGraphics_til.png" />
+    <None Remove="Assets\zxGraphics_udg.png" />
     <None Remove="Fonts\AlmaMono-Bold.otf" />
     <None Remove="Fonts\AlmaMono-Heavy.otf" />
     <None Remove="Fonts\AlmaMono-Light.otf" />
@@ -101,7 +101,9 @@
     <None Remove="Svg\diagram-project-plus-solid.svg" />
     <None Remove="Svg\diagram-project-solid.svg" />
     <None Remove="Svg\display-lines-solid.svg" />
+    <None Remove="Svg\Documents\file-font.svg" />
     <None Remove="Svg\Documents\file-text.svg" />
+    <None Remove="Svg\Documents\file-udg.svg" />
     <None Remove="Svg\Documents\file-zxasm.svg" />
     <None Remove="Svg\Documents\file-zxbasic.svg" />
     <None Remove="Svg\dumpster-solid.svg" />
@@ -217,7 +219,7 @@
     <AvaloniaResource Include="Assets\zxbs.ico" />
     <AvaloniaResource Include="Assets\zxGraphics_config.png" />
     <AvaloniaResource Include="Assets\zxGraphics_fnt.png" />
-    <AvaloniaResource Include="Assets\zxGraphics_gdu.png" />
+    <AvaloniaResource Include="Assets\zxGraphics_udg.png" />
     <AvaloniaResource Include="Assets\zxGraphics_map.png" />
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
@@ -251,7 +253,9 @@
     <AvaloniaResource Include="Fonts\ConsolaMono.ttf" />
     <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\Documents\file-font.svg" />
     <AvaloniaResource Include="Svg\Documents\file-text.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-udg.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxbasic.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxasm.svg" />
     <AvaloniaResource Include="Svg\Export.svg" />
@@ -450,8 +454,8 @@
     <Compile Update="DocumentEditors\ZXGraphics\EditorControl.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="DocumentEditors\ZXGraphics\FontGDU.axaml.cs">
-      <DependentUpon>FontGDU.axaml</DependentUpon>
+    <Compile Update="DocumentEditors\ZXGraphics\FontGDUEditor.axaml.cs">
+      <DependentUpon>FontGDUEditor.axaml</DependentUpon>
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\PatternControl.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>

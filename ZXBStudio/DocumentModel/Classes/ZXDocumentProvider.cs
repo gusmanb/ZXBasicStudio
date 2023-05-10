@@ -25,6 +25,9 @@ namespace ZXBasicStudio.DocumentModel.Classes
             _docTypes.Add(new ZXAssemblerDocument());
             _docTypes.Add(new ZXTextDocument());
             _docTypes.Add(new ZXConfigurationDocument());
+            // ZXGraphics
+            _docTypes.Add(new UDGDocument());
+            _docTypes.Add(new FontDocument());
             //TODO: Load external document types
         }
 

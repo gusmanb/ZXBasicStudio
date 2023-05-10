@@ -395,9 +395,9 @@ namespace ZXBasicStudio
                     return;
                 }
             }
-            else if (activeTab.Content is DocumentEditors.ZXGraphics.FontGDU)
+            else if (activeTab.Content is DocumentEditors.ZXGraphics.FontGDUEditor)
             {
-                var editor = activeTab.Content as DocumentEditors.ZXGraphics.FontGDU;
+                var editor = activeTab.Content as DocumentEditors.ZXGraphics.FontGDUEditor;
 
                 if (editor == null)
                     return;

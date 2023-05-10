@@ -5,57 +5,86 @@ using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using System;
 using System.Linq;
 using ZXBasicStudio.Common;
+using Avalonia;
+using ZXBasicStudio.DocumentModel.Classes;
+using System.IO;
+using ZXBasicStudio.Classes;
+using AvaloniaEdit.Folding;
+using Avalonia.Threading;
+using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
     /// <summary>
     /// Editor for GDUs and Fonts
     /// </summary>
-    public partial class FontGDU : UserControl
+    public partial class FontGDUEditor : ZXDocumentEditorBase, IObserver<AvaloniaPropertyChangedEventArgs>
     {
-        /// <summary>
-        /// Dpcument modified event
-        /// </summary>
-        public event EventHandler? DocumentModified;
+        #region Events
 
-        /// <summary>
-        /// Document saved event
-        /// </summary>
-        public event EventHandler? DocumentSaved;
+        public override event EventHandler? DocumentRestored;
+        public override event EventHandler? DocumentModified;
+        public override event EventHandler? DocumentSaved;
+        public override event EventHandler? RequestSaveDocument;
 
-        /// <summary>
-        /// True if the document was modified
-        /// </summary>
-        public bool Modified {
-            get
-            {
-                return _Modified;
-            }
-            set
-            {
-                if(_Modified==false && value == true)
-                {
-                    DocumentModified?.Invoke(this, EventArgs.Empty);
-                }
-                _Modified = value;               
-            }
-        }
-        private bool _Modified;
+        #endregion
 
-        /// <summary>
-        /// Filename of the actual document
-        /// </summary>
-        public string FileName 
+
+        #region ZXDocumentBase properties
+        
+        public override string DocumentName
         {
             get
             {
-                return fileType.FileName;
+                return Path.GetFileName(fileType.FileName);
             }
-            set
-            {
-                fileType.FileName = value;
-            } 
         }
+
+
+        public override string DocumentPath
+        {
+            get
+            {
+                return Path.GetFullPath(fileType.FileName);
+            }
+        }
+
+        public override bool Modified
+        {
+            get
+            {
+                return _Modified;
+            }            
+        }
+
+        private bool _Modified = false;
+
+        protected virtual AbstractFoldingStrategy? foldingStrategy { get { return null; } }
+
+        #endregion
+
+
+        #region IObserver implementation for modified document notifications
+
+        public void OnCompleted()
+        {
+
+        }
+
+        public void OnError(Exception error)
+        {
+
+        }
+
+        public void OnNext(AvaloniaPropertyChangedEventArgs value)
+        {
+
+        }
+
+        #endregion
+
+
+        #region Private variables
 
         /// <summary>
         /// File type of the actual document
@@ -85,11 +114,69 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             1,2,4,8,16,24,32,48,64
         };
 
+        private FoldingManager? fManager;
+        private DispatcherTimer? updateFoldingsTimer;
+
+        #endregion
+
+
+        #region ZXDocumentBase functions
+
+        public override bool SaveDocument(TextWriter OutputLog)
+        {
+            try
+            {
+                if (!Modified)
+                {
+                    return true;
+                }
+
+
+                if (!ServiceLayer.Files_Save_GDUorFont(fileType, patterns.Select(d => d.Pattern)))
+                {
+                    OutputLog.WriteLine($"Error saving file {fileType.FileName}: " + ServiceLayer.LastError);
+                    return false;
+                }
+
+                OutputLog.WriteLine($"File {fileType.FileName} saved successfully.");
+                DocumentSaved?.Invoke(this, EventArgs.Empty);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                OutputLog.WriteLine($"Error saving file {fileType.FileName}: {ex.Message}");
+                return false;
+            }
+        }
+
+
+        public override bool RenameDocument(string NewName, TextWriter OutputLog)
+        {
+            fileType.FileName = NewName;
+            return true;
+        }
+
+
+        public override bool CloseDocument(TextWriter OutputLog, bool ForceClose)
+        {
+            return true;
+        }
+
+
+        public override void Dispose()
+        {
+        }
+
+        #endregion
+
+
+
+
 
         /// <summary>
         /// Constructor, without parameters is mandatory to cal Initialize
         /// </summary>
-        public FontGDU()
+        public FontGDUEditor()
         {
             InitializeComponent();
         }
@@ -99,7 +186,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// Constructor
         /// </summary>
         /// <param name="fileName">Name of the file</param>
-        public FontGDU(string fileName)
+        public FontGDUEditor(string fileName)
         {
             InitializeComponent();
             Initialize(fileName);
@@ -113,16 +200,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <returns>True if OK, or False if error</returns>
         public bool Initialize(string fileName)
         {
-            Modified = false;
-            
+            _Modified = false;
+
             ServiceLayer.Initialize();
 
             fileType = ServiceLayer.GetFileType(fileName);
             fileData = ServiceLayer.GetFileData(fileName);
 
-            if(fileData==null || fileData.Length == 0)
+            if (fileData == null || fileData.Length == 0)
             {
-                fileData = ServiceLayer.Files_CreateData(fileType);                    
+                fileData = ServiceLayer.Files_CreateData(fileType);
             }
 
             ctrlPreview.Initialize(GetPattern, fileType.NumerOfPatterns);
@@ -206,7 +293,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         break;
                 }
                 p.Data = ServiceLayer.Binary2PointData(n, fileData, 0, 0);
-                patterns[n].Initialize(p,Pattern_Click);
+                patterns[n].Initialize(p, Pattern_Click);
                 patterns[n].Refresh();
             }
             ctrEditor.Initialize(0, GetPattern, SetPattern);
@@ -220,7 +307,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <exception cref="NotImplementedException"></exception>
         private void Pattern_Click(PatternControl selectedPattern)
         {
-            foreach(var pattern in patterns)
+            foreach (var pattern in patterns)
             {
                 pattern.IsSelected = false;
             }
@@ -237,13 +324,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void SldZoom_PropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
         {
             int z = (int)sldZoom.Value;
-            if (z==0 ||z == lastZoom)
+            if (z == 0 || z == lastZoom)
             {
                 return;
             }
             lastZoom = z;
 
-            z = zooms[z-1];
+            z = zooms[z - 1];
             txtZoom.Text = "Zoom " + z.ToString() + "x";
             ctrEditor.Zoom = z;
         }
@@ -295,9 +382,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         /// <param name="id">Id of the pattern to set</param>
         /// <param name="pattern">Pattern to set</param>
-        private void SetPattern(int id,Pattern pattern)
+        private void SetPattern(int id, Pattern pattern)
         {
-            Modified = true;
+            if (!_Modified)
+            {
+                _Modified = true;
+                DocumentModified?.Invoke(this, EventArgs.Empty);
+            }
+
             var pat = patterns.FirstOrDefault(d => d.Pattern.Id == pattern.Id);
             if (pat != null)
             {
@@ -314,12 +406,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <returns>True if ook or false if error</returns>
         public bool SaveDocument()
         {
-            if(!ServiceLayer.Files_Save_GDUorFont(fileType, patterns?.Select(d=>d.Pattern)))
+            if (!ServiceLayer.Files_Save_GDUorFont(fileType, patterns?.Select(d => d.Pattern)))
             {
                 return false;
             };
-            
-            Modified = false;
+
+            _Modified = false;
             DocumentSaved?.Invoke(this, EventArgs.Empty);
             return true;
         }
@@ -394,7 +486,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void BtnRotateLeft_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
-        {            
+        {
             this.ctrEditor.RotateLeft();
         }
 
@@ -538,7 +630,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             grdExportControl.Children.Clear();
 
-            
+
             switch (exportType)
             {
                 case ExportTypes.Bin:

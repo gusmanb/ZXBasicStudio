@@ -170,7 +170,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         /// </summary>
         /// <param name="fileType">File information</param>
         /// <param name="patterns">Pattens to save</param>
-        /// <returns>True if OK or FGalse if error</returns>
+        /// <returns>True if OK or False if error</returns>
         public static bool Files_Save_GDUorFont(FileTypeConfig fileType, IEnumerable<Pattern> patterns)
         {
             try
@@ -275,6 +275,23 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         public static byte[] Files_CreateData(FileTypeConfig fileType)
         {
             return dataLayer.Files_CreateData(fileType);
+        }
+
+
+        // <summary>
+        /// Rename a file
+        /// </summary>
+        /// <param name="oldName">Old filename</param>
+        /// <param name="newName">New filename</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool Files_Rename(string oldName, string newName)
+        {
+            if (!dataLayer.Files_Rename(oldName, newName))
+            {
+                LastError = dataLayer.LastError;
+                return false;
+            }
+            return true;
         }
     }
 }

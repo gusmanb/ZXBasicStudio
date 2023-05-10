@@ -99,5 +99,31 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.dat
             }
             return null;
         }
+
+
+        // <summary>
+        /// Rename a file
+        /// </summary>
+        /// <param name="oldName">Old filename</param>
+        /// <param name="newName">New filename</param>
+        /// <returns>True if OK or False if error</returns>
+        public bool Files_Rename(string oldName, string newName)
+        {
+            try
+            {
+                if (File.Exists(newName))
+                {
+                    LastError = "A file with this name already exists.";
+                    return false;
+                }
+                File.Move(oldName, newName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                return false;
+            }
+        }
     }
 }
