@@ -9,6 +9,7 @@ using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics;
 
 namespace ZXBasicStudio.DocumentModel.Classes
 {

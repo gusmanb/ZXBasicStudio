@@ -9,7 +9,7 @@ using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
+namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
 {
     public class FontDocumentFactory : IZXDocumentFactory
     {

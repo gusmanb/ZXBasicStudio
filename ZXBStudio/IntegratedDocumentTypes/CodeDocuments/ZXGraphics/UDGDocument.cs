@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
+namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
 {
     public class UDGDocument : IZXDocumentType
     {
