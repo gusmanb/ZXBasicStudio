@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls.ZXTapeBuilderEditor">
+  <Grid RowDefinitions="160,*">
+    <Border Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
+      <Grid RowDefinitions="5,*,*,*" ColumnDefinitions="Auto,*">
+        <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center">Program name:</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" MaxLength="10"></TextBox>
+        <TextBlock Grid.Row="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Colors:</TextBlock>
+        <StackPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+          <CheckBox Classes="dialog" VerticalAlignment="Center" Name="ckInk" Margin="5,0,0,0">Ink</CheckBox>
+          <ComboBox Classes="dialog" HorizontalAlignment="Left" ItemsSource="{Binding Colors}" Width="102" SelectedIndex="3" Margin="5,0,0,0" Name="cbInk">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="Auto,Auto">
+                  <TextBlock Text="{Binding ColorName}" Width="38"></TextBlock>
+                  <Border Grid.Column="2" Width="32" Height="16" Background="{Binding ColorBrush}" BorderBrush="White" BorderThickness="1"></Border>
+                </Grid>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </StackPanel>
+      </Grid>
+    </Border>
+    <TextBlock Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">Basic loader</TextBlock>
+  </Grid>
+</UserControl>

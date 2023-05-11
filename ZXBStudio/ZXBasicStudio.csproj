@@ -461,6 +461,7 @@
     <Folder Include="DebuggingTools\TStates\Classes\" />
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
+    <Folder Include="DocumentEditors\ZXTapeBuilder\Classes\" />
     <Folder Include="IntegratedDocumentTypes\CodeDocuments\Assembler\" />
     <Folder Include="IntegratedDocumentTypes\TapeDocuments\TAP\" />
     <Folder Include="IntegratedDocumentTypes\TapeDocuments\TZX\" />

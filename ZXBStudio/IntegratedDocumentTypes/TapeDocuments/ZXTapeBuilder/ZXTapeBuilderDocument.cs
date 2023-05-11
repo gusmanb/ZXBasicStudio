@@ -18,7 +18,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
         static string _docDesc = "Creates a tape builder file which allows to define a tape structure to be composed when the project is built in release mode.";
         static string _docCategory = "Tools";
         static string _docAspect = "/Svg/Documents/file-zxtape.svg";
-
+        static ZXTapeBuilderFactory _docFactory = new ZXTapeBuilderFactory();
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
@@ -53,21 +53,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 
         public bool CanEdit => true;
 
-        public IZXDocumentFactory DocumentFactory
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public IZXDocumentFactory DocumentFactory => _docFactory;
 
-        public IZXDocumentBuilder? DocumentBuilder
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public IZXDocumentBuilder? DocumentBuilder => null;
 
         public ZXBuildStage? DocumentBuildStage => ZXBuildStage.PostBuild;
     }

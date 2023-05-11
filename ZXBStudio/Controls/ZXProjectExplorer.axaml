@@ -10,7 +10,7 @@
     <TreeView Name="tvExplorer" Grid.Row="1" Background="#ff202020" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0">
       <TreeView.ItemTemplate>
         <TreeDataTemplate ItemsSource="{Binding ChildNodes}">
-          <Border BorderThickness="1,0,0,0" BorderBrush="#ff303030">
+          <Border BorderThickness="1,0,0,0" BorderBrush="#ff303030" DoubleTapped="TvExplorer_DoubleTapped" Background="Transparent">
             <Panel Background="#00ffffff">
               <Panel.ContextMenu>
                 <ContextMenu>
