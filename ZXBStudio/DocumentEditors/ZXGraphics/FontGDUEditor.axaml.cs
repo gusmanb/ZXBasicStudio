@@ -271,7 +271,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 p.Number = "";
                 switch (fileType.FileType)
                 {
-                    case FileTypes.GDU:
+                    case FileTypes.UDG:
                         {
                             var id = n;
                             p.Number = id.ToString();
@@ -615,7 +615,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void BtnExport_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             var dlg = new FontGDUExportDialog();
-            dlg.Initialize(fileType, patterns);
+            dlg.Initialize(fileType, patterns.Select(d=>d.Pattern).ToArray());
             dlg.ShowDialog(this.VisualRoot as Window);
         }
 

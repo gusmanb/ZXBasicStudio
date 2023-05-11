@@ -33,6 +33,13 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
 
         private static readonly ExportManager _exportManager = new ExportManager();
 
+
+        public FontDocument()
+        {
+            _exportManager.Initialize(DocumentEditors.ZXGraphics.neg.FileTypes.Font);
+        }
+
+
         public Bitmap DocumentIcon
         {
             get
@@ -59,6 +66,6 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
 
         public IZXDocumentBuilder? DocumentBuilder => _exportManager;
 
-        public ZXBuildStage? DocumentBuildStage => null;
+        public ZXBuildStage? DocumentBuildStage => ZXBuildStage.PreBuild;
     }
 }

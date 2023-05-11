@@ -17,6 +17,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
     public static class ServiceLayer
     {
         public static string LastError = "";
+        public static bool Initialized = false;
 
         private static DataLayer dataLayer = null;
 
@@ -35,6 +36,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     return false;
                 }
             }
+            Initialized = true;
             return true;
         }
 
@@ -54,7 +56,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             {
                 case ZXExtensions.ZX_GRAPHICS_UDG:
                 case ZXExtensions.ZX_GRAPHICS_GDU:
-                    ftc.FileType = FileTypes.GDU;
+                    ftc.FileType = FileTypes.UDG;
                     ftc.FirstIndex = 64;    // CHAR A
                     ftc.NumerOfPatterns = 21;
                     break;
@@ -62,27 +64,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     ftc.FileType = FileTypes.Font;
                     ftc.FirstIndex = 32;    // SPACE
                     ftc.NumerOfPatterns = 96;
-                    break;
-                case ZXExtensions.ZX_GRAPHICS_SPR:
-                    ftc.FileType = FileTypes.Sprite;
-                    ftc.FirstIndex = 0;
-                    ftc.NumerOfPatterns = 256;
-                    break;
-                case ZXExtensions.ZX_GRAPHICS_TIL:
-                    ftc.FileType = FileTypes.Tile;
-                    ftc.FirstIndex = 0;
-                    ftc.NumerOfPatterns = 256;
-                    break;
-                case ZXExtensions.ZX_GRAPHICS_MAP:
-                    ftc.FileType = FileTypes.Map;
-                    ftc.FirstIndex = 0;
-                    ftc.NumerOfPatterns = 0;
-                    break;
-                case ZXExtensions.ZX_GRAPHICS_GCFG:
-                    ftc.FileType = FileTypes.Config;
-                    ftc.FirstIndex = 0;
-                    ftc.NumerOfPatterns = 256;
-                    break;
+                    break;                
             }
             return ftc;
         }
@@ -178,7 +160,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             try
             {
                 var data = Files_CreateBinData_GDUorFont(fileType, patterns);
-                return dataLayer.WriteFileData(fileType.FileName, data);
+                return dataLayer.Files_WriteFileData(fileType.FileName, data);
             }
             catch (Exception ex)
             {
@@ -193,12 +175,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         /// </summary>
         /// <param name="fileType">File information</param>
         /// <param name="patterns">Pattens to use</param>
-        /// <returns>Arrfay oof byte with the data ready to save oon disk</returns>
+        /// <returns>Arrfay of byte with the data ready to save on disk</returns>
         public static byte[] Files_CreateBinData_GDUorFont(FileTypeConfig fileType, IEnumerable<Pattern> patterns)
         {
             try
             {
-                if (fileType.FileType != FileTypes.GDU && fileType.FileType != FileTypes.Font)
+                if (fileType.FileType != FileTypes.UDG && fileType.FileType != FileTypes.Font)
                 {
                     return null;
                 }
@@ -259,7 +241,27 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         {
             try
             {
-                return dataLayer.WriteFileData(fileName, data);
+                return dataLayer.Files_WriteFileData(fileName, data);
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR saving data: " + ex.Message + ex.StackTrace;
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Save string data to a file
+        /// </summary>
+        /// <param name="fileName">File name with full path</param>
+        /// <param name="data">Data to save</param>
+        /// <returns>True if ok or false if error</returns>
+        public static bool Files_SaveFileString(string fileName, string data)
+        {
+            try
+            {
+                return dataLayer.Files_SetString(fileName, data);
             }
             catch (Exception ex)
             {
@@ -294,6 +296,29 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                 return false;
             }
             return true;
+        }
+
+
+        /// <summary>
+        /// Get all files oof a type, in a directory and his subdirectories
+        /// </summary>
+        /// <param name="path">Root path</param>
+        /// <param name="filetyle">FileType</param>
+        /// <returns>Array of strings with the fullpath filenames</returns>
+        public static string[] Files_GetAllConfigFiles(string path, FileTypes filetyle)
+        {
+            var lst = new List<string>();
+            switch (filetyle)
+            {
+                case FileTypes.UDG:
+                    dataLayer.Files_GetAllFileNames(path, ".udg.zbs", ref lst);
+                    dataLayer.Files_GetAllFileNames(path, ".gdu.zbs", ref lst);
+                    return lst.ToArray();
+                case FileTypes.Font:
+                    dataLayer.Files_GetAllFileNames(path, ".fnt.zbs", ref lst);
+                    return lst.ToArray();
+            }
+            return null;
         }
 
 

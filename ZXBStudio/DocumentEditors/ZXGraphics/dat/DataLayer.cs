@@ -1,6 +1,7 @@
 ﻿using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.dat
 {
@@ -68,7 +69,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.dat
         /// <param name="fileName">Filename width path</param>
         /// <param name="data">Data to write</param>
         /// <returns>True if correct or False if error</returns>
-        internal bool WriteFileData(string fileName, byte[] data)
+        internal bool Files_WriteFileData(string fileName, byte[] data)
         {
             try
             {
@@ -92,7 +93,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.dat
         {
             switch (fileType.FileType)
             {
-                case FileTypes.GDU:
+                case FileTypes.UDG:
                     return GDUData;
                 case FileTypes.Font:
                     return FontData;
@@ -172,6 +173,25 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.dat
             {
                 LastError = ex.Message;
                 return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Get all files oof a type, in a directory and his subdirectories
+        /// </summary>
+        /// <param name="path">Root path</param>
+        /// <param name="extension">file extension (.gdu)</param>
+        /// <returns>Array of strings with the fullpath filenames</returns>
+        public void Files_GetAllFileNames(string path, string extension, ref List<string> lst)
+        {
+            var files = Directory.GetFiles(path, "*" + extension);
+            lst.AddRange(files);
+
+            var directories = Directory.GetDirectories(path);
+            foreach(var dir in directories)
+            {
+                Files_GetAllFileNames(dir, extension, ref lst);
             }
         }
     }

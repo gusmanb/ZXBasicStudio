@@ -12,9 +12,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
     public enum FileTypes
     {
         /// <summary>
+        /// Not defined = None
+        /// </summary>
+        Undefined = 99,
+
+        /// <summary>
         /// GDU or UDG
         /// </summary>
-        GDU = 0,
+        UDG = 0,
         /// <summary>
         /// Estándar font
         /// </summary>
@@ -31,9 +36,5 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
         /// Maping data
         /// </summary>
         Map = 4,
-        /// <summary>
-        /// Config data... (not used yet)
-        /// </summary>
-        Config = 5
     }
 }

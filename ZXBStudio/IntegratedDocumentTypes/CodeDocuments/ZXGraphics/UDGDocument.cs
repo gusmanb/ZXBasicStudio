@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
@@ -29,6 +30,14 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         public string DocumentDescription => _docDesc;
         public string DocumentCategory => _docCat;
         public string? DocumentAspect => _docAspect;
+
+        private static readonly ExportManager _exportManager = new ExportManager();
+
+        public UDGDocument()
+        {
+            _exportManager.Initialize(DocumentEditors.ZXGraphics.neg.FileTypes.UDG);
+        }
+
 
         public Bitmap DocumentIcon
         {
@@ -54,8 +63,8 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
 
         public IZXDocumentFactory DocumentFactory => _factory;
 
-        public IZXDocumentBuilder? DocumentBuilder => null;
+        public IZXDocumentBuilder? DocumentBuilder => _exportManager;
 
-        public ZXBuildStage? DocumentBuildStage => null;
+        public ZXBuildStage? DocumentBuildStage => ZXBuildStage.PreBuild;
     }
 }
