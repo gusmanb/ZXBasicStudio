@@ -18,6 +18,7 @@ using CoreSpectrum.Enums;
 using CoreSpectrum.SupportClasses;
 using HarfBuzzSharp;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using SkiaSharp;
 using Svg;
@@ -29,6 +30,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.Arm;
@@ -266,30 +268,88 @@ namespace ZXBasicStudio
                 if (isFile)
                 {
                     var dir = Path.GetDirectoryName(path);
-                    var document = openDocuments.FirstOrDefault(d => d.DocumentPath == path);
-                    if (document != null)
+                    string newPath = Path.Combine(dir ?? "", newName);
+                    var childFiles = peExplorer.GetChildFiles(path);
+
+                    //Compose a list of old and new files, and its related document editors
+                    List<(string oldFile, string newFile, ZXDocumentEditorBase? editor)> files = new List<(string oldFile, string newFile, ZXDocumentEditorBase? editor)>();
+
+                    files.Add((path, newPath, openDocuments.FirstOrDefault(d => d.DocumentPath == path)));
+
+                    foreach (var childPath in childFiles)
                     {
-                        if (document.Modified)
-                        {
-                            // TODO: Renombrando un archivo modificado
-                            await this.ShowError("Rename file", "The file you are trying to rename is open and modified. Save or discard the changes before renaming.");
-                            return;
-                        }
-
-                        File.Move(path, Path.Combine(dir ?? "", newName));
-
-                        if (!document.RenameDocument(Path.Combine(dir ?? "", newName), outLog.Writer))
-                        {
-                            await this.ShowError("Error", "Error renaming the file, check the output log for more information.");
-                            File.Move(Path.Combine(dir ?? "", newName), path);
-                            return;
-                        }
-
-                        var tab = editTabs.First(t => t.Content == document);
-                        tab.Tag = newName;
+                        string ext = Path.GetExtension(childPath);
+                        string cNewPath = newPath + ext;
+                        files.Add((childPath, cNewPath, openDocuments.FirstOrDefault(d => d.DocumentPath == childPath)));
                     }
-                    else
-                        File.Move(path, Path.Combine(dir ?? "", newName));
+
+                    //First check if the file or any of its childs are open and modified
+                    if (files.Any(f => f.editor?.Modified ?? false))
+                    {
+                        await this.ShowError("Rename file", "The file or one of its childs you are trying to rename is open and modified. Save or discard the changes before renaming.");
+                        return;
+                    }
+
+                    //Create a list of renamed files in case of the need to undo
+                    List<(string oldFile, string newFile, ZXDocumentEditorBase? editor)> renamed = new List<(string oldFile, string newFile, ZXDocumentEditorBase? editor)>();
+
+                    bool undo = false;
+
+                    //Move the files
+                    foreach (var file in files)
+                    {
+                        try 
+                        {
+                            File.Move(file.oldFile, file.newFile);
+                            renamed.Add(file);
+
+                            //Notify the editor about the file movement
+                            if (file.editor != null)
+                            {
+                                if (!file.editor.RenameDocument(file.newFile, outLog.Writer))
+                                {
+                                    //Error in the editor!
+                                    await this.ShowError("Error", "Error renaming the file, check the output log for more information.");
+                                    undo = true;
+                                    break;
+                                }
+
+                                //Update editor tab with new file name
+                                var tab = editTabs.First(t => t.Content == file.editor);
+                                tab.Tag = Path.GetFileName(file.newFile);
+                            }
+                        }
+                        catch 
+                        {
+                            undo = true;
+                            break;
+                        }
+                    }
+
+                    //Something went wrong, try to undo
+                    if (undo)
+                    {
+                        foreach (var file in renamed)
+                        {
+                            try
+                            {
+                                File.Move(file.newFile, file.oldFile);
+                                if (file.editor != null)
+                                {
+                                    file.editor.RenameDocument(file.oldFile, outLog.Writer);
+                                    //Update editor tab with new file name
+                                    var tab = editTabs.First(t => t.Content == file.editor);
+                                    tab.Tag = Path.GetFileName(file.newFile);
+                                }
+                            }
+                            catch 
+                            {
+                                //Total failure, we can't do more...
+                                await this.ShowError("Error", "Error reverting file changes, manual intervention required.");
+                                break;
+                            }
+                        }
+                    }
                     
                 }
             }

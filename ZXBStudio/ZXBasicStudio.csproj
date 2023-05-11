@@ -474,5 +474,6 @@
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
     <Folder Include="IntegratedDocumentTypes\CodeDocuments\Assembler\" />
+    <Folder Include="Networking\ZXBUpdater\" />
   </ItemGroup>
 </Project>
