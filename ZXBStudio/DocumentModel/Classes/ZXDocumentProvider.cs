@@ -97,5 +97,10 @@ namespace ZXBasicStudio.DocumentModel.Classes
         {
             return _docTypes.Where(d => d.DocumentBuilder != null && d.DocumentBuildStage == Enums.ZXBuildStage.PostBuild).Select(d => d.DocumentBuilder);
         }
+
+        public static IZXDocumentType? GetDocumentTypeInstance(Type DocumentType)
+        {
+            return _docTypes.FirstOrDefault(d => d.GetType() == DocumentType);
+        }
     }
 }

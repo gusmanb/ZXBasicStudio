@@ -16,6 +16,7 @@ using System.Linq;
 using System.Xml.Linq;
 using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentModel.Classes;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration;
 
 namespace ZXBasicStudio.Controls
 {
@@ -68,7 +69,7 @@ namespace ZXBasicStudio.Controls
         }
         #endregion
 
-        public event EventHandler<EventArgs> SelectedPathChanged;
+        public event EventHandler<EventArgs>? SelectedPathChanged;
 
         FileSystemWatcher? fWatcher;
 
@@ -94,6 +95,7 @@ namespace ZXBasicStudio.Controls
             InitializeComponent();
             tvExplorer.DoubleTapped += TvExplorer_DoubleTapped;
             tvExplorer.SelectionChanged += TvExplorer_SelectionChanged;
+            _nodes = new SortableObservableCollection<ExplorerNode>();
         }
         private void ContextMenuOpenFileClick(object? sender, RoutedEventArgs e)
         { RaiseEvent(new RoutedEventArgs(OpenFileRequestedEvent)); }
@@ -200,6 +202,17 @@ namespace ZXBasicStudio.Controls
             }
         }
 
+        public string[] GetChildFiles(string Path)
+        {
+            var node = FindNode(Path, _nodes);
+
+            if(node != null)
+                return node.ChildNodes.Where(c => c.IsFile).Select(c => c.Path).ToArray();
+
+            return new string[0];
+        }
+
+
         private void FWatcher_Renamed(object sender, RenamedEventArgs e)
         {
             Dispatcher.UIThread.InvokeAsync(() => {
@@ -208,18 +221,121 @@ namespace ZXBasicStudio.Controls
 
                 if (node != null)
                 {
+                    //Rename the node
                     node.UpdateNode(e.FullPath);
 
-                    string pathWithoutNode = Path.GetDirectoryName(e.FullPath);
-                    string left = pathWithoutNode.Replace(rootPath, "");
+                    string pathWithoutNode = Path.GetDirectoryName(e.FullPath) ?? "";
+                    string left = pathWithoutNode.Replace(rootPath ?? "", "");
+                    bool isFile = File.Exists(e.FullPath);
 
+                    SortableObservableCollection<ExplorerNode>? container = null;
+
+                    //Find where it is contained
                     if (string.IsNullOrWhiteSpace(left))
-                        _nodes.Sort();
+                        container = _nodes;
                     else
                     {
                         var parent = FindNode(pathWithoutNode, _nodes);
                         if (parent != null)
-                            parent.ChildNodes.Sort();
+                            container = parent.ChildNodes;
+                    }
+
+                    if (container != null)
+                    {
+                        bool needsUpdate = true;
+
+                        //Check for child hierarchy changes
+                        if (isFile)
+                        {
+                            //Do the node has childs?
+                            if (node.ChildNodes.Count > 0 && isFile)
+                            {
+                                //Yes, move them to the parent as the name now does not match
+                                foreach (var childNode in node.ChildNodes)
+                                    container.Add(childNode);
+
+                                //Clear the child nodes
+                                node.ChildNodes.Clear();
+
+                                //Collection has been sorted by the change of items, no need to update it
+                                needsUpdate = false;
+                            }
+
+                            var docCfg = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXConfigurationDocument));
+
+                            //Check if the node can be a child of an existing file
+                            string fileExt = Path.GetExtension(e.FullPath);
+
+                            if (docCfg != null && docCfg.DocumentExtensions.Contains(fileExt))
+                            {
+                                var possibleParent = e.FullPath.Substring(0, e.FullPath.Length - fileExt.Length);
+                                var parent = FindNode(possibleParent, _nodes);
+
+                                //This is a child, move it to its parent
+                                if (parent != null)
+                                {
+                                    container.Remove(node);
+                                    parent.ChildNodes.Add(node);
+                                }
+
+                            }
+
+                            //Check if the node can contain childs
+                            if (docCfg != null)
+                            {
+                                foreach (var ext in docCfg.DocumentExtensions)
+                                {
+                                    string child = e.FullPath + ext;
+                                    var childNode = container.FirstOrDefault(n => n.Path == child);
+
+                                    //We found a child, move it
+                                    if (childNode != null)
+                                    {
+                                        container.Remove(childNode);
+                                        node.ChildNodes.Add(childNode);
+
+                                        //Collection has been sorted by the change of items, no need to update it
+                                        needsUpdate = false;
+                                    }
+                                }
+                            }
+
+                            string oldFileExt = Path.GetExtension(e.OldFullPath);
+
+                            //Check if the node was a child
+                            if (docCfg != null)
+                            {
+                                var possibleParent = e.OldFullPath.Substring(0, e.OldFullPath.Length - oldFileExt.Length);
+                                var parent = FindNode(possibleParent, _nodes);
+
+                                //This is a child, remove it from its parent and add it to the upper container
+                                if (parent != null)
+                                {
+                                    parent.ChildNodes.Remove(node);
+                                    string parentPathWithoutNode = Path.GetDirectoryName(parent.Path) ?? "";
+                                    string parentLeft = pathWithoutNode.Replace(rootPath ?? "", "");
+
+                                    if (string.IsNullOrWhiteSpace(parentLeft))
+                                        container = _nodes;
+                                    else
+                                    {
+                                        parent = FindNode(pathWithoutNode, _nodes);
+                                        if (parent != null)
+                                            container = parent.ChildNodes;
+                                    }
+
+                                    if (container != null)
+                                    {
+                                        container.Add(node);
+                                        needsUpdate = false;
+                                    }
+                                }
+                            }
+                        }
+
+                        //Collection needs to be sorted
+                        if (needsUpdate && container != null)
+                            container.Sort();
                     }
 
                     if (tvExplorer.SelectedItem == node)
@@ -232,18 +348,34 @@ namespace ZXBasicStudio.Controls
         {
             Dispatcher.UIThread.InvokeAsync(() => { 
                 var node = FindNode(e.FullPath, _nodes);
+
                 if (node != null)
                 {
-                    string pathWithoutNode = Path.GetDirectoryName(e.FullPath);
-                    string left = pathWithoutNode.Replace(rootPath, "");
+                    string pathWithoutNode = Path.GetDirectoryName(e.FullPath) ?? "";
+                    string left = pathWithoutNode.Replace(rootPath ?? "", "");
 
+                    SortableObservableCollection<ExplorerNode>? container = null;
+
+                    //Find where it is contained
                     if (string.IsNullOrWhiteSpace(left))
-                        _nodes.Remove(node);
+                        container = _nodes;
                     else
                     {
                         var parent = FindNode(pathWithoutNode, _nodes);
                         if (parent != null)
-                            parent.ChildNodes.Remove(node);
+                            container = parent.ChildNodes;
+                    }
+
+                    //Not found? ingnore...
+                    if (container != null)
+                    {
+                        container.Remove(node);
+                        //If it is a file and the file had childs, add it to the container
+                        if(node.IsFile && node.ChildNodes.Count > 0)
+                        {
+                            foreach (var cNode in node.ChildNodes)
+                                container.Add(cNode);
+                        }
                     }
 
                     if (SelectedPath != null && SelectedPath.StartsWith(e.FullPath))
@@ -254,18 +386,69 @@ namespace ZXBasicStudio.Controls
 
         private void FWatcher_Created(object sender, FileSystemEventArgs e)
         {
-            Dispatcher.UIThread.InvokeAsync(() => {
-                string pathWithoutNode = Path.GetDirectoryName(e.FullPath);
-                string left = pathWithoutNode.Replace(rootPath, "");
+            Dispatcher.UIThread.InvokeAsync(() => 
+            {
+                bool isFile = File.Exists(e.FullPath);
+                string pathWithoutNode = Path.GetDirectoryName(e.FullPath) ?? "";
+                string left = pathWithoutNode.Replace(rootPath ?? "", "");
+                var newNode = new ExplorerNode(e.FullPath, this);
+                var docCfg = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXConfigurationDocument));
 
+                SortableObservableCollection<ExplorerNode>? container = null;
+
+                //Find where to add the new node
                 if (string.IsNullOrWhiteSpace(left))
-                    _nodes.Add(new ExplorerNode(e.FullPath, this));
+                    container = _nodes;
                 else
                 {
                     var node = FindNode(pathWithoutNode, _nodes);
                     if (node != null)
-                        node.ChildNodes.Add(new ExplorerNode(e.FullPath, this));
+                        container = node.ChildNodes;
                 }
+
+                //We didn't found where to add it... :(
+                if (container == null)
+                    return;
+
+                //Check if any existing file at the same level is a child or if this is a child
+                if (isFile && docCfg != null)
+                {
+                    //Check if the node can be a child of an existing file
+
+                    string fileExt = Path.GetExtension(e.FullPath);
+
+                    if (docCfg != null && docCfg.DocumentExtensions.Contains(fileExt))
+                    {
+                        var possibleParent = e.FullPath.Substring(0, e.FullPath.Length - fileExt.Length);
+                        var parent = container.FirstOrDefault(n => n.Path == possibleParent);
+
+                        //This is a child
+                        if (parent != null)
+                        {
+                            parent.ChildNodes.Add(newNode);
+                            return;
+                        }
+                    }
+
+                    //Add it to the hierarchy
+                    container.Add(newNode);
+
+                    foreach (var ext in docCfg.DocumentExtensions)
+                    {
+                        string child = e.FullPath + ext;
+                        var childNode = container.FirstOrDefault(n => n.Path == child);
+
+                        //We found a child, move it
+                        if (childNode != null)
+                        {
+                            container.Remove(childNode);
+                            newNode.ChildNodes.Add(childNode);
+                        }
+                    }
+                }
+                else
+                    //Add it to the hierarchy
+                    container.Add(newNode);
             });
         }
 
@@ -279,13 +462,11 @@ namespace ZXBasicStudio.Controls
 
             foreach (var node in Nodes)
             {
-                if (!node.IsFile)
-                {
-                    var n = FindNode(Path, node.ChildNodes);
+                var n = FindNode(Path, node.ChildNodes);
 
-                    if(n != null)
-                        return n;
-                }
+                if(n != null)
+                    return n;
+                
             }
 
             return null;
@@ -327,10 +508,50 @@ namespace ZXBasicStudio.Controls
                 nodes.Add(node);
             }
             var files = System.IO.Directory.GetFiles(Folder);
+
+            List<string> childFiles = new List<string>();
+            var cfgType = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXConfigurationDocument));
+
+            //Check for child cfg's
+            if (cfgType != null)
+            {
+                //Warning! We can have problems if casing does not match
+                var nonCfgFiles = files.Where(f => !cfgType.DocumentExtensions.Contains(Path.GetExtension(f)));
+
+                foreach (var noCfg in nonCfgFiles)
+                {
+                    foreach (var ext in cfgType.DocumentExtensions)
+                    {
+                        string cfg = noCfg + ext;
+                        if (files.Contains(cfg))
+                            childFiles.Add(cfg);
+                    }
+                }
+            }
+
             foreach (var file in files) 
             {
+                //If this is a child, ignore it for now
+                if (childFiles.Contains(file))
+                    continue;
+
                 ExplorerNode node = new ExplorerNode(file, this);
                 nodes.Add(node);
+
+                if (cfgType != null)
+                {
+                    //Check for any child
+                    foreach (var ext in cfgType.DocumentExtensions)
+                    {
+                        string cfg = file + ext;
+                        if (childFiles.Contains(cfg))
+                        {
+                            ExplorerNode childNode = new ExplorerNode(cfg, this);
+                            node.ChildNodes.Add(childNode);
+                            childFiles.Add(cfg);
+                        }
+                    }
+                }
             }
             return nodes;
         }
