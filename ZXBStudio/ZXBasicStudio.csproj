@@ -48,6 +48,7 @@
     <None Remove="Assets\zxGraphics_map.png" />
     <None Remove="Assets\zxGraphics_spr.png" />
     <None Remove="Assets\zxGraphics_til.png" />
+    <None Remove="Assets\zxtFile.png" />
     <None Remove="Fonts\AlmaMono-Bold.otf" />
     <None Remove="Fonts\AlmaMono-Heavy.otf" />
     <None Remove="Fonts\AlmaMono-Light.otf" />
@@ -102,6 +103,7 @@
     <None Remove="Svg\Documents\file-text.svg" />
     <None Remove="Svg\Documents\file-zxasm.svg" />
     <None Remove="Svg\Documents\file-zxbasic.svg" />
+    <None Remove="Svg\Documents\file-zxtape.svg" />
     <None Remove="Svg\dumpster-solid.svg" />
     <None Remove="Svg\eject-solid.svg" />
     <None Remove="Svg\file-arrow-down-solid.svg" />
@@ -216,6 +218,7 @@
     <AvaloniaResource Include="Assets\zxGraphics_map.png" />
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
+    <AvaloniaResource Include="Assets\zxtFile.png" />
     <AvaloniaResource Include="Fonts\AlmaMono-Bold.otf" />
     <AvaloniaResource Include="Fonts\AlmaMono-Heavy.otf" />
     <AvaloniaResource Include="Fonts\AlmaMono-Light.otf" />
@@ -247,6 +250,7 @@
     <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
     <AvaloniaResource Include="Svg\Documents\file-text.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxtape.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxbasic.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxasm.svg" />
     <AvaloniaResource Include="Svg\Export.svg" />
@@ -458,6 +462,8 @@
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
     <Folder Include="IntegratedDocumentTypes\CodeDocuments\Assembler\" />
+    <Folder Include="IntegratedDocumentTypes\TapeDocuments\TAP\" />
+    <Folder Include="IntegratedDocumentTypes\TapeDocuments\TZX\" />
     <Folder Include="Networking\ZXBUpdater\" />
   </ItemGroup>
 </Project>

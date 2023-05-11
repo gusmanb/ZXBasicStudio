@@ -21,7 +21,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
         static readonly string _docCat = "Code";
         static readonly string _docAspect = "/Svg/Documents/file-zxbasic.svg";
         static readonly ZXBasicDocumentFactory _factory = new ZXBasicDocumentFactory();
-        Avalonia.Svg.Skia.Svg? _aspect;
+
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
