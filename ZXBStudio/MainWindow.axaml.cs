@@ -38,6 +38,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.BuildSystem;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Common.ZXSinclairBasic;
 using ZXBasicStudio.Controls;
 using ZXBasicStudio.Controls.DockSystem;
 using ZXBasicStudio.Dialogs;
@@ -48,6 +49,7 @@ using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.Emulator.Classes;
 using ZXBasicStudio.Emulator.Controls;
 using ZXBasicStudio.Extensions;
+using I = ZXBasicStudio.Common.ZXSinclairBasic.ZXSinclairBasicInstruction;
 
 namespace ZXBasicStudio
 {
