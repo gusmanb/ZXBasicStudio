@@ -14,7 +14,51 @@
     <StackPanel Orientation="Vertical">
       <local:SelectExportTypeControl Name="cmbSelectExportType"/>
     </StackPanel>
-    <Grid Name="grdExportControl" Grid.Column="2"/>
+    
+    <Grid Name="grdOptions" Grid.Column="2" RowDefinitions="Auto,*,Auto" IsVisible="False">
+      <TextBlock Name="lblTitle" FontSize="18" FontWeight="Bold">format - Export options</TextBlock>
+
+      <Border BorderBrush="Gray" BorderThickness="0,0,0,1" Padding="0,0,0,4" Grid.Row="1">
+        <ScrollViewer>
+          <StackPanel Orientation="Vertical" Spacing="4">
+            <TextBlock Name="lblDescription" Grid.Row="2" TextWrapping="Wrap">
+              ...
+            </TextBlock>
+
+            <TextBlock FontSize="14" Foreground="Red" Margin="0,16,0,0">
+              Export options
+            </TextBlock>
+            <CheckBox Classes="dialog" Name="chkAuto">Auto-export on every compilation (exit with save button)</CheckBox>
+            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+              <TextBlock Name="lblOutputFile" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Export file path:</TextBlock>
+              <TextBox Name="txtOutputFile" Classes="dialog" Grid.Column="1" MaxWidth="Infinity"></TextBox>
+              <Button Name="btnOutputFile" Classes="dialog" Grid.Column="2" VerticalAlignment="Center">...</Button>
+
+              <TextBlock Name="lblLabelName" Classes="dialog" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right">Label name:</TextBlock>
+              <TextBox Name="txtLabelName" Classes="dialog" Grid.Row="1" Grid.Column="1" MaxLength="64" Width="100" HorizontalAlignment="Left"></TextBox>
+
+              <TextBlock Name="lblZXFile" Classes="dialog" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right">ZX Spectrum filename:</TextBlock>
+              <TextBox Name="txtZXFile" Classes="dialog" Grid.Row="2" Grid.Column="1" MaxLength="10" Width="100" HorizontalAlignment="Left"></TextBox>
+
+              <TextBlock Name="lblMemoryAddr" Classes="dialog" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right">Start memory address (decimal)</TextBlock>
+              <TextBox Name="txtMemoryAddr" Classes="dialog" Grid.Row="3" Grid.Column="1" MaxLength="5" Width="60" HorizontalAlignment="Left"></TextBox>
+            </Grid>
+
+            <TextBlock FontSize="14" Foreground="Red" Margin="0,16,0,0">
+              Example of use
+            </TextBlock>
+            <TextBox Name="txtCode" AcceptsReturn="true" AcceptsTab="True" IsReadOnly="True" />
+            <Button Name="btnCopy" Classes="dialog" HorizontalAlignment="Right" Width="150">Copy sample to clipboard</Button>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2" Margin="8">
+        <Button Name="btnCancel" Classes="dialog">Close</Button>
+        <Button Name="btnExport" Classes="dialog">Export now</Button>
+        <Button Name="btnSave" Classes="dialog">Save options</Button>
+      </StackPanel>
+    </Grid>
   </Grid>
 
 </Window>

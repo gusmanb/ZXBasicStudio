@@ -427,12 +427,6 @@
     <Compile Update="Dialogs\ZXNewFileDialog.axaml.cs">
       <DependentUpon>ZXNewFileDialog.axaml</DependentUpon>
     </Compile>
-    <Compile Update="DocumentEditors\ZXGraphics\ExportControls\DataFormat_ExportControl.axaml.cs">
-      <DependentUpon>DataFormat_ExportControl.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="DocumentEditors\ZXGraphics\ExportControls\DimFormat_ExportControl.axaml.cs">
-      <DependentUpon>DimFormat_ExportControl.axaml</DependentUpon>
-    </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\FontGDUExportDialog.axaml.cs">
       <DependentUpon>FontGDUExportDialog.axaml</DependentUpon>
     </Compile>

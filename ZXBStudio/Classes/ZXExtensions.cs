@@ -15,7 +15,6 @@ namespace ZXBasicStudio.Classes
         public const string ZX_GRAPHICS_SPR = ".spr";
         public const string ZX_GRAPHICS_TIL = ".til";
         public const string ZX_GRAPHICS_MAP = ".map";
-        public const string ZX_GRAPHICS_GCFG = ".gcfg";
 
         static string[] basicFiles = new string[] { ".bas", ".zxbas", ".zxb" };
         static string[] asmFiles = new string[] { ".asm", ".zxasm", ".zxa", ".z80asm" };
@@ -28,7 +27,6 @@ namespace ZXBasicStudio.Classes
             ZX_GRAPHICS_SPR,
             ZX_GRAPHICS_TIL,
             ZX_GRAPHICS_MAP,
-            ZX_GRAPHICS_GCFG
         };
 
         static string[] tapeFiles = new string[] { ".tap", ".tzx" };
