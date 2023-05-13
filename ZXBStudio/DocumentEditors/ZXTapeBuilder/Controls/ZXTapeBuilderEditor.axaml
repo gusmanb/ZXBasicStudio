@@ -2,9 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="using:ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
              Background="#202020"
              x:Class="ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls.ZXTapeBuilderEditor">
+  <UserControl.Resources>
+    <local:BoolToColorConverter x:Key="BoolToColorConverter" />
+  </UserControl.Resources>
   <Grid RowDefinitions="160,120,*,40">
     <Border Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
       <Grid RowDefinitions="5,*,*,*" ColumnDefinitions="96,*">
@@ -74,7 +78,7 @@
         <TextBlock Grid.Row="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Add block</TextBlock>
         <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Block list</TextBlock>
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="10">
-          <Grid ColumnDefinitions="56,*,32" RowDefinitions="Auto,Auto,Auto,16,*">
+          <Grid ColumnDefinitions="56,*,32" RowDefinitions="Auto,Auto,Auto,Auto,16,*">
             <TextBlock Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">File:</TextBlock>
             <TextBox Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,0,5" Name="txtBlockFile"></TextBox>
             <Button  Grid.Column="2" Classes="dialog" Margin="10,5,10,5" Width="32" Height="32" Name="btnSelectBlock">...</Button>
@@ -84,7 +88,9 @@
             <Border Height="32" Grid.Row="2" Grid.Column="1" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,5,10,0" HorizontalAlignment="Stretch" MaxWidth="Infinity" Grid.ColumnSpan="2">
               <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="32768" FormatString="####" Minimum="0" Maximum="65535" Name="nudBlockAddress"></NumericUpDown>
             </Border>
-            <Button Grid.Row="4" Grid.ColumnSpan="3" Classes="dialog" Margin="10,5,10,5" Height="32" Name="btnAddBlock" VerticalAlignment="Bottom">Add block</Button>
+            <TextBlock Grid.Row="3" Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">Basic load:</TextBlock>
+            <CheckBox Classes="dialog" Grid.Row="3" Grid.Column="1" Margin="10" Name="ckBasicLoad"></CheckBox>
+            <Button Grid.Row="5" Grid.ColumnSpan="3" Classes="dialog" Margin="10,5,10,5" Height="32" Name="btnAddBlock" VerticalAlignment="Bottom">Add block</Button>
           </Grid>
         </ScrollViewer>
         <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*,48" RowDefinitions="24,28,*,48">
@@ -100,7 +106,7 @@
           <ListBox Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="0,0,0,15" ItemsSource="{Binding Blocks}" Name="lstBlocks">
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <Grid ColumnDefinitions="*,*,*">
+                <Grid ColumnDefinitions="*,*,*" Background="{Binding BasicLoad, Converter={StaticResource BoolToColorConverter}}">
                   <TextBlock HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockFile}">asas</TextBlock>
                   <TextBlock Grid.Column="1" HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockName}"></TextBlock>
                   <TextBlock Grid.Column="2" HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockAddress}"></TextBlock>

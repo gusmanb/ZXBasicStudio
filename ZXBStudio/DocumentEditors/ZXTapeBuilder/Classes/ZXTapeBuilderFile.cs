@@ -33,5 +33,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes
         public required string BlockFile { get; set; }
         public required string BlockName { get; set; }
         public ushort BlockAddress { get; set; }
+        public bool BasicLoad { get; set; }
     }
 }

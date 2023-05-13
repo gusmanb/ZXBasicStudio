@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.VisualBasic;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -92,9 +93,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 
                 line.AddTokens(I.LOAD, "\"\"", I.CODE, CompiledProgram.Org);
 
-                if (buildFile.DataBlocks != null && buildFile.DataBlocks.Length > 0)
+                if (buildFile.DataBlocks != null && buildFile.DataBlocks.Length > 0 && buildFile.DataBlocks.Any(b => b.BasicLoad))
                 {
-                    foreach(var block in buildFile.DataBlocks)
+                    foreach(var block in buildFile.DataBlocks.Where(b => b.BasicLoad))
                         line.AddTokens(I.LOAD, "\"\"", I.CODE, block.BlockAddress);
                 }
 

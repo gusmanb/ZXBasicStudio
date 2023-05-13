@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Newtonsoft.Json;
@@ -6,6 +8,7 @@ using Svg;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -163,7 +166,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 return;
             }
 
-            ZXTapeBuilderDataBlock block = new ZXTapeBuilderDataBlock { BlockFile = txtBlockFile.Text, BlockName = txtBlockName.Text, BlockAddress = (ushort)nudBlockAddress.Value };
+            ZXTapeBuilderDataBlock block = new ZXTapeBuilderDataBlock { BlockFile = txtBlockFile.Text, BlockName = txtBlockName.Text, BlockAddress = (ushort)nudBlockAddress.Value, BasicLoad = ckBasicLoad.IsChecked ?? false };
 
             _blocks.Add(block);
 
@@ -459,4 +462,5 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
         }
         #endregion
     }
+    
 }

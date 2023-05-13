@@ -258,9 +258,9 @@
     <AvaloniaResource Include="Svg\caret-down-solid.svg" />
     <AvaloniaResource Include="Svg\caret-up-solid.svg" />
     <AvaloniaResource Include="Svg\Documents\file-text.svg" />
-    <AvaloniaResource Include="Svg\Documents\file-zxtape.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxbasic.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxasm.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxtape.svg" />
     <AvaloniaResource Include="Svg\Export.svg" />
     <AvaloniaResource Include="Svg\keyboard-regular.svg" />
     <AvaloniaResource Include="Svg\Mask.svg" />
@@ -474,8 +474,6 @@
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
     <Folder Include="IntegratedDocumentTypes\CodeDocuments\Assembler\" />
-    <Folder Include="IntegratedDocumentTypes\TapeDocuments\TAP\" />
-    <Folder Include="IntegratedDocumentTypes\TapeDocuments\TZX\" />
     <Folder Include="Networking\ZXBUpdater\" />
   </ItemGroup>
 </Project>
