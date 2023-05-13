@@ -104,6 +104,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
 
             UpdateFileName(_docPath);
 
+            _modified = false;
+
             if(DocumentRestored != null)
                 DocumentRestored(this, EventArgs.Empty);
         }
