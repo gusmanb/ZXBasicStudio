@@ -76,6 +76,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
             ckPaper.IsCheckedChanged+= DocumentChanged;
             cbPaper.SelectionChanged+= DocumentChanged;
             ckBorder.IsCheckedChanged+= DocumentChanged;
+            ckHide.IsCheckedChanged+= DocumentChanged;
             cbBorder.SelectionChanged+= DocumentChanged;
             txtPokesBefore.TextChanged += DocumentChanged;
             txtPokesAfter.TextChanged += DocumentChanged;
@@ -292,6 +293,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
             else
                 txtPokesAfter.Text = "";
 
+            ckHide.IsChecked = fileContent.HideHeaders;
+
             //Load screen
             txtScreenName.Text = fileContent.ScreenName;
             txtScreenFile.Text = fileContent.ScreenFile;
@@ -405,6 +408,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 Paper = cbPaper.SelectedIndex,
                 UseBorder = ckBorder.IsChecked ?? false,
                 Border = cbBorder.SelectedIndex,
+                HideHeaders = ckHide.IsChecked ?? false,
                 PokesBeforeLoad = beforePokes,
                 PokesAfterLoad = afterPokes,
                 ScreenFile = txtScreenFile.Text,

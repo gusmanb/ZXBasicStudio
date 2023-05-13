@@ -15,6 +15,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes
         public int Paper { get; set; }
         public bool UseBorder { get; set; }
         public int Border { get; set; }
+        public bool HideHeaders { get; set; }
         public ZXTapeBuilderPoke[]? PokesBeforeLoad { get; set; }
         public ZXTapeBuilderPoke[]? PokesAfterLoad { get; set; }
         public string? ScreenName { get; set; }

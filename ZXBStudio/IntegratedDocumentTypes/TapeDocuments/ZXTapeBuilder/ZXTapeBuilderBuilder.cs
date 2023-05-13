@@ -82,6 +82,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 
                 line.AddTokens(I.CLEAR, CompiledProgram.Org);
 
+                if (buildFile.HideHeaders)
+                    line.AddTokens(I.POKE, 23739, ",", 111);
+
                 if (buildFile.PokesBeforeLoad != null && buildFile.PokesBeforeLoad.Length > 0)
                 {
                     foreach (var poke in buildFile.PokesBeforeLoad)
@@ -98,6 +101,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
                     foreach(var block in buildFile.DataBlocks.Where(b => b.BasicLoad))
                         line.AddTokens(I.LOAD, "\"\"", I.CODE, block.BlockAddress);
                 }
+
+                if (buildFile.HideHeaders)
+                    line.AddTokens(I.POKE, 23739, ",", 244);
 
                 if (buildFile.PokesAfterLoad != null && buildFile.PokesAfterLoad.Length > 0)
                 {

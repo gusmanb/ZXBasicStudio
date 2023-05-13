@@ -51,8 +51,9 @@
           </ComboBox>
         </StackPanel>
         <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Pokes:</TextBlock>
-        <Grid Grid.Row="3" Grid.Column="1" ColumnDefinitions="Auto,*,Auto,*">
-          <TextBlock Classes="dialog" VerticalAlignment="Center">Before load:</TextBlock>
+        <Grid Grid.Row="3" Grid.Column="1" ColumnDefinitions="Auto,*,Auto,*,Auto">
+          <CheckBox Grid.Column="4" Classes="dialog" VerticalAlignment="Center" Name="ckHide" Margin="5,0,10,0">Hide headers</CheckBox>
+          <TextBlock Grid.Column="0" Classes="dialog" VerticalAlignment="Center">Before load:</TextBlock>
           <TextBox Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" Name="txtPokesBefore"></TextBox>
           <TextBlock Grid.Column="2" Classes="dialog" VerticalAlignment="Center">After load:</TextBlock>
           <TextBox Grid.Column="3" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" Name="txtPokesAfter"></TextBox>
