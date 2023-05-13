@@ -35,7 +35,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
         string _docPath;
         bool _modified;
         bool _internalUpdate;
-        ObservableCollection<ZXTapeBuilderDataBlock> _blocks;
+        ObservableCollection<ZXTapeBuilderDataBlock> _blocks = new ObservableCollection<ZXTapeBuilderDataBlock>();
         #endregion
 
         #region Events
@@ -89,7 +89,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
             btnDiscard.Click += BtnDiscard_Click;
             _docPath = DocumentPath;
             _docName = Path.GetFileName(DocumentPath);
-            _blocks = new ObservableCollection<ZXTapeBuilderDataBlock>();
             if (!UpdateFileName(DocumentPath))
                 throw new Exception("Error opening document");
         }
@@ -118,19 +117,28 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
         private void BtnRemoveBlock_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (lstBlocks.SelectedItem != null)
+            {
                 _blocks.Remove((ZXTapeBuilderDataBlock)lstBlocks.SelectedItem);
+                DocumentChanged(this, e);
+            }
         }
 
         private void BtnMoveBlockDown_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (lstBlocks.SelectedItem != null && lstBlocks.SelectedIndex < _blocks.Count - 1)
+            {
                 _blocks.Move(lstBlocks.SelectedIndex, lstBlocks.SelectedIndex + 1);
+                DocumentChanged(this, e);
+            }
         }
 
         private void BtnMoveBlockUp_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (lstBlocks.SelectedItem != null && lstBlocks.SelectedIndex > 0)
+            {
                 _blocks.Move(lstBlocks.SelectedIndex, lstBlocks.SelectedIndex - 1);
+                DocumentChanged(this, e);
+            }
         }
 
         private async void BtnAddBlock_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -153,9 +161,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 return;
             }
 
-            ZXTapeBuilderDataBlock block = new ZXTapeBuilderDataBlock { BlockFile = txtBlockFile.Text, BlockName = txtBlockName.Text, Address = (ushort)nudBlockAddress.Value };
+            ZXTapeBuilderDataBlock block = new ZXTapeBuilderDataBlock { BlockFile = txtBlockFile.Text, BlockName = txtBlockName.Text, BlockAddress = (ushort)nudBlockAddress.Value };
 
             _blocks.Add(block);
+
+            DocumentChanged(this, e);
         }
 
         private async void BtnSelectBlock_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
