@@ -458,30 +458,12 @@ namespace ZXBasicStudio
             var editor = activeTab.Content as ZXDocumentEditorBase;
 
             if (editor == null)
+                return;
+
             if (!editor.SaveDocument(outLog.Writer))
             {
                 await this.ShowError("Error", "Cannot save the file, check the output log for more info.");
                 return;
-                if (!editor.SaveDocument(outLog.Writer))
-                {
-                    await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
-                    return;
-                }
-            }
-            else if (activeTab.Content is DocumentEditors.ZXGraphics.FontGDUEditor)
-            {
-                var editor = activeTab.Content as DocumentEditors.ZXGraphics.FontGDUEditor;
-
-                if (editor == null)
-                    return;
-
-                if (!editor.SaveDocument())
-                {
-                    await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
-                    return;
-                }
-                    return;
-                }
             }
         }
 

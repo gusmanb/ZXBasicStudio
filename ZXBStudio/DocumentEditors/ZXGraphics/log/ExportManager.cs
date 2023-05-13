@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.BuildSystem;
 using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using ZXBasicStudio.DocumentModel.Enums;
@@ -26,7 +27,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         }
 
 
-        public bool Build(string BuildPath, ZXBuildType BuildType, TextWriter OutputLog)
+        public bool Build(string BuildPath, ZXBuildType BuildType, ZXProgram? program, TextWriter OutputLog)
         {
             if (!ServiceLayer.Initialized)
             {
