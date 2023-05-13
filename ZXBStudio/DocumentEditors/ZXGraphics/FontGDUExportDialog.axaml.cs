@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,6 +22,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private FileTypeConfig fileType = null;
         private Pattern[] patterns = null;
         private ExportConfig exportConfig = null;
+
 
         public FontGDUExportDialog()
         {
@@ -46,14 +48,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 exportConfig = new ExportConfig();
                 exportConfig.ExportType = ExportTypes.None;
                 exportConfig.AutoExport = false;
-                exportConfig.ExportFilePath = fileType.FileName.Replace(".fnt", ".bas").Replace(".gdu", ".bas").Replace(".udg", ".bas");
+                exportConfig.ExportFilePath = "";
                 exportConfig.LabelName = Path.GetFileName(exportConfig.ExportFilePath).Replace(".bas", "").Replace(" ", "_");
                 exportConfig.ZXAddress = 49152;
-                var spName = Path.GetFileName(exportConfig.ZXFileName).Replace(".tap", "");
-                if (spName.Length > 10)
-                {
-                    exportConfig.ZXFileName = spName.Substring(0, 10);
-                }
+                exportConfig.ZXFileName = "";
             }
 
             txtLabelName.Text = exportConfig.LabelName;
@@ -96,6 +94,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     lblOutputFile.IsVisible = true;
                     txtOutputFile.IsVisible = true;
                     btnOutputFile.IsVisible = true;
+                    CreateExportPath(".bin");
                     CreateExample_BIN();
                     break;
                 case ExportTypes.Tap:
@@ -106,6 +105,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     txtZXFile.IsVisible = true;
                     lblMemoryAddr.IsVisible = true;
                     txtMemoryAddr.IsVisible = true;
+                    CreateExportPath(".tap");
                     CreateExample_TAP();
                     break;
                 case ExportTypes.Asm:
@@ -114,6 +114,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     btnOutputFile.IsVisible = true;
                     lblLabelName.IsVisible = true;
                     txtLabelName.IsVisible = true;
+                    CreateExportPath(".bas");
                     CreateExample_ASM();
                     break;
                 case ExportTypes.Dim:
@@ -122,6 +123,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     btnOutputFile.IsVisible = true;
                     lblLabelName.IsVisible = true;
                     txtLabelName.IsVisible = true;
+                    CreateExportPath(".bas");
                     CreateExample_DIM();
                     break;
                 case ExportTypes.Data:
@@ -130,6 +132,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     btnOutputFile.IsVisible = true;
                     lblLabelName.IsVisible = true;
                     txtLabelName.IsVisible = true;
+                    CreateExportPath(".bas");
                     CreateExample_DATA();
                     break;
                 default:
@@ -137,6 +140,30 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     break;
             }
         }
+
+
+        private void CreateExportPath(string extension)
+        {
+            if (string.IsNullOrEmpty(exportConfig.ExportFilePath))
+            {
+                txtOutputFile.Text = fileType.FileName + extension;
+                var spName = Path.GetFileName(fileType.FileName.ToStringNoNull()).
+                    Replace(".bin", "").
+                    Replace(".tap", "").
+                    Replace(".bas", "").
+                    Replace(".fnt", "").
+                    Replace(".udg", "").
+                    Replace(".gdu", "").
+                    Replace(".", "");
+                txtLabelName.Text = spName;
+                if (spName.Length > 10)
+                {
+                    spName = spName.Substring(0, 10);
+                }
+                txtZXFile.Text = spName;
+            }
+        }
+
 
         #endregion
 
@@ -351,7 +378,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             var select = await StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
             {
                 ShowOverwritePrompt = true,
-                FileTypeChoices=fileTypes,
+                FileTypeChoices = fileTypes,
                 Title = "Select Export path...",
             });
 

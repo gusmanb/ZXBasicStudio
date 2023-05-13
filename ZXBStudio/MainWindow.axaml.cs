@@ -18,7 +18,6 @@ using CoreSpectrum.Enums;
 using CoreSpectrum.SupportClasses;
 using HarfBuzzSharp;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using SkiaSharp;
 using Svg;
