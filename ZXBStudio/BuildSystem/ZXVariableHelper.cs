@@ -314,7 +314,7 @@ namespace ZXBasicStudio.BuildSystem
             if (Value == 0)
                 return new byte[5];
 
-            var exp = Math.Ceiling(Math.Log2(Math.Abs(Value)));
+            var exp = Math.Ceiling(Math.Log2(Math.Abs(Value) + 1));
 
             if (exp < -128 || exp > 127)
                 return null;

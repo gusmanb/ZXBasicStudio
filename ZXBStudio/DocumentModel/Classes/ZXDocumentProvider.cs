@@ -10,6 +10,7 @@ using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics;
+using ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder;
 
 namespace ZXBasicStudio.DocumentModel.Classes
 {
@@ -26,6 +27,7 @@ namespace ZXBasicStudio.DocumentModel.Classes
             _docTypes.Add(new ZXAssemblerDocument());
             _docTypes.Add(new ZXTextDocument());
             _docTypes.Add(new ZXConfigurationDocument());
+            _docTypes.Add(new ZXTapeBuilderDocument());
             // ZXGraphics
             _docTypes.Add(new UDGDocument());
             _docTypes.Add(new FontDocument());

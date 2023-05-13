@@ -93,7 +93,7 @@ namespace ZXBasicStudio.Controls
         public ZXProjectExplorer()
         {
             InitializeComponent();
-            tvExplorer.DoubleTapped += TvExplorer_DoubleTapped;
+            //tvExplorer.DoubleTapped += TvExplorer_DoubleTapped;
             tvExplorer.SelectionChanged += TvExplorer_SelectionChanged;
             _nodes = new SortableObservableCollection<ExplorerNode>();
         }
@@ -472,7 +472,7 @@ namespace ZXBasicStudio.Controls
             return null;
         }
 
-        private void TvExplorer_DoubleTapped(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void TvExplorer_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             var source = e.Source as Control;
 
@@ -492,9 +492,10 @@ namespace ZXBasicStudio.Controls
                 return;
 
             if (data.IsFile)
+            {
                 RaiseEvent(new RoutedEventArgs(OpenFileRequestedEvent));
-            else
-                item.IsExpanded = !item.IsExpanded;
+                e.Handled = true;
+            }
         }
 
         private SortableObservableCollection<ExplorerNode> ScanFolder(string Folder)

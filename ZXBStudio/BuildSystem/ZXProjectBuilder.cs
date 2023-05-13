@@ -121,10 +121,10 @@ namespace ZXBasicStudio.BuildSystem
 
                 Cleanup(Folder, binFile);
 
-                if(!PostBuild(false, Folder, OutputLogWritter))
-                    return null;
-
                 ZXProgram program = ZXProgram.CreateReleaseProgram(binary, settings.Origin ?? 32768);
+
+                if (!PostBuild(false, Folder, program, OutputLogWritter))
+                    return null;
 
                 OutputLogWritter.WriteLine($"Program size: {binary.Length} bytes");
 
@@ -353,10 +353,10 @@ namespace ZXBasicStudio.BuildSystem
 
                 ushort org = disasFile.FindOrg();
 
-                if (!PostBuild(true, Folder, OutputLogWritter))
-                    return null;
-
                 ZXProgram program = ZXProgram.CreateDebugProgram(files, disasFile, progMap, asmMap, varMap, binary, org);
+
+                if (!PostBuild(true, Folder, program, OutputLogWritter))
+                    return null;
 
                 OutputLogWritter.WriteLine($"Program size: {binary.Length} bytes");
 
@@ -522,7 +522,7 @@ namespace ZXBasicStudio.BuildSystem
 
             foreach (var builder in builders)
             {
-                if (!builder.Build(path, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, outLog))
+                if (!builder.Build(path, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, null, outLog))
                 {
                     outLog.WriteLine("Error on pre-build stage, aborting...");
                     return false;
@@ -531,14 +531,14 @@ namespace ZXBasicStudio.BuildSystem
 
             return true;
         }
-        private static bool PostBuild(bool debug, string path, TextWriter outLog)
+        private static bool PostBuild(bool debug, string path, ZXProgram CompiledProgram, TextWriter outLog)
         {
             outLog.WriteLine("Building postcompilation documents...");
             var builders = ZXDocumentProvider.GetPostcompilationDocumentBuilders();
 
             foreach (var builder in builders)
             {
-                if (!builder.Build(path, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, outLog))
+                if (!builder.Build(path, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, CompiledProgram, outLog))
                 {
                     outLog.WriteLine("Error on post-build stage, aborting...");
                     return false;

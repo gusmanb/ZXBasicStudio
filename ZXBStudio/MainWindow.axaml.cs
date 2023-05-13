@@ -17,7 +17,8 @@ using CoreSpectrum.Debug;
 using CoreSpectrum.Enums;
 using CoreSpectrum.SupportClasses;
 using HarfBuzzSharp;
-using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using SkiaSharp;
 using Svg;
@@ -37,6 +38,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.BuildSystem;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Common.ZXSinclairBasic;
 using ZXBasicStudio.Controls;
 using ZXBasicStudio.Controls.DockSystem;
 using ZXBasicStudio.Dialogs;
@@ -47,6 +49,7 @@ using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.Emulator.Classes;
 using ZXBasicStudio.Emulator.Controls;
 using ZXBasicStudio.Extensions;
+using I = ZXBasicStudio.Common.ZXSinclairBasic.ZXSinclairBasicInstruction;
 
 namespace ZXBasicStudio
 {
@@ -452,13 +455,13 @@ namespace ZXBasicStudio
             if (activeTab == null)
                 return;
 
-            if (activeTab.Content is ZXTextEditor)
+            var editor = activeTab.Content as ZXDocumentEditorBase;
+
+            if (editor == null)
+            if (!editor.SaveDocument(outLog.Writer))
             {
-                var editor = activeTab.Content as ZXTextEditor;
-
-                if (editor == null)
-                    return;
-
+                await this.ShowError("Error", "Cannot save the file, check the output log for more info.");
+                return;
                 if (!editor.SaveDocument(outLog.Writer))
                 {
                     await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
@@ -475,6 +478,8 @@ namespace ZXBasicStudio
                 if (!editor.SaveDocument())
                 {
                     await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
+                    return;
+                }
                     return;
                 }
             }
