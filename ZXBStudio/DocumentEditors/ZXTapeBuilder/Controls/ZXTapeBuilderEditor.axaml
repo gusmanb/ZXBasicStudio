@@ -2,17 +2,40 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
+             Background="#202020"
              x:Class="ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls.ZXTapeBuilderEditor">
-  <Grid RowDefinitions="160,*">
+  <Grid RowDefinitions="160,120,*,40">
     <Border Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
-      <Grid RowDefinitions="5,*,*,*" ColumnDefinitions="Auto,*">
-        <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center">Program name:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" MaxLength="10"></TextBox>
+      <Grid RowDefinitions="5,*,*,*" ColumnDefinitions="96,*">
+        <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Program name:</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" MaxLength="10" Name="txtLoaderName"></TextBox>
         <TextBlock Grid.Row="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Colors:</TextBlock>
         <StackPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
           <CheckBox Classes="dialog" VerticalAlignment="Center" Name="ckInk" Margin="5,0,0,0">Ink</CheckBox>
-          <ComboBox Classes="dialog" HorizontalAlignment="Left" ItemsSource="{Binding Colors}" Width="102" SelectedIndex="3" Margin="5,0,0,0" Name="cbInk">
+          <ComboBox Classes="dialog" HorizontalAlignment="Left" ItemsSource="{Binding Colors}" Width="102" SelectedIndex="0" Margin="5,0,0,0" Name="cbInk">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="Auto,Auto">
+                  <TextBlock Text="{Binding ColorName}" Width="38"></TextBlock>
+                  <Border Grid.Column="2" Width="32" Height="16" Background="{Binding ColorBrush}" BorderBrush="White" BorderThickness="1"></Border>
+                </Grid>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <CheckBox Classes="dialog" VerticalAlignment="Center" Name="ckPaper" Margin="15,0,0,0">Paper</CheckBox>
+          <ComboBox Classes="dialog" HorizontalAlignment="Left" ItemsSource="{Binding Colors}" Width="102" SelectedIndex="0" Margin="5,0,0,0" Name="cbPaper">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="Auto,Auto">
+                  <TextBlock Text="{Binding ColorName}" Width="38"></TextBlock>
+                  <Border Grid.Column="2" Width="32" Height="16" Background="{Binding ColorBrush}" BorderBrush="White" BorderThickness="1"></Border>
+                </Grid>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <CheckBox Classes="dialog" VerticalAlignment="Center" Name="ckBorder" Margin="15,0,0,0">Border</CheckBox>
+          <ComboBox Classes="dialog" HorizontalAlignment="Left" ItemsSource="{Binding Colors}" Width="102" SelectedIndex="0" Margin="5,0,0,0" Name="cbBorder">
             <ComboBox.ItemTemplate>
               <DataTemplate>
                 <Grid ColumnDefinitions="Auto,Auto">
@@ -23,8 +46,84 @@
             </ComboBox.ItemTemplate>
           </ComboBox>
         </StackPanel>
+        <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Pokes:</TextBlock>
+        <Grid Grid.Row="3" Grid.Column="1" ColumnDefinitions="Auto,*,Auto,*">
+          <TextBlock Classes="dialog" VerticalAlignment="Center">Before load:</TextBlock>
+          <TextBox Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" Name="txtPokesBefore"></TextBox>
+          <TextBlock Grid.Column="2" Classes="dialog" VerticalAlignment="Center">After load:</TextBlock>
+          <TextBox Grid.Column="3" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" Name="txtPokesAfter"></TextBox>
+        </Grid>
       </Grid>
     </Border>
     <TextBlock Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">Basic loader</TextBlock>
+
+    <Border Grid.Row="1" Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
+      <Grid RowDefinitions="5,*,*" ColumnDefinitions="96,*">
+        <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Screen name:</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" MaxLength="10" Name="txtScreenName"></TextBox>
+        <TextBlock Grid.Row="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Screen file:</TextBlock>
+        <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,32">
+          <TextBox Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,0,5" Name="txtScreenFile"></TextBox>
+          <Button Grid.Column="1" Classes="dialog" Margin="10,5,10,5" Width="32" Height="32" Name="btnSelectScreen">...</Button>
+        </Grid>
+      </Grid>
+    </Border>
+    <TextBlock Grid.Row="1" Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">Load screen</TextBlock>
+    <Border Grid.Row="2" Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
+      <Grid RowDefinitions="5,24,*" ColumnDefinitions="320,*">
+        <TextBlock Grid.Row="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Add block</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Block list</TextBlock>
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="10">
+          <Grid ColumnDefinitions="56,*,32" RowDefinitions="Auto,Auto,Auto,16,*">
+            <TextBlock Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">File:</TextBlock>
+            <TextBox Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,0,5" Name="txtBlockFile"></TextBox>
+            <Button  Grid.Column="2" Classes="dialog" Margin="10,5,10,5" Width="32" Height="32" Name="btnSelectBlock">...</Button>
+            <TextBlock Grid.Row="1" Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">Name:</TextBlock>
+            <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,10,5" MaxLength="10" Name="txtBlockName"></TextBox>
+            <TextBlock Grid.Row="2" Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">Address:</TextBlock>
+            <Border Height="32" Grid.Row="2" Grid.Column="1" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,5,10,0" HorizontalAlignment="Stretch" MaxWidth="Infinity" Grid.ColumnSpan="2">
+              <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="32768" FormatString="####" Minimum="0" Maximum="65535" Name="nudBlockAddress"></NumericUpDown>
+            </Border>
+            <Button Grid.Row="4" Grid.ColumnSpan="3" Classes="dialog" Margin="10,5,10,5" Height="32" Name="btnAddBlock" VerticalAlignment="Bottom">Add block</Button>
+          </Grid>
+        </ScrollViewer>
+        <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*,48" RowDefinitions="24,28,*,48">
+          <Border Background="#202020" BorderBrush="White" BorderThickness="1">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">File name</TextBlock>
+          </Border>
+          <Border Grid.Column="1" Background="#202020" BorderBrush="White" BorderThickness="1">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Block name</TextBlock>
+          </Border>
+          <Border Grid.Column="2" Background="#202020" BorderBrush="White" BorderThickness="1">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Address</TextBlock>
+          </Border>
+          <ListBox Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="0,0,0,15" ItemsSource="{Binding Blocks}" Name="lstBlocks">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="*,*,*">
+                  <TextBlock HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockFile}"></TextBlock>
+                  <TextBlock Grid.Column="1" HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockName}"></TextBlock>
+                  <TextBlock Grid.Column="2" HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockAddress}"></TextBlock>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <Button Classes="dialog" Grid.Column="3" Grid.Row="1" Margin="10,0,10,0" Name="btnMoveBlockUp">
+            <Svg Path="/Svg/White/caret-up-solid.svg"></Svg>
+          </Button>
+          <Button Classes="dialog" Grid.Column="3" Grid.Row="2" VerticalAlignment="Center" Height="24" Margin="10,0,10,0" Name="btnRemoveBlock">
+            <Svg Path="/Svg/White/minus-solid.svg"></Svg>
+          </Button>
+          <Button Classes="dialog" Grid.Column="3" Grid.Row="3" Margin="10,5,10,15" Name="btnMoveBlockDown">
+            <Svg Path="/Svg/White/caret-down-solid.svg"></Svg>
+          </Button>
+        </Grid>
+      </Grid>
+    </Border>
+    <TextBlock Grid.Row="2" Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">Data blocks</TextBlock>
+    <Grid ColumnDefinitions="*,*" Grid.Row="3">
+      <Button Classes="dialog" Name="btnSave">Save changes</Button>
+      <Button Classes="dialog" Grid.Column="1" Name="btnDiscard">Discard changes</Button>
+    </Grid>
   </Grid>
 </UserControl>

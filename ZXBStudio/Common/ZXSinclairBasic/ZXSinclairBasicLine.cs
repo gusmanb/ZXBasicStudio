@@ -16,7 +16,29 @@ namespace ZXBasicStudio.Common.ZXSinclairBasic
         public ZXSinclairBasicLine(int LineNumber, params ZXSinclairBasicToken[] Tokens) 
         {
             this.LineNumber = LineNumber;
-            this.Tokens.AddRange(Tokens);
+            if(Tokens != null && Tokens.Length > 0)
+                this.Tokens.AddRange(Tokens);
+        }
+
+        public void AddTokens(params ZXSinclairBasicToken[] Tokens)
+        {
+            if (Tokens != null && Tokens.Length > 0)
+            {
+                if (this.Tokens.Count > 0)
+                {
+                    var lastToken = this.Tokens.Last();
+                    
+                    if (lastToken.TokenType != ZXSinclairBasicTokenType.String || lastToken.StringContent != ":")
+                    {
+                        var firstToken = Tokens.First();
+
+                        if (firstToken.TokenType != ZXSinclairBasicTokenType.String || firstToken.StringContent != ":")
+                            this.Tokens.Add(":");
+                    }
+                }
+
+                this.Tokens.AddRange(Tokens);
+            }
         }
 
         public override string ToString()

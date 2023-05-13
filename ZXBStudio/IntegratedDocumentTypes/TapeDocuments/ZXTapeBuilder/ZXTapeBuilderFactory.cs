@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,12 +15,31 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
     {
         public bool CreateDocument(string Path, TextWriter OutputLog)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ZXTapeBuilderDocument doc = new ZXTapeBuilderDocument();
+                string content = JsonConvert.SerializeObject(doc);
+                File.WriteAllText(Path, content);
+                return true;
+            }
+            catch(Exception ex) 
+            {
+                OutputLog.WriteLine($"Error creating document: {ex.Message}");
+                return false;
+            }
         }
 
         public ZXDocumentEditorBase? CreateEditor(string Path, TextWriter OutputLog)
         {
-            return new ZXTapeBuilderEditor();
+            try
+            {
+                return new ZXTapeBuilderEditor(Path);
+            }
+            catch (Exception ex) 
+            {
+                OutputLog.WriteLine("Error opening the document. Aborting.");
+                return null;
+            }
         }
     }
 }

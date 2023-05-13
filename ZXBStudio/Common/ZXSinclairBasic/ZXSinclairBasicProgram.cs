@@ -8,7 +8,6 @@ namespace ZXBasicStudio.Common.ZXSinclairBasic
 {
     public class ZXSinclairBasicProgram
     {
-        public int? AutostartLine { get; set; }
         public string? ProgramName { get; set; }
         public List<ZXSinclairBasicLine> Lines { get; private set; } = new List<ZXSinclairBasicLine>();
 
@@ -22,7 +21,7 @@ namespace ZXBasicStudio.Common.ZXSinclairBasic
             return sb.ToString();
         }
 
-        public byte[] ToBinary()
+        public byte[] Serialize()
         {
             List<byte> buffer = new List<byte>();
 
@@ -31,7 +30,7 @@ namespace ZXBasicStudio.Common.ZXSinclairBasic
 
             return buffer.ToArray();
         }
-
+        /*
         public byte[] ToTAP()
         {
             List<byte> tapContent = new List<byte>();
@@ -75,5 +74,6 @@ namespace ZXBasicStudio.Common.ZXSinclairBasic
 
             return tapContent.ToArray();
         }
+        */
     }
 }

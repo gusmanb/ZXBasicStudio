@@ -17,8 +17,6 @@ using CoreSpectrum.Debug;
 using CoreSpectrum.Enums;
 using CoreSpectrum.SupportClasses;
 using HarfBuzzSharp;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using SkiaSharp;
 using Svg;
@@ -455,31 +453,15 @@ namespace ZXBasicStudio
             if (activeTab == null)
                 return;
 
-            if (activeTab.Content is ZXTextEditor)
+            var editor = activeTab.Content as ZXDocumentEditorBase;
+
+            if (editor == null)
+                return;
+
+            if (!editor.SaveDocument(outLog.Writer))
             {
-                var editor = activeTab.Content as ZXTextEditor;
-
-                if (editor == null)
-                    return;
-
-                if (!editor.SaveDocument(outLog.Writer))
-                {
-                    await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
-                    return;
-                }
-            }
-            else if (activeTab.Content is DocumentEditors.ZXGraphics.FontGDU)
-            {
-                var editor = activeTab.Content as DocumentEditors.ZXGraphics.FontGDU;
-
-                if (editor == null)
-                    return;
-
-                if (!editor.SaveDocument())
-                {
-                    await this.ShowError("Error", "Cannot save the file, check if another program is blocking it.");
-                    return;
-                }
+                await this.ShowError("Error", "Cannot save the file, check the output log for more info.");
+                return;
             }
         }
 

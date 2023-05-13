@@ -19,6 +19,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
         static string _docCategory = "Tools";
         static string _docAspect = "/Svg/Documents/file-zxtape.svg";
         static ZXTapeBuilderFactory _docFactory = new ZXTapeBuilderFactory();
+        static ZXTapeBuilderBuilder _docBuilder = new ZXTapeBuilderBuilder();
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
@@ -55,7 +56,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 
         public IZXDocumentFactory DocumentFactory => _docFactory;
 
-        public IZXDocumentBuilder? DocumentBuilder => null;
+        public IZXDocumentBuilder? DocumentBuilder => _docBuilder;
 
         public ZXBuildStage? DocumentBuildStage => ZXBuildStage.PostBuild;
     }
