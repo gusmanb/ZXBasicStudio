@@ -123,6 +123,12 @@ namespace ZXBasicStudio.BuildSystem
 
                 ZXProgram program = ZXProgram.CreateReleaseProgram(binary, settings.Origin ?? 32768);
 
+                if (binary.Length + program.Org > 0xFFFF)
+                {
+                    OutputLogWritter.WriteLine("Program too long, change base address or reduce code size.");
+                    return null;
+                }
+
                 if (!PostBuild(false, Folder, program, OutputLogWritter))
                     return null;
 
@@ -354,6 +360,12 @@ namespace ZXBasicStudio.BuildSystem
                 ushort org = disasFile.FindOrg();
 
                 ZXProgram program = ZXProgram.CreateDebugProgram(files, disasFile, progMap, asmMap, varMap, binary, org);
+
+                if (binary.Length + program.Org > 0xFFFF)
+                {
+                    OutputLogWritter.WriteLine("Program too long, change base address or reduce code size.");
+                    return null;
+                }
 
                 if (!PostBuild(true, Folder, program, OutputLogWritter))
                     return null;

@@ -390,7 +390,7 @@ namespace ZXBasicStudio.Emulator.Controls
             }
         }
 
-        public void InjectProgram(ushort Address, byte[] Data, bool ImmediateJump)
+        public bool InjectProgram(ushort Address, byte[] Data, bool ImmediateJump)
         {
             ProgramImage img = new ProgramImage 
             { 
@@ -402,8 +402,12 @@ namespace ZXBasicStudio.Emulator.Controls
                 } 
             };
 
-            machine.InjectProgram(img);
+            if (!machine.InjectProgram(img))
+                return false;
+
             emuScr.IsRunning = true;
+
+            return true;
         }
 
         private void Machine_FrameRendered(object? sender, EventArgs e)
