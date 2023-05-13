@@ -95,7 +95,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
                 if (buildFile.DataBlocks != null && buildFile.DataBlocks.Length > 0)
                 {
                     foreach(var block in buildFile.DataBlocks)
-                        line.AddTokens(I.LOAD, "\"\"", I.CODE, block.Address);
+                        line.AddTokens(I.LOAD, "\"\"", I.CODE, block.BlockAddress);
                 }
 
                 if (buildFile.PokesAfterLoad != null && buildFile.PokesAfterLoad.Length > 0)
@@ -160,7 +160,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
                             if (Path.GetExtension(block.BlockFile).ToLower() == ".tap")
                                 tFile.Blocks.Add(new TAPRawBlock(File.ReadAllBytes(block.BlockFile)));
                             else
-                                tFile.Blocks.Add(TAPBlock.CreateDataBlock(block.BlockName, File.ReadAllBytes(block.BlockFile), block.Address));
+                                tFile.Blocks.Add(TAPBlock.CreateDataBlock(block.BlockName, File.ReadAllBytes(block.BlockFile), block.BlockAddress));
                         }
                         catch (Exception ex)
                         {

@@ -101,7 +101,7 @@
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <Grid ColumnDefinitions="*,*,*">
-                  <TextBlock HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockFile}"></TextBlock>
+                  <TextBlock HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockFile}">asas</TextBlock>
                   <TextBlock Grid.Column="1" HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockName}"></TextBlock>
                   <TextBlock Grid.Column="2" HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding BlockAddress}"></TextBlock>
                 </Grid>
