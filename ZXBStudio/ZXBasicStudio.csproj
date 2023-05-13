@@ -48,6 +48,7 @@
     <None Remove="Assets\zxGraphics_map.png" />
     <None Remove="Assets\zxGraphics_spr.png" />
     <None Remove="Assets\zxGraphics_til.png" />
+    <None Remove="Assets\zxtFile.png" />
     <None Remove="Fonts\AlmaMono-Bold.otf" />
     <None Remove="Fonts\AlmaMono-Heavy.otf" />
     <None Remove="Fonts\AlmaMono-Light.otf" />
@@ -88,6 +89,8 @@
     <None Remove="Svg\box-solid.svg" />
     <None Remove="Svg\boxes-stacked-solid.svg" />
     <None Remove="Svg\bug-solid.svg" />
+    <None Remove="Svg\caret-down-solid.svg" />
+    <None Remove="Svg\caret-up-solid.svg" />
     <None Remove="Svg\cassette-solid.svg" />
     <None Remove="Svg\circle-minus-solid.svg" />
     <None Remove="Svg\circle-xmark-solid.svg" />
@@ -102,6 +105,7 @@
     <None Remove="Svg\Documents\file-text.svg" />
     <None Remove="Svg\Documents\file-zxasm.svg" />
     <None Remove="Svg\Documents\file-zxbasic.svg" />
+    <None Remove="Svg\Documents\file-zxtape.svg" />
     <None Remove="Svg\dumpster-solid.svg" />
     <None Remove="Svg\eject-solid.svg" />
     <None Remove="Svg\file-arrow-down-solid.svg" />
@@ -128,6 +132,7 @@
     <None Remove="Svg\magnifying-glass-location-solid.svg" />
     <None Remove="Svg\maximize-solid.svg" />
     <None Remove="Svg\minimize-solid.svg" />
+    <None Remove="Svg\minus-solid.svg" />
     <None Remove="Svg\paste-solid.svg" />
     <None Remove="Svg\pause-solid.svg" />
     <None Remove="Svg\play-solid.svg" />
@@ -148,6 +153,8 @@
     <None Remove="Svg\White\box-solid.svg" />
     <None Remove="Svg\White\boxes-stacked-solid.svg" />
     <None Remove="Svg\White\bug-solid.svg" />
+    <None Remove="Svg\White\caret-down-solid.svg" />
+    <None Remove="Svg\White\caret-up-solid.svg" />
     <None Remove="Svg\White\cassette-solid.svg" />
     <None Remove="Svg\White\circle-minus-solid.svg" />
     <None Remove="Svg\White\circle-xmark-solid.svg" />
@@ -184,6 +191,7 @@
     <None Remove="Svg\White\magnifying-glass-location-solid.svg" />
     <None Remove="Svg\White\maximize-solid.svg" />
     <None Remove="Svg\White\minimize-solid.svg" />
+    <None Remove="Svg\White\minus-solid.svg" />
     <None Remove="Svg\White\paste-solid.svg" />
     <None Remove="Svg\White\pause-solid.svg" />
     <None Remove="Svg\White\play-solid.svg" />
@@ -216,6 +224,7 @@
     <AvaloniaResource Include="Assets\zxGraphics_map.png" />
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
+    <AvaloniaResource Include="Assets\zxtFile.png" />
     <AvaloniaResource Include="Fonts\AlmaMono-Bold.otf" />
     <AvaloniaResource Include="Fonts\AlmaMono-Heavy.otf" />
     <AvaloniaResource Include="Fonts\AlmaMono-Light.otf" />
@@ -246,12 +255,16 @@
     <AvaloniaResource Include="Fonts\ConsolaMono.ttf" />
     <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\caret-down-solid.svg" />
+    <AvaloniaResource Include="Svg\caret-up-solid.svg" />
     <AvaloniaResource Include="Svg\Documents\file-text.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxtape.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxbasic.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxasm.svg" />
     <AvaloniaResource Include="Svg\Export.svg" />
     <AvaloniaResource Include="Svg\keyboard-regular.svg" />
     <AvaloniaResource Include="Svg\Mask.svg" />
+    <AvaloniaResource Include="Svg\minus-solid.svg" />
     <AvaloniaResource Include="Svg\MoveRight.svg" />
     <AvaloniaResource Include="Svg\Invert.svg" />
     <AvaloniaResource Include="Svg\ShiftRight.svg" />
@@ -329,6 +342,8 @@
     <AvaloniaResource Include="Svg\White\box-solid.svg" />
     <AvaloniaResource Include="Svg\White\boxes-stacked-solid.svg" />
     <AvaloniaResource Include="Svg\White\bug-solid.svg" />
+    <AvaloniaResource Include="Svg\White\caret-down-solid.svg" />
+    <AvaloniaResource Include="Svg\White\caret-up-solid.svg" />
     <AvaloniaResource Include="Svg\White\cassette-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-minus-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-xmark-solid.svg" />
@@ -365,6 +380,7 @@
     <AvaloniaResource Include="Svg\White\magnifying-glass-location-solid.svg" />
     <AvaloniaResource Include="Svg\White\maximize-solid.svg" />
     <AvaloniaResource Include="Svg\White\minimize-solid.svg" />
+    <AvaloniaResource Include="Svg\White\minus-solid.svg" />
     <AvaloniaResource Include="Svg\White\paste-solid.svg" />
     <AvaloniaResource Include="Svg\White\pause-solid.svg" />
     <AvaloniaResource Include="Svg\White\play-solid.svg" />
@@ -458,6 +474,8 @@
     <Folder Include="DebuggingTools\Variables\Classes\" />
     <Folder Include="DebuggingTools\Variables\Binding\" />
     <Folder Include="IntegratedDocumentTypes\CodeDocuments\Assembler\" />
+    <Folder Include="IntegratedDocumentTypes\TapeDocuments\TAP\" />
+    <Folder Include="IntegratedDocumentTypes\TapeDocuments\TZX\" />
     <Folder Include="Networking\ZXBUpdater\" />
   </ItemGroup>
 </Project>

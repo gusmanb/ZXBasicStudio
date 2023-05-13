@@ -9,6 +9,7 @@ using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
+using ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder;
 
 namespace ZXBasicStudio.DocumentModel.Classes
 {
@@ -25,6 +26,7 @@ namespace ZXBasicStudio.DocumentModel.Classes
             _docTypes.Add(new ZXAssemblerDocument());
             _docTypes.Add(new ZXTextDocument());
             _docTypes.Add(new ZXConfigurationDocument());
+            _docTypes.Add(new ZXTapeBuilderDocument());
             //TODO: Load external document types
         }
 

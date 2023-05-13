@@ -264,6 +264,8 @@ namespace CoreSpectrum.Hardware
 
                 foreach (var exec in _syncExecs)
                     exec.Resume();
+
+                _nextFrame = _sw.ElapsedTicks;
             }
         }
 
@@ -297,7 +299,7 @@ namespace CoreSpectrum.Hardware
                     if (!paused && !_stop)
                     {
                         Pause();
-                        Thread.Sleep(10);
+                        Thread.Sleep(100);
                     }
 
                     _turbo = false;

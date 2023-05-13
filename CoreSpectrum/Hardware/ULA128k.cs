@@ -115,8 +115,8 @@ namespace CoreSpectrum.Hardware
             int ULASamplesGenerated = _sampler.GetSamples(tStates, Buffer);
             int AYSamplesGenerated = _aySampler.GetSamples(tStates, Buffer);
 
-            if (ULASamplesGenerated != AYSamplesGenerated)
-                throw new Exception("Audio desync!!!");
+            //if (ULASamplesGenerated != AYSamplesGenerated)
+            //    throw new Exception("Audio desync!!!");
 
             return ULASamplesGenerated;
         }

@@ -161,7 +161,8 @@ namespace CoreSpectrum.Hardware
         public virtual bool FlashInvert { get; protected set; }
         public virtual IVideoRenderer? Renderer { get { return _renderer; } set { _renderer = value; } }
 
-        internal virtual bool Turbo { get; set; }
+        protected bool _turbo;
+        internal virtual bool Turbo { get { return _turbo; } set { _turbo = value; ResetAudio(false); } }
         protected ULABase(int CpuClock, int AudioSamplingFrequency)
         {
             _sampler = new ULASampler(AudioSamplingFrequency, CpuClock);
