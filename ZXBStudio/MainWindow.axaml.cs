@@ -1269,7 +1269,7 @@ namespace ZXBasicStudio
                     loadedProgram = program;
                     var disas = openDocuments.FirstOrDefault(e => e.DocumentPath == ZXConstants.DISASSEMBLY_DOC) as ZXTextEditor;
 
-                    Dispatcher.UIThread.InvokeAsync(() =>
+                    Dispatcher.UIThread.InvokeAsync(async () =>
                     {
                         if (disas != null)
                         {
@@ -1286,9 +1286,15 @@ namespace ZXBasicStudio
                                 disas.Text = loadedProgram.Disassembly.Content;
                         }
 
-                        emu.InjectProgram(program.Org, program.Binary, true);
-                        emuDock.Select();
-                        emu.Focus();
+                        if (!emu.InjectProgram(program.Org, program.Binary, true))
+                        {
+                            await this.ShowError("Error", "Cannot inject program! Check program size and address.");
+                        }
+                        else
+                        {
+                            emuDock.Select();
+                            emu.Focus();
+                        }
                         EmulatorInfo.CanDebug = FileInfo.ProjectLoaded;
                         EmulatorInfo.CanRun = FileInfo.ProjectLoaded;
                     });
@@ -1368,9 +1374,15 @@ namespace ZXBasicStudio
 
                         UpdateUserBreakpoints();
 
-                        emu.InjectProgram(program.Org, program.Binary, true);
-                        emuDock.Select();
-                        emu.Focus();
+                        if (!emu.InjectProgram(program.Org, program.Binary, true))
+                        {
+                            await this.ShowError("Error", "Cannot inject program! Check program size and address.");
+                        }
+                        else
+                        {
+                            emuDock.Select();
+                            emu.Focus();
+                        }
                         EmulatorInfo.CanDebug = FileInfo.ProjectLoaded;
                         EmulatorInfo.CanRun = FileInfo.ProjectLoaded;
                     });

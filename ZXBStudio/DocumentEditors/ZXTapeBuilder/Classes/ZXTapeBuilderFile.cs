@@ -15,6 +15,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes
         public int Paper { get; set; }
         public bool UseBorder { get; set; }
         public int Border { get; set; }
+        public bool HideHeaders { get; set; }
         public ZXTapeBuilderPoke[]? PokesBeforeLoad { get; set; }
         public ZXTapeBuilderPoke[]? PokesAfterLoad { get; set; }
         public string? ScreenName { get; set; }
@@ -33,5 +34,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes
         public required string BlockFile { get; set; }
         public required string BlockName { get; set; }
         public ushort BlockAddress { get; set; }
+        public bool BasicLoad { get; set; }
     }
 }

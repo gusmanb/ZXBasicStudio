@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Newtonsoft.Json;
@@ -6,6 +8,7 @@ using Svg;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -73,6 +76,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
             ckPaper.IsCheckedChanged+= DocumentChanged;
             cbPaper.SelectionChanged+= DocumentChanged;
             ckBorder.IsCheckedChanged+= DocumentChanged;
+            ckHide.IsCheckedChanged+= DocumentChanged;
             cbBorder.SelectionChanged+= DocumentChanged;
             txtPokesBefore.TextChanged += DocumentChanged;
             txtPokesAfter.TextChanged += DocumentChanged;
@@ -103,6 +107,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 return;
 
             UpdateFileName(_docPath);
+
+            _modified = false;
 
             if(DocumentRestored != null)
                 DocumentRestored(this, EventArgs.Empty);
@@ -161,7 +167,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 return;
             }
 
-            ZXTapeBuilderDataBlock block = new ZXTapeBuilderDataBlock { BlockFile = txtBlockFile.Text, BlockName = txtBlockName.Text, BlockAddress = (ushort)nudBlockAddress.Value };
+            ZXTapeBuilderDataBlock block = new ZXTapeBuilderDataBlock { BlockFile = txtBlockFile.Text, BlockName = txtBlockName.Text, BlockAddress = (ushort)nudBlockAddress.Value, BasicLoad = ckBasicLoad.IsChecked ?? false };
 
             _blocks.Add(block);
 
@@ -287,6 +293,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
             else
                 txtPokesAfter.Text = "";
 
+            ckHide.IsChecked = fileContent.HideHeaders;
+
             //Load screen
             txtScreenName.Text = fileContent.ScreenName;
             txtScreenFile.Text = fileContent.ScreenFile;
@@ -400,6 +408,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 Paper = cbPaper.SelectedIndex,
                 UseBorder = ckBorder.IsChecked ?? false,
                 Border = cbBorder.SelectedIndex,
+                HideHeaders = ckHide.IsChecked ?? false,
                 PokesBeforeLoad = beforePokes,
                 PokesAfterLoad = afterPokes,
                 ScreenFile = txtScreenFile.Text,
@@ -457,4 +466,5 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
         }
         #endregion
     }
+    
 }
