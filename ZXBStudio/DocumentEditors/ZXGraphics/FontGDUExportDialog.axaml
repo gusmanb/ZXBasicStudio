@@ -43,8 +43,6 @@
               <TextBlock Name="lblMemoryAddr" Classes="dialog" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right">Start memory address (decimal)</TextBlock>
               <TextBox Name="txtMemoryAddr" Classes="dialog" Grid.Row="3" Grid.Column="1" MaxLength="5" Width="60" HorizontalAlignment="Left"></TextBox>
 
-              <TextBlock Name="lblMemoryAddr" Classes="dialog" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right">Start memory address (decimal)</TextBlock>
-              <TextBox Name="txtMemoryAddr" Classes="dialog" Grid.Row="3" Grid.Column="1" MaxLength="5" Width="60" HorizontalAlignment="Left"></TextBox>
             </Grid>
 
             <TextBlock FontSize="14" Foreground="Red" Margin="0,16,0,0">
