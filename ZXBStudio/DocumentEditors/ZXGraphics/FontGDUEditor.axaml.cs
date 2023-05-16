@@ -137,6 +137,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     OutputLog.WriteLine($"Error saving file {fileType.FileName}: " + ServiceLayer.LastError);
                     return false;
                 }
+                _Modified = false;
 
                 OutputLog.WriteLine($"File {fileType.FileName} saved successfully.");
                 DocumentSaved?.Invoke(this, EventArgs.Empty);
