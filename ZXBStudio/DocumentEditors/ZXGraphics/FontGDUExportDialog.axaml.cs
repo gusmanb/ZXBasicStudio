@@ -281,6 +281,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             var sb = new StringBuilder();
             sb.AppendLine("' Example of use of the embedded export format");
+            sb.AppendLine("DIM n as ubyte");
             sb.AppendLine(ExportManager.Export_DIM(fileType, patterns, txtLabelName.Text, exportConfig.ArrayBase));
             switch (fileType.FileType)
             {
