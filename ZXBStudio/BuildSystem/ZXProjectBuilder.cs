@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Dialogs;
 using ZXBasicStudio.DocumentModel.Classes;
 
 namespace ZXBasicStudio.BuildSystem
@@ -23,6 +24,7 @@ namespace ZXBasicStudio.BuildSystem
                 Cleanup(Folder);
                 string settingsFile = Path.Combine(Folder, ZXConstants.BUILDSETTINGS_FILE);
                 ZXBuildSettings? settings = null;
+                settings = null;
                 string? mainFile = null;
 
                 if (string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbcPath) || string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbasmPath))
@@ -40,7 +42,6 @@ namespace ZXBasicStudio.BuildSystem
                 if (File.Exists(settingsFile))
                 {
                     settings = JsonConvert.DeserializeObject<ZXBuildSettings>(File.ReadAllText(settingsFile));
-
                     if (settings == null)
                     {
                         OutputLogWritter.WriteLine($"Error deserializing settings file \"{Path.GetFileName(settingsFile)}\", aborting...");

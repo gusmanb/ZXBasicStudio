@@ -33,6 +33,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnCopy.Tapped += BtnCopy_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
             btnOutputFile.Tapped += BtnOutputFile_Tapped;
+            cmbArrayBase.SelectionChanged += CmbArrayBase_SelectionChanged;
             btnSave.Tapped += BtnSave_Tapped;
         }
 
@@ -47,9 +48,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             if (exportConfig == null)
             {
                 exportConfig = new ExportConfig();
-                exportConfig.ExportType = ExportTypes.None;
+                exportConfig.ArrayBase = 0;
                 exportConfig.AutoExport = false;
                 exportConfig.ExportFilePath = "";
+                exportConfig.ExportType = ExportTypes.None;
                 exportConfig.LabelName = Path.GetFileName(exportConfig.ExportFilePath).Replace(".bas", "").Replace(" ", "_");
                 exportConfig.ZXAddress = 49152;
                 exportConfig.ZXFileName = "";
@@ -61,7 +63,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             txtZXFile.Text = exportConfig.ZXFileName;
             chkAuto.IsChecked = exportConfig.AutoExport;
             cmbSelectExportType.ExportType = exportConfig.ExportType;
-
+            cmbArrayBase.SelectedIndex = exportConfig.ArrayBase.ToInteger();
             return true;
         }
 
@@ -88,6 +90,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             lblMemoryAddr.IsVisible = false;
             txtMemoryAddr.IsVisible = false;
+
+            lblArrayBase.IsVisible = false;
+            cmbArrayBase.IsVisible = false;
 
             switch (exportType)
             {
@@ -124,6 +129,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     btnOutputFile.IsVisible = true;
                     lblLabelName.IsVisible = true;
                     txtLabelName.IsVisible = true;
+                    lblArrayBase.IsVisible = true;
+                    cmbArrayBase.IsVisible = true;
                     CreateExportPath(".bas");
                     CreateExample_DIM();
                     break;
@@ -274,7 +281,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             var sb = new StringBuilder();
             sb.AppendLine("' Example of use of the embedded export format");
-            sb.AppendLine(ExportManager.Export_DIM(fileType, patterns, txtLabelName.Text));
+            sb.AppendLine(ExportManager.Export_DIM(fileType, patterns, txtLabelName.Text, exportConfig.ArrayBase));
             switch (fileType.FileType)
             {
                 case FileTypes.UDG:
@@ -429,6 +436,17 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.Close();
         }
 
+
+
+        private void CmbArrayBase_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var idx = cmbArrayBase.SelectedIndex;
+            exportConfig.ArrayBase = idx;
+            if (exportConfig.ExportType == ExportTypes.Dim)
+            {
+                CreateExample_DIM();
+            }
+        }
 
         #endregion
     }

@@ -55,10 +55,7 @@ namespace ZXBasicStudio
     {
         //TODO: Añadir lista de proyectos recientes al menú
 
-
-        //List<ZXTextEditor> openEditors = new List<ZXTextEditor>();
-        //List<DocumentEditors.ZXGraphics.FontGDU> openZXGraphics = new List<DocumentEditors.ZXGraphics.FontGDU>();
-
+        public static MainWindow mainWindowInstance = null;
 
         List<ZXDocumentEditorBase> openDocuments = new List<ZXDocumentEditorBase>();
         ObservableCollection<TabItem> editTabs = new ObservableCollection<TabItem>();
@@ -89,6 +86,8 @@ namespace ZXBasicStudio
             InitializeComponent();
             EditItems = editTabs;
             DataContext = this;
+            mainWindowInstance = this;
+
 
             #region Attach explorer events
             peExplorer.OpenFileRequested += OpenFile;
@@ -1985,6 +1984,25 @@ namespace ZXBasicStudio
             }
         }
         #endregion
+
+
+        // TODO: DUEFECTU 2023.05.17: Get prooject root path
+        public static string GetProjectRootPath()
+        {
+            try
+            {
+                if (mainWindowInstance==null || mainWindowInstance.peExplorer == null)
+                {
+                    return null;
+                }
+                return mainWindowInstance.peExplorer.RootPath;
+            }
+            catch 
+            {
+                return null;
+            }
+        }
+
     }
 
     public enum PreferredSourceType

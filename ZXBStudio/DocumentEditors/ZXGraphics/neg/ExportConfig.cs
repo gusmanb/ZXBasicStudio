@@ -35,5 +35,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
         /// Memory address in the ZX Spectrum
         /// </summary>
         public int ZXAddress { get; set; }
+        /// <summary>
+        /// Array base for DIM export
+        /// 0=0, 1=1, 2=From project settings
+        /// </summary>
+        public int ArrayBase { get; set; }
     }
 }

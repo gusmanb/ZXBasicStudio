@@ -1,4 +1,5 @@
 ﻿using CoreSpectrum.SupportClasses;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.BuildSystem;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using ZXBasicStudio.DocumentModel.Enums;
@@ -83,7 +85,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     exportedData = Export_ASM(fileTypeConfig, patterns, exportConfig.LabelName);
                     break;
                 case ExportTypes.Dim:
-                    exportedData = Export_DIM(fileTypeConfig, patterns, exportConfig.LabelName);
+                    exportedData = Export_DIM(fileTypeConfig, patterns, exportConfig.LabelName, exportConfig.ArrayBase);
                     break;
                 case ExportTypes.Data:
                     exportedData = Export_DATA(fileTypeConfig, patterns, exportConfig.LabelName);
@@ -205,7 +207,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         public static string Export_DATA(FileTypeConfig fileType, Pattern[] patterns, string labelName)
         {
             var sb = new StringBuilder();
-            sb.AppendLine(labelName+":");
+            sb.AppendLine(labelName + ":");
 
             var data = ServiceLayer.Files_CreateBinData_GDUorFont(fileType, patterns);
             int col = 0;
@@ -241,10 +243,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         /// <param name="fileType">FileTyeConfig</param>
         /// <param name="patterns">Patterns with the source data</param>
         /// <param name="labelName">Name of the label</param>
+        /// <param name="arrayBase">Array base for DIM</param>
         /// <returns>String with de exported data</returns>
-        public static string Export_DIM(FileTypeConfig fileType, Pattern[] patterns, string labelName)
+        public static string Export_DIM(FileTypeConfig fileType, Pattern[] patterns, string labelName, int arrayBase)
         {
             int la = 20;
+            int bt = 7;
+
             switch (fileType.FileType)
             {
                 case FileTypes.UDG:
@@ -255,8 +260,30 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     break;
             }
 
+            switch (arrayBase)
+            {
+                case 1:
+                    la++;
+                    bt = 8;
+                    break;
+                case 2:
+                    {
+                        var settings = ServiceLayer.GetProjectSettings();
+                        if (settings != null)
+                        {
+                            if (settings.ArrayBase == 1)
+                            {
+                                la++;
+                                bt = 8;
+                            }
+                        }
+
+                    }
+                    break;
+            }
+
             var sb = new StringBuilder();
-            sb.AppendLine(string.Format("DIM {0}({1},7) AS UBYTE => {{ _", labelName, la.ToString()));
+            sb.AppendLine(string.Format("DIM {0}({1},{2}) AS UBYTE => {{ _", labelName, la, bt));
 
             var data = ServiceLayer.Files_CreateBinData_GDUorFont(fileType, patterns);
             int col = 0;

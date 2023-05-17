@@ -7,6 +7,7 @@ using System.Linq;
 using ZXBasicStudio.Classes;
 using ZXBasicStudio.Common;
 using System.Runtime;
+using Newtonsoft.Json;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
@@ -64,7 +65,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     ftc.FileType = FileTypes.Font;
                     ftc.FirstIndex = 32;    // SPACE
                     ftc.NumerOfPatterns = 96;
-                    break;                
+                    break;
             }
             return ftc;
         }
@@ -365,6 +366,31 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                 LastError = "Error deserializing \"" + fileName + "\" to ExportConfig";
                 return false;
             }
+        }
+
+
+        public static ZXBuildSettings GetProjectSettings()
+        {
+            try
+            {
+                var settingsPath = MainWindow.GetProjectRootPath();
+                var settingsFile = Path.Combine(settingsPath, ZXConstants.BUILDSETTINGS_FILE);
+
+                if (!string.IsNullOrEmpty(settingsPath))
+                {
+                    var jsonData=dataLayer.Files_GetString(settingsFile);
+                    if (!string.IsNullOrEmpty(jsonData))
+                    {
+                        var settings = JsonConvert.DeserializeObject<ZXBuildSettings>(jsonData);
+                        return settings;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = "Error getting project settings";
+            }
+            return null;
         }
     }
 }
