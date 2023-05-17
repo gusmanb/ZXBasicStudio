@@ -275,7 +275,14 @@ namespace ZXBasicStudio.BuildSystem
 
                 OutputLogWritter.WriteLine("Building program map...");
 
-                var codeFile = files.First(f => f.AbsolutePath == Path.GetFullPath(mainFile));
+                // TODO: DUEFECTU 2023.05.17: Bug for long path
+                var codeFile = files.FirstOrDefault(f => f.AbsolutePath == Path.GetFullPath(mainFile));
+                if (codeFile == null)
+                {
+                    Cleanup(Folder);
+                    OutputLogWritter.WriteLine("Main file path not found. More than 256 chars?");
+                    return null;
+                }
 
                 var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -M MEMORY_MAP " + args) { WorkingDirectory = Folder, RedirectStandardError = true, CreateNoWindow = true });
 

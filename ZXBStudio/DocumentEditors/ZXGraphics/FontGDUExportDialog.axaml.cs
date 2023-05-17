@@ -14,6 +14,7 @@ using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.Extensions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -191,10 +192,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     sb.AppendLine("");
                     break;
                 case FileTypes.UDG:
-                    sb.AppendLine("' Example of use of UDG\rPOKE (uinteger 23675, @MyUDG)\rPRINT \"Hello World!\"\rSTOP\r\r' Don't let the execution thread bypass the ASM\r\rMyUGD:\rASM\r\tincbin \"MyUDG.fnt\"\rEND ASM\r");
                     sb.AppendLine("' Example of use of UDG/GDU");
                     sb.AppendLine("POKE (uinteger 23675, @MyUDG)");
-                    sb.AppendLine("PRINT \"Hello World!\"");
+                    sb.AppendLine("PRINT \"UDG/GDU Table\"");
+                    sb.AppendLine("FOR n=0 TO 20");
+                    sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
+                    sb.AppendLine("NEXT n");
                     sb.AppendLine("STOP");
                     sb.AppendLine("");
                     sb.AppendLine("' Don't let the execution thread bypass the ASM");
@@ -228,7 +231,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     break;
                 case FileTypes.UDG:
                     sb.AppendLine("POKE (uinteger 23675, 60000)");
-                    sb.AppendLine("PRINT \"Hello World!\"");
+                    sb.AppendLine("PRINT \"UDG/GDU Table\"");
+                    sb.AppendLine("FOR n=0 TO 20");
+                    sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
+                    sb.AppendLine("NEXT n");
                     sb.AppendLine("STOP");
                     sb.AppendLine("");
                     break;
@@ -244,13 +250,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             if (fileType.FileType == FileTypes.Font)
             {
                 sb.AppendLine(string.Format("POKE (uinteger 23606, @{0}-256)", txtLabelName.Text));
+                sb.AppendLine("PRINT \"Hello World!\"");
+                sb.AppendLine("STOP");
             }
             else
             {
                 sb.AppendLine(string.Format("POKE (uinteger 23675, @{0})", txtLabelName.Text));
+                sb.AppendLine("PRINT \"UDG/GDU Table\"");
+                sb.AppendLine("FOR n=0 TO 20");
+                sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
+                sb.AppendLine("NEXT n");
+                sb.AppendLine("STOP");
             }
-            sb.AppendLine("PRINT \"Hello World!\"");
-            sb.AppendLine("STOP");
             sb.AppendLine("");
 
             sb.Append(ExportManager.Export_ASM(fileType, patterns, txtLabelName.Text));
@@ -268,13 +279,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 case FileTypes.UDG:
                     sb.AppendLine(string.Format("POKE (uinteger 23675, @{0})", txtLabelName.Text));
+                    sb.AppendLine("PRINT \"UDG/GDU Table\"");
+                    sb.AppendLine("FOR n=0 TO 20");
+                    sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
+                    sb.AppendLine("NEXT n");
+                    sb.AppendLine("STOP");
                     break;
                 case FileTypes.Font:
                     sb.AppendLine(string.Format("POKE (uinteger 23606, @{0}-256)", txtLabelName.Text));
+                    sb.AppendLine("PRINT \"Hello World!\"");
+                    sb.AppendLine("STOP");
                     break;
             }
-            sb.AppendLine("PRINT \"Hello World!\"");
-            sb.AppendLine("STOP");
             sb.AppendLine("");
 
             txtCode.Text = sb.ToString();
@@ -311,13 +327,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 case FileTypes.Font:
                     sb.AppendLine("POKE (uinteger 23606, $c000-256)");
+                    sb.AppendLine("PRINT \"Hello World!\"");
+                    sb.AppendLine("STOP");
                     break;
                 case FileTypes.UDG:
                     sb.AppendLine("POKE (uinteger 23675, $c000)");
+                    sb.AppendLine("PRINT \"UDG/GDU Table\"");
+                    sb.AppendLine("FOR n=0 TO 20");
+                    sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
+                    sb.AppendLine("NEXT n");
+                    sb.AppendLine("STOP");
                     break;
             }
-            sb.AppendLine("PRINT \"Hello World!\"");
-            sb.AppendLine("STOP");
             sb.AppendLine("");
 
             sb.AppendLine(ExportManager.Export_DATA(fileType, patterns, txtLabelName.Text));
@@ -399,7 +420,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void BtnCopy_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            Application.Current.Clipboard.SetTextAsync(txtCode.Text);
+            Avalonia.Application.Current.Clipboard.SetTextAsync(txtCode.Text);
         }
 
 
