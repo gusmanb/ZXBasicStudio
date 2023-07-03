@@ -31,6 +31,7 @@ namespace ZXBasicStudio.DocumentModel.Classes
             // ZXGraphics
             _docTypes.Add(new UDGDocument());
             _docTypes.Add(new FontDocument());
+            _docTypes.Add(new SpriteDocument());
             //TODO: Load external document types
         }
 

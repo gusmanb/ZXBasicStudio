@@ -94,6 +94,7 @@
     <None Remove="Svg\caret-up-solid.svg" />
     <None Remove="Svg\cassette-solid.svg" />
     <None Remove="Svg\cassette.svg" />
+    <None Remove="Svg\check-alt-svgrepo-com.svg" />
     <None Remove="Svg\circle-minus-solid.svg" />
     <None Remove="Svg\circle-xmark-solid.svg" />
     <None Remove="Svg\clock-rotate-left-solid.svg" />
@@ -105,7 +106,10 @@
     <None Remove="Svg\diagram-project-solid.svg" />
     <None Remove="Svg\display-lines-solid.svg" />
     <None Remove="Svg\Documents\file-font.svg" />
+    <None Remove="Svg\Documents\file-map.svg" />
+    <None Remove="Svg\Documents\file-sprite.svg" />
     <None Remove="Svg\Documents\file-text.svg" />
+    <None Remove="Svg\Documents\file-tile.svg" />
     <None Remove="Svg\Documents\file-udg.svg" />
     <None Remove="Svg\Documents\file-zxasm.svg" />
     <None Remove="Svg\Documents\file-zxbasic.svg" />
@@ -213,6 +217,7 @@
     <None Remove="Svg\White\trash-can-regular.svg" />
     <None Remove="Svg\White\trash-solid.svg" />
     <None Remove="Svg\White\truck-fast-solid.svg" />
+    <None Remove="Svg\x-svgrepo-com.svg" />
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\asmFile.png" />
@@ -264,8 +269,12 @@
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
     <AvaloniaResource Include="Svg\caret-down-solid.svg" />
     <AvaloniaResource Include="Svg\caret-up-solid.svg" />
+    <AvaloniaResource Include="Svg\check-alt-svgrepo-com.svg" />
     <AvaloniaResource Include="Svg\Documents\file-font.svg" />
     <AvaloniaResource Include="Svg\Documents\file-text.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-sprite.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-tile.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-map.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxtape.svg" />
     <AvaloniaResource Include="Svg\Documents\file-udg.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxbasic.svg" />
@@ -408,6 +417,7 @@
     <AvaloniaResource Include="Svg\White\trash-can-regular.svg" />
     <AvaloniaResource Include="Svg\White\trash-solid.svg" />
     <AvaloniaResource Include="Svg\White\truck-fast-solid.svg" />
+    <AvaloniaResource Include="Svg\x-svgrepo-com.svg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="zxbs.ico" />
@@ -442,6 +452,12 @@
     </Compile>
     <Compile Update="Dialogs\ZXNewFileDialog.axaml.cs">
       <DependentUpon>ZXNewFileDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpritePatternEditor.axaml.cs">
+      <DependentUpon>SpritePatternEditor.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpriteEditor.axaml.cs">
+      <DependentUpon>SpriteEditor.axaml</DependentUpon>
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\FontGDUExportDialog.axaml.cs">
       <DependentUpon>FontGDUExportDialog.axaml</DependentUpon>

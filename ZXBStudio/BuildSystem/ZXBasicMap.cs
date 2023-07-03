@@ -260,15 +260,29 @@ namespace ZXBasicStudio.BuildSystem
                 {
                     if (location.LocationType == ZXBasicLocationType.Sub)
                     {
-                        var sub = subs.Where(s => s.Name == location.Name).First();
-                        var zVar = sub.LocalVariables.Where(v => v.Name == varName).First();
-                        zVar.Unused = true;
+                        // DUEFECTU: 20230604 - Bug en First
+                        var sub = subs.Where(s => s.Name == location.Name).FirstOrDefault();
+                        if (sub != null)
+                        {
+                            var zVar = sub.LocalVariables.Where(v => v.Name == varName).FirstOrDefault();
+                            if (zVar != null)
+                            {
+                                zVar.Unused = true;
+                            }
+                        }
                     }
                     else
                     {
-                        var func = functions.Where(f => f.Name == location.Name).First();
-                        var zVar = func.LocalVariables.Where(v => v.Name == varName).First();
-                        zVar.Unused = true;
+                        // DUEFECTU: 20230604 - Bug en First
+                        var func = functions.Where(f => f.Name == location.Name).FirstOrDefault();
+                        if (func != null)
+                        {
+                            var zVar = func.LocalVariables.Where(v => v.Name == varName).FirstOrDefault();
+                            if (zVar != null)
+                            {
+                                zVar.Unused = true;
+                            }
+                        }
                     }
                 }
                 else

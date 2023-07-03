@@ -318,7 +318,13 @@ namespace ZXBasicStudio.BuildSystem
                     return null;
                 }
 
-                var mainCodeFile = files.Where(f => Path.GetFullPath(mainFile.ToLower()) == Path.GetFullPath(f.AbsolutePath.ToLower())).First();
+                /// DUEFECTU: 2023.06.04 -> Bug
+                //var mainCodeFile = files.Where(f => Path.GetFullPath(mainFile.ToLower()) == Path.GetFullPath(f.AbsolutePath.ToLower())).First();
+                var mainCodeFile = files.Where(f => Path.GetFullPath(mainFile.ToLower()) == Path.GetFullPath(f.AbsolutePath.ToLower())).FirstOrDefault();
+                if (mainCodeFile == null)
+                {
+                    return null;
+                }
 
                 ZXBasicMap bMap = new ZXBasicMap(mainCodeFile, files, logOutput);
 

@@ -38,6 +38,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
             // Get all config filenames
             var files = ServiceLayer.Files_GetAllConfigFiles(BuildPath, fileType);
+            if (files == null)
+            {
+                return true;
+            }
 
             foreach (var file in files)
             {
