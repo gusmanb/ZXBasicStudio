@@ -17,6 +17,7 @@ namespace ZXBasicStudio.BuildSystem
         static Regex regLocalEndFunction = new Regex("\\('label', '([^']*)__leave'\\)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         static Regex regLocalVar = new Regex("\\('pstore([iuf](8|16|32)|str|f)', '(-[0-9]+)'", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         static Regex regLocalVar2 = new Regex("\\('pload([iuf](8|16|32)|str|f)', '[^']*', '(-[0-9]+)'\\)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        static Regex regLocalVar3 = new Regex("\\('lvard',\\ '([0-9]+)',\\ \"\\[('[0-9]+'(,\\ )?)+\\]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         static Regex regLocalArr = new Regex("\\('larrd',\\ '([0-9a-fA-F]+)', \"\\[('[0-9A-F]+',?\\ ?)+\\]\",\\ '([0-9]+)'", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         static string arrGlobalInfoTemplate = "\\('vard',\\ '{0}',\\ \"\\['(?<extraDims>[0-9A-Fa-f]{{4}})',\\ (?<extraDimsSize>'[0-9A-Fa-f]{{4}}',\\ )*'(?<itemSize>[0-9]+)'\\]\\\"";
@@ -154,6 +155,7 @@ namespace ZXBasicStudio.BuildSystem
             foreach (Match functionEnd in functionEnds)
             {
                 string label = functionEnd.Groups[1].Value;
+
                 var regStart = new Regex(string.Format(regLocalStartFunction, label));
 
                 var startMatch = regStart.Match(icTop);
@@ -204,6 +206,36 @@ namespace ZXBasicStudio.BuildSystem
                 {
                     ZXVariableStorage storage = Enum.Parse<ZXVariableStorage>(localMatch.Groups[1].Value.ToUpper());
                     int offset = int.Parse(localMatch.Groups[3].Value);
+                    ZXVariable lVar = new ZXVariable { Name = offset.ToString(), Address = new ZXVariableAddress { AddressType = ZXVariableAddressType.Relative, AddressValue = offset }, Scope = currentScope, StorageType = storage, VariableType = ZXVariableType.Flat };
+                    localVars.Add(lVar);
+                }
+
+                var matchesLocalAssign = regLocalVar3.Matches(funcCode);
+
+                foreach (Match localMatch in matchesLocalAssign)
+                {
+                    ZXVariableStorage storage;
+
+                    int bytes = localMatch.Groups[2].Captures.Count;
+
+                    switch(bytes) 
+                    {
+                        case 1:
+                            storage = ZXVariableStorage.U8;
+                            break;
+                        case 2:
+                            storage = ZXVariableStorage.U16;
+                            break;
+                        case 4:
+                            storage = ZXVariableStorage.U32;
+                            break;
+                        default:
+                            storage = ZXVariableStorage.F;
+                            break;
+                    }
+
+                    int offset = -int.Parse(localMatch.Groups[1].Value);
+
                     ZXVariable lVar = new ZXVariable { Name = offset.ToString(), Address = new ZXVariableAddress { AddressType = ZXVariableAddressType.Relative, AddressValue = offset }, Scope = currentScope, StorageType = storage, VariableType = ZXVariableType.Flat };
                     localVars.Add(lVar);
                 }
@@ -271,7 +303,6 @@ namespace ZXBasicStudio.BuildSystem
                         if (nonArrays.Length != lNonArrays.Length)
                             continue;
 
-
                         for (int buc = 0; buc < nonArrays.Length; buc++)
                         {
                             nonArrays[buc].StorageType = lNonArrays[buc].Storage;
@@ -303,21 +334,24 @@ namespace ZXBasicStudio.BuildSystem
             {
                 case ZXVariableStorage.I8:
                 case ZXVariableStorage.U8:
+
+                    return 1;
+
                 case ZXVariableStorage.I16:
                 case ZXVariableStorage.U16:
                 case ZXVariableStorage.STR:
 
-                    return 1;
+                    return 2;
 
                 case ZXVariableStorage.I32:
                 case ZXVariableStorage.U32:
                 case ZXVariableStorage.F16:
 
-                    return 2;
+                    return 4;
 
                 default: //float
 
-                    return 3;
+                    return 5;
             }
         }
 

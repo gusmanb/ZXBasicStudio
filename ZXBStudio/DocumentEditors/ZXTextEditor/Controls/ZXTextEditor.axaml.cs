@@ -458,7 +458,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         private void Document_Changing(object? sender, DocumentChangeEventArgs e)
         {
 
-            if (!allowsBreakpoints)
+            if (!allowsBreakpoints || e.OffsetChangeMap == null || e.OffsetChangeMap.Count == 0)
                 return;
 
             int start = e.OffsetChangeMap[0].Offset;
@@ -501,7 +501,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         }
         private void Document_Changed(object? sender, DocumentChangeEventArgs e)
         {
-            if (!allowsBreakpoints)
+            if (!allowsBreakpoints || e.OffsetChangeMap == null || e.OffsetChangeMap.Count == 0)
                 return;
 
             int start = e.OffsetChangeMap[0].Offset;

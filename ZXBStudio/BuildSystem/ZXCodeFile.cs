@@ -24,7 +24,7 @@ namespace ZXBasicStudio.BuildSystem
         static Regex regRemoveEmpty = new Regex("^\\s*(\\r)?\\n", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         static Regex regSub = new Regex("^\\s*([^\\s,;:]*:\\ *?)?(fastcall)?sub\\s+(fastcall\\s+)?([^\\(\\)]*)\\(", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        static Regex regFunc = new Regex("^\\s*([^\\s,;:]*:\\ *?)(fastcall)?function\\s+(fastcall\\s+)([^\\(\\)]*)\\(", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        static Regex regFunc = new Regex("^\\s*([^\\s,;:]*:\\ *?)?(fastcall)?function\\s+(fastcall\\s+)?([^\\(\\)]*)\\(", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         static Regex regEndSub = new Regex("^\\s*end\\s*sub(\\s|$|')", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         static Regex regEndFunc = new Regex("^\\s*end\\s*function(\\s|$|')", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         public string Name { get; set; }
@@ -330,7 +330,7 @@ namespace ZXBasicStudio.BuildSystem
             if (LineNumber >= lines.Length)
                 return false;
 
-            Regex regDim = new Regex($"(\\s|,){VarName}(\\s|,|\\()", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            Regex regDim = new Regex($"(\\s|,){VarName}(\\s|,|\\(|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
             return regDim.IsMatch(lines[LineNumber]);
         }

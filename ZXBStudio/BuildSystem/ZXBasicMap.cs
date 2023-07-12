@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ZXBasicStudio.BuildSystem
 {
+    //TODO: improve detection of unused vars
     public class ZXBasicMap
     {
         static Regex regSub = new Regex("^\\s*(fastcall)?\\s*sub\\s+([^\\(]+)\\(((?:[^()]+|\\([^()]*\\))*)\\)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -195,6 +196,10 @@ namespace ZXBasicStudio.BuildSystem
                     if (varNameDef.Contains("(")) //array
                     {
                         string varName = varNameDef.Substring(0, varNameDef.IndexOf("(")).Trim();
+
+                        if (!jointLines.Skip(buc + 1).Any(l => l.Contains(varName)))
+                            continue;
+
                         string[] dims = varNameDef.Substring(varNameDef.IndexOf("(") + 1).Replace(")", "").Split(",", StringSplitOptions.RemoveEmptyEntries);
 
                         ZXBasicVariable varArr = new ZXBasicVariable { Name = varName, IsArray = true, Dimensions = dims.Select(d => GetDimensionSize(d)).ToArray(), Storage = StorageFromString(dimMatch.Groups[5].Value, varName) };
@@ -212,6 +217,10 @@ namespace ZXBasicStudio.BuildSystem
 
                         foreach (var vName in varNames)
                         {
+
+                            if (!jointLines.Skip(buc + 1).Any(l => l.Contains(vName)))
+                                continue;
+
                             var storage = StorageFromString(dimMatch.Groups[5].Value, vName);
                             ZXBasicVariable var = new ZXBasicVariable { Name = vName.Trim(), IsArray = false, Storage = storage };
                             if (currentSub != null)
@@ -241,7 +250,7 @@ namespace ZXBasicStudio.BuildSystem
 
             foreach (Match unused in unusedMatches)
             {
-                string file = unused.Groups[1].Value;
+                string file = unused.Groups[1].Value?.Replace(".buildtemp", "") ?? "";
                 string line = unused.Groups[2].Value;
                 string varName = unused.Groups[3].Value.Trim();
 

@@ -1055,6 +1055,8 @@ namespace ZXBasicStudio
 
                 LoadBreakpoints(LoadedBreakpoints.User);
 
+                regView.Registers = emu.Registers;
+
                 EmulatorInfo.IsPaused = false;
                 emu.Resume();
             });
