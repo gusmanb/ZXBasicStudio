@@ -23,10 +23,6 @@ namespace ZXBasicStudio.BuildSystem
         static Regex regClean = new Regex("^(\\.LABEL\\._)?file__[^:\\n]*?:(\\ )?", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         static Regex regRemoveEmpty = new Regex("^\\s*(\\r)?\\n", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-        static Regex regSub = new Regex("^\\s*([^\\s,;:]*:\\ *?)?(fastcall)?sub\\s+(fastcall\\s+)?([^\\(\\)]*)\\(", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        static Regex regFunc = new Regex("^\\s*([^\\s,;:]*:\\ *?)?(fastcall)?function\\s+(fastcall\\s+)?([^\\(\\)]*)\\(", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        static Regex regEndSub = new Regex("^\\s*end\\s*sub(\\s|$|')", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        static Regex regEndFunc = new Regex("^\\s*end\\s*function(\\s|$|')", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         public string Name { get; set; }
         public string Directory { get; set; }
         public string AbsolutePath { get; set; }
@@ -169,9 +165,6 @@ namespace ZXBasicStudio.BuildSystem
                 {
                     var line = lines[buc];
 
-                    if (line.Contains("postrem"))
-                        line = line;
-
                     if (!inAsm)
                         inAsm = line.Trim().ToLower().StartsWith("asm");
                     else
@@ -257,96 +250,6 @@ namespace ZXBasicStudio.BuildSystem
             }
 
             return sb.ToString();
-        }
-
-        public List<ZXBasicLocation> GetBuildLocations()
-        {
-            List<ZXBasicLocation> locations = new List<ZXBasicLocation>();
-
-            if (FileType != ZXFileType.Basic)
-                return locations;
-
-            string[] lines = Content.Replace("\r", "").Split("\n");
-
-            ZXBasicLocation? loc = null;
-
-            for (int buc = 0; buc < lines.Length; buc++)
-            {
-                var line = lines[buc];
-
-                if (loc == null)
-                {
-                    var subMatch = regSub.Match(line);
-
-                    if (subMatch != null && subMatch.Success)
-                    {
-                        loc = new ZXBasicLocation { Name = subMatch.Groups[4].Value.Trim(), LocationType = ZXBasicLocationType.Sub, FirstLine = buc, File = Path.Combine(Directory, TempFileName) };
-                        continue;
-                    }
-
-                    var funcMatch = regFunc.Match(line);
-
-                    if (funcMatch != null && funcMatch.Success)
-                    {
-                        loc = new ZXBasicLocation { Name = funcMatch.Groups[4].Value.Trim(), LocationType = ZXBasicLocationType.Function, FirstLine = buc, File = Path.Combine(Directory, TempFileName) };
-                        continue;
-                    }
-                }
-                else
-                {
-                    if (loc.LocationType == ZXBasicLocationType.Sub)
-                    {
-                        if (regEndSub.IsMatch(line))
-                        {
-                            loc.LastLine = buc;
-                            locations.Add(loc);
-                            loc = null;
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        if (regEndFunc.IsMatch(line))
-                        {
-                            loc.LastLine = buc;
-                            locations.Add(loc);
-                            loc = null;
-                            continue;
-                        }
-                    }
-                }
-            }
-
-            return locations;
-        }
-
-        public bool ContainsBuildDim(string VarName, int LineNumber)
-        {
-            if (FileType != ZXFileType.Basic)
-                return false;
-
-            string[] lines = Content.Replace("\r", "").Split("\n");
-
-            if (LineNumber >= lines.Length)
-                return false;
-
-            Regex regDim = new Regex($"(\\s|,){VarName}(\\s|,|\\(|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-            return regDim.IsMatch(lines[LineNumber]);
-        }
-        class LineRange
-        {
-            public LineRange(int start, int end)
-            {
-                Start = start;
-                End = end;
-            }
-            public int Start { get; set; }
-            public int End { get; set; }
-            public bool Contains(int Value)
-            {
-                return Start <= Value && Value < End;
-            }
         }
     }
 }

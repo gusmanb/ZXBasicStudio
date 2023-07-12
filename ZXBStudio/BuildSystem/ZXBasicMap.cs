@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ZXBasicStudio.BuildSystem
 {
-    //TODO: improve detection of unused vars
     public class ZXBasicMap
     {
         static Regex regSub = new Regex("^\\s*(fastcall)?\\s*sub\\s+([^\\(]+)\\(((?:[^()]+|\\([^()]*\\))*)\\)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -197,7 +197,7 @@ namespace ZXBasicStudio.BuildSystem
                     {
                         string varName = varNameDef.Substring(0, varNameDef.IndexOf("(")).Trim();
 
-                        if (!jointLines.Skip(buc + 1).Any(l => l.Contains(varName)))
+                        if (!jointLines.Skip(buc + 1).Any(l => Regex.IsMatch(l, $"(^|[^a-zA-Z0-9_]){varName}($|[^a-zA-Z0-9_])", RegexOptions.Multiline)))
                             continue;
 
                         string[] dims = varNameDef.Substring(varNameDef.IndexOf("(") + 1).Replace(")", "").Split(",", StringSplitOptions.RemoveEmptyEntries);
@@ -218,7 +218,7 @@ namespace ZXBasicStudio.BuildSystem
                         foreach (var vName in varNames)
                         {
 
-                            if (!jointLines.Skip(buc + 1).Any(l => l.Contains(vName)))
+                            if (!jointLines.Skip(buc + 1).Any(l => Regex.IsMatch(l, $"(^|[^a-zA-Z0-9_]){vName}($|[^a-zA-Z0-9_])", RegexOptions.Multiline)))
                                 continue;
 
                             var storage = StorageFromString(dimMatch.Groups[5].Value, vName);
@@ -237,7 +237,7 @@ namespace ZXBasicStudio.BuildSystem
             List<ZXBasicLocation> locations = new List<ZXBasicLocation>();
 
             foreach (var file in AllFiles)
-                locations.AddRange(file.GetBuildLocations());
+                locations.AddRange(GetBuildLocations(file));
 
             GlobalVariables = globalVars.ToArray();
             Subs = subs.ToArray();
@@ -256,7 +256,7 @@ namespace ZXBasicStudio.BuildSystem
 
                 int lineNum = int.Parse(line) - 1;
 
-                var cFile = AllFiles.FirstOrDefault(f => f.ContainsBuildDim(varName, lineNum));
+                var cFile = AllFiles.FirstOrDefault(f => ContainsBuildDim(f, varName, lineNum));
 
                 if (cFile == null)
                     continue;
@@ -288,6 +288,80 @@ namespace ZXBasicStudio.BuildSystem
                 }
             }
 
+        }
+
+        public List<ZXBasicLocation> GetBuildLocations(ZXCodeFile CodeFile)
+        {
+            List<ZXBasicLocation> locations = new List<ZXBasicLocation>();
+
+            if (CodeFile.FileType != ZXFileType.Basic)
+                return locations;
+
+            string[] lines = CodeFile.Content.Replace("\r", "").Split("\n");
+
+            ZXBasicLocation? loc = null;
+
+            for (int buc = 0; buc < lines.Length; buc++)
+            {
+                var line = lines[buc];
+
+                if (loc == null)
+                {
+                    var subMatch = regSub.Match(line);
+
+                    if (subMatch != null && subMatch.Success)
+                    {
+                        loc = new ZXBasicLocation { Name = subMatch.Groups[2].Value.Trim(), LocationType = ZXBasicLocationType.Sub, FirstLine = buc, File = Path.Combine(CodeFile.Directory, CodeFile.TempFileName) };
+                        continue;
+                    }
+
+                    var funcMatch = regFunc.Match(line);
+
+                    if (funcMatch != null && funcMatch.Success)
+                    {
+                        loc = new ZXBasicLocation { Name = funcMatch.Groups[2].Value.Trim(), LocationType = ZXBasicLocationType.Function, FirstLine = buc, File = Path.Combine(CodeFile.Directory, CodeFile.TempFileName) };
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (loc.LocationType == ZXBasicLocationType.Sub)
+                    {
+                        if (regEndSub.IsMatch(line))
+                        {
+                            loc.LastLine = buc;
+                            locations.Add(loc);
+                            loc = null;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (regEndFunc.IsMatch(line))
+                        {
+                            loc.LastLine = buc;
+                            locations.Add(loc);
+                            loc = null;
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            return locations;
+        }
+
+        public bool ContainsBuildDim(ZXCodeFile CodeFile, string VarName, int LineNumber)
+        {
+            if (CodeFile.FileType != ZXFileType.Basic)
+                return false;
+
+            string[] lines = CodeFile.Content.Replace("\r", "").Split("\n");
+
+            if (LineNumber >= lines.Length)
+                return false;
+
+            return Regex.IsMatch(lines[LineNumber], $"(\\s|,){VarName}(\\s|,|\\(|$)", RegexOptions.Multiline);
         }
 
         private static void ParseInputParameters(string ParameterString, List<ZXBasicParameter> Storage)

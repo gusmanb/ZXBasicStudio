@@ -58,6 +58,10 @@ namespace ZXBasicStudio.DebuggingTools.Variables.Controls
                 {
                     model.SvgPath = "/Svg/White/box-solid.svg";
                     model.PropertyValue = variable.GetValue(mem, regs)?.ToString() ?? "{null}";
+
+                    if (variable.StorageType == ZXVariableStorage.STR)
+                        model.PropertyValue = $"\"{model.PropertyValue}\"";
+
                     model.PropertyType = variable.StorageType.ToString();
                     model.Editable = true;
                     model.Memory = mem;
@@ -126,6 +130,10 @@ namespace ZXBasicStudio.DebuggingTools.Variables.Controls
                     model.SvgPath = "/Svg/White/box-solid.svg";
                     model.PropertyName = name;
                     model.PropertyValue = Variable.GetArrayValue(mem, Descriptor, path)?.ToString() ?? "{null}";
+
+                    if (Variable.StorageType == ZXVariableStorage.STR)
+                        model.PropertyValue = $"\"{model.PropertyValue}\"";
+
                     model.PropertyType = Variable.StorageType.ToString();
                     model.Editable = true;
                     model.ArrayPath = path;

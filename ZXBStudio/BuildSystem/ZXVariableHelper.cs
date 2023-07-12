@@ -344,7 +344,10 @@ namespace ZXBasicStudio.BuildSystem
 
         public static void SetString(ushort StringAddress, IMemory Memory, string NewValue)
         {
-            ushort len = BitConverter.ToUInt16(Memory.GetContents(StringAddress, 2));
+            ushort addr = BitConverter.ToUInt16(Memory.GetContents(StringAddress, 2));
+
+            ushort len = BitConverter.ToUInt16(Memory.GetContents(addr, 2));
+
             List<byte> tmpBuf = new List<byte>();
             tmpBuf.AddRange(Encoding.ASCII.GetBytes(NewValue));
 
@@ -362,7 +365,7 @@ namespace ZXBasicStudio.BuildSystem
                 }
             }
 
-            Memory.SetContents(StringAddress + 2, tmpBuf.ToArray());
+            Memory.SetContents(addr + 2, tmpBuf.ToArray());
         }
     }
 
