@@ -8,21 +8,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
+using ZXBasicStudio.DocumentEditors.NextDows.log;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
+namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.NextDows
 {
-    public class FontDocument : IZXDocumentType
+    public class ZXFormsDocument : IZXDocumentType
     {
-        static readonly string[] _docExtensions = { ".fnt" };
-        static readonly string _docName = "ZX Font file";
-        static readonly string _docDesc = "User font (96 chars). Array of 768 bytes to use as custom font in ZX Spectrum 48K/128K models.\nThe font editor allows you to create and modify font sets with the mouse and export in multiple formats.";
-        static readonly string _docCat = "Graphics";
-        static readonly string _docAspect = "/Svg/Documents/file-font.svg";
+        static readonly string[] _docExtensions = { ".zxf" };
+        static readonly string _docName = "ZXForms file";
+        static readonly string _docDesc = "ZXForms files allow you to create and modify NextDows Forms definitios, known as ZXForms. NextDows is a brand new operating system based on windows environment for ZX Spectrum Next/N-GO devices and compatibles.";
+        static readonly string _docCat = "NextDows";
+        static readonly string _docAspect = "/Svg/Documents/file-zxforms.svg";
 
-        static readonly FontDocumentFactory _factory = new FontDocumentFactory();
+        static readonly ZXFormsDocumentFactory _factory = new ZXFormsDocumentFactory();
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
@@ -34,9 +34,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         private static readonly ExportManager _exportManager = new ExportManager();
 
 
-        public FontDocument()
+        public ZXFormsDocument()
         {
-            _exportManager.Initialize(DocumentEditors.ZXGraphics.neg.FileTypes.Font);
+            _exportManager.Initialize(DocumentEditors.ZXGraphics.neg.FileTypes.NextDows_ZXForms);
         }
 
 
@@ -51,7 +51,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
                     if (assets == null)
                         throw new AvaloniaInternalException("Cannot create assets loader");
 
-                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_fnt.png")));
+                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxForms.png")));
                 }
 
                 return _icon;

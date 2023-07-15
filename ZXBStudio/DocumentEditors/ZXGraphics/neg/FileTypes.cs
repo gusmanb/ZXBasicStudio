@@ -36,5 +36,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
         /// Maping data
         /// </summary>
         Map = 4,
+
+        /// <summary>
+        /// Form definition for ZXForms on NextDows environment
+        /// </summary>
+        NextDows_ZXForms = 16
     }
 }

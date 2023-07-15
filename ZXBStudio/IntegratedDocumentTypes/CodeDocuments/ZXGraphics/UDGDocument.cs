@@ -17,8 +17,8 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
     public class UDGDocument : IZXDocumentType
     {
         static readonly string[] _docExtensions = { ".gdu", ".udg" };
-        static readonly string _docName = "UGD file";
-        static readonly string _docDesc = "User Graphics Defined data (21 chars). Array of 168 bytes to use classical ZX Spectrum UDGs/GDUs.";
+        static readonly string _docName = "UDG file";
+        static readonly string _docDesc = "User Defined Graphics data (21 chars). Array of 168 bytes to use classical ZX Spectrum UDGs/GDUs.\nThe GDU editor allows you to create and modify graphics with the mouse and export in multiple formats.";
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-udg.svg";
 

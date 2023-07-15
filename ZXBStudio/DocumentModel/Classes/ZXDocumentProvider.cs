@@ -10,6 +10,7 @@ using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.NextDows;
 using ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder;
 
 namespace ZXBasicStudio.DocumentModel.Classes
@@ -31,7 +32,9 @@ namespace ZXBasicStudio.DocumentModel.Classes
             // ZXGraphics
             _docTypes.Add(new UDGDocument());
             _docTypes.Add(new FontDocument());
-            _docTypes.Add(new SpriteDocument());
+            //_docTypes.Add(new SpriteDocument());
+            // NextDows
+            //_docTypes.Add(new ZXFormsDocument());
             //TODO: Load external document types
         }
 
