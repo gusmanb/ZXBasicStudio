@@ -200,5 +200,245 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         {
             return dataLayer.Files_CreateData(fileType);
         }
+
+
+        // <summary>
+        /// Rename a file
+        /// </summary>
+        /// <param name="oldName">Old filename</param>
+        /// <param name="newName">New filename</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool Files_Rename(string oldName, string newName)
+        {
+            if (!dataLayer.Files_Rename(oldName, newName))
+            {
+                LastError = dataLayer.LastError;
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Get all files oof a type, in a directory and his subdirectories
+        /// </summary>
+        /// <param name="path">Root path</param>
+        /// <param name="filetyle">FileType</param>
+        /// <returns>Array of strings with the fullpath filenames</returns>
+        public static string[] Files_GetAllConfigFiles(string path, FileTypes filetyle)
+        {
+            var lst = new List<string>();
+            switch (filetyle)
+            {
+                case FileTypes.UDG:
+                    dataLayer.Files_GetAllFileNames(path, ".udg.zbs", ref lst);
+                    dataLayer.Files_GetAllFileNames(path, ".gdu.zbs", ref lst);
+                    return lst.ToArray();
+                case FileTypes.Font:
+                    dataLayer.Files_GetAllFileNames(path, ".fnt.zbs", ref lst);
+                    return lst.ToArray();
+            }
+            return null;
+        }
+
+
+        /// <summary>
+        /// Returns the ExportConfig (.zbs) of a file
+        /// </summary>
+        /// <param name="fileName">Full path and name of the config file</param>
+        /// <returns>ExportConfig object or null if file not exists</returns>
+        public static ExportConfig Export_GetConfigFile(string fileName)
+        {
+            try
+            {
+                var jsonData = dataLayer.Files_GetString(fileName);
+                if (string.IsNullOrEmpty(jsonData))
+                {
+                    return null;
+                }
+
+                ExportConfig exportConfig = jsonData.Deserializar<ExportConfig>();
+                return exportConfig;
+            }
+            catch (Exception ex)
+            {
+                LastError = "Error deserializing \"" + fileName + "\" to ExportConfig";
+                return null;
+            }
+        }
+
+
+        public static bool Export_SetConfigFile(string fileName, ExportConfig exportConfig)
+        {
+            try
+            {
+                if (exportConfig == null)
+                {
+                    return false;
+                }
+
+                var jsonData = exportConfig.Serializar();
+                return dataLayer.Files_SetString(fileName, jsonData);
+            }
+            catch (Exception ex)
+            {
+                LastError = "Error deserializing \"" + fileName + "\" to ExportConfig";
+                return false;
+            }
+        }
+
+
+        public static ZXBuildSettings GetProjectSettings()
+        {
+            //ZXProjectManager
+            try
+            {
+                var settingsPath = MainWindow.GetProjectRootPath();
+                var settingsFile = Path.Combine(settingsPath, ZXConstants.BUILDSETTINGS_FILE);
+
+                if (!string.IsNullOrEmpty(settingsPath))
+                {
+                    var jsonData = dataLayer.Files_GetString(settingsFile);
+                    if (!string.IsNullOrEmpty(jsonData))
+                    {
+                        var settings = JsonConvert.DeserializeObject<ZXBuildSettings>(jsonData);
+                        return settings;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = "Error getting project settings";
+            }
+            return null;
+        }
+
+
+        #region Palettes
+
+        private static PaletteColor[] DefaultColors = new PaletteColor[]
+        {
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0x00 },     // Black
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0xa0 },     // Blue
+            new PaletteColor() { Red=0xdc, Green=0x00, Blue=0x00 },     // Red
+            new PaletteColor() { Red=0xe4, Green=0x00, Blue=0xb4 },     // Magenta
+            new PaletteColor() { Red=0x00, Green=0xd4, Blue=0x00 },     // Green
+            new PaletteColor() { Red=0x00, Green=0xd4, Blue=0xd4 },     // Cyan
+            new PaletteColor() { Red=0xd0, Green=0xd0, Blue=0x00 },     // Yellow
+            new PaletteColor() { Red=0xc8, Green=0xc8, Blue=0xc8 },     // White
+            // Bright 1
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0x00 },     // Black
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0xac },     // Blue
+            new PaletteColor() { Red=0xf0, Green=0x00, Blue=0x00 },     // Red
+            new PaletteColor() { Red=0xfc, Green=0x00, Blue=0xdc },     // Magenta
+            new PaletteColor() { Red=0x00, Green=0xf0, Blue=0x00 },     // Green
+            new PaletteColor() { Red=0x00, Green=0xfc, Blue=0xfc },     // Cyan
+            new PaletteColor() { Red=0xfc, Green=0xfc, Blue=0x00 },     // Yellow
+            new PaletteColor() { Red=0xfc, Green=0xfc, Blue=0xfc }      // White
+        };
+
+
+        public static PaletteColor[] GetPalette(GraphicsModes mode)
+        {
+            switch (mode)
+            {
+                case GraphicsModes.Monochrome:
+                    return new PaletteColor[]
+                    {
+                        DefaultColors[7], DefaultColors[0]
+                    };
+
+                case GraphicsModes.ZXSpectrum:
+                    return DefaultColors;
+
+                default:
+                    // TODO: Next Palete
+                    return DefaultColors;
+            }
+        }
+
+        #endregion
+
+
+        #region Sprites
+
+        /// <summary>
+        /// Resizes the point data of the sprite to the new size
+        /// </summary>
+        /// <param name="sprite">Old sprite with new Width and Height properties set to target. Patterns will be updated.</param>
+        /// <param name="oldWidth">Old Width of the sprite, the new must set in sprite parameter</param>
+        /// <param name="oldHeight">Old Height of the spritye, the new must set in sprite parameter</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool SpriteData_Resize(ref Sprite sprite, int oldWidth, int oldHeight)
+        {
+            for (int p = 0; p < sprite.Patterns.Count; p++)
+            {
+                var pattern = sprite.Patterns[p];
+                var patList = pattern.Data.ToList();
+                for (int y = 0; y < sprite.Height; y++)
+                {
+                    for (int x = 0; x < sprite.Width; x++)
+                    {
+                        var point = patList.FirstOrDefault(d => d.X == x && d.Y == y);
+                        if (point == null)
+                        {
+                            patList.Add(new PointData()
+                            {
+                                ColorIndex = sprite.DefaultColor,
+                                X = x,
+                                Y = y
+                            });
+                        }
+                    }
+                }
+
+                var w = sprite.Width;
+                var h = sprite.Height;
+                patList.RemoveAll(d => d.X >= w || d.Y >= h);
+                sprite.Patterns[p].Data = patList.ToArray();
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Change the sprite mode
+        /// </summary>
+        /// <param name="sprite">Old sprite with new graphic mode property set to target. Patterns will be updated.</param>
+        /// <param name="oldMode">Old graphic mode, the new must set in sprite parameter</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool SpriteData_ChangeMode(ref Sprite sprite, GraphicsModes oldMode)
+        {
+            // TODO: Do it!!!
+            return true;
+        }
+
+
+        /// <summary>
+        /// Change the sprite mask parameter
+        /// </summary>
+        /// <param name="sprite">Old sprite with new mask status property set to target. Patterns will be updated.</param>
+        /// <param name="oldMasked">Old mask value, the new must set in sprite parameter</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool SpriteData_ChangeMasked(ref Sprite sprite, bool oldMasked)
+        {
+            // TODO: Do it!!!
+            return true;
+        }
+
+
+        /// <summary>
+        /// Change the sprite frames parameter
+        /// </summary>
+        /// <param name="sprite">Old sprite with new Frames property set to target. Patterns will be updated.</param>
+        /// <param name="oldFrames">Old Frames value, the new must set in sprite parameter</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool SpriteData_ChangeFrames(ref Sprite sprite, byte oldFrames)
+        {
+            // TODO: Do it!!!
+            return true;
+        }
+
+        #endregion
     }
 }
