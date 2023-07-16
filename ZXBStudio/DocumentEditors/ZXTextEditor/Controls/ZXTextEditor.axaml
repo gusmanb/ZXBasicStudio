@@ -5,23 +5,27 @@
              xmlns:AvalonEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls.ZXTextEditor">
-  <AvalonEdit:TextEditor Name="editor"
+  <Grid RowDefinitions="*,Auto">
+    <AvalonEdit:TextEditor Name="editor"
                          HorizontalScrollBarVisibility="Auto"
                          VerticalScrollBarVisibility="Auto"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
                          ShowLineNumbers="True"
                          >
-    <AvalonEdit:TextEditor.ContextMenu>
-      <ContextMenu>
-        <MenuItem Header="Copy" Command="{Binding Copy}"></MenuItem>
-        <MenuItem Header="Cut" Command="{Binding Cut}"></MenuItem>
-        <MenuItem Header="Paste" Command="{Binding Paste}"></MenuItem>
-        <Separator></Separator>
-        <MenuItem Header="Undo" Command="{Binding Undo}"></MenuItem>
-        <MenuItem Header="Redo" Command="{Binding Redo}"></MenuItem>
-      </ContextMenu>
-    </AvalonEdit:TextEditor.ContextMenu>
-    
-  </AvalonEdit:TextEditor>
+      <AvalonEdit:TextEditor.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="Copy" Command="{Binding Copy}"></MenuItem>
+          <MenuItem Header="Cut" Command="{Binding Cut}"></MenuItem>
+          <MenuItem Header="Paste" Command="{Binding Paste}"></MenuItem>
+          <Separator></Separator>
+          <MenuItem Header="Undo" Command="{Binding Undo}"></MenuItem>
+          <MenuItem Header="Redo" Command="{Binding Redo}"></MenuItem>
+        </ContextMenu>
+      </AvalonEdit:TextEditor.ContextMenu>
+    </AvalonEdit:TextEditor>
+    <StackPanel Grid.Row="1" Background="Purple" Height="25" DockPanel.Dock="Bottom" Orientation="Horizontal">
+      <TextBlock Foreground="White" Name="txtStatus" Text="Ready" Margin="5 0 0 0" VerticalAlignment="Center" FontSize="12"/>
+    </StackPanel>
+  </Grid>
 </UserControl>

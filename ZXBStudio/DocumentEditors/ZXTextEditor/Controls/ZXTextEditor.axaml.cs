@@ -156,6 +156,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             editor.TextArea.SelectionCornerRadius = 2;
             editor.TextArea.KeyDown += TextArea_Down;
             editor.TextArea.LayoutUpdated += TextArea_LayoutUpdated;
+            editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
             //editor.TextArea.TextEntered += TextArea_TextEntered;
 
             if (langDef != null)
@@ -189,6 +190,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
             foreach (var bp in breaks)
                 bpMargin?.Breakpoints.Add(bp);
+        }
+
+        private void Caret_PositionChanged(object? sender, EventArgs e)
+        {
+            txtStatus.Text = $"Line {editor.TextArea.Caret.Line}, Column {editor.TextArea.Caret.Column}";
         }
 
         #endregion
