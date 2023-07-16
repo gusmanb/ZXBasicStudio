@@ -16,12 +16,20 @@ namespace ZXBasicStudio.BuildSystem
 {
     public class ZXProjectBuilder
     {
-        public static ZXProgram? Build(string Folder, TextWriter OutputLogWritter)
+        public static ZXProgram? Build(TextWriter OutputLogWritter)
         {
             try
             {
-                Cleanup(Folder);
-                string settingsFile = Path.Combine(Folder, ZXConstants.BUILDSETTINGS_FILE);
+
+                if (ZXProjectManager.Current == null)
+                {
+                    OutputLogWritter.WriteLine("No open projcet, aborting...");
+                    return null;
+                }
+
+                var project = ZXProjectManager.Current;
+
+                Cleanup(project.ProjectPath);
                 ZXBuildSettings? settings = null;
                 string? mainFile = null;
 
@@ -37,70 +45,23 @@ namespace ZXBasicStudio.BuildSystem
                     return null;
                 }
 
-                if (File.Exists(settingsFile))
+                settings = project.GetProjectSettings();
+                mainFile = project.GetMainFile();
+
+                if (mainFile == null)
                 {
-                    settings = JsonConvert.DeserializeObject<ZXBuildSettings>(File.ReadAllText(settingsFile));
-
-                    if (settings == null)
-                    {
-                        OutputLogWritter.WriteLine($"Error deserializing settings file \"{Path.GetFileName(settingsFile)}\", aborting...");
-                        return null;
-                    }
-
-                }
-                else
-                {
-                    OutputLogWritter.WriteLine("No settings file found, using default settings.");
-
-                    if (ZXOptions.Current.DefaultBuildSettings != null)
-                        settings = ZXOptions.Current.DefaultBuildSettings.Clone();
-                    else
-                        settings = new ZXBuildSettings();
+                    OutputLogWritter.WriteLine("Cannot find main file, check that it exists and if there are more than one that is specified in the build settings.");
+                    return null;
                 }
 
-                if (string.IsNullOrWhiteSpace(settings.MainFile))
-                {
-                    OutputLogWritter.WriteLine("Main file not configured, scanning for default files...");
-
-                    List<string> mainFiles = new List<string>();
-
-                    foreach (var ext in ZXExtensions.ZXBasicFiles)
-                        mainFiles.AddRange(Directory.GetFiles(Folder, $"main{ext}"));
-
-                    if (mainFiles.Count > 1)
-                    {
-                        OutputLogWritter.WriteLine("Found multiple main files, aborting...");
-                        return null;
-                    }
-                    else if (mainFiles.Count < 1)
-                    {
-                        OutputLogWritter.WriteLine("No main file found, aborting...");
-                        return null;
-                    }
-
-                    mainFile = mainFiles[0];
-
-                    OutputLogWritter.WriteLine($"Using main file \"{Path.GetFileName(mainFile)}\".");
-                }
-                else
-                {
-                    mainFile = Path.Combine(Folder, settings.MainFile);
-                    if (!File.Exists(mainFile))
-                    {
-                        OutputLogWritter.WriteLine($"Main file {settings.MainFile} not found, aborting...");
-                        return null;
-                    }
-                    OutputLogWritter.WriteLine($"Using main file \"{settings.MainFile}\".");
-                }
-
-                if (!PreBuild(false, Folder, OutputLogWritter))
+                if (!PreBuild(false, project.ProjectPath, OutputLogWritter))
                     return null;
 
                 var args = settings.GetSettings();
 
                 OutputLogWritter.WriteLine("Building program...");
 
-                var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{mainFile}\" " + args) { WorkingDirectory = Folder, RedirectStandardError = true, CreateNoWindow = true });
+                var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{mainFile}\" " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 string logOutput;
 
@@ -110,16 +71,16 @@ namespace ZXBasicStudio.BuildSystem
 
                 if (ecode != 0)
                 {
-                    Cleanup(Folder);
+                    Cleanup(project.ProjectPath);
                     OutputLogWritter.WriteLine("Error building program, aborting...");
                     return null;
                 }
 
-                string binFile = Path.Combine(Folder, Path.GetFileNameWithoutExtension(mainFile) + ".bin");
+                string binFile = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(mainFile) + ".bin");
 
                 byte[] binary = File.ReadAllBytes(binFile);
 
-                Cleanup(Folder, binFile);
+                Cleanup(project.ProjectPath, binFile);
 
                 ZXProgram program = ZXProgram.CreateReleaseProgram(binary, settings.Origin ?? 32768);
 
@@ -129,7 +90,7 @@ namespace ZXBasicStudio.BuildSystem
                     return null;
                 }
 
-                if (!PostBuild(false, Folder, program, OutputLogWritter))
+                if (!PostBuild(false, project.ProjectPath, program, OutputLogWritter))
                     return null;
 
                 OutputLogWritter.WriteLine($"Program size: {binary.Length} bytes");
@@ -144,45 +105,19 @@ namespace ZXBasicStudio.BuildSystem
                 return null;
             }
         }
-
-        private static void OutputProcessLog(TextWriter OutputLogWritter, Process proc, out string Log)
-        {
-            StringBuilder sbLog = new StringBuilder();
-            while (!proc.HasExited)
-            {
-                if (!proc.StandardError.EndOfStream)
-                {
-                    try
-                    {
-                        string? line = proc.StandardError.ReadLine();
-                        OutputLogWritter.WriteLine(line);
-                        if (line != null)
-                            sbLog.AppendLine(line);
-                    }
-                    catch { }
-
-
-                }
-            }
-
-            if (!proc.StandardError.EndOfStream)
-            {
-                string? line = proc.StandardError.ReadToEnd();
-                OutputLogWritter.WriteLine(line);
-                if (line != null)
-                    sbLog.AppendLine(line);
-            }
-
-            Log = sbLog.ToString();
-        }
-
-        public static ZXProgram? BuildDebug(string Folder, TextWriter OutputLogWritter)
+        public static ZXProgram? BuildDebug(TextWriter OutputLogWritter)
         {
             try
             {
-                Cleanup(Folder);
+                if (ZXProjectManager.Current == null)
+                {
+                    OutputLogWritter.WriteLine("No open projcet, aborting...");
+                    return null;
+                }
 
-                string settingsFile = Path.Combine(Folder, ZXConstants.BUILDSETTINGS_FILE);
+                var project = ZXProjectManager.Current;
+
+                Cleanup(project.ProjectPath);
                 ZXBuildSettings? settings = null;
                 string? mainFile = null;
 
@@ -198,69 +133,23 @@ namespace ZXBasicStudio.BuildSystem
                     return null;
                 }
 
-                if (File.Exists(settingsFile))
-                {
-                    settings = JsonConvert.DeserializeObject<ZXBuildSettings>(File.ReadAllText(settingsFile));
+                settings = project.GetProjectSettings();
+                mainFile = project.GetMainFile();
 
-                    if (settings == null)
-                    {
-                        OutputLogWritter.WriteLine($"Error deserializing settings file \"{Path.GetFileName(settingsFile)}\", aborting...");
-                        return null;
-                    }
-                }
-                else
+                if (mainFile == null)
                 {
-                    OutputLogWritter.WriteLine("No settings file found, using default settings.");
-
-                    if (ZXOptions.Current.DefaultBuildSettings != null)
-                        settings = ZXOptions.Current.DefaultBuildSettings.Clone();
-                    else
-                        settings = new ZXBuildSettings();
+                    OutputLogWritter.WriteLine("Cannot find main file, check that it exists and if there are more than one that is specified in the build settings.");
+                    return null;
                 }
 
-                if (string.IsNullOrWhiteSpace(settings.MainFile))
-                {
-                    OutputLogWritter.WriteLine("Main file not configured, scanning for default files...");
-
-                    List<string> mainFiles = new List<string>();
-
-                    foreach (var ext in ZXExtensions.ZXBasicFiles)
-                        mainFiles.AddRange(Directory.GetFiles(Folder, $"main{ext}"));
-
-                    if (mainFiles.Count > 1)
-                    {
-                        OutputLogWritter.WriteLine("Found multiple main files, aborting...");
-                        return null;
-                    }
-                    else if (mainFiles.Count < 1)
-                    {
-                        OutputLogWritter.WriteLine("No main file found, aborting...");
-                        return null;
-                    }
-
-                    mainFile = mainFiles[0];
-
-                    OutputLogWritter.WriteLine($"Using main file \"{Path.GetFileName(mainFile)}\".");
-                }
-                else
-                {
-                    mainFile = Path.Combine(Folder, settings.MainFile);
-                    if (!File.Exists(mainFile))
-                    {
-                        OutputLogWritter.WriteLine($"Main file {settings.MainFile} not found, aborting...");
-                        return null;
-                    }
-                    OutputLogWritter.WriteLine($"Using main file \"{settings.MainFile}\".");
-                }
-
-                if (!PreBuild(true, Folder, OutputLogWritter))
+                if (!PreBuild(true, project.ProjectPath, OutputLogWritter))
                     return null;
 
-                var files = ScanFolder(Folder);
+                var files = ScanFolder(project.ProjectPath);
 
                 if (files.Count() == 0)
                 {
-                    OutputLogWritter.WriteLine("No file found to build, aborting...");
+                    OutputLogWritter.WriteLine("No file to build, aborting...");
                     return null;
                 }
 
@@ -277,7 +166,7 @@ namespace ZXBasicStudio.BuildSystem
 
                 var codeFile = files.First(f => f.AbsolutePath == Path.GetFullPath(mainFile));
 
-                var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -M MEMORY_MAP " + args) { WorkingDirectory = Folder, RedirectStandardError = true, CreateNoWindow = true });
+                var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -M MEMORY_MAP " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 OutputProcessLog(OutputLogWritter, proc, out logOutput);
 
@@ -285,19 +174,19 @@ namespace ZXBasicStudio.BuildSystem
 
                 if (ecode != 0)
                 {
-                    Cleanup(Folder);
+                    Cleanup(project.ProjectPath);
                     OutputLogWritter.WriteLine("Error building map, aborting...");
                     return null;
                 }
 
-                var progMap = new ZXMemoryMap(Path.Combine(Folder, "MEMORY_MAP"), files);
-                string binFile = Path.Combine(Folder, Path.GetFileNameWithoutExtension(codeFile.TempFileName) + ".bin");
+                var progMap = new ZXMemoryMap(Path.Combine(project.ProjectPath, "MEMORY_MAP"), files);
+                string binFile = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(codeFile.TempFileName) + ".bin");
 
                 byte[] binary = File.ReadAllBytes(binFile);
 
                 OutputLogWritter.WriteLine("Building variable map...");
 
-                proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -E " + args) { WorkingDirectory = Folder, RedirectStandardError = true, CreateNoWindow = true });
+                proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -E " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 OutputProcessLog(OutputLogWritter, proc, out logOutput);
 
@@ -305,7 +194,7 @@ namespace ZXBasicStudio.BuildSystem
 
                 if (ecode != 0)
                 {
-                    Cleanup(Folder, binFile);
+                    Cleanup(project.ProjectPath, binFile);
                     OutputLogWritter.WriteLine("Error building variable map, aborting...");
                     return null;
                 }
@@ -314,13 +203,13 @@ namespace ZXBasicStudio.BuildSystem
 
                 ZXBasicMap bMap = new ZXBasicMap(mainCodeFile, files, logOutput);
 
-                string varFile = Path.Combine(Folder, Path.GetFileNameWithoutExtension(codeFile.TempFileName) + ".ic");
-                string mapFile = Path.Combine(Folder, "MEMORY_MAP");
+                string varFile = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(codeFile.TempFileName) + ".ic");
+                string mapFile = Path.Combine(project.ProjectPath, "MEMORY_MAP");
                 var varMap = new ZXVariableMap(varFile, mapFile, bMap);
 
                 OutputLogWritter.WriteLine("Building disassembly...");
 
-                proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -A " + args) { WorkingDirectory = Folder, RedirectStandardError = true, CreateNoWindow = true });
+                proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -A " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 OutputProcessLog(OutputLogWritter, proc, out logOutput);
 
@@ -328,19 +217,19 @@ namespace ZXBasicStudio.BuildSystem
 
                 if (ecode != 0)
                 {
-                    Cleanup(Folder, binFile);
+                    Cleanup(project.ProjectPath, binFile);
                     OutputLogWritter.WriteLine("Error building disassembly, aborting...");
                     return null;
                 }
 
                 OutputLogWritter.WriteLine("Building disassembly map...");
 
-                string disFile = Path.Combine(Folder, Path.GetFileNameWithoutExtension(Path.Combine(codeFile.Directory, codeFile.TempFileName)) + ".asm");
+                string disFile = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(Path.Combine(codeFile.Directory, codeFile.TempFileName)) + ".asm");
                 var disasFile = new ZXCodeFile(disFile, true);
 
                 disasFile.CreateBuildFile(files);
 
-                proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbasmPath), $"\"{Path.Combine(disasFile.Directory, disasFile.TempFileName)}\" -M MEMORY_MAP") { WorkingDirectory = Folder, RedirectStandardError = true, CreateNoWindow = true });
+                proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbasmPath), $"\"{Path.Combine(disasFile.Directory, disasFile.TempFileName)}\" -M MEMORY_MAP") { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 OutputProcessLog(OutputLogWritter, proc, out logOutput);
 
@@ -348,14 +237,14 @@ namespace ZXBasicStudio.BuildSystem
 
                 if (ecode != 0)
                 {
-                    Cleanup(Folder, binFile, disFile);
+                    Cleanup(project.ProjectPath, binFile, disFile);
                     OutputLogWritter.WriteLine("Error building disassembly map, aborting...");
                     return null;
                 }
 
-                var asmMap = new ZXMemoryMap(Path.Combine(Folder, "MEMORY_MAP"), new ZXCodeFile[] { disasFile });
+                var asmMap = new ZXMemoryMap(Path.Combine(project.ProjectPath, "MEMORY_MAP"), new ZXCodeFile[] { disasFile });
 
-                Cleanup(Folder, binFile, disFile);
+                Cleanup(project.ProjectPath, binFile, disFile);
 
                 ushort org = disasFile.FindOrg();
 
@@ -367,7 +256,7 @@ namespace ZXBasicStudio.BuildSystem
                     return null;
                 }
 
-                if (!PostBuild(true, Folder, program, OutputLogWritter))
+                if (!PostBuild(true, project.ProjectPath, program, OutputLogWritter))
                     return null;
 
                 OutputLogWritter.WriteLine($"Program size: {binary.Length} bytes");
@@ -382,12 +271,19 @@ namespace ZXBasicStudio.BuildSystem
                 return null;
             }
         }
-        public static bool Export(string Folder, ZXExportOptions Export, TextWriter OutputLogWritter)
+        public static bool Export(ZXExportOptions Export, TextWriter OutputLogWritter)
         {
             try
             {
-                Cleanup(Folder);
-                string settingsFile = Path.Combine(Folder, ZXConstants.BUILDSETTINGS_FILE);
+                if (ZXProjectManager.Current == null)
+                {
+                    OutputLogWritter.WriteLine("No open projcet, aborting...");
+                    return false;
+                }
+
+                var project = ZXProjectManager.Current;
+
+                Cleanup(project.ProjectPath);
                 ZXBuildSettings? settings = null;
                 string? mainFile = null;
 
@@ -403,67 +299,20 @@ namespace ZXBasicStudio.BuildSystem
                     return false;
                 }
 
-                if (File.Exists(settingsFile))
+                settings = project.GetProjectSettings();
+                mainFile = project.GetMainFile();
+
+                if (mainFile == null)
                 {
-                    settings = JsonConvert.DeserializeObject<ZXBuildSettings>(File.ReadAllText(settingsFile));
-
-                    if (settings == null)
-                    {
-                        OutputLogWritter.WriteLine($"Error deserializing settings file \"{Path.GetFileName(settingsFile)}\", aborting...");
-                        return false;
-                    }
-
-                }
-                else
-                {
-                    OutputLogWritter.WriteLine("No settings file found, using default settings.");
-
-                    if (ZXOptions.Current.DefaultBuildSettings != null)
-                        settings = ZXOptions.Current.DefaultBuildSettings.Clone();
-                    else
-                        settings = new ZXBuildSettings();
-                }
-
-                if (string.IsNullOrWhiteSpace(settings.MainFile))
-                {
-                    OutputLogWritter.WriteLine("Main file not configured, scanning for default files...");
-
-                    List<string> mainFiles = new List<string>();
-
-                    foreach (var ext in ZXExtensions.ZXBasicFiles)
-                        mainFiles.AddRange(Directory.GetFiles(Folder, $"main{ext}"));
-
-                    if (mainFiles.Count > 1)
-                    {
-                        OutputLogWritter.WriteLine("Found multiple main files, aborting...");
-                        return false;
-                    }
-                    else if (mainFiles.Count < 1)
-                    {
-                        OutputLogWritter.WriteLine("No main file found, aborting...");
-                        return false;
-                    }
-
-                    mainFile = mainFiles[0];
-
-                    OutputLogWritter.WriteLine($"Using main file \"{Path.GetFileName(mainFile)}\".");
-                }
-                else
-                {
-                    mainFile = Path.Combine(Folder, settings.MainFile);
-                    if (!File.Exists(mainFile))
-                    {
-                        OutputLogWritter.WriteLine($"Main file {settings.MainFile} not found, aborting...");
-                        return false;
-                    }
-                    OutputLogWritter.WriteLine($"Using main file \"{settings.MainFile}\".");
+                    OutputLogWritter.WriteLine("Cannot find main file, check that it exists and if there are more than one that is specified in the build settings.");
+                    return false;
                 }
 
                 var args = settings.GetSettings();
 
                 OutputLogWritter.WriteLine("Exporting program...");
 
-                var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{mainFile}\" " + args + " " + Export.GetExportOptions()) { WorkingDirectory = Folder, RedirectStandardError = true, CreateNoWindow = true });
+                var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{mainFile}\" " + args + " " + Export.GetExportOptions()) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 string logOutput;
 
@@ -473,7 +322,7 @@ namespace ZXBasicStudio.BuildSystem
 
                 if (ecode != 0)
                 {
-                    Cleanup(Folder);
+                    Cleanup(project.ProjectPath);
                     OutputLogWritter.WriteLine("Error building program, aborting...");
                     return false;
                 }
@@ -526,7 +375,36 @@ namespace ZXBasicStudio.BuildSystem
 
             return files;
         }
+        private static void OutputProcessLog(TextWriter OutputLogWritter, Process proc, out string Log)
+        {
+            StringBuilder sbLog = new StringBuilder();
+            while (!proc.HasExited)
+            {
+                if (!proc.StandardError.EndOfStream)
+                {
+                    try
+                    {
+                        string? line = proc.StandardError.ReadLine();
+                        OutputLogWritter.WriteLine(line);
+                        if (line != null)
+                            sbLog.AppendLine(line);
+                    }
+                    catch { }
 
+
+                }
+            }
+
+            if (!proc.StandardError.EndOfStream)
+            {
+                string? line = proc.StandardError.ReadToEnd();
+                OutputLogWritter.WriteLine(line);
+                if (line != null)
+                    sbLog.AppendLine(line);
+            }
+
+            Log = sbLog.ToString();
+        }
         private static bool PreBuild(bool debug, string path, TextWriter outLog)
         {
             outLog.WriteLine("Building precompilation documents...");
