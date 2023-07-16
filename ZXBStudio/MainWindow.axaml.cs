@@ -110,8 +110,6 @@ namespace ZXBasicStudio
 
             EditItems = editTabs;
             DataContext = this;
-            mainWindowInstance = this;
-
 
             #region Attach explorer events
             peExplorer.OpenFileRequested += OpenFile;

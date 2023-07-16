@@ -170,7 +170,7 @@ namespace ZXBasicStudio.BuildSystem
                 var codeFile = files.FirstOrDefault(f => f.AbsolutePath == Path.GetFullPath(mainFile));
                 if (codeFile == null)
                 {
-                    Cleanup(Folder);
+                    Cleanup(project.ProjectPath);
                     OutputLogWritter.WriteLine("Main file path not found. More than 256 chars?");
                     return null;
                 }

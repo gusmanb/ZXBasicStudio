@@ -371,27 +371,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
         public static ZXBuildSettings GetProjectSettings()
         {
-            //ZXProjectManager
-            try
-            {
-                var settingsPath = MainWindow.GetProjectRootPath();
-                var settingsFile = Path.Combine(settingsPath, ZXConstants.BUILDSETTINGS_FILE);
-
-                if (!string.IsNullOrEmpty(settingsPath))
-                {
-                    var jsonData = dataLayer.Files_GetString(settingsFile);
-                    if (!string.IsNullOrEmpty(jsonData))
-                    {
-                        var settings = JsonConvert.DeserializeObject<ZXBuildSettings>(jsonData);
-                        return settings;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LastError = "Error getting project settings";
-            }
-            return null;
+            return ZXProjectManager.Current.GetProjectSettings();
         }
 
 
