@@ -89,7 +89,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Name = "DATA format"
             });
 
-            lstOptions.Items = ExportTypesList;
+            lstOptions.ItemsSource = ExportTypesList;
 
             lstOptions.SelectionChanged += LstOptions_SelectionChanged;
 

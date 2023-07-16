@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
@@ -21,6 +22,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         static readonly string _docDesc = "Sprite files allow you to create and modify graphics of different sizes and formats. Once created, they can be exported in multiple formats.";
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-sprite.svg";
+        static readonly Guid _docId = Guid.Parse("E5D4D440-B156-42F1-8FBB-E78D655E754E");
 
         static readonly SpriteDocumentFactory _factory = new SpriteDocumentFactory();
         Bitmap? _icon;
@@ -46,12 +48,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
             {
                 if (_icon == null)
                 {
-                    var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-
-                    if (assets == null)
-                        throw new AvaloniaInternalException("Cannot create assets loader");
-
-                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_spr.png")));
+                    _icon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_spr.png")));
                 }
 
                 return _icon;
@@ -67,5 +64,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         public IZXDocumentBuilder? DocumentBuilder => _exportManager;
 
         public ZXBuildStage? DocumentBuildStage => ZXBuildStage.PreBuild;
+
+        Guid IZXDocumentType.DocumentTypeId => _docId;
+
+        ZXKeybCommand[]? IZXDocumentType.EditorCommands => new ZXKeybCommand[0];
     }
 }

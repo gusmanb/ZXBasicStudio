@@ -11,7 +11,6 @@ namespace ZXBasicStudio.Classes
 {
     public static class ZXKeybMapper
     {
-        const string keysFile = "ZXBasicStudioKeysMap.json";
         static Dictionary<Guid, ZXKeybCommand[]> mappings;
         static Dictionary<Guid, string> sourceNames;
 
@@ -24,9 +23,9 @@ namespace ZXBasicStudio.Classes
 
             try
             {
-                if (ZXApplicationFileProvider.Exists(keysFile))
+                if (ZXApplicationFileProvider.Exists(ZXConstants.APPKEYS_FILE))
                 {
-                    var remappings = JsonConvert.DeserializeObject<Dictionary<Guid, ZXKeybCommand[]>>(ZXApplicationFileProvider.ReadAllText(keysFile)) ?? new Dictionary<Guid, ZXKeybCommand[]>();
+                    var remappings = JsonConvert.DeserializeObject<Dictionary<Guid, ZXKeybCommand[]>>(ZXApplicationFileProvider.ReadAllText(ZXConstants.APPKEYS_FILE)) ?? new Dictionary<Guid, ZXKeybCommand[]>();
 
                     foreach (var cmds in remappings)
                     {
@@ -81,7 +80,7 @@ namespace ZXBasicStudio.Classes
                     return false;
 
                 mappings[SourceId] = Commands;
-                ZXApplicationFileProvider.WriteAllText(keysFile, JsonConvert.SerializeObject(mappings));
+                ZXApplicationFileProvider.WriteAllText(ZXConstants.APPKEYS_FILE, JsonConvert.SerializeObject(mappings));
                 return true;
             }
             catch { return false; }
@@ -92,8 +91,8 @@ namespace ZXBasicStudio.Classes
             LoadDefaults();
             try 
             {
-                if(ZXApplicationFileProvider.Exists(keysFile))
-                    ZXApplicationFileProvider.Delete(keysFile);
+                if(ZXApplicationFileProvider.Exists(ZXConstants.APPKEYS_FILE))
+                    ZXApplicationFileProvider.Delete(ZXConstants.APPKEYS_FILE);
 
             } catch { }
         }

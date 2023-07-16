@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
@@ -21,6 +22,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         static readonly string _docDesc = "User Defined Graphics data (21 chars). Array of 168 bytes to use classical ZX Spectrum UDGs/GDUs.\nThe GDU editor allows you to create and modify graphics with the mouse and export in multiple formats.";
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-udg.svg";
+        static readonly Guid _docId = Guid.Parse("468D8D2B-8461-4950-A4C3-8B20454B851A");
 
         static readonly UDGDocumentFactory _factory = new UDGDocumentFactory();
         Bitmap? _icon;
@@ -45,12 +47,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
             {
                 if (_icon == null)
                 {
-                    var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-
-                    if (assets == null)
-                        throw new AvaloniaInternalException("Cannot create assets loader");
-
-                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_udg.png")));
+                    _icon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_udg.png")));
                 }
 
                 return _icon;
@@ -66,5 +63,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         public IZXDocumentBuilder? DocumentBuilder => _exportManager;
 
         public ZXBuildStage? DocumentBuildStage => ZXBuildStage.PreBuild;
+
+        Guid IZXDocumentType.DocumentTypeId => _docId;
+
+        ZXKeybCommand[]? IZXDocumentType.EditorCommands => new ZXKeybCommand[0];
     }
 }

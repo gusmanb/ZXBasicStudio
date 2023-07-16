@@ -493,8 +493,10 @@ namespace ZXBasicStudio
             foreach (var doc in openDocuments)
                 doc.CloseDocument(outLog.Writer, true);
 
+            ZXProjectManager.CloseProject();
+
             editTabs.Clear();
-            peExplorer.OpenProjectFolder(null);
+            peExplorer.UpdateProjectFolder();
             FileInfo.FileLoaded = false;
             FileInfo.ProjectLoaded = false;
             EmulatorInfo.CanDebug = false;
@@ -584,6 +586,8 @@ namespace ZXBasicStudio
                     foreach (var doc in openDocuments)
                         doc.CloseDocument(outLog.Writer, true);
                 }
+
+                ZXProjectManager.CloseProject();
             }
 
             FolderPickerOpenOptions opts = new FolderPickerOpenOptions { AllowMultiple = false, Title = "Open project" };
@@ -592,9 +596,11 @@ namespace ZXBasicStudio
             if (res == null || res.Count == 0)
                 return;
 
+            ZXProjectManager.OpenProject(res[0].Path.LocalPath);
+
             Cleanup();
             BreakpointManager.ClearBreakpoints();
-            peExplorer.OpenProjectFolder(res[0].Path.LocalPath);
+            peExplorer.UpdateProjectFolder();
             editTabs.Clear();
             openDocuments.Clear();
             FileInfo.ProjectLoaded = true;
@@ -683,17 +689,26 @@ namespace ZXBasicStudio
 
         private async void CreateProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-
-            if (openDocuments.Any(e => e.Modified))
+            if (FileInfo.ProjectLoaded)
             {
-                var resConfirm = await this.ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
+                if (openDocuments.Any(e => e.Modified))
+                {
+                    var resConfirm = await this.ShowConfirm("Warning!", "Current project has pending changes, creating a new project will discard those changes. Do you want to continue?");
 
-                if (!resConfirm)
-                    return;
+                    if (!resConfirm)
+                        return;
 
-                foreach (var doc in openDocuments)
-                    doc.CloseDocument(outLog.Writer, true);
+                    foreach (var doc in openDocuments)
+                        doc.CloseDocument(outLog.Writer, true);
+
+                }
+
+                openDocuments.Clear();
+                editTabs.Clear();
+                ZXProjectManager.CloseProject();
             }
+
+            outLog.Clear();
 
             var fld = await StorageProvider.OpenFolderPickerAsync(new Avalonia.Platform.Storage.FolderPickerOpenOptions { AllowMultiple = false, Title = "Select project's folder." });
 
@@ -711,18 +726,15 @@ namespace ZXBasicStudio
             if (!setRes)
                 return;
 
-            var settingsFile = Path.Combine(selFolder, ZXConstants.BUILDSETTINGS_FILE);
-            var content = JsonConvert.SerializeObject(dlg.Settings);
-            try
+            if (!ZXProjectManager.CreateProject(selFolder, dlg.Settings, outLog.Writer))
             {
-                File.WriteAllText(settingsFile, content);
-            }
-            catch (Exception ex)
-            {
-                await this.ShowError("Create error", $"Unexpected error trying to create the project settings file: {ex.Message} - {ex.StackTrace}");
+                await this.ShowError("Create error", $"Error creating project, check the output log for more details.");
                 return;
             }
-            peExplorer.OpenProjectFolder(selFolder);
+
+            ZXProjectManager.OpenProject(selFolder);
+
+            peExplorer.UpdateProjectFolder();
             editTabs.Clear();
             openDocuments.Clear();
             FileInfo.ProjectLoaded = true;
@@ -1290,7 +1302,7 @@ namespace ZXBasicStudio
             _ = Task.Run(() =>
             {
                 if(peExplorer.RootPath != null)
-                    ZXProjectBuilder.Build(peExplorer.RootPath, outLog.Writer);
+                    ZXProjectBuilder.Build(outLog.Writer);
 
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -1322,7 +1334,7 @@ namespace ZXBasicStudio
 
             _ = Task.Run(() =>
             {
-                var program = peExplorer.RootPath == null ? null : ZXProjectBuilder.Build(peExplorer.RootPath, outLog.Writer);
+                var program = peExplorer.RootPath == null ? null : ZXProjectBuilder.Build(outLog.Writer);
 
                 if (program != null)
                 {
@@ -1391,7 +1403,7 @@ namespace ZXBasicStudio
 
             _ = Task.Run(() => 
             {
-                var program = peExplorer.RootPath == null ? null : ZXProjectBuilder.BuildDebug(peExplorer.RootPath, outLog.Writer);
+                var program = peExplorer.RootPath == null ? null : ZXProjectBuilder.BuildDebug(outLog.Writer);
 
                 if (program != null)
                 {
@@ -1458,22 +1470,20 @@ namespace ZXBasicStudio
         }
         private async void Export(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+
+            if (ZXProjectManager.Current == null)
+            {
+                await this.ShowError("Cannot export", "No project has been open, cannot export.");
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbcPath) || string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbasmPath))
             {
                 await this.ShowError("Missing configuration.", "Paths for ZXBASM and ZXBC are not configured, you need to configure these before building.");
                 return;
             }
 
-            ZXExportOptions? opts = null;
-            string optsFile = Path.Combine(peExplorer.RootPath ?? "", ZXConstants.EXPORTSETTINGS_FILE);
-            if (File.Exists(optsFile))
-            {
-                try
-                {
-                    opts = JsonConvert.DeserializeObject<ZXExportOptions>(File.ReadAllText(optsFile));
-                }
-                catch { }
-            }
+            ZXExportOptions? opts = ZXProjectManager.Current.GetExportOptions();
 
             var dlg = new ZXExportDialog();
             dlg.ExportOptions = opts;
@@ -1490,7 +1500,7 @@ namespace ZXBasicStudio
                 return;
             }
 
-            File.WriteAllText(optsFile, JsonConvert.SerializeObject(opts));
+            ZXProjectManager.Current.SaveExportOptions(opts);
 
             string file = opts.OutputPath;
 
@@ -1503,7 +1513,7 @@ namespace ZXBasicStudio
             _ = Task.Run(() =>
             {
                 if(peExplorer.RootPath != null)
-                    ZXProjectBuilder.Export(peExplorer.RootPath, opts, outLog.Writer);
+                    ZXProjectBuilder.Export(opts, outLog.Writer);
 
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -1519,25 +1529,21 @@ namespace ZXBasicStudio
         #region Project actions
         private async void ConfigureProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            var dlg = new ZXBuildSettingsDialog();
-            string buildFile = Path.Combine(peExplorer.RootPath ?? "", ZXConstants.BUILDSETTINGS_FILE);
-            if (File.Exists(buildFile))
+
+            if (ZXProjectManager.Current == null)
             {
-                var settings = JsonConvert.DeserializeObject<ZXBuildSettings>(File.ReadAllText(buildFile));
-                dlg.Settings = settings ?? new ZXBuildSettings();
+                await this.ShowError("No project", $"No project has been loaded, aborting.");
+                return;
             }
-            else if (ZXOptions.Current.DefaultBuildSettings != null)
-                dlg.Settings = ZXOptions.Current.DefaultBuildSettings.Clone();
+
+            var dlg = new ZXBuildSettingsDialog();
+            dlg.Settings = ZXProjectManager.Current.GetProjectSettings();
 
             if (await dlg.ShowDialog<bool>(this))
             {
-                try
+                if (!ZXProjectManager.Current.SaveProjectSettings(dlg.Settings))
                 {
-                    File.WriteAllText(buildFile, JsonConvert.SerializeObject(dlg.Settings));
-                }
-                catch (Exception ex)
-                {
-                    await this.ShowError("Error saving file", $"Unexpected error trying to save the configuration file: {ex.Message} - {ex.StackTrace}");
+                    await this.ShowError("Error saving file", $"Unexpected error trying to save the configuration file.");
                 }
             }
         }

@@ -428,7 +428,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void BtnCopy_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            Avalonia.Application.Current.Clipboard.SetTextAsync(txtCode.Text);
+            TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(txtCode.Text);
         }
 
 

@@ -371,6 +371,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
         public static ZXBuildSettings GetProjectSettings()
         {
+            //ZXProjectManager
             try
             {
                 var settingsPath = MainWindow.GetProjectRootPath();

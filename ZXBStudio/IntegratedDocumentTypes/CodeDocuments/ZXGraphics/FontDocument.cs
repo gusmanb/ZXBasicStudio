@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
+using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
@@ -21,6 +23,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         static readonly string _docDesc = "User font (96 chars). Array of 768 bytes to use as custom font in ZX Spectrum 48K/128K models.\nThe font editor allows you to create and modify font sets with the mouse and export in multiple formats.";
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-font.svg";
+        static readonly Guid _docId = Guid.Parse("05E30D61-F66F-46B5-85BB-FFF35D04184B");
+
+        public static Guid Id => _docId;
 
         static readonly FontDocumentFactory _factory = new FontDocumentFactory();
         Bitmap? _icon;
@@ -46,12 +51,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
             {
                 if (_icon == null)
                 {
-                    var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-
-                    if (assets == null)
-                        throw new AvaloniaInternalException("Cannot create assets loader");
-
-                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_fnt.png")));
+                    _icon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_fnt.png")));
                 }
 
                 return _icon;
@@ -67,5 +67,10 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         public IZXDocumentBuilder? DocumentBuilder => _exportManager;
 
         public ZXBuildStage? DocumentBuildStage => ZXBuildStage.PreBuild;
+
+        Guid IZXDocumentType.DocumentTypeId => _docId;
+
+        // TODO: Implement commands
+        public ZXKeybCommand[]? EditorCommands => new ZXKeybCommand[0];
     }
 }

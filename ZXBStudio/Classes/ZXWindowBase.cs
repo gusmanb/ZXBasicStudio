@@ -25,8 +25,8 @@ namespace ZXBasicStudio.Classes
         static AppConfig config;
         static ZXWindowBase()
         {
-            if (File.Exists("AppSettings.json"))
-                config = JsonConvert.DeserializeObject<AppConfig>(File.ReadAllText("AppSettings.json"), jSettings) ?? new AppConfig();
+            if (ZXApplicationFileProvider.Exists(ZXConstants.APPSETTINGS_FILE))
+                config = JsonConvert.DeserializeObject<AppConfig>(ZXApplicationFileProvider.ReadAllText(ZXConstants.APPSETTINGS_FILE), jSettings) ?? new AppConfig();
 
             if (config == null)
                 config = new AppConfig();
@@ -95,7 +95,7 @@ namespace ZXBasicStudio.Classes
             {
                 WindowStatus status = new WindowStatus { Height = this.Height, Width = this.Width, State = this.WindowState };
                 config.WindowSettings[this.GetType().FullName] = status;
-                File.WriteAllText("AppSettings.json", JsonConvert.SerializeObject(config, jSettings));
+                File.WriteAllText(ZXConstants.APPSETTINGS_FILE, JsonConvert.SerializeObject(config, jSettings));
             }
         }
 

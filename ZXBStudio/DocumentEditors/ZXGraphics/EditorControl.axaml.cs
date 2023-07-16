@@ -401,38 +401,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
             Refresh();
         }
-            try
-            {
-                var patterns = GetSelectedPatterns();
-                var cbData = await Application.Current.Clipboard.GetTextAsync();
-                if (string.IsNullOrEmpty(cbData))
-                {
-                    return;
-                }
-                var cbPatterns = cbData.Deserializar<Pattern[]>();
-                if (cbPatterns == null)
-                {
-                    return;
-                }
-                int idx = 0;
-                foreach (var pattern in patterns)
-                {
-                    if (idx < cbPatterns.Length)
-                    {
-                        pattern.Data = cbPatterns[idx].Data;
-                        idx++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    callBackSetPattern(pattern.Id, pattern);
-                }
-                Refresh();
-            }
-            catch { }
-        }
-
+            
 
         /// <summary>
         /// Horizontal mirror of selected patterns

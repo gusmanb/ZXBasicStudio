@@ -70,8 +70,7 @@ namespace ZXBasicStudio.DocumentEditors.NextDows
                 txtTitle.Text= title;
                 txtDescription.Text= description;
 
-                var assetLoader = new AssetLoader();
-                var bitmap = new Bitmap(assetLoader.Open(new Uri("avares://ZXBasicStudio/DocumentEditors/NextDows/images/"+imageName)));
+                var bitmap = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/DocumentEditors/NextDows/images/"+imageName)));
                 imgImage.Source = bitmap;
                 IsHover = false;
                 _IsSelected = false;

@@ -12,14 +12,12 @@ namespace ZXBasicStudio.Classes
 {
     public static class ZXLayoutPersister
     {
-        const string LayoutFile = "ZXBasicStudioLayout.json";
-
         public static void ResetLayout()
         {
             try
             {
-                if (ZXApplicationFileProvider.Exists(LayoutFile))
-                    ZXApplicationFileProvider.Delete(LayoutFile);
+                if (ZXApplicationFileProvider.Exists(ZXConstants.APPLAYOUT_FILE))
+                    ZXApplicationFileProvider.Delete(ZXConstants.APPLAYOUT_FILE);
             }
             catch { }
         }
@@ -68,7 +66,7 @@ namespace ZXBasicStudio.Classes
 
                 var content = JsonConvert.SerializeObject(layout, Formatting.Indented);
 
-                ZXApplicationFileProvider.WriteAllText(LayoutFile, content);
+                ZXApplicationFileProvider.WriteAllText(ZXConstants.APPLAYOUT_FILE, content);
 
                 ZXFloatController.Dispose();
             }
@@ -82,10 +80,10 @@ namespace ZXBasicStudio.Classes
                 if (Avalonia.Controls.Design.IsDesignMode)
                     return;
 
-                if (!ZXApplicationFileProvider.Exists(LayoutFile))
+                if (!ZXApplicationFileProvider.Exists(ZXConstants.APPLAYOUT_FILE))
                     return;
 
-                ZXLayout? layout = JsonConvert.DeserializeObject<ZXLayout>(ZXApplicationFileProvider.ReadAllText(LayoutFile));
+                ZXLayout? layout = JsonConvert.DeserializeObject<ZXLayout>(ZXApplicationFileProvider.ReadAllText(ZXConstants.APPLAYOUT_FILE));
 
                 if (layout == null)
                     return;
