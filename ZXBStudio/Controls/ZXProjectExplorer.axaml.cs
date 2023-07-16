@@ -157,25 +157,26 @@ namespace ZXBasicStudio.Controls
                 SelectedPath = selItem.Path;
         }
 
-        public void OpenProjectFolder(string? RootFolder)
+        public void UpdateProjectFolder()
         {
-            rootPath = string.Empty;
-            SelectedPath = null;
-
-            if (RootFolder == null)
+            if (ZXProjectManager.Current == null)
             {
                 if (fWatcher != null)
                     fWatcher.Dispose();
                 fWatcher = null;
                 tbRoot.Text = "No project open";
                 tvExplorer.ItemsSource = null;
+                rootPath = null;
+                SelectedPath = null;
                 return;
             }
 
-            rootPath = System.IO.Path.GetFullPath(RootFolder);
-            _nodes = ScanFolder(RootFolder);
+            rootPath = ZXProjectManager.Current.ProjectPath;
+            SelectedPath = null;
+
+            _nodes = ScanFolder(rootPath);
             tvExplorer.ItemsSource = _nodes;
-            tbRoot.Text = "Project " + System.IO.Path.GetFileName(RootFolder);
+            tbRoot.Text = "Project " + System.IO.Path.GetFileName(rootPath);
             
 
             if (fWatcher != null)
@@ -186,7 +187,7 @@ namespace ZXBasicStudio.Controls
                 fWatcher.Dispose();
             }
 
-            fWatcher = new FileSystemWatcher(RootFolder) { IncludeSubdirectories = true };
+            fWatcher = new FileSystemWatcher(rootPath) { IncludeSubdirectories = true };
             fWatcher.Created += FWatcher_Created;
             fWatcher.Deleted += FWatcher_Deleted;
             fWatcher.Renamed += FWatcher_Renamed;
