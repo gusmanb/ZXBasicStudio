@@ -157,6 +157,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             editor.TextArea.KeyDown += TextArea_Down;
             editor.TextArea.LayoutUpdated += TextArea_LayoutUpdated;
             editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
+            editor.TextArea.SelectionChanged += TextArea_SelectionChanged;
             //editor.TextArea.TextEntered += TextArea_TextEntered;
 
             if (langDef != null)
@@ -190,6 +191,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
             foreach (var bp in breaks)
                 bpMargin?.Breakpoints.Add(bp);
+        }
+
+        private void TextArea_SelectionChanged(object? sender, EventArgs e)
+        {
+            if (editor.TextArea.Selection.Length == 0)
+                txtSelection.Text = "No text selected";
+            else
+            {
+                txtSelection.Text = $"Selected from [{editor.TextArea.Selection.StartPosition.Line},{editor.TextArea.Selection.StartPosition.Column}] to [{editor.TextArea.Selection.EndPosition.Line},{editor.TextArea.Selection.EndPosition.Column}], {editor.TextArea.Selection.Length} chars";
+            }
         }
 
         private void Caret_PositionChanged(object? sender, EventArgs e)

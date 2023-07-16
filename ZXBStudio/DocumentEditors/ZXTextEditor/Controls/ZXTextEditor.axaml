@@ -24,8 +24,9 @@
         </ContextMenu>
       </AvalonEdit:TextEditor.ContextMenu>
     </AvalonEdit:TextEditor>
-    <StackPanel Grid.Row="1" Background="Purple" Height="25" DockPanel.Dock="Bottom" Orientation="Horizontal">
+    <Grid Grid.Row="1" Background="Purple" Height="25" ColumnDefinitions="*,*">
       <TextBlock Foreground="White" Name="txtStatus" Text="Ready" Margin="5 0 0 0" VerticalAlignment="Center" FontSize="12"/>
-    </StackPanel>
+      <TextBlock Grid.Column="1" Foreground="White" Name="txtSelection" Text="No text selected" Margin="0 0 5 0" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12"/>
+    </Grid>
   </Grid>
 </UserControl>
