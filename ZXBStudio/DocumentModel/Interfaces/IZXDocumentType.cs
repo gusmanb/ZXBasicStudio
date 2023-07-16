@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentModel.Enums;
 
 namespace ZXBasicStudio.DocumentModel.Interfaces
@@ -15,6 +16,10 @@ namespace ZXBasicStudio.DocumentModel.Interfaces
     /// </summary>
     public interface IZXDocumentType
     {
+        /// <summary>
+        /// Unique identifier of the document type
+        /// </summary>
+        Guid DocumentTypeId { get; }
         /// <summary>
         /// List of possible extensions for the document type.
         /// </summary>
@@ -67,5 +72,9 @@ namespace ZXBasicStudio.DocumentModel.Interfaces
         /// Building stage, null if the document type does not need to be built
         /// </summary>
         ZXBuildStage? DocumentBuildStage { get; }
+        /// <summary>
+        /// List of editor command shortcuts, used to remap them in the keyboard mapper
+        /// </summary>
+        ZXKeybCommand[]? EditorCommands { get; }
     }
 }

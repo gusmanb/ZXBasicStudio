@@ -18,8 +18,8 @@ namespace ZXBasicStudio.Classes
         {
             try
             {
-                if (File.Exists(LayoutFile))
-                    File.Delete(LayoutFile);
+                if (ZXApplicationFileProvider.Exists(LayoutFile))
+                    ZXApplicationFileProvider.Delete(LayoutFile);
             }
             catch { }
         }
@@ -68,7 +68,7 @@ namespace ZXBasicStudio.Classes
 
                 var content = JsonConvert.SerializeObject(layout, Formatting.Indented);
 
-                File.WriteAllText(LayoutFile, content);
+                ZXApplicationFileProvider.WriteAllText(LayoutFile, content);
 
                 ZXFloatController.Dispose();
             }
@@ -82,10 +82,10 @@ namespace ZXBasicStudio.Classes
                 if (Avalonia.Controls.Design.IsDesignMode)
                     return;
 
-                if (!File.Exists(LayoutFile))
+                if (!ZXApplicationFileProvider.Exists(LayoutFile))
                     return;
 
-                ZXLayout? layout = JsonConvert.DeserializeObject<ZXLayout>(File.ReadAllText(LayoutFile));
+                ZXLayout? layout = JsonConvert.DeserializeObject<ZXLayout>(ZXApplicationFileProvider.ReadAllText(LayoutFile));
 
                 if (layout == null)
                     return;

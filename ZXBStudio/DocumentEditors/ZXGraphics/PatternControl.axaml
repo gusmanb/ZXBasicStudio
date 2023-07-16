@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="36" d:DesignHeight="52"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.PatternControl"
              Width="36" Height="52" Margin="1">
-  <Border Name="brdMain" BorderBrush="Transparent" BorderThickness="1" BorderDashArray="5,0">
+  <Border Name="brdMain" BorderBrush="Transparent" BorderThickness="1">
     <Grid RowDefinitions="16,34">
       <Grid ColumnDefinitions="*,Auto" Background="Black">
         <TextBlock Name="lblNumber" Foreground="Cyan"/>
@@ -16,4 +16,5 @@
       </Border>
     </Grid>
   </Border>
+  
 </UserControl>

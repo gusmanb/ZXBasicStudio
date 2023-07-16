@@ -34,7 +34,7 @@ namespace CoreSpectrum.Hardware
             if (RomSet == null || RomSet.Length != 1 || RomSet[0].Length != 16 * 1024)
                 throw new ArgumentException("Spectrum 48k needs a 16Kb ROM.");
 
-            var ula = new ULA48k(Timmings48k.CpuClock, 44100);
+            var ula = new ULA48k(Timmings48k.CpuClock, 44100, Timmings48k);
             var memory = new Memory48k(RomSet);
 
             MachineHardware hardware = new MachineHardware

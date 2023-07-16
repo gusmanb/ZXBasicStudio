@@ -25,6 +25,14 @@ using ZXBasicStudio.DocumentModel.Classes;
 using AvaloniaEdit;
 using System.Collections;
 using static AvaloniaEdit.Document.TextDocumentWeakEventManager;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
+using System.Runtime.InteropServices;
+using System.Windows.Input;
+using FFmpeg.AutoGen;
+using System.Reflection;
+using AvaloniaEdit.Search;
+using AvaloniaEdit.CodeCompletion;
+using AvaloniaEdit.Utils;
 
 namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 {
@@ -42,6 +50,25 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         protected virtual AbstractFoldingStrategy? foldingStrategy { get { return null; } }
         protected virtual Regex? regCancelBreakpoint { get { return null; } }
         protected virtual char? commentChar { get { return null; } }
+        protected virtual ICompletionData[] CompletionData { get { return null; } }
+
+
+        internal static Dictionary<string, ZXKeybCommand> keyboardCommands = new Dictionary<string, ZXKeybCommand> {
+            { "Save", new ZXKeybCommand{ CommandId = Guid.Parse("87f7d73b-d28a-44f4-ba0c-41baa4de238c"), CommandName = "Save", Key = Key.S, Modifiers = KeyModifiers.Control } },
+            { "Copy",new ZXKeybCommand{ CommandId = Guid.Parse("fee014bb-222b-42e3-80f3-048325b70e34"), CommandName = "Copy", Key = Key.C, Modifiers = KeyModifiers.Control } },
+            { "Cut",new ZXKeybCommand{ CommandId = Guid.Parse("1edf352f-238b-421e-b69f-613dc63c0e47"), CommandName = "Cut", Key = Key.X, Modifiers = KeyModifiers.Control } },
+            { "Paste", new ZXKeybCommand{ CommandId = Guid.Parse("f5d450b0-d126-4f62-885b-b3e28e638542"), CommandName = "Paste", Key = Key.V, Modifiers = KeyModifiers.Control } },
+            { "Select", new ZXKeybCommand{ CommandId = Guid.Parse("dc325d2f-be66-4baa-8388-caff14ff75e7"), CommandName = "Select all", Key = Key.A, Modifiers = KeyModifiers.Control } },
+            { "Undo", new ZXKeybCommand{ CommandId = Guid.Parse("912c1887-ab37-4c0a-9aee-65d84b4521c7"), CommandName = "Undo", Key = Key.Z, Modifiers = KeyModifiers.Control } },
+            { "Redo", new ZXKeybCommand{ CommandId = Guid.Parse("c5c506f0-d5e4-429f-ad21-af8cee7d1d9a"), CommandName = "Redo", Key = Key.Z, Modifiers = KeyModifiers.Control | KeyModifiers.Shift } },
+            { "Find", new ZXKeybCommand{ CommandId = Guid.Parse("bdb79400-bbc1-46bb-8f3d-b3d9f0f3a11b"), CommandName = "Find", Key = Key.F, Modifiers = KeyModifiers.Control } },
+            { "Replace", new ZXKeybCommand{ CommandId = Guid.Parse("ee825cb5-bbdf-460f-8b28-e40482177a52"), CommandName = "Replace", Key = Key.R, Modifiers = KeyModifiers.Control } },
+            { "Collapse", new ZXKeybCommand{ CommandId = Guid.Parse("22778e78-6807-43d6-9a11-70ea66a9784b"), CommandName = "Collapse all", Key = Key.E, Modifiers = KeyModifiers.Control | KeyModifiers.Shift } },
+            { "Expand", new ZXKeybCommand{ CommandId = Guid.Parse("bdcfc508-19fe-4f6f-8cc5-5762bc61e93a"), CommandName = "Expand all", Key = Key.E, Modifiers = KeyModifiers.Control } },
+            { "Comment", new ZXKeybCommand{ CommandId = Guid.Parse("5d7eac8e-1c73-4f30-ba4a-daafa40eaea0"), CommandName = "Comment selection", Key = Key.M, Modifiers = KeyModifiers.Control } },
+            { "Uncomment", new ZXKeybCommand{ CommandId = Guid.Parse("3a14b7b9-8269-43ff-a72a-d475d7f441da"), CommandName = "Uncomment selection", Key = Key.M , Modifiers = KeyModifiers.Control | KeyModifiers.Shift } },
+        };
+
         #endregion
 
         #region Private variables
@@ -52,6 +79,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         FoldingManager? fManager;
         string _docPath;
         string _docName;
+        Guid _docTypeId;
+
+        Dictionary<Guid, Action> _keybCommands = new Dictionary<Guid, Action>();
+
         #endregion
 
         #region Events
@@ -103,13 +134,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         #endregion
 
         #region Constructors
-        public ZXTextEditor() : this("Untitled")
-        { 
+        public ZXTextEditor() : this("Untitled", ZXTextDocument.Id)
+        {
+            
         }
-        public ZXTextEditor(string DocumentPath)
+        public ZXTextEditor(string DocumentPath, Guid DocumentTypeId)
         {
             InitializeComponent();
 
+            _docTypeId = DocumentTypeId;
+            InitializeShortcuts();
+            
+            editor.DataContext = editor;
             editor.FontSize = ZXOptions.Current.EditorFontSize;
             editor.WordWrap = ZXOptions.Current.WordWrap;
 
@@ -118,8 +154,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             editor.TextArea.SelectionBrush = Brush.Parse("#305da9f6");
             editor.TextArea.SelectionBorder = new Pen(Brushes.White, 1);
             editor.TextArea.SelectionCornerRadius = 2;
-            editor.TextArea.KeyUp += TextArea_KeyUp;
+            editor.TextArea.KeyDown += TextArea_Down;
             editor.TextArea.LayoutUpdated += TextArea_LayoutUpdated;
+            editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
+            editor.TextArea.SelectionChanged += TextArea_SelectionChanged;
+            //editor.TextArea.TextEntered += TextArea_TextEntered;
 
             if (langDef != null)
             {
@@ -153,6 +192,127 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             foreach (var bp in breaks)
                 bpMargin?.Breakpoints.Add(bp);
         }
+
+        private void TextArea_SelectionChanged(object? sender, EventArgs e)
+        {
+            if (editor.TextArea.Selection.Length == 0)
+                txtSelection.Text = "No text selected";
+            else
+            {
+                txtSelection.Text = $"Selected from [{editor.TextArea.Selection.StartPosition.Line},{editor.TextArea.Selection.StartPosition.Column}] to [{editor.TextArea.Selection.EndPosition.Line},{editor.TextArea.Selection.EndPosition.Column}], {editor.TextArea.Selection.Length} chars";
+            }
+        }
+
+        private void Caret_PositionChanged(object? sender, EventArgs e)
+        {
+            txtStatus.Text = $"Line {editor.TextArea.Caret.Line}, Column {editor.TextArea.Caret.Column}";
+        }
+
+        #endregion
+
+        //#region Completion
+        //CompletionWindow? completionWindow;
+
+        //private void TextArea_TextEntered(object? sender, TextInputEventArgs e)
+        //{
+        //    if (CompletionData != null && e.Text == " ")
+        //    {
+        //        // Open code completion after the user has pressed dot:
+        //        completionWindow = new CompletionWindow(editor.TextArea);
+        //        IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+        //        data.Add(new MyCompletionData("Item1"));
+        //        data.Add(new MyCompletionData("Item2"));
+        //        data.Add(new MyCompletionData("Item3"));
+        //        completionWindow.Show();
+        //        completionWindow.Closed += delegate {
+        //            completionWindow = null;
+        //        };
+        //        /*
+        //        completionWindow = new CompletionWindow(editor.TextArea);
+        //        completionWindow.CompletionList.CompletionData.AddRange(CompletionData);
+        //        completionWindow.Show();
+        //        completionWindow.Closed += delegate {
+        //            completionWindow = null;
+        //        };*/
+        //    }
+        //}
+
+        //#endregion
+
+        #region Shortcut management
+
+        private void InitializeShortcuts()
+        {
+            DisableCommand(ApplicationCommands.Cut);
+            DisableCommand(ApplicationCommands.Copy);
+            DisableCommand(ApplicationCommands.Paste);
+            DisableCommand(ApplicationCommands.Undo);
+            DisableCommand(ApplicationCommands.Redo);
+            DisableCommand(ApplicationCommands.Find);
+            DisableCommand(ApplicationCommands.Replace);
+            DisableCommand(AvaloniaEditCommands.DeleteLine);
+
+            _keybCommands = new Dictionary<Guid, Action>()
+            {
+                { keyboardCommands["Save"].CommandId, () => { RequestSaveDocument?.Invoke(this, EventArgs.Empty); } },
+                { keyboardCommands["Copy"].CommandId, () => { editor.Copy(); } },
+                { keyboardCommands["Cut"].CommandId, () => { editor.Cut();} },
+                { keyboardCommands["Paste"].CommandId, () => { editor.Paste(); } },
+                { keyboardCommands["Select"].CommandId, () => { editor.SelectAll(); } },
+                { keyboardCommands["Undo"].CommandId, () => { editor.Undo(); } },
+                { keyboardCommands["Redo"].CommandId, () => { editor.Redo(); } },
+                { keyboardCommands["Find"].CommandId, () => { ApplicationCommands.Find.Execute(null, editor.TextArea); } },
+                { keyboardCommands["Replace"].CommandId, () => { ApplicationCommands.Replace.Execute(null, editor.TextArea); } },
+                { keyboardCommands["Collapse"].CommandId, () => { Collapse();  } },
+                { keyboardCommands["Expand"].CommandId, () => { Expand();  } },
+                { keyboardCommands["Comment"].CommandId, () => { CommentSelection(); } },
+                { keyboardCommands["Uncomment"].CommandId, () => { UncommentSelection(); } }
+            };
+        }
+
+        private void DisableCommand(RoutedCommand cut)
+        {
+            var field = typeof(RoutedCommand).GetField("<Gesture>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            KeyGesture g = new KeyGesture(Key.None, KeyModifiers.None);
+            field.SetValue(cut, g);
+        }
+
+        void FindBinding(ICommand Command, ITextAreaInputHandler Handler)
+        {
+            if (Handler is not TextAreaInputHandler)
+                return;
+
+            var handler = (TextAreaInputHandler)Handler;
+
+            foreach (var binding in handler.KeyBindings.ToList())
+            {
+                var cmd = binding.Command as RoutedCommand;
+
+                if (cmd != null && cmd.Gesture != null && cmd.Gesture.Key == Key.D)
+                    cmd = cmd;
+            }
+
+            foreach (var binding in handler.CommandBindings.ToList())
+            {
+                var cmd = binding.Command as RoutedCommand;
+
+                if (cmd != null && cmd.Gesture != null && cmd.Gesture.Key == Key.D)
+                    cmd = cmd;
+            }
+
+            foreach (var childHandler in handler.NestedInputHandlers)
+                FindBinding(Command, childHandler);
+
+        }
+
+        private void TextArea_Down(object? sender, Avalonia.Input.KeyEventArgs e)
+        {
+            var commandId = ZXKeybMapper.GetCommandId(_docTypeId, e.Key, e.KeyModifiers);
+
+            if (commandId != null && _keybCommands.ContainsKey(commandId.Value))
+                _keybCommands[commandId.Value]();
+        }
+
         #endregion
 
         #region Editor event handling
@@ -173,11 +333,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                     editor.ScrollTo(blRender.Line.Value + 1, 1);
                 }
             }
-        }
-        private void TextArea_KeyUp(object? sender, Avalonia.Input.KeyEventArgs e)
-        {
-            if (e.Key == Avalonia.Input.Key.S && e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control) && RequestSaveDocument != null)
-                RequestSaveDocument(this, EventArgs.Empty);
         }
         private void Editor_PointerWheelChanged(object? sender, Avalonia.Input.PointerWheelEventArgs e)
         {
@@ -309,7 +464,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             }
 
             editor.TextArea.PointerWheelChanged -= Editor_PointerWheelChanged;
-            editor.TextArea.KeyUp -= TextArea_KeyUp;
+            editor.TextArea.KeyDown -= TextArea_Down;
             editor.TextArea.LayoutUpdated -= TextArea_LayoutUpdated;
 
             if (allowsBreakpoints)
@@ -458,7 +613,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         private void Document_Changing(object? sender, DocumentChangeEventArgs e)
         {
 
-            if (!allowsBreakpoints)
+            if (!allowsBreakpoints || e.OffsetChangeMap == null || e.OffsetChangeMap.Count == 0)
                 return;
 
             // TODO: DUEFECTU 2023.05.17 - if e.OffsetChangeMap.Count == 0, e.OffsetChangeMap[0].Offset throws a null reference exception
@@ -507,7 +662,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         }
         private void Document_Changed(object? sender, DocumentChangeEventArgs e)
         {
-            if (!allowsBreakpoints)
+            if (!allowsBreakpoints || e.OffsetChangeMap == null || e.OffsetChangeMap.Count == 0)
                 return;
 
             // TODO: DUEFECTU 2023.05.17 - if e.OffsetChangeMap.Count == 0, e.OffsetChangeMap[0].Offset throws a null reference exception
@@ -623,5 +778,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
         }
         #endregion
+
     }
 }

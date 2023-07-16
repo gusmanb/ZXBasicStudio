@@ -66,6 +66,7 @@ namespace CoreSpectrum.Hardware
 
         internal readonly ULASampler _sampler;
         protected IVideoRenderer? _renderer;
+        protected MachineTimmings _timmings;
 
         private int _currentLine = 0;
         private int _flashFrames = 0;
@@ -106,6 +107,7 @@ namespace CoreSpectrum.Hardware
             }
         }
         public virtual byte? ValueOnDataBus => 255;
+
         public virtual ulong TStates 
         { 
             get 
@@ -114,7 +116,7 @@ namespace CoreSpectrum.Hardware
             } 
             set 
             { 
-                _tStates = value; 
+                _tStates = value;
 
                 if (_screenIrq && _tStates > _irqStates) 
                     _screenIrq = false; 
@@ -163,9 +165,10 @@ namespace CoreSpectrum.Hardware
 
         protected bool _turbo;
         internal virtual bool Turbo { get { return _turbo; } set { _turbo = value; ResetAudio(false); } }
-        protected ULABase(int CpuClock, int AudioSamplingFrequency)
+        protected ULABase(int CpuClock, int AudioSamplingFrequency, MachineTimmings Timmings)
         {
             _sampler = new ULASampler(AudioSamplingFrequency, CpuClock);
+            _timmings = Timmings;
         }
         public virtual void PressKey(SpectrumKeys Key)
         {
@@ -181,14 +184,14 @@ namespace CoreSpectrum.Hardware
         {
             _screenIrq = false;
         }
-        public virtual void ScanLine(Span<byte> VideoMemory, byte FirstScan, int ScansPerFrame)
+        public virtual void ScanLine(Span<byte> VideoMemory)
         {
             if(_renderer != null)
-                _renderer.RenderLine(VideoMemory, FirstScan, Border, FlashInvert, _currentLine);
+                _renderer.RenderLine(VideoMemory, _timmings.FirstScan, Border, FlashInvert, _currentLine);
 
             _currentLine++;
 
-            if (_currentLine == ScansPerFrame)
+            if (_currentLine == _timmings.ScansPerFrame)
             {
                 _currentLine = 0;
                 _screenIrq = true;

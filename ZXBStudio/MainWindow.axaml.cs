@@ -13,11 +13,13 @@ using Avalonia.Platform.Storage;
 using Avalonia.Skia;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CoreSpectrum.Debug;
 using CoreSpectrum.Enums;
 using CoreSpectrum.SupportClasses;
 using HarfBuzzSharp;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using Svg;
 using System;
@@ -51,13 +53,32 @@ using I = ZXBasicStudio.Common.ZXSinclairBasic.ZXSinclairBasicInstruction;
 
 namespace ZXBasicStudio
 {
-    public partial class MainWindow : ZXWindowBase, IObserver<RawInputEventArgs>
+    public partial class MainWindow : ZXWindowBase //, IObserver<RawInputEventArgs>
     {
-        //TODO: Añadir lista de proyectos recientes al menú
 
-        public static MainWindow mainWindowInstance = null;
+        #region Shortcut handling
+
+        internal static Guid KeybSourceId = Guid.Parse("72af48c7-4d62-4bef-8676-63c10d99de20");
+
+        internal static ZXKeybCommand[] KeybCommands = 
+        {
+            new ZXKeybCommand { CommandId = Guid.Parse("62c23849-7312-41ac-8788-9f6d851cc3b9"), CommandName = "Build and run", Key = Key.F5, Modifiers = KeyModifiers.None },
+            new ZXKeybCommand { CommandId = Guid.Parse("d9222ec4-5d7a-4b04-b9e3-e29d6d8bca78"), CommandName = "Build and debug", Key = Key.F6, Modifiers = KeyModifiers.None },
+            new ZXKeybCommand { CommandId = Guid.Parse("57aff55a-f4a1-4a57-a532-a38117e1a532"), CommandName = "Pause emulation", Key = Key.F7, Modifiers = KeyModifiers.None },
+            new ZXKeybCommand { CommandId = Guid.Parse("d4dc5ad4-d5f2-431c-a550-541b56d52fbb"), CommandName = "Resume emulation", Key = Key.F8, Modifiers = KeyModifiers.None },
+            new ZXKeybCommand { CommandId = Guid.Parse("df3bacb0-baab-40b9-a287-653fa339fe1d"), CommandName = "Assembler step", Key = Key.F9, Modifiers = KeyModifiers.None },
+            new ZXKeybCommand { CommandId = Guid.Parse("bd77367e-f17b-4550-9dd1-26013f7d250a"), CommandName = "Basic step", Key = Key.F10, Modifiers = KeyModifiers.None },
+            new ZXKeybCommand { CommandId = Guid.Parse("cf0216e0-3180-4429-8e09-664e6262dbd9"), CommandName = "Stop emulation", Key = Key.F11, Modifiers = KeyModifiers.None },
+            new ZXKeybCommand { CommandId = Guid.Parse("703808fa-abec-4c65-940b-16544c2bd93d"), CommandName = "Turbo mode", Key = Key.F12, Modifiers = KeyModifiers.None },
+            new ZXKeybCommand { CommandId = Guid.Parse("077a0fb9-34a4-461b-9f44-8f3472f9e872"), CommandName = "Swap fullscreen mode", Key = Key.Enter, Modifiers = KeyModifiers.Alt },
+        };
+
+        Dictionary<Guid, Action> _shortcuts = new Dictionary<Guid, Action>();
+
+        #endregion
 
         List<ZXDocumentEditorBase> openDocuments = new List<ZXDocumentEditorBase>();
+
         ObservableCollection<TabItem> editTabs = new ObservableCollection<TabItem>();
 
         ZXProgram? loadedProgram;
@@ -84,6 +105,9 @@ namespace ZXBasicStudio
         public MainWindow()
         {
             InitializeComponent();
+
+            GlobalKeybHandler.KeyUp += GlobalKeyUp;
+
             EditItems = editTabs;
             DataContext = this;
             mainWindowInstance = this;
@@ -165,8 +189,6 @@ namespace ZXBasicStudio
             emu.ExceptionTrapped += Emu_ExceptionTrapped;
             #endregion
 
-            InputManager.Instance?.PreProcess.Subscribe(this);
-
             regView.Registers = emu.Registers;
             memView.Initialize(emu.Memory);
             CreateRomBreakpoints();
@@ -181,6 +203,44 @@ namespace ZXBasicStudio
             _playerDock.Name = "TapePlayerDock";
 
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom, new[] { _playerDock });
+            #region Shortcut initialization
+            _shortcuts = new Dictionary<Guid, Action>()
+            {
+                { Guid.Parse("62c23849-7312-41ac-8788-9f6d851cc3b9"), () => {
+                    if (EmulatorInfo.CanRun)
+                        BuildAndRun(this, new RoutedEventArgs());} },
+                { Guid.Parse("d9222ec4-5d7a-4b04-b9e3-e29d6d8bca78"), () => {
+                    if (EmulatorInfo.CanDebug)
+                        BuildAndDebug(this, new RoutedEventArgs()); } },
+                { Guid.Parse("57aff55a-f4a1-4a57-a532-a38117e1a532"), () => {
+                    if (EmulatorInfo.CanPause)
+                        PauseEmulator(this, new RoutedEventArgs());} },
+                { Guid.Parse("d4dc5ad4-d5f2-431c-a550-541b56d52fbb"), () => {
+                    if (EmulatorInfo.CanResume)
+                        ResumeEmulator(this, new RoutedEventArgs());} },
+                { Guid.Parse("df3bacb0-baab-40b9-a287-653fa339fe1d"), () => {
+                    if (EmulatorInfo.CanStep)
+                        AssemblerStepEmulator(this, new RoutedEventArgs()); } },
+                { Guid.Parse("bd77367e-f17b-4550-9dd1-26013f7d250a"), () => {
+                    if (EmulatorInfo.CanStep)
+                        BasicStepEmulator(this, new RoutedEventArgs());} },
+                { Guid.Parse("cf0216e0-3180-4429-8e09-664e6262dbd9"), () => {
+                    if (EmulatorInfo.IsRunning)
+                        StopEmulator(this, new RoutedEventArgs());} },
+                { Guid.Parse("703808fa-abec-4c65-940b-16544c2bd93d"), () => {
+                    if (EmulatorInfo.IsRunning)
+                        TurboModeEmulator(this, new RoutedEventArgs());} },
+                { Guid.Parse("077a0fb9-34a4-461b-9f44-8f3472f9e872"), () => {
+                    if (EmulatorInfo.IsRunning)
+                        SwapFullScreen();} },
+            };
+            #endregion
+        }
+
+        protected override void OnMeasureInvalidated()
+        {
+            
+            base.OnMeasureInvalidated();
         }
 
         private void BtnMapKeyboard_Click(object? sender, RoutedEventArgs e)
@@ -690,6 +750,7 @@ namespace ZXBasicStudio
                 return null;
             }
 
+            //TODO: Provide commands
             ZXDocumentEditorBase? editor = docType.DocumentFactory.CreateEditor(file, outLog.Writer);
 
             if (editor == null)
@@ -836,7 +897,7 @@ namespace ZXBasicStudio
         {
             emu.Borderless = btnBorderless.IsChecked ?? false;
         }
-        private void SwapFullScreen()
+        public void SwapFullScreen()
         {
 
             ZXFloatingWindow? floatW = ZXFloatController.Windows.FirstOrDefault(w => w.DockingContainer.DockingControls.Contains(emuDock));
@@ -1053,6 +1114,8 @@ namespace ZXBasicStudio
                     varsView.Initialize(loadedProgram.Variables, emu.Memory, emu.Registers);
 
                 LoadBreakpoints(LoadedBreakpoints.User);
+
+                regView.Registers = emu.Registers;
 
                 EmulatorInfo.IsPaused = false;
                 emu.Resume();
@@ -1901,108 +1964,20 @@ namespace ZXBasicStudio
                 ZXLayoutPersister.SaveLayout(grdMain, dockLeft, dockRight, dockBottom);
 
             base.OnClosing(e);
-
         }
         #endregion
 
         #region Global keyb handling
-        public void OnCompleted()
-        {
 
+        private void GlobalKeyUp(object? sender, KeyEventArgs e)
+        {
+            var cmd = ZXKeybMapper.GetCommandId(KeybSourceId, e.Key, e.KeyModifiers);
+
+            if (cmd != null && _shortcuts.ContainsKey(cmd.Value))
+                _shortcuts[cmd.Value]();
         }
 
-        public void OnError(Exception error)
-        {
-
-        }
-
-        public void OnNext(RawInputEventArgs value)
-        {
-            if (EmulatorInfo.IsRunning)
-                emu.ProcessRawInput(value);
-            
-            if (value is RawKeyEventArgs)
-            {
-                RawKeyEventArgs args = (RawKeyEventArgs)value;
-
-                if (args.Type != RawKeyEventType.KeyUp)
-                    return;
-
-                if (EmulatorInfo.IsRunning)
-                {
-                    if (args.Key == Key.Enter && args.Modifiers == RawInputModifiers.Alt)
-                    {
-                        SwapFullScreen();
-                        return;
-                    }
-                }
-
-                switch (args.Key)
-                {
-                    case Key.F5:
-                        if (EmulatorInfo.CanRun)
-                            BuildAndRun(this, new RoutedEventArgs());
-                        value.Handled = true;
-                        break;
-                    case Key.F6:
-                        if (EmulatorInfo.CanDebug)
-                            BuildAndDebug(this, new RoutedEventArgs());
-                        value.Handled = true;
-                        break;
-                    case Key.F7:
-                        if (EmulatorInfo.CanPause)
-                            PauseEmulator(this, new RoutedEventArgs());
-                        value.Handled = true;
-                        break;
-                    case Key.F8:
-                        if (EmulatorInfo.CanResume)
-                            ResumeEmulator(this, new RoutedEventArgs());
-                        value.Handled = true;
-                        break;
-                    case Key.F9:
-                        if (EmulatorInfo.CanStep)
-                            AssemblerStepEmulator(this, new RoutedEventArgs());
-                        value.Handled = true;
-                        break;
-                    case Key.F10:
-                        if (EmulatorInfo.CanStep)
-                            BasicStepEmulator(this, new RoutedEventArgs());
-                        value.Handled = true;
-                        break;
-                    case Key.F11:
-                        if (EmulatorInfo.IsRunning)
-                            StopEmulator(this, new RoutedEventArgs());
-                        value.Handled = true;
-                        break;
-
-                    case Key.F12:
-                        if (EmulatorInfo.IsRunning)
-                            TurboModeEmulator(this, new RoutedEventArgs());
-                        value.Handled = true;
-                        break;
-                }
-            }
-        }
         #endregion
-
-
-        // TODO: DUEFECTU 2023.05.17: Get prooject root path
-        public static string GetProjectRootPath()
-        {
-            try
-            {
-                if (mainWindowInstance==null || mainWindowInstance.peExplorer == null)
-                {
-                    return null;
-                }
-                return mainWindowInstance.peExplorer.RootPath;
-            }
-            catch 
-            {
-                return null;
-            }
-        }
-
     }
 
     public enum PreferredSourceType
@@ -2012,80 +1987,34 @@ namespace ZXBasicStudio
         ROM
     }
 
-    public class FileInfoProvider : AvaloniaObject
+    public partial class FileInfoProvider : ObservableObject
     {
-        StyledProperty<bool> ProjectLoadedProperty = StyledProperty<bool>.Register<FileInfoProvider, bool>("ProjectLoaded", false);
-        StyledProperty<bool> FileLoadedProperty = StyledProperty<bool>.Register<FileInfoProvider, bool>("FileLoaded", false);
-        StyledProperty<bool> FileSystemObjectSelectedProperty = StyledProperty<bool>.Register<FileInfoProvider, bool>("FileSystemObjectSelected", false);
-
-        public bool ProjectLoaded
-        {
-            get { return GetValue<bool>(ProjectLoadedProperty); }
-            set { SetValue<bool>(ProjectLoadedProperty, value); }
-        }
-        public bool FileLoaded
-        {
-            get { return GetValue<bool>(FileLoadedProperty); }
-            set { SetValue<bool>(FileLoadedProperty, value); }
-        }
-        public bool FileSystemObjectSelected
-        {
-            get { return GetValue<bool>(FileSystemObjectSelectedProperty); }
-            set { SetValue<bool>(FileSystemObjectSelectedProperty, value); }
-        }
+        [ObservableProperty]
+        bool projectLoaded;
+        [ObservableProperty]
+        bool fileLoaded;
+        [ObservableProperty]
+        bool fileSystemObjectSelected;
+        
     }
-    public class EmulatorInfoProvider : AvaloniaObject
+    public partial class EmulatorInfoProvider : ObservableObject
     {
-        StyledProperty<bool> IsRunningProperty = StyledProperty<bool>.Register<EmulatorInfoProvider, bool>("IsRunning", false);
-        StyledProperty<bool> IsPausedProperty = StyledProperty<bool>.Register<EmulatorInfoProvider, bool>("IsPaused", false);
-        StyledProperty<bool> IsDebuggingProperty = StyledProperty<bool>.Register<EmulatorInfoProvider, bool>("IsDebugging", false);
-        StyledProperty<bool> CanPauseProperty = StyledProperty<bool>.Register<EmulatorInfoProvider, bool>("CanPause", false);
-        StyledProperty<bool> CanResumeProperty = StyledProperty<bool>.Register<EmulatorInfoProvider, bool>("CanResume", false);
-        StyledProperty<bool> CanStepProperty = StyledProperty<bool>.Register<EmulatorInfoProvider, bool>("CanStep", false);
-
-        StyledProperty<bool> CanRunProperty = StyledProperty<bool>.Register<EmulatorInfoProvider, bool>("CanRun", false);
-        StyledProperty<bool> CanDebugProperty = StyledProperty<bool>.Register<EmulatorInfoProvider, bool>("CanDebug", false);
-
-        public bool IsRunning
-        {
-            get { return GetValue<bool>(IsRunningProperty); }
-            set { SetValue<bool>(IsRunningProperty, value); }
-        }
-        public bool IsPaused
-        {
-            get { return GetValue<bool>(IsPausedProperty); }
-            set { SetValue<bool>(IsPausedProperty, value); }
-        }
-        public bool IsDebugging
-        {
-            get { return GetValue<bool>(IsDebuggingProperty); }
-            set { SetValue<bool>(IsDebuggingProperty, value); }
-        }
-        public bool CanPause
-        {
-            get { return GetValue<bool>(CanPauseProperty); }
-            set { SetValue<bool>(CanPauseProperty, value); }
-        }
-        public bool CanResume
-        {
-            get { return GetValue<bool>(CanResumeProperty); }
-            set { SetValue<bool>(CanResumeProperty, value); }
-        }
-        public bool CanStep
-        {
-            get { return GetValue<bool>(CanStepProperty); }
-            set { SetValue<bool>(CanStepProperty, value); }
-        }
-        public bool CanRun
-        {
-            get { return GetValue<bool>(CanRunProperty); }
-            set { SetValue<bool>(CanRunProperty, value); }
-        }
-        public bool CanDebug
-        {
-            get { return GetValue<bool>(CanDebugProperty); }
-            set { SetValue<bool>(CanDebugProperty, value); }
-        }
+        [ObservableProperty]
+        bool isRunning;
+        [ObservableProperty]
+        bool isPaused;
+        [ObservableProperty]
+        bool isDebugging;
+        [ObservableProperty]
+        bool canPause;
+        [ObservableProperty]
+        bool canResume;
+        [ObservableProperty]
+        bool canStep;
+        [ObservableProperty]
+        bool canRun;
+        [ObservableProperty]
+        bool canDebug;
         public LoadedBreakpoints LoadedBreakpoints { get; set; }
     }
 

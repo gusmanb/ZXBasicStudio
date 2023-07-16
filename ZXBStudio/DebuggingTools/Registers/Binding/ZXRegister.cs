@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ZXBasicStudio.DebuggingTools.Registers.Binding
 {
-    public class ZXRegister : AvaloniaObject
+    public partial class ZXRegister : AvaloniaObject
     {
         public static StyledProperty<string> NameProperty = AvaloniaProperty.Register<ZXRegister, string>("Name", "");
         public static StyledProperty<string> HexProperty = AvaloniaProperty.Register<ZXRegister, string>("Hex", "--");

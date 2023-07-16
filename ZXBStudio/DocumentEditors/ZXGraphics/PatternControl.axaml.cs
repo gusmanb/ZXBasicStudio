@@ -3,6 +3,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using System;
+using System.IO.Compression;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {

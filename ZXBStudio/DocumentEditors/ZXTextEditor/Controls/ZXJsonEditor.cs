@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
 
 namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 {
@@ -19,6 +20,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         protected override bool allowsBreakpoints => false;
 
         public ZXJsonEditor() : base() { }
-        public ZXJsonEditor(string DocumentPath) : base(DocumentPath) { }
+        public ZXJsonEditor(string DocumentPath) : base(DocumentPath, ZXTextDocument.Id) { }
     }
 }

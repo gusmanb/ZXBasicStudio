@@ -13,8 +13,8 @@
     <TreeView Background="#303030" 
               Grid.Row="2" 
               Grid.ColumnSpan="3" 
-              Items="{Binding variables}" 
-              BorderThickness="0"
+              ItemsSource="{Binding variables}"
+              BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
               >
       <TreeView.ItemTemplate>
         <TreeDataTemplate ItemsSource="{Binding ChildProperties}">

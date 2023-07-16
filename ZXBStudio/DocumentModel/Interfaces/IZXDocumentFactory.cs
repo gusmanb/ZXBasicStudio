@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentModel.Classes;
 
 namespace ZXBasicStudio.DocumentModel.Interfaces
@@ -25,6 +26,7 @@ namespace ZXBasicStudio.DocumentModel.Interfaces
         /// </summary>
         /// <param name="Path">Path to the document</param>
         /// <param name="OutputLog">TextWriter used to show logs to the user</param>
+        /// <param name="CommandMappings">List of mapped commands. Can be null if the document type does not provide any command or the user has not remapped the commands</param>
         /// <returns>The new document editor if success, null in other case</returns>
         ZXDocumentEditorBase? CreateEditor(string Path, TextWriter OutputLog);
     }

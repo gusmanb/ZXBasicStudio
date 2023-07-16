@@ -10,7 +10,7 @@
         <Svg Name="svgImg" Path="{Binding SvgPath}" Margin="5,0,5,0" VerticalAlignment="Center" Height="12" Width="12" HorizontalAlignment="Left"></Svg>
         <TextBlock Name="tbName" Foreground="#ffffff" Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding PropertyName}"></TextBlock>
       </StackPanel>
-      <TextBlock Grid.Column="1" Name="tbValue" Foreground="#ffffff" Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding PropertyValue}"></TextBlock>
+      <TextBlock Grid.Column="1" Name="tbValue" Foreground="#ffffff" Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding PropertyValue}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding PropertyValue}"></TextBlock>
       <TextBlock Grid.Column="2" Name="tbType" Foreground="#ffffff" Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding PropertyType}"></TextBlock>
     
       <Border BorderBrush="Black" BorderThickness="1" CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#ff303030" Name="brdEdit" IsVisible="False" Grid.ColumnSpan="3" Margin="-2" Padding="0">

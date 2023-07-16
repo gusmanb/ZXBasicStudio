@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
@@ -19,8 +21,26 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
         static readonly string _docCat = "General";
         static readonly string _docAspect = "/Svg/Documents/file-text.svg";
         static readonly ZXTextDocumentFactory _factory = new ZXTextDocumentFactory();
+        static readonly Guid _docId = Guid.Parse("1202e397-504e-4666-9369-4ea0e888fbcb");
+
+        public static Guid Id => _docId;
+
+        static readonly ZXKeybCommand[] _editCommands = new ZXKeybCommand[]
+        {
+            ZXTextEditor.keyboardCommands["Save"],
+            ZXTextEditor.keyboardCommands["Copy"],
+            ZXTextEditor.keyboardCommands["Cut"],
+            ZXTextEditor.keyboardCommands["Paste"],
+            ZXTextEditor.keyboardCommands["Select"],
+            ZXTextEditor.keyboardCommands["Undo"],
+            ZXTextEditor.keyboardCommands["Redo"],
+            ZXTextEditor.keyboardCommands["Find"],
+            ZXTextEditor.keyboardCommands["Replace"]
+        };
+
         Bitmap? _icon;
 
+        public Guid DocumentTypeId => _docId;
         public string[] DocumentExtensions => _docExtensions;
         public string DocumentName => _docName;
         public string DocumentDescription => _docDesc;
@@ -33,12 +53,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
             {
                 if (_icon == null)
                 {
-                    var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-
-                    if (assets == null)
-                        throw new AvaloniaInternalException("Cannot create asstes loader");
-
-                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/txtFile.png")));
+                    _icon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/txtFile.png")));
                 }
 
                 return _icon;
@@ -54,5 +69,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
         public IZXDocumentBuilder? DocumentBuilder => null;
 
         public ZXBuildStage? DocumentBuildStage => null;
+
+        public ZXKeybCommand[]? EditorCommands => _editCommands;
     }
 }

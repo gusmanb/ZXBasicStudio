@@ -22,7 +22,7 @@ namespace CoreSpectrum.Hardware
             }
         }
 
-        public ULA48k(int CpuClock, int AudioSamplingFrequency) : base(CpuClock, AudioSamplingFrequency) { }
+        public ULA48k(int CpuClock, int AudioSamplingFrequency, MachineTimmings Timmings) : base(CpuClock, AudioSamplingFrequency, Timmings) { }
         public override byte this[byte portLo, byte portHi]
         {
             get

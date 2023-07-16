@@ -4,7 +4,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CoreSpectrum.Hardware;
 using CoreSpectrum.SupportClasses;
-using MessageBox.Avalonia;
+using MsBox.Avalonia;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -251,13 +251,13 @@ namespace ZXBasicStudio.Emulator.Controls
         {
             var window = (Window.GetTopLevel(this) as Window);
 
-            var box = MessageBoxManager.GetMessageBoxStandardWindow(Title, Text, icon: MessageBox.Avalonia.Enums.Icon.Error);
+            var box = MessageBoxManager.GetMessageBoxStandard(Title, Text, icon: MsBox.Avalonia.Enums.Icon.Error);
 
             var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
             var win = prop.GetValue(box) as Window;
 
             win.Icon = window.Icon;
-            await box.ShowDialog(window);
+            await box.ShowWindowDialogAsync(window);
         }
     }
 }

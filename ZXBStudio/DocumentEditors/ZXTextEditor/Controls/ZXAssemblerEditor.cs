@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 
 namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 {
@@ -21,6 +22,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         protected override bool allowsBreakpoints => true;
 
         public ZXAssemblerEditor() : base() { }
-        public ZXAssemblerEditor(string DocumentPath) : base(DocumentPath) { }
+        public ZXAssemblerEditor(string DocumentPath) : base(DocumentPath, ZXAssemblerDocument.Id) { }
     }
 }

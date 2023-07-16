@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
-using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia.Models;
-using MessageBox.Avalonia;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia.Models;
+using MsBox.Avalonia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
+using MsBox.Avalonia.Dto;
 
 namespace ZXBasicStudio.Extensions
 {
@@ -21,13 +22,22 @@ namespace ZXBasicStudio.Extensions
 
             var window = (Window)Source;
 
-            var box = MessageBoxManager.GetMessageBoxStandardWindow(Title, Text, icon: MessageBox.Avalonia.Enums.Icon.Error);
+            var box = MessageBoxManager.GetMessageBoxStandard(
+                new MessageBoxStandardParams
+                {
+                    ButtonDefinitions = ButtonEnum.Ok,
+                    ContentTitle = Title,
+                    ContentMessage = Text,
+                    Icon = Icon.Error,
+                    WindowIcon = window.Icon,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                });
 
-            var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-            var win = prop.GetValue(box) as Window;
+            //var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
+            //var win = prop.GetValue(box) as Window;
 
-            win.Icon = window.Icon;
-            await box.ShowDialog(window);
+            //win.Icon = window.Icon;
+            await box.ShowWindowDialogAsync(window);
         }
         public static async Task ShowInfo(this TopLevel Source, string Title, string Text)
         {
@@ -36,13 +46,17 @@ namespace ZXBasicStudio.Extensions
 
             var window = (Window)Source;
 
-            var box = MessageBoxManager.GetMessageBoxStandardWindow(Title, Text, icon: MessageBox.Avalonia.Enums.Icon.Info);
+            var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
+            {
+                ButtonDefinitions = ButtonEnum.Ok,
+                ContentTitle = Title,
+                ContentMessage = Text,
+                Icon = Icon.Info,
+                WindowIcon = window.Icon,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            });
 
-            var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-            var win = prop.GetValue(box) as Window;
-
-            win.Icon = window.Icon;
-            await box.ShowDialog(window);
+            await box.ShowWindowDialogAsync(window);
         }
         public static async Task<bool> ShowConfirm(this TopLevel Source, string Title, string Text)
         {
@@ -51,13 +65,17 @@ namespace ZXBasicStudio.Extensions
 
             var window = (Window)Source;
 
-            var box = MessageBoxManager.GetMessageBoxStandardWindow(Title, Text, @enum: ButtonEnum.YesNo, icon: MessageBox.Avalonia.Enums.Icon.Warning);
+            var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
+            {
+                ButtonDefinitions = ButtonEnum.YesNo,
+                ContentTitle = Title,
+                ContentMessage = Text,
+                Icon = Icon.Warning,
+                WindowIcon = window.Icon,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            });
 
-            var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-            var win = prop.GetValue(box) as Window;
-
-            win.Icon = window.Icon;
-            var result = await box.ShowDialog(window);
+            var result = await box.ShowWindowDialogAsync(window);
 
             if (result == ButtonResult.No)
                 return false;
@@ -71,21 +89,23 @@ namespace ZXBasicStudio.Extensions
 
             var window = (Window)Source;
 
-            List<ButtonDefinition> buttons = new List<ButtonDefinition>();
-            buttons.Add(new ButtonDefinition { Name = "Accept", IsDefault = true });
-            buttons.Add(new ButtonDefinition { Name = "Cancel", IsCancel = true });
-            var box = MessageBoxManager.GetMessageBoxInputWindow(new MessageBox.Avalonia.DTO.MessageBoxInputParams { ContentTitle = Title, ContentMessage = Label, ContentHeader = Text, ButtonDefinitions = buttons, Icon = MessageBox.Avalonia.Enums.Icon.Setting, WindowStartupLocation = WindowStartupLocation.CenterOwner, InputDefaultValue = DefaultValue });
+            var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
+            {
+                ButtonDefinitions = ButtonEnum.OkCancel,
+                ContentTitle = Title,
+                ContentMessage = Text,
+                Icon = Icon.Warning,
+                WindowIcon = window.Icon,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                InputParams = new InputParams { Label = Label, DefaultValue = DefaultValue }
+            });
 
-            var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-            var win = prop.GetValue(box) as Window;
+            var result = await box.ShowWindowDialogAsync(window);
 
-            win.Icon = window.Icon;
-            var result = await box.ShowDialog(window);
-
-            if (result.Button == "Cancel" || string.IsNullOrWhiteSpace(result.Message))
+            if (result == ButtonResult.Cancel)
                 return null;
 
-            return result.Message;
+            return box.InputValue;
         }
         public static IStorageProvider GetStorageProvider(this TopLevel Source)
         {

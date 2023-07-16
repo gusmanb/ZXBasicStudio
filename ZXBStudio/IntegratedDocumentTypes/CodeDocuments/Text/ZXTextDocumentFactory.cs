@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
@@ -49,7 +50,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text
                 OutputLog.WriteLine($"Document {Path} is not a text file, internal document handling error, operation aborted.");
                 return null;
             }
-            ZXTextEditor editor = new ZXTextEditor(Path);
+            ZXTextEditor editor = new ZXTextEditor(Path, ZXTextDocument.Id);
             return editor;
         }
     }

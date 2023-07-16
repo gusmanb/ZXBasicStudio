@@ -3,19 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace ZXBasicStudio.BuildSystem
 {
     public class ZXBasicMap
     {
-        static Regex regSub = new Regex("^\\s*(fastcall)?\\s*sub\\s+([^\\(]+)\\(((?:[^()]+|\\([^()]*\\))*)\\)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        static Regex regFunc = new Regex("^\\s*(fastcall)?\\s*function\\s+([^\\(]+)\\(((?:[^()]+|\\([^()]*\\))*)\\)\\s*(as\\s+([a-zA-Z]+))?", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        static Regex regSub = new Regex("^\\s*([^\\s,;:]*:\\ *?)?(fastcall)?sub\\s+(fastcall\\s+)?([^\\(]+)\\(((?:[^()]+|\\([^()]*\\))*)\\)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        static Regex regFunc = new Regex("^\\s*([^\\s,;:]*:\\ *?)?(fastcall)?function\\s+(fastcall\\s+)?([^\\(]+)\\(((?:[^()]+|\\([^()]*\\))*)\\)\\s*(as\\s+([a-zA-Z]+))?", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-        static Regex regEndSub = new Regex("^\\s*end\\s*sub(\\s|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        static Regex regEndFunc = new Regex("^\\s*end\\s*function(\\s|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        static Regex regEndSub = new Regex("^\\s*end\\s*sub(\\s|$|')", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        static Regex regEndFunc = new Regex("^\\s*end\\s*function(\\s|$|')", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         static Regex regMulti = new Regex("(\\s|^|[^a-zA-Z0-9])(_)(\\s|$)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
@@ -42,8 +44,9 @@ namespace ZXBasicStudio.BuildSystem
 
             //Remove strings and comments to ease tasks
             string cleanContent = regRemoveMultiComments.Replace(PlainContent, string.Empty);
+            cleanContent = regRemoveStrings.Replace(cleanContent, "\"\"");
             cleanContent = regRemoveSingleComments.Replace(cleanContent, string.Empty);
-            cleanContent = regRemoveStrings.Replace(cleanContent, string.Empty);
+            
 
             string[] allLines = cleanContent.Replace("\r", "").Split("\n");
 
@@ -134,6 +137,7 @@ namespace ZXBasicStudio.BuildSystem
                 //Check for sub end
                 if (currentSub != null && regEndSub.IsMatch(line))
                 {
+                    currentSub.EndLine = buc;
                     subs.Add(currentSub);
                     currentSub = null;
                     continue;
@@ -142,6 +146,7 @@ namespace ZXBasicStudio.BuildSystem
                 //Check for function end
                 if (currentFunction != null && regEndFunc.IsMatch(line))
                 {
+                    currentFunction.EndLine = buc;
                     functions.Add(currentFunction);
                     currentFunction = null;
                     continue;
@@ -150,16 +155,15 @@ namespace ZXBasicStudio.BuildSystem
                 //If there is no open sub/function...
                 if (currentFunction == null && currentSub == null)
                 {
-
                     //Check sub begin
                     var subMatch = regSub.Match(line);
 
                     if (subMatch != null && subMatch.Success)
                     {
-                        currentSub = new ZXBasicSub { FastCall = subMatch.Groups[1].Success, Name = subMatch.Groups[2].Value.Trim() };
+                        currentSub = new ZXBasicSub { FastCall = subMatch.Groups[2].Success || subMatch.Groups[3].Success, Name = subMatch.Groups[4].Value.Trim(), StartLine = buc };
 
-                        if (subMatch.Groups[3].Success && !string.IsNullOrWhiteSpace(subMatch.Groups[3].Value))
-                            ParseInputParameters(subMatch.Groups[3].Value, currentSub.InputParameters);
+                        if (subMatch.Groups[5].Success && !string.IsNullOrWhiteSpace(subMatch.Groups[5].Value))
+                            ParseInputParameters(subMatch.Groups[5].Value, currentSub.InputParameters);
 
                         continue;
                     }
@@ -169,12 +173,12 @@ namespace ZXBasicStudio.BuildSystem
 
                     if (funcMatch != null && funcMatch.Success)
                     {
-                        currentFunction = new ZXBasicFunction { FastCall = funcMatch.Groups[1].Success, Name = funcMatch.Groups[2].Value.Trim() };
+                        currentFunction = new ZXBasicFunction { FastCall = funcMatch.Groups[2].Success || funcMatch.Groups[3].Success, Name = funcMatch.Groups[4].Value.Trim(), StartLine = buc };
 
-                        if (funcMatch.Groups[3].Success && !string.IsNullOrWhiteSpace(funcMatch.Groups[3].Value))
-                            ParseInputParameters(funcMatch.Groups[3].Value, currentFunction.InputParameters);
+                        if (funcMatch.Groups[5].Success && !string.IsNullOrWhiteSpace(funcMatch.Groups[5].Value))
+                            ParseInputParameters(funcMatch.Groups[5].Value, currentFunction.InputParameters);
 
-                        if (funcMatch.Groups[5].Success)
+                        if (funcMatch.Groups[7].Success)
                             currentFunction.ReturnType = StorageFromString(funcMatch.Groups[5].Value, currentFunction.Name);
                         else
                             currentFunction.ReturnType = ZXVariableStorage.F;
@@ -184,42 +188,46 @@ namespace ZXBasicStudio.BuildSystem
 
                 }
 
-                //Check for dim
-                var dimMatch = regDim.Match(line);
-
-                if (dimMatch != null && dimMatch.Success)
+                //Check for global variables
+                if (currentSub == null && currentFunction == null)
                 {
+                    //Check for dim
+                    var dimMatch = regDim.Match(line);
 
-                    string varNameDef = dimMatch.Groups[2].Value;
-
-                    if (varNameDef.Contains("(")) //array
+                    if (dimMatch != null && dimMatch.Success)
                     {
-                        string varName = varNameDef.Substring(0, varNameDef.IndexOf("(")).Trim();
-                        string[] dims = varNameDef.Substring(varNameDef.IndexOf("(") + 1).Replace(")", "").Split(",", StringSplitOptions.RemoveEmptyEntries);
 
-                        ZXBasicVariable varArr = new ZXBasicVariable { Name = varName, IsArray = true, Dimensions = dims.Select(d => GetDimensionSize(d)).ToArray(), Storage = StorageFromString(dimMatch.Groups[5].Value, varName) };
+                        string varNameDef = dimMatch.Groups[2].Value;
 
-                        if (currentSub != null)
-                            currentSub.LocalVariables.Add(varArr);
-                        else if (currentFunction != null)
-                            currentFunction.LocalVariables.Add(varArr);
-                        else
-                            globalVars.Add(varArr);
-                    }
-                    else
-                    {
-                        string[] varNames = dimMatch.Groups[2].Value.Split(",", StringSplitOptions.RemoveEmptyEntries);
-
-                        foreach (var vName in varNames)
+                        if (varNameDef.Contains("(")) //array
                         {
-                            var storage = StorageFromString(dimMatch.Groups[5].Value, vName);
-                            ZXBasicVariable var = new ZXBasicVariable { Name = vName.Trim(), IsArray = false, Storage = storage };
-                            if (currentSub != null)
-                                currentSub.LocalVariables.Add(var);
-                            else if (currentFunction != null)
-                                currentFunction.LocalVariables.Add(var);
-                            else
+                            string varName = varNameDef.Substring(0, varNameDef.IndexOf("(")).Trim();
+
+                            if (!jointLines.Skip(buc + 1).Any(l => Regex.IsMatch(l, $"(^|[^a-zA-Z0-9_]){varName}($|[^a-zA-Z0-9_])", RegexOptions.Multiline)))
+                                continue;
+
+                            string[] dims = varNameDef.Substring(varNameDef.IndexOf("(") + 1).Replace(")", "").Split(",", StringSplitOptions.RemoveEmptyEntries);
+
+                            ZXBasicVariable varArr = new ZXBasicVariable { Name = varName, IsArray = true, Dimensions = dims.Select(d => GetDimensionSize(d)).ToArray(), Storage = StorageFromString(dimMatch.Groups[5].Value, varName) };
+
+                            globalVars.Add(varArr);
+                        }
+                        else
+                        {
+                            string[] varNames = dimMatch.Groups[2].Value.Split(",", StringSplitOptions.RemoveEmptyEntries);
+
+                            foreach (var vName in varNames)
+                            {
+                                string varName = vName.Trim();
+
+                                if (!jointLines.Skip(buc + 1).Any(l => Regex.IsMatch(l, $"(^|[^a-zA-Z0-9_]){varName}($|[^a-zA-Z0-9_])", RegexOptions.Multiline)))
+                                    continue;
+
+                                var storage = StorageFromString(dimMatch.Groups[5].Value, varName);
+                                ZXBasicVariable var = new ZXBasicVariable { Name = varName, IsArray = false, Storage = storage };
+                                
                                 globalVars.Add(var);
+                            }
                         }
                     }
                 }
@@ -228,11 +236,17 @@ namespace ZXBasicStudio.BuildSystem
             List<ZXBasicLocation> locations = new List<ZXBasicLocation>();
 
             foreach (var file in AllFiles)
-                locations.AddRange(file.GetBuildLocations());
+                locations.AddRange(GetBuildLocations(file));
 
             GlobalVariables = globalVars.ToArray();
             Subs = subs.ToArray();
             Functions = functions.ToArray();
+
+            foreach(var sub in Subs)
+                GetSubVars(sub, jointLines.Skip(sub.StartLine).Take(sub.EndLine - sub.StartLine + 1).ToArray());
+
+            foreach (var sub in Functions)
+                GetSubVars(sub, jointLines.Skip(sub.StartLine).Take(sub.EndLine - sub.StartLine + 1).ToArray());
 
             //Build locations may contain commented functions/subs, not a problem for now.
             BuildLocations = locations.ToArray();
@@ -247,52 +261,211 @@ namespace ZXBasicStudio.BuildSystem
 
                 int lineNum = int.Parse(line) - 1;
 
-                var cFile = AllFiles.FirstOrDefault(f => f.ContainsBuildDim(varName, lineNum));
+                var unusedVar = FindUnusedVar(AllFiles, varName, lineNum, locations, file, subs, functions);
 
-                if (cFile == null)
-                    continue;
+                //Var can be already purged by the basic map, the compiler has an unconsistent behavior
+                //informing about unused variables so the map purges vars that finds that are totally
+                //unused, it keeps the ones that have been assigned in different statements than its dim
+                //but those are informed by the compiler consistently
 
-                string bPath = Path.GetFullPath(Path.Combine(cFile.Directory, cFile.TempFileName)).ToLower();
+                if (unusedVar != null)
+                    unusedVar.Unused = true;
+            }
 
-                var location = locations.Where(l => l.FirstLine <= lineNum && l.LastLine >= lineNum && l.File.ToLower() == bPath).FirstOrDefault();
+        }
 
-                if (location != null)
+        ZXBasicVariable? FindUnusedVar(IEnumerable<ZXCodeFile> AllFiles, string varName, int lineNum, List<ZXBasicLocation> locations, string file, List<ZXBasicSub> subs, List<ZXBasicFunction> functions)
+        {
+
+            ZXBasicVariable? foundVar = null;
+
+            //First, search by file name
+
+            string bPath = Path.GetFullPath(file).ToLower();
+
+            //Find a location in the file which contains the line number of the var declaration
+            var location = locations.Where(l => l.File.ToLower() == bPath && l.FirstLine <= lineNum && l.LastLine >= lineNum).FirstOrDefault();
+
+            if (location != null)
+            {
+                //Search for the var in the sub/function that the location points to
+                if (location.LocationType == ZXBasicLocationType.Sub)
                 {
-                    if (location.LocationType == ZXBasicLocationType.Sub)
+                    var sub = subs.Where(s => s.Name == location.Name).FirstOrDefault();
+                    if(sub != null)
+                        foundVar = sub.LocalVariables.Where(v => v.Name == varName).FirstOrDefault();
+                }
+                else
+                {
+                    var func = functions.Where(f => f.Name == location.Name).FirstOrDefault();
+                    if (func != null)
+                        foundVar = func.LocalVariables.Where(v => v.Name == varName).FirstOrDefault();
+                }
+            }
+
+            //In this case we do not check if it is flagged as unused as the file and location matched
+            if (foundVar != null)
+                return foundVar;
+
+            //If not found, search by declaration. Unsafe but used to avoid bug in compiler.
+            //Must be removed once bug is corrected in the compiler.
+
+            //Find all files that contain a Dim for the specified var name and line number
+            var files = AllFiles.Where(f => ContainsBuildDim(f, varName, lineNum)).Select(f => Path.GetFullPath(Path.Combine(f.Directory, f.TempFileName)).ToLower());
+
+            //Find in those files a location that contains the Dim line
+            var possibleLocations = locations.Where(l => l.FirstLine <= lineNum && l.LastLine >= lineNum && files.Contains(l.File.ToLower()));
+
+            foreach (var possibleLocation in possibleLocations)
+            {
+                //Search for a var with the specified name and that is not flagged as unused
+                //(to avoid the very unprobable case where the same var is defined in different files in locations that match the same range)
+                if (possibleLocation.LocationType == ZXBasicLocationType.Sub)
+                {
+                    var sub = subs.Where(s => s.Name == possibleLocation.Name).FirstOrDefault();
+                    if (sub != null)
+                        foundVar = sub.LocalVariables.Where(v => v.Name == varName && !v.Unused).FirstOrDefault();
+                }
+                else
+                {
+                    var func = functions.Where(f => f.Name == possibleLocation.Name).FirstOrDefault();
+                    if (func != null)
+                        foundVar = func.LocalVariables.Where(v => v.Name == varName && !v.Unused).FirstOrDefault();
+                }
+                
+                //If the criteria finds a var, return it
+                if (foundVar != null)
+                    return foundVar;
+            }
+
+            //return null, not found
+            return null;
+        }
+
+        void GetSubVars(ZXBasicSub Sub, string[] Lines)
+        {
+            for (int buc = 0; buc < Lines.Length; buc++) 
+            {
+                string line = Lines[buc];
+                
+                //Check for dim
+                var dimMatch = regDim.Match(line);
+
+                if (dimMatch != null && dimMatch.Success)
+                {
+
+                    string varNameDef = dimMatch.Groups[2].Value;
+
+                    if (varNameDef.Contains("(")) //array
                     {
-                        // DUEFECTU: 20230604 - Bug en First
-                        var sub = subs.Where(s => s.Name == location.Name).FirstOrDefault();
-                        if (sub != null)
-                        {
-                            var zVar = sub.LocalVariables.Where(v => v.Name == varName).FirstOrDefault();
-                            if (zVar != null)
-                            {
-                                zVar.Unused = true;
-                            }
-                        }
+                        string varName = varNameDef.Substring(0, varNameDef.IndexOf("(")).Trim();
+
+                        //Ignore unused vars (vars that are found only on its dim line, there may be the improbable
+                        //case where a var is defined and used in the same line using a colon and not used
+                        //anywhere else, but that would be an awful code :) )
+                        if (!Lines.Skip(buc+1).Any(l => Regex.IsMatch(l, $"(^|[^a-zA-Z0-9_]){varName}($|[^a-zA-Z0-9_])", RegexOptions.Multiline)))
+                            continue;
+
+                        string[] dims = varNameDef.Substring(varNameDef.IndexOf("(") + 1).Replace(")", "").Split(",", StringSplitOptions.RemoveEmptyEntries);
+
+                        ZXBasicVariable varArr = new ZXBasicVariable { Name = varName, IsArray = true, Dimensions = dims.Select(d => GetDimensionSize(d)).ToArray(), Storage = StorageFromString(dimMatch.Groups[5].Value, varName) };
+
+                        Sub.LocalVariables.Add(varArr);
                     }
                     else
                     {
-                        // DUEFECTU: 20230604 - Bug en First
-                        var func = functions.Where(f => f.Name == location.Name).FirstOrDefault();
-                        if (func != null)
+                        string[] varNames = dimMatch.Groups[2].Value.Split(",", StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (var vName in varNames)
                         {
-                            var zVar = func.LocalVariables.Where(v => v.Name == varName).FirstOrDefault();
-                            if (zVar != null)
-                            {
-                                zVar.Unused = true;
-                            }
+                            string varName = vName.Trim();
+
+                            //Ignore unused vars
+                            if (!Lines.Skip(buc+1).Any(l => Regex.IsMatch(l, $"(^|[^a-zA-Z0-9_]){varName}($|[^a-zA-Z0-9_])", RegexOptions.Multiline)))
+                                continue;
+
+                            var storage = StorageFromString(dimMatch.Groups[5].Value, varName);
+                            ZXBasicVariable var = new ZXBasicVariable { Name = varName, IsArray = false, Storage = storage };
+
+                            Sub.LocalVariables.Add(var);
                         }
+                    }
+                }
+            }
+        }
+
+        public List<ZXBasicLocation> GetBuildLocations(ZXCodeFile CodeFile)
+        {
+            List<ZXBasicLocation> locations = new List<ZXBasicLocation>();
+
+            if (CodeFile.FileType != ZXFileType.Basic)
+                return locations;
+
+            string[] lines = CodeFile.Content.Replace("\r", "").Split("\n");
+
+            ZXBasicLocation? loc = null;
+
+            for (int buc = 0; buc < lines.Length; buc++)
+            {
+                var line = lines[buc];
+
+                if (loc == null)
+                {
+                    var subMatch = regSub.Match(line);
+
+                    if (subMatch != null && subMatch.Success)
+                    {
+                        loc = new ZXBasicLocation { Name = subMatch.Groups[2].Value.Trim(), LocationType = ZXBasicLocationType.Sub, FirstLine = buc, File = Path.Combine(CodeFile.Directory, CodeFile.TempFileName) };
+                        continue;
+                    }
+
+                    var funcMatch = regFunc.Match(line);
+
+                    if (funcMatch != null && funcMatch.Success)
+                    {
+                        loc = new ZXBasicLocation { Name = funcMatch.Groups[2].Value.Trim(), LocationType = ZXBasicLocationType.Function, FirstLine = buc, File = Path.Combine(CodeFile.Directory, CodeFile.TempFileName) };
+                        continue;
                     }
                 }
                 else
                 {
-                    var zVar = globalVars.Where(g => g.Name == varName).FirstOrDefault();
-                    if (zVar != null)
-                        zVar.Unused = true;
+                    if (loc.LocationType == ZXBasicLocationType.Sub)
+                    {
+                        if (regEndSub.IsMatch(line))
+                        {
+                            loc.LastLine = buc;
+                            locations.Add(loc);
+                            loc = null;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (regEndFunc.IsMatch(line))
+                        {
+                            loc.LastLine = buc;
+                            locations.Add(loc);
+                            loc = null;
+                            continue;
+                        }
+                    }
                 }
             }
 
+            return locations;
+        }
+
+        public bool ContainsBuildDim(ZXCodeFile CodeFile, string VarName, int LineNumber)
+        {
+            if (CodeFile.FileType != ZXFileType.Basic)
+                return false;
+
+            string[] lines = CodeFile.Content.Replace("\r", "").Split("\n");
+
+            if (LineNumber >= lines.Length)
+                return false;
+
+            return Regex.IsMatch(lines[LineNumber], $"(\\s|,){VarName}(\\s|,|\\(|$)", RegexOptions.Multiline);
         }
 
         private static void ParseInputParameters(string ParameterString, List<ZXBasicParameter> Storage)
@@ -430,6 +603,9 @@ namespace ZXBasicStudio.BuildSystem
         public bool FastCall { get; set; }
         public List<ZXBasicParameter> InputParameters { get; set; } = new List<ZXBasicParameter>();
         public List<ZXBasicVariable> LocalVariables { get; set; } = new List<ZXBasicVariable>();
+
+        public int StartLine { get; set; }
+        public int EndLine { get; set; }
     }
 
     public class ZXBasicFunction : ZXBasicSub

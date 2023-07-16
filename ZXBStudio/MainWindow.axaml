@@ -168,7 +168,7 @@
     </zxd:ZXDockingContainer>
     <zxd:ZXCollapseButton CollapseDirection="Left" Grid.Column="1" Grid.Row="2"></zxd:ZXCollapseButton>
     <GridSplitter Classes="vertical" Grid.Column="1" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns" />
-    <TabControl Grid.Column="2" Grid.Row="2" Name="tcEditors" Items="{Binding EditItems}" />
+    <TabControl Grid.Column="2" Grid.Row="2" Name="tcEditors" ItemsSource="{Binding EditItems}" />
     <zxd:ZXCollapseButton CollapseDirection="Right" GridColumn="4" Grid.Column="3" Grid.Row="2"></zxd:ZXCollapseButton>
     <GridSplitter Classes="vertical" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns"></GridSplitter>
     <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,*" Grid.RowSpan="3" Name="dockRight">
@@ -195,7 +195,9 @@
       <zxd:ZXTabDockingContainer.DockedControls>
         <zxd:ZXDockingControl Title="Memory viewer" Name="memDock">
           <zxd:ZXDockingControl.DockedControl>
-            <zxdtm:ZXMemoryBlockView Name="memView" Background="#202020"></zxdtm:ZXMemoryBlockView>
+            <!--
+            <zxdtm:ZXMemoryBlockView Name="memView" Background="#202020"></zxdtm:ZXMemoryBlockView>-->
+            <zxdtm:ZXMemoryView Name="memView"></zxdtm:ZXMemoryView>
           </zxd:ZXDockingControl.DockedControl>
         </zxd:ZXDockingControl>
         <zxd:ZXDockingControl Title="Output" Name="outDock">

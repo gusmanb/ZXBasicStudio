@@ -169,7 +169,8 @@ namespace CoreSpectrum.Hardware
 
             _scanCycles -= _timmings.TStatesPerScan;
 
-            _ula.ScanLine(_memory.GetVideoMemory(), _timmings.FirstScan, _timmings.ScansPerFrame);
+            _ula.ScanLine(_memory.GetVideoMemory());
+
 
             if (_ula.NewFrame && (!_turbo || _renderOnturbo))
             {

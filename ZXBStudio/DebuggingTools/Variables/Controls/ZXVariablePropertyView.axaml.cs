@@ -87,7 +87,7 @@ namespace ZXBasicStudio.DebuggingTools.Variables.Controls
                 brdEdit.IsVisible = true;
                 editing = true;
                 e.Handled = true;
-                txtEdit.Text = PropertyValue;
+                txtEdit.Text = PropertyType == "STR" ? PropertyValue.Substring(1, PropertyValue.Length - 2) : PropertyValue;
                 txtEdit.Focus();
             }
         }
@@ -193,7 +193,7 @@ namespace ZXBasicStudio.DebuggingTools.Variables.Controls
                 else
                     Variable.SetArrayValue(Memory, Registers, ArrayPath, finalValue);
 
-                PropertyValue = finalValue.ToString();
+                PropertyValue = PropertyType == "STR" ? $"\"{finalValue}\"" : finalValue.ToString() ?? "";
 
                 brdEdit.IsVisible = false;
                 editing = false;
