@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="using:ZXBasicStudio.Controls"
+        xmlns:classes="using:ZXBasicStudio.Classes"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="450"
+        x:Class="ZXBasicStudio.Dialogs.ZXKeybMappingDialog"
+        MaxWidth="640" MaxHeight="450"
+        MinWidth="640" MinHeight="450"
+        CanResize="False"
+        Icon="/Assets/zxbs.ico"
+        Title="Keyboard mappings" WindowStartupLocation="CenterOwner">
+  <Window.Resources>
+    <classes:KeyModifiersConverter x:Key="modifiersConverter"/>
+  </Window.Resources>
+  <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,2*">
+    <ListBox Margin="15,15,0,15" ItemsSource="{Binding}" Name="selSource">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding SourceName}"></TextBlock>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <Border Grid.Column="1" BorderBrush="#555555" BorderThickness="1" Margin="15">
+      <StackPanel>
+        <Grid ColumnDefinitions="2*,*,2.25*">
+          <Border Grid.Column="0" Background="#333333" BorderBrush="#555555" BorderThickness="1" Margin="0"></Border>
+          <TextBlock Margin="5" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">Command</TextBlock>
+          <Border Grid.Column="1" Background="#333333" BorderBrush="#555555" BorderThickness="1" Margin="0"></Border>
+          <TextBlock Margin="5" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">Key</TextBlock>
+          <Border Grid.Column="2" Background="#333333" BorderBrush="#555555" BorderThickness="1" Margin="0"></Border>
+          <TextBlock Margin="5" Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">Modifiers</TextBlock>
+        </Grid>
+        <ScrollViewer Name="scrMaps" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Visible" Height="341">
+        
+          <ItemsControl ItemsSource="{Binding #selSource.SelectedItem.KeybCommands}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="2*,*,2*">
+                  <Border BorderBrush="#555555" BorderThickness="1" Margin="0">
+                    <TextBlock Text="{Binding CommandName}" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                  </Border>
+                  <Border Grid.Column="1" Grid.RowSpan="2" BorderBrush="#555555" BorderThickness="1" Margin="0"></Border>
+                  <ComboBox Margin="5" Grid.Column="1" Grid.Row="1" ItemsSource="{x:Static classes:ZXStaticData.Keys}" SelectedItem="{Binding Key, Mode=TwoWay}" />
+                  <Border Grid.Column="2" Grid.RowSpan="2" BorderBrush="#555555" BorderThickness="1" Margin="0"></Border>
+                  <ListBox Margin="5" Grid.Column="2" Grid.Row="1" SelectionMode="Multiple,Toggle" ItemsSource="{x:Static classes:ZXStaticData.Modifiers}" SelectedItems="{Binding Converter={StaticResource modifiersConverter}}">
+                    <ListBox.Styles>
+                      <Style Selector="ListBoxItem[IsSelected=True] /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#3344AA" />
+                      </Style>
+                    </ListBox.Styles>
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                  </ListBox>
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        
+        </ScrollViewer>
+      </StackPanel>
+    </Border>
+    <Button Margin="15,0,10,10" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Classes="dialog" Padding="7" Name="btnRestore">Restore defaults</Button>
+    <StackPanel Grid.Column="1" Margin="0,0,10,10" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnCancel">Cancel</Button>
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnAccept">Accept</Button>
+    </StackPanel>
+  </Grid>
+</Window>

@@ -49,7 +49,7 @@ namespace CoreSpectrum.Hardware
                 throw new ArgumentException("Spectrum 128k needs two 16Kb ROMs.");
 
             var memory = new Memory128k(RomSet[0], RomSet[1]);
-            var ula = new ULA128k(Timmings128k.CpuClock, 44100, memory);
+            var ula = new ULA128k(Timmings128k.CpuClock, 44100, memory, Timmings128k);
             
             MachineHardware hardware = new MachineHardware
             {

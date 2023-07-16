@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Konamiman.Z80dotNet;
 using System.Buffers;
 using System.Collections.Generic;
@@ -158,80 +159,39 @@ namespace ZXBasicStudio.DebuggingTools.Variables.Controls
         }
     }
 
-    public class ZXVariablePropertyModel : AvaloniaObject
+    public partial class ZXVariablePropertyModel : ObservableObject
     {
-        public static StyledProperty<string> SvgPathProperty = StyledProperty<string>.Register<ZXVariablePropertyModel, string>("SvgPath");
-        public static StyledProperty<IBrush> BackgroundProperty = StyledProperty<IBrush>.Register<ZXVariablePropertyModel, IBrush>("Background", Brushes.Transparent);
-        public static StyledProperty<string> PropertyNameProperty = StyledProperty<string>.Register<ZXVariablePropertyModel, string>("PropertyName");
-        public static StyledProperty<string> PropertyTypeProperty = StyledProperty<string>.Register<ZXVariablePropertyModel, string>("PropertyType");
-        public static StyledProperty<string> PropertyValueProperty = StyledProperty<string>.Register<ZXVariablePropertyModel, string>("PropertyValue");
-        public static StyledProperty<bool> EditableProperty = StyledProperty<bool>.Register<ZXVariablePropertyModel, bool>("Editable");
-        public static StyledProperty<ObservableCollection<ZXVariablePropertyModel>> ChildPropertiesProperty = StyledProperty<ObservableCollection<ZXVariablePropertyModel>>.Register<ZXVariablePropertyModel, ObservableCollection<ZXVariablePropertyModel>>("ChildProperties");
+        [ObservableProperty]
+        string? svgPath;
 
-        public static StyledProperty<ZXVariable> VariableProperty = StyledProperty<ZXVariable>.Register<ZXVariablePropertyModel, ZXVariable>("Variable");
-        public static StyledProperty<int[]> ArrayPathProperty = StyledProperty<int[]>.Register<ZXVariablePropertyModel, int[]>("ArrayPath");
-        public static StyledProperty<IMemory> MemoryProperty = StyledProperty<IMemory>.Register<ZXVariablePropertyModel, IMemory>("Memory");
-        public static StyledProperty<IZ80Registers> RegistersProperty = StyledProperty<IZ80Registers>.Register<ZXVariablePropertyModel, IZ80Registers>("Registers");
+        [ObservableProperty]
+        IBrush background = Brushes.Transparent;
 
-        public string SvgPath
-        {
-            get { return GetValue<string>(SvgPathProperty); }
-            set { SetValue<string>(SvgPathProperty, value); }
-        }
-        public IBrush Background
-        {
-            get { return GetValue<IBrush>(BackgroundProperty);}
-            set { SetValue<IBrush>(BackgroundProperty, value); }
-        }
-        public string PropertyName
-        {
-            get { return GetValue<string>(PropertyNameProperty); }
-            set { SetValue<string>(PropertyNameProperty, value); }
-        }
-        public string PropertyType
-        {
-            get { return GetValue<string>(PropertyTypeProperty); }
-            set { SetValue<string>(PropertyTypeProperty, value); }
-        }
-        public string PropertyValue
-        {
-            get { return GetValue<string>(PropertyValueProperty); }
-            set { SetValue<string>(PropertyValueProperty, value); }
-        }
-        public bool Editable
-        {
-            get { return GetValue<bool>(EditableProperty); }
-            set { SetValue<bool>(EditableProperty, value); }
-        }
-        public ObservableCollection<ZXVariablePropertyModel> ChildProperties
-        {
-            get { return GetValue<ObservableCollection<ZXVariablePropertyModel>>(ChildPropertiesProperty); }
-            set { SetValue<ObservableCollection<ZXVariablePropertyModel>>(ChildPropertiesProperty, value); }
-        }
-        public required ZXVariable Variable 
-        {
-            get { return GetValue<ZXVariable>(VariableProperty); }
-            set { SetValue<ZXVariable>(VariableProperty, value); }
-        }
-        public int[] ArrayPath
-        {
-            get { return GetValue<int[]>(ArrayPathProperty); }
-            set { SetValue<int[]>(ArrayPathProperty, value); }
-        }
-        public IMemory Memory
-        {
-            get { return GetValue<IMemory>(MemoryProperty); }
-            set { SetValue<IMemory>(MemoryProperty, value); }
-        }
-        public IZ80Registers Registers
-        {
-            get { return GetValue<IZ80Registers>(RegistersProperty); }
-            set { SetValue<IZ80Registers>(RegistersProperty, value); }
-        }
+        [ObservableProperty]
+        string? propertyName;
 
-        public ZXVariablePropertyModel()
-        {
-            ChildProperties = new ObservableCollection<ZXVariablePropertyModel>();
-        }
+        [ObservableProperty]
+        string? propertyType;
+
+        [ObservableProperty]
+        string? propertyValue;
+
+        [ObservableProperty]
+        bool editable;
+
+        [ObservableProperty]
+        ObservableCollection<ZXVariablePropertyModel> childProperties = new ObservableCollection<ZXVariablePropertyModel>();
+
+        [ObservableProperty]
+        ZXVariable? variable;
+
+        [ObservableProperty]
+        int[]? arrayPath;
+
+        [ObservableProperty]
+        IMemory? memory;
+
+        [ObservableProperty]
+        IZ80Registers? registers;
     }
 }

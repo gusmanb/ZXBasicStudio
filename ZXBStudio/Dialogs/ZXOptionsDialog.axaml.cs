@@ -25,7 +25,13 @@ namespace ZXBasicStudio.Dialogs
             ckDisableAudio.IsChecked = ZXOptions.Current.AudioDisabled;
             ckWordWrap.IsChecked = ZXOptions.Current.WordWrap;
             ckCls.IsChecked = ZXOptions.Current.Cls;
+            btnKeybMap.Click += BtnKeybMap_Click;
+        }
 
+        private void BtnKeybMap_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dlg = new ZXKeybMappingDialog();
+            dlg.ShowDialog(this);
         }
 
         private async void BtnDefaultBuildConfig_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

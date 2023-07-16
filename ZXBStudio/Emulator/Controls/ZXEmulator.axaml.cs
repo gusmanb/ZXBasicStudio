@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Input.Raw;
+using Avalonia.Input.TextInput;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -17,6 +18,7 @@ using CoreSpectrum.Renderers;
 using CoreSpectrum.SupportClasses;
 using Fizzler;
 using Konamiman.Z80dotNet;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,6 +29,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tmds.DBus;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Controls.DockSystem;
 using ZXBasicStudio.Emulator.Classes;
 
 namespace ZXBasicStudio.Emulator.Controls
@@ -108,7 +111,27 @@ namespace ZXBasicStudio.Emulator.Controls
             InitializeComponent();
             emuKeyb.KeyPressed += EmuKeyb_KeyPressed;
             btnKeyb.Click += BtnKeyb_Click;
+            GlobalKeybHandler.KeyUp += GlobalKeyUp;
+            GlobalKeybHandler.KeyDown += GlobalKeyDown;
+            GlobalKeybHandler.TextInput += GlobalTextInput;
+        }
 
+        private void GlobalTextInput(object? sender, TextInputEventArgs e)
+        {
+            if (Running)
+                ProcessTextInput(e.Text ?? "");
+        }
+
+        private void GlobalKeyDown(object? sender, KeyEventArgs e)
+        {
+            if (Running)
+                ProcessKey(e.Key, false);
+        }
+
+        private void GlobalKeyUp(object? sender, KeyEventArgs e)
+        {
+            if (Running)
+                ProcessKey(e.Key, true);
         }
 
         public void SetModel(ZXSpectrumModel Model)
@@ -422,56 +445,56 @@ namespace ZXBasicStudio.Emulator.Controls
             catch (Exception ex) { if (ExceptionTrapped != null) ExceptionTrapped(this, new ExceptionEventArgs(ex)); }
         }
 
-        public void ProcessRawInput(RawInputEventArgs value)
+        public void ProcessKey(Key InputKey, bool Up)
         {
             if (mapper.Active)
-                mapper.ProcessInput(value);
+                mapper.ProcessKey(InputKey, Up);
             else
             {
-                if (value is RawKeyEventArgs)
+                try
                 {
-                    RawKeyEventArgs args = (RawKeyEventArgs)value;
-
-                    try
+                    switch (InputKey)
                     {
-                        switch (args.Key)
-                        {
-                            case Key.LeftShift:
-                            case Key.RightShift:
+                        case Key.LeftShift:
+                        case Key.RightShift:
 
-                                if (args.Type == RawKeyEventType.KeyUp)
-                                    SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Caps);
+                            if (Up)
+                                SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Caps);
+                            else
+                                SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Caps);
+                            break;
+                        case Key.LeftCtrl:
+                        case Key.RightCtrl:
+                            if (Up)
+                                SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Sym);
+                            else
+                                SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Sym);
+                            break;
+                        case Key.Enter:
+                            if (Up)
+                                SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Enter);
+                            else
+                                SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Enter);
+                            break;
+                        default:
+                            if (Enum.TryParse<SpectrumKeys>(InputKey.ToString(), true, out var key))
+                            {
+                                if (Up)
+                                    SendKeyUp(key);
                                 else
-                                    SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Caps);
-                                break;
-                            case Key.LeftCtrl:
-                            case Key.RightCtrl:
-                                if (args.Type == RawKeyEventType.KeyUp)
-                                    SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Sym);
-                                else
-                                    SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Sym);
-                                break;
-                            case Key.Enter:
-                                if (args.Type == RawKeyEventType.KeyUp)
-                                    SendKeyUp(CoreSpectrum.Enums.SpectrumKeys.Enter);
-                                else
-                                    SendKeyDown(CoreSpectrum.Enums.SpectrumKeys.Enter);
-                                break;
-                            default:
-                                if (Enum.TryParse<SpectrumKeys>(args.Key.ToString(), true, out var key))
-                                {
-                                    if (args.Type == RawKeyEventType.KeyUp)
-                                        SendKeyUp(key);
-                                    else
-                                        SendKeyDown(key);
-                                }
-                                break;
-                        }
+                                    SendKeyDown(key);
+                            }
+                            break;
                     }
-                    catch { }
-
                 }
+                catch { }
             }
+        }
+
+        public void ProcessTextInput(string Text)
+        {
+            if (mapper.Active)
+                mapper.ProcessTextInput(Text);
         }
     }
 

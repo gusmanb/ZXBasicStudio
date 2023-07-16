@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -110,7 +111,7 @@ namespace ZXBasicStudio.Controls
             if (item == null)
                 return;
 
-            Application.Current?.Clipboard?.SetTextAsync(item.Path);
+            TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(item.Path);
         }
         private void ContextMenuRenameClick(object? sender, RoutedEventArgs e)
         { RaiseEvent(new RoutedEventArgs(RenameRequestedEvent)); }
@@ -556,45 +557,31 @@ namespace ZXBasicStudio.Controls
             }
             return nodes;
         }
-        public class ExplorerNode : AvaloniaObject
+        public partial class ExplorerNode : ObservableObject
         {
-
             static Bitmap bmpFile;
             static Bitmap bmpFolder;
 
-            public static readonly StyledProperty<SortableObservableCollection<ExplorerNode>> ChildNodesProperty = StyledProperty<SortableObservableCollection<ExplorerNode>>.Register<ExplorerNode, SortableObservableCollection<ExplorerNode>>("ChildNodes");
-            public static readonly StyledProperty<string> TextProperty = StyledProperty<string>.Register<ExplorerNode, string>("Text");
-            public static readonly StyledProperty<Bitmap> ImageProperty = StyledProperty<Bitmap>.Register<ExplorerNode, Bitmap>("Image");
+            [ObservableProperty]
+            SortableObservableCollection<ExplorerNode> childNodes;
+            [ObservableProperty]
+            string text = "";
+            [ObservableProperty]
+            Bitmap? image;
 
             static ExplorerNode()
             {
-                var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-                bmpFile = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/unknFile.png")));
-                bmpFolder = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/folder.png")));
+                bmpFile = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/unknFile.png")));
+                bmpFolder = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/folder.png")));
             }
 
             ZXProjectExplorer explorer;
-            public SortableObservableCollection<ExplorerNode> ChildNodes 
-            { 
-                get { return GetValue<SortableObservableCollection<ExplorerNode>>(ChildNodesProperty); }
-                set { SetValue(ChildNodesProperty, value); }
-            }
+
             bool _isFile;
             public bool IsFile { get { return _isFile;   } }
-            public string Path { get; set; }
-            public string Text 
-            { 
-                get { return GetValue<string>(TextProperty); }
-                set { SetValue(TextProperty, value); }
-            }
-            public Bitmap Image
-            {
-                get { return GetValue<Bitmap>(ImageProperty); }
-                set { SetValue(ImageProperty, value); }
-            }
+            public string Path { get; set; } = "";
             public ExplorerNode(string path, ZXProjectExplorer explorer)
             {
-                
                 this.explorer = explorer;
                 ChildNodes = new SortableObservableCollection<ExplorerNode> { SortingSelector = node => $"{ (node.IsFile ? "0000-0001" : "0000-0000") } - {node.Text}" };
                 UpdateNode(path);
@@ -624,8 +611,6 @@ namespace ZXBasicStudio.Controls
                     Image = bmpFile;
                     _isFile = true;
                 }
-
-
             }
 
             

@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CoreSpectrum.Enums;
 using System;
 using System.Collections.Generic;
@@ -10,74 +11,31 @@ using ZXBasicStudio.Controls;
 
 namespace ZXBasicStudio.Emulator.Binding
 {
-    public class ZXKey : AvaloniaObject
+    public partial class ZXKey : ObservableObject
     {
-        public static StyledProperty<string> UpperCommandProperty = AvaloniaProperty.Register<ZXKey, string>("UpperCommand");
-        public static StyledProperty<string> LowerCommandProperty = AvaloniaProperty.Register<ZXKey, string>("LowerCommand");
-        public static StyledProperty<string> CommandProperty = AvaloniaProperty.Register<ZXKey, string>("Command");
-        public static StyledProperty<string> SymbolProperty = AvaloniaProperty.Register<ZXKey, string>("Symbol");
-        public static StyledProperty<string> CharProperty = AvaloniaProperty.Register<ZXKey, string>("Char");
-        public static StyledProperty<SolidColorBrush> UpperColorProperty = AvaloniaProperty.Register<ZXKey, SolidColorBrush>("UpperColor");
-        public static StyledProperty<SolidColorBrush> LowerColorProperty = AvaloniaProperty.Register<ZXKey, SolidColorBrush>("LowerColor");
-        public static StyledProperty<SolidColorBrush> SymbolColorProperty = AvaloniaProperty.Register<ZXKey, SolidColorBrush>("SymbolColor");
-        public static StyledProperty<SolidColorBrush> CommandColorProperty = AvaloniaProperty.Register<ZXKey, SolidColorBrush>("CommandColor");
-        public static StyledProperty<bool> DoubleLayoutProperty = AvaloniaProperty.Register<ZXKey, bool>("DoubleLayout");
-        public static StyledProperty<SolidColorBrush> KeyBackgroundProperty = AvaloniaProperty.Register<ZXKey, SolidColorBrush>("KeyBackground");
-        public string UpperCommand
-        {
-            get { return GetValue(UpperCommandProperty); }
-            set { SetValue(UpperCommandProperty, value); }
-        }
-        public string LowerCommand
-        {
-            get { return GetValue(LowerCommandProperty); }
-            set { SetValue(LowerCommandProperty, value); }
-        }
-        public string Command
-        {
-            get { return GetValue(CommandProperty); }
-            set { SetValue(CommandProperty, value); }
-        }
-        public string Symbol
-        {
-            get { return GetValue(SymbolProperty); }
-            set { SetValue(SymbolProperty, value); }
-        }
-        public string Char
-        {
-            get { return GetValue(CharProperty); }
-            set { SetValue(CharProperty, value); }
-        }
-        public SolidColorBrush UpperColor
-        {
-            get { return GetValue(UpperColorProperty); }
-            set { SetValue(UpperColorProperty, value); }
-        }
-        public SolidColorBrush LowerColor
-        {
-            get { return GetValue(LowerColorProperty); }
-            set { SetValue(LowerColorProperty, value); }
-        }
-        public SolidColorBrush SymbolColor
-        {
-            get { return GetValue(SymbolColorProperty); }
-            set { SetValue(SymbolColorProperty, value); }
-        }
-        public SolidColorBrush CommandColor
-        {
-            get { return GetValue(CommandColorProperty); }
-            set { SetValue(CommandColorProperty, value); }
-        }
-        public bool DoubleLayout
-        {
-            get { return GetValue(DoubleLayoutProperty); }
-            set { SetValue(DoubleLayoutProperty, value); }
-        }
-        public SolidColorBrush KeyBackground
-        {
-            get { return GetValue(KeyBackgroundProperty); }
-            set { SetValue(KeyBackgroundProperty, value); }
-        }
+        [ObservableProperty]
+        string upperCommand = "";
+        [ObservableProperty]
+        string lowerCommand = "";
+        [ObservableProperty]
+        string command = "";
+        [ObservableProperty]
+        string symbol = "";
+        [ObservableProperty]
+        string @char = "";
+        [ObservableProperty]
+        SolidColorBrush? upperColor;
+        [ObservableProperty]
+        SolidColorBrush? lowerColor;
+        [ObservableProperty]
+        SolidColorBrush? symbolColor;
+        [ObservableProperty]
+        SolidColorBrush? commandColor;
+        [ObservableProperty]
+        bool doubleLayout;
+        [ObservableProperty]
+        SolidColorBrush? keyBackground;
+
         public SpectrumKeys SpectrumKey { get; set; }
 
         ZXKeyType _keyType;

@@ -295,14 +295,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         public void Copy()
         {
             var patterns = GetSelectedPatterns();
-            Application.Current.Clipboard.SetTextAsync(patterns.Serializar()).Wait();
+            TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(patterns.Serializar()).Wait();
         }
 
 
         public async void Paste()
         {
             var patterns = GetSelectedPatterns();
-            var cbData = await Application.Current.Clipboard.GetTextAsync();
+            var cbData = await TopLevel.GetTopLevel(this).Clipboard.GetTextAsync();
             if (string.IsNullOrEmpty(cbData))
             {
                 return;

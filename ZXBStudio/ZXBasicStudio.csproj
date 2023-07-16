@@ -405,15 +405,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.0-preview6" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview6" />
-    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview6" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview6" />
+    <PackageReference Include="Avalonia" Version="11.0.0" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview6" />
-    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0-preview6" />
-    <PackageReference Include="MessageBox.Avalonia" Version="2.3.1-prev6" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
   </ItemGroup>
@@ -421,6 +421,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Bufdio\Bufdio.csproj" />
     <ProjectReference Include="..\CoreSpectrum\CoreSpectrum.csproj" />
+    <ProjectReference Include="..\MsBox.Avalonia\MsBox.Avalonia.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -467,7 +468,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DebuggingTools\Memory\Classes\" />
     <Folder Include="DebuggingTools\Registers\Classes\" />
     <Folder Include="DebuggingTools\TStates\Binding\" />
     <Folder Include="DebuggingTools\TStates\Classes\" />

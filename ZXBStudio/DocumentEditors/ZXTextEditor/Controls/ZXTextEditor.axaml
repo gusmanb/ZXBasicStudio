@@ -11,5 +11,17 @@
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
                          ShowLineNumbers="True"
-                         />
+                         >
+    <AvalonEdit:TextEditor.ContextMenu>
+      <ContextMenu>
+        <MenuItem Header="Copy" Command="{Binding Copy}"></MenuItem>
+        <MenuItem Header="Cut" Command="{Binding Cut}"></MenuItem>
+        <MenuItem Header="Paste" Command="{Binding Paste}"></MenuItem>
+        <Separator></Separator>
+        <MenuItem Header="Undo" Command="{Binding Undo}"></MenuItem>
+        <MenuItem Header="Redo" Command="{Binding Redo}"></MenuItem>
+      </ContextMenu>
+    </AvalonEdit:TextEditor.ContextMenu>
+    
+  </AvalonEdit:TextEditor>
 </UserControl>

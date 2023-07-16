@@ -61,8 +61,7 @@ namespace ZXBasicStudio.Emulator.Controls
             int[] tmpData = new int[416 * 312];
             Array.Fill(tmpData, unchecked((int)0xFFFFFFFF));
             RenderFrame(tmpData);
-            var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-            logoBitmap = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/logoSmall.png")));
+            logoBitmap = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/logoSmall.png")));
             InitializeComponent();
         }
 
@@ -121,7 +120,7 @@ namespace ZXBasicStudio.Emulator.Controls
 
                     var targetRect = new Rect(xOffset, yOffset, w, h);
 
-                    context.DrawImage(buffer, new Rect(0, 0, buffer.PixelSize.Width, buffer.PixelSize.Height), targetRect, BitmapInterpolationMode.LowQuality);
+                    context.DrawImage(buffer, new Rect(0, 0, buffer.PixelSize.Width, buffer.PixelSize.Height), targetRect);
                 }
                 else
                 {
@@ -136,7 +135,7 @@ namespace ZXBasicStudio.Emulator.Controls
 
                     var targetRect = new Rect(xOffset, yOffset, w, h);
 
-                    context.DrawImage(logoBitmap, new Rect(0, 0, logoBitmap.PixelSize.Width, logoBitmap.PixelSize.Height), targetRect, BitmapInterpolationMode.HighQuality);
+                    context.DrawImage(logoBitmap, new Rect(0, 0, logoBitmap.PixelSize.Width, logoBitmap.PixelSize.Height), targetRect);
                 }
             }
         }

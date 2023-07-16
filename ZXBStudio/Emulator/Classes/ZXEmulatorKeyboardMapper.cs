@@ -209,7 +209,25 @@ namespace ZXBasicStudio.Emulator.Classes
                 }
             }
         }
+        public void ProcessKey(Key InputKey, bool Up)
+        {
+            if (!_running || !Active)
+                return;
 
+            if (_keyMap.ContainsKey(InputKey))
+                ProcessKeyStroke(_keyMap[InputKey], Up);
+            else if (Up)
+                ProcessKeyStroke(new ZXMappedChar("", SpectrumKeys.None, false, false), true);
+        }
+        public void ProcessTextInput(string Text)
+        {
+            if (!_running || !Active)
+                return;
+
+            if (_charMap.ContainsKey(Text))
+                ProcessKeyStroke(_charMap[Text], false);
+        }
+        /*
         /// <summary>
         /// Processes input events from Avalonia
         /// </summary>
@@ -240,6 +258,7 @@ namespace ZXBasicStudio.Emulator.Classes
                     ProcessKeyStroke(new ZXMappedChar("", SpectrumKeys.None, false, false), true);
             }
         }
+        */
 
         /// <summary>
         /// Process a key stroke

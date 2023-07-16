@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
@@ -20,10 +22,31 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
         static readonly string _docDesc = "ZX Basic source code file.";
         static readonly string _docCat = "Code";
         static readonly string _docAspect = "/Svg/Documents/file-zxbasic.svg";
+        static readonly Guid _docId = Guid.Parse("b7f0d8e8-7fc6-4cb1-92a9-e574547f43e9");
+
+        public static Guid Id => _docId;
+
         static readonly ZXBasicDocumentFactory _factory = new ZXBasicDocumentFactory();
+        static readonly ZXKeybCommand[] _editCommands = new ZXKeybCommand[]
+        {
+            ZXTextEditor.keyboardCommands["Save"],
+            ZXTextEditor.keyboardCommands["Copy"],
+            ZXTextEditor.keyboardCommands["Cut"],
+            ZXTextEditor.keyboardCommands["Paste"],
+            ZXTextEditor.keyboardCommands["Select"],
+            ZXTextEditor.keyboardCommands["Undo"],
+            ZXTextEditor.keyboardCommands["Redo"],
+            ZXTextEditor.keyboardCommands["Find"],
+            ZXTextEditor.keyboardCommands["Replace"],
+            ZXTextEditor.keyboardCommands["Collapse"],
+            ZXTextEditor.keyboardCommands["Expand"],
+            ZXTextEditor.keyboardCommands["Comment"],
+            ZXTextEditor.keyboardCommands["Uncomment"]
+        };
 
         Bitmap? _icon;
 
+        public Guid DocumentTypeId => _docId;
         public string[] DocumentExtensions => _docExtensions;
         public string DocumentName => _docName;
         public string DocumentDescription => _docDesc;
@@ -36,12 +59,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
             {
                 if (_icon == null)
                 {
-                    var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-
-                    if (assets == null)
-                        throw new AvaloniaInternalException("Cannot create asstes loader");
-
-                    _icon = new Bitmap(assets.Open(new Uri("avares://ZXBasicStudio/Assets/zxbFile.png")));
+                    _icon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/zxbFile.png")));
                 }
 
                 return _icon;
@@ -57,5 +75,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic
         public IZXDocumentBuilder? DocumentBuilder => null;
 
         public ZXBuildStage? DocumentBuildStage => null;
+
+        public ZXKeybCommand[]? EditorCommands => _editCommands;
     }
 }

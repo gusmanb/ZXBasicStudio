@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ using System.IO;
 using System.ComponentModel;
 using Avalonia.Media;
 using Avalonia.Threading;
-using MessageBox.Avalonia.Models;
+using MsBox.Avalonia.Models;
 using Avalonia.Controls.Primitives;
 
 namespace ZXBasicStudio.Classes
@@ -33,6 +33,7 @@ namespace ZXBasicStudio.Classes
         }
         protected virtual bool PersistBounds { get { return false; } }
         public ZXWindowBase() : base() { }
+        /*
         protected override void OnOpened(EventArgs e)
         {
             base.OnOpened(e);
@@ -73,7 +74,7 @@ namespace ZXBasicStudio.Classes
                     PixelSize.FromSize(pOwner.ClientSize, scale)).CenterRect(rect).Position;
             }
         }
-
+        */
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
             base.OnApplyTemplate(e);
@@ -86,62 +87,6 @@ namespace ZXBasicStudio.Classes
                 this.WindowState = settings.State;
             }
         }
-
-        /*
-        protected async Task ShowError(string Title, string Text)
-        {
-            var box = MessageBoxManager.GetMessageBoxStandardWindow(Title, Text, icon: MessageBox.Avalonia.Enums.Icon.Error);
-
-            var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-            var win = prop.GetValue(box) as Window;
-
-            win.Icon = Icon;
-            await box.ShowDialog(this);
-        }
-        protected async Task ShowInfo(string Title, string Text)
-        {
-            var box = MessageBoxManager.GetMessageBoxStandardWindow(Title, Text, icon: MessageBox.Avalonia.Enums.Icon.Info);
-
-            var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-            var win = prop.GetValue(box) as Window;
-
-            win.Icon = Icon;
-            await box.ShowDialog(this);
-        }
-        protected async Task<bool> ShowConfirm(string Title, string Text)
-        {
-            var box = MessageBoxManager.GetMessageBoxStandardWindow(Title, Text, @enum: ButtonEnum.YesNo, icon: MessageBox.Avalonia.Enums.Icon.Warning);
-
-            var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-            var win = prop.GetValue(box) as Window;
-
-            win.Icon = Icon;
-            var result = await box.ShowDialog(this);
-
-            if (result == ButtonResult.No)
-                return false;
-
-            return true;
-        }
-        protected async Task<string?> ShowInput(string Title, string Text, string Label, string DefaultValue = "")
-        {
-            List<ButtonDefinition> buttons = new List<ButtonDefinition>();
-            buttons.Add(new ButtonDefinition { Name = "Accept", IsDefault = true });
-            buttons.Add(new ButtonDefinition { Name = "Cancel", IsCancel = true }) ;
-            var box = MessageBoxManager.GetMessageBoxInputWindow(new MessageBox.Avalonia.DTO.MessageBoxInputParams { ContentTitle = Title, ContentMessage = Label, ContentHeader = Text, ButtonDefinitions = buttons, Icon = MessageBox.Avalonia.Enums.Icon.Setting, WindowStartupLocation = WindowStartupLocation.CenterOwner, InputDefaultValue = DefaultValue });
-
-            var prop = box.GetType().GetField("_window", BindingFlags.Instance | BindingFlags.NonPublic);
-            var win = prop.GetValue(box) as Window;
-
-            win.Icon = Icon;
-            var result = await box.ShowDialog(this);
-
-            if (result.Button == "Cancel" || string.IsNullOrWhiteSpace(result.Message))
-                return null;
-
-            return result.Message;
-        }
-        */
 
         protected override void OnClosing(WindowClosingEventArgs e)
         {

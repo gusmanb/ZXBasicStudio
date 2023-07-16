@@ -13,7 +13,7 @@
     <TreeView Background="#303030" 
               Grid.Row="2" 
               Grid.ColumnSpan="3" 
-              Items="{Binding variables}" 
+              ItemsSource="{Binding variables}"
               BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
               >
       <TreeView.ItemTemplate>
