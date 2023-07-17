@@ -25,6 +25,7 @@
     <Compile Remove="Classes\GLConsts.cs" />
     <Compile Remove="Classes\MicroTimer.cs" />
     <Compile Remove="Classes\ObjectTreeEventHandler.cs" />
+    <Compile Remove="Classes\ZXExtensions.cs" />
     <Compile Remove="Classes\ZXGlobalVariableMap.cs" />
     <Compile Remove="Classes\ZXLocalVariableMap.cs" />
     <Compile Remove="Controls\ZXLocalVariablesView.axaml.cs" />
@@ -106,6 +107,7 @@
     <None Remove="Svg\box-solid.svg" />
     <None Remove="Svg\boxes-stacked-solid.svg" />
     <None Remove="Svg\bug-solid.svg" />
+    <None Remove="Svg\buildexport.svg" />
     <None Remove="Svg\caret-down-solid.svg" />
     <None Remove="Svg\caret-up-solid.svg" />
     <None Remove="Svg\cassette-solid.svg" />
@@ -300,6 +302,7 @@
     <AvaloniaResource Include="Fonts\ConsolaMono.ttf" />
     <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\buildexport.svg" />
     <AvaloniaResource Include="Svg\caret-down-solid.svg" />
     <AvaloniaResource Include="Svg\caret-up-solid.svg" />
     <AvaloniaResource Include="Svg\check-alt-svgrepo-com.svg" />

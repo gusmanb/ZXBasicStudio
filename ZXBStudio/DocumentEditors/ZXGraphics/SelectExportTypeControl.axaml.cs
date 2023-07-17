@@ -37,21 +37,17 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 lstOptions.SelectedItem = option;
             }
         }
-        private ExportTypes _ExportType = ExportTypes.Bin;
 
         private List<ExportTypeDescrioptionItem> ExportTypesList = null;
-      
 
         public SelectExportTypeControl()
         {
             InitializeComponent();
+            InitializeGUI();
         }
 
-
-        public bool Initialize(Action<ExportTypes> callbackSelectionChanged)
+        void InitializeGUI()
         {
-            this.SelectionChanged = callbackSelectionChanged;
-
             ExportTypesList = new List<ExportTypeDescrioptionItem>();
             ExportTypesList.Add(new ExportTypeDescrioptionItem()
             {
@@ -62,7 +58,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             });
             ExportTypesList.Add(new ExportTypeDescrioptionItem()
             {
-                Description = "It is exported as .tap, which allows loading with LOAD \"\" CODE.",
+                Description = "It is built as .tap, which allows loading with LOAD \"\" CODE.",
                 ExportType = ExportTypes.Tap,
                 Image = "/Svg/cassette-solid.svg",
                 Name = ".tap format"
@@ -92,7 +88,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             lstOptions.ItemsSource = ExportTypesList;
 
             lstOptions.SelectionChanged += LstOptions_SelectionChanged;
+        }
 
+        public bool Initialize(Action<ExportTypes> callbackSelectionChanged)
+        {
+            this.SelectionChanged = callbackSelectionChanged;
             return true;
         }
 

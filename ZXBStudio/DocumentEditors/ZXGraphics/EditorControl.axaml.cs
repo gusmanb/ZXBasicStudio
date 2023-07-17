@@ -162,7 +162,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             r.Width = _Zoom + 1;
                             r.Height = _Zoom + 1;
                             r.Stroke = Brushes.White;
-                            r.StrokeThickness = 1;
+                            r.StrokeThickness = _Zoom > 4 ? 1 : 0;
                             if (p.ColorIndex == 0)
                             {
                                 r.Fill = Brushes.LightGray;

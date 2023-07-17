@@ -8,12 +8,14 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.Extensions;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
@@ -46,16 +48,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.cmbSelectExportType.Initialize(ExportType_Changed);
             exportConfig = ServiceLayer.Export_GetConfigFile(fileType.FileName + ".zbs");
             if (exportConfig == null)
-            {
-                exportConfig = new ExportConfig();
-                exportConfig.ArrayBase = 0;
-                exportConfig.AutoExport = false;
-                exportConfig.ExportFilePath = "";
-                exportConfig.ExportType = ExportTypes.None;
-                exportConfig.LabelName = Path.GetFileName(exportConfig.ExportFilePath).Replace(".bas", "").Replace(" ", "_");
-                exportConfig.ZXAddress = 49152;
-                exportConfig.ZXFileName = "";
-            }
+                exportConfig = ServiceLayer.Export_GetDefaultConfig(fileType.FileName);
 
             txtLabelName.Text = exportConfig.LabelName;
             txtMemoryAddr.Text = exportConfig.ZXAddress.ToString();
@@ -155,14 +148,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             if (string.IsNullOrEmpty(exportConfig.ExportFilePath))
             {
                 txtOutputFile.Text = fileType.FileName + extension;
-                var spName = Path.GetFileName(fileType.FileName.ToStringNoNull()).
-                    Replace(".bin", "").
-                    Replace(".tap", "").
-                    Replace(".bas", "").
-                    Replace(".fnt", "").
-                    Replace(".udg", "").
-                    Replace(".gdu", "").
-                    Replace(".", "");
+                var spName = Path.GetFileNameWithoutExtension(fileType.FileName.ToStringNoNull());
                 txtLabelName.Text = spName;
                 if (spName.Length > 10)
                 {
@@ -253,7 +239,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void CreateExample_ASM()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("' Example of use of the asm export format");
+            sb.AppendLine("' Example of use of the asm format");
             if (fileType.FileType == FileTypes.Font)
             {
                 sb.AppendLine(string.Format("POKE (uinteger 23606, @{0}-256)", txtLabelName.Text));
@@ -280,7 +266,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void CreateExample_DIM()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("' Example of use of the embedded export format");
+            sb.AppendLine("' Example of use of the embedded format");
             sb.AppendLine("DIM n as ubyte");
             sb.AppendLine(ExportManager.Export_DIM(fileType, patterns, txtLabelName.Text, exportConfig.ArrayBase));
             switch (fileType.FileType)
@@ -319,7 +305,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
 
             var sb = new StringBuilder();
-            sb.AppendLine("' Example of use of the DATA export format");
+            sb.AppendLine("' Example of use of the DATA format");
             sb.AppendLine("DIM dir AS UINTEGER = $c000");
             sb.AppendLine("DIM n AS UINTEGER");
             sb.AppendLine("DIM d AS UBYTE");

@@ -102,7 +102,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.dat
         }
 
 
-        // <summary>
+        /// <summary>
         /// Rename a file
         /// </summary>
         /// <param name="oldName">Old filename</param>

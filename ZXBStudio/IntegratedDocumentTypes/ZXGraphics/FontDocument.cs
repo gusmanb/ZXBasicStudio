@@ -14,13 +14,13 @@ using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
+namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
 {
     public class FontDocument : IZXDocumentType
     {
         static readonly string[] _docExtensions = { ".fnt" };
         static readonly string _docName = "ZX Font file";
-        static readonly string _docDesc = "User font (96 chars). Array of 768 bytes to use as custom font in ZX Spectrum 48K/128K models.\nThe font editor allows you to create and modify font sets with the mouse and export in multiple formats.";
+        static readonly string _docDesc = "User font (96 chars). Array of 768 bytes to use as custom font in ZX Spectrum 48K/128K models.\nThe font editor allows you to create and modify font sets with the mouse and build in multiple formats.";
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-font.svg";
         static readonly Guid _docId = Guid.Parse("05E30D61-F66F-46B5-85BB-FFF35D04184B");

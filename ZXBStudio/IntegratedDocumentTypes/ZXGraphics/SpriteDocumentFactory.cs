@@ -9,17 +9,17 @@ using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
+namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
 {
-    public class FontDocumentFactory : IZXDocumentFactory
+    public class SpriteDocumentFactory : IZXDocumentFactory
     {
         public bool CreateDocument(string Path, TextWriter OutputLog)
         {
             var type = ZXDocumentProvider.GetDocumentType(Path);
 
-            if (type is not FontDocument)
+            if (type is not SpriteDocument)
             {
-                OutputLog.WriteLine($"Document {Path} is not a font file, internal document handling error, operation aborted.");
+                OutputLog.WriteLine($"Document {Path} is not an sprite file, internal document handling error, operation aborted.");
                 return false;
             }
 
@@ -45,12 +45,12 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         {
             var type = ZXDocumentProvider.GetDocumentType(Path);
 
-            if (type is not FontDocument)
+            if (type is not SpriteDocument)
             {
-                OutputLog.WriteLine($"Document {Path} is not a font file, internal document handling error, operation aborted.");
+                OutputLog.WriteLine($"Document {Path} is not an sprite file, internal document handling error, operation aborted.");
                 return null;
             }
-            FontGDUEditor editor = new FontGDUEditor(Path);
+            SpriteEditor editor = new SpriteEditor(Path);
             return editor;
         }
     }

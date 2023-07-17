@@ -4,22 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ZXBasicStudio.DocumentEditors.ZXGraphics;
-using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
+using ZXBasicStudio.DocumentEditors.NextDows;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
+namespace ZXBasicStudio.IntegratedDocumentTypes.NextDows
 {
-    public class UDGDocumentFactory : IZXDocumentFactory
+    public class ZXFormsDocumentFactory : IZXDocumentFactory
     {
         public bool CreateDocument(string Path, TextWriter OutputLog)
         {
             var type = ZXDocumentProvider.GetDocumentType(Path);
 
-            if (type is not UDGDocument)
+            if (type is not ZXFormsDocument)
             {
-                OutputLog.WriteLine($"Document {Path} is not a UDG file, internal document handling error, operation aborted.");
+                OutputLog.WriteLine($"Document {Path} is not an ZXForms file, internal document handling error, operation aborted.");
                 return false;
             }
 
@@ -45,12 +44,12 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
         {
             var type = ZXDocumentProvider.GetDocumentType(Path);
 
-            if (type is not UDGDocument)
+            if (type is not ZXFormsDocument)
             {
-                OutputLog.WriteLine($"Document {Path} is not a UDG file, internal document handling error, operation aborted.");
+                OutputLog.WriteLine($"Document {Path} is not an ZXForms file, internal document handling error, operation aborted.");
                 return null;
             }
-            FontGDUEditor editor = new FontGDUEditor(Path);
+            ZXFormsEditor editor = new ZXFormsEditor(Path);
             return editor;
         }
     }

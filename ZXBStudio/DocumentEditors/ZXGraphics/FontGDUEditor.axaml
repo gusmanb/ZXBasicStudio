@@ -132,15 +132,15 @@
           </Button>
           <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
-          <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Export pattern">
-            <svg:Svg Path="/Svg/Export.svg"></svg:Svg>
+          <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Build / Export">
+            <svg:Svg Path="/Svg/buildexport.svg"></svg:Svg>
           </Button>
         </WrapPanel>
 
         <local:EditorControl Name="ctrEditor" Grid.Row="1" Background="#303030"/>
 
         <WrapPanel Orientation="Horizontal" Background="#ff202020" Grid.Row="2" Margin="10,5,10,5" Height="NaN">
-          <TextBlock Name="txtZoom" Classes="dialog">Zoom 24x</TextBlock>
+          <TextBlock Name="txtZoom" Classes="dialog" Width="55">Zoom 24x</TextBlock>
           <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" VerticalAlignment="Center"/>
           <TextBlock Classes="dialog">Width</TextBlock>
           <Border Classes="numericborder">

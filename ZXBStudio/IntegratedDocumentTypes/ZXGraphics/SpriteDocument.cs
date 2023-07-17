@@ -13,13 +13,13 @@ using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
+namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
 {
     public class SpriteDocument : IZXDocumentType
     {
         static readonly string[] _docExtensions = { ".spr" };
         static readonly string _docName = "Sprites file";
-        static readonly string _docDesc = "Sprite files allow you to create and modify graphics of different sizes and formats. Once created, they can be exported in multiple formats.";
+        static readonly string _docDesc = "Sprite files allow you to create and modify graphics of different sizes and formats. Once created, they can be built in multiple formats.";
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-sprite.svg";
         static readonly Guid _docId = Guid.Parse("E5D4D440-B156-42F1-8FBB-E78D655E754E");

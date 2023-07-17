@@ -67,7 +67,7 @@ namespace ZXBasicStudio.DocumentEditors.NextDows.dat
         }        
 
 
-        // <summary>
+        /// <summary>
         /// Rename a file
         /// </summary>
         /// <param name="oldName">Old filename</param>
