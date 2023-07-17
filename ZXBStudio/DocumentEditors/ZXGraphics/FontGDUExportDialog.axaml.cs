@@ -113,7 +113,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     btnOutputFile.IsVisible = true;
                     lblLabelName.IsVisible = true;
                     txtLabelName.IsVisible = true;
-                    CreateExportPath(".bas");
+                    CreateExportPath(ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument)).DocumentExtensions.First());
                     CreateExample_ASM();
                     break;
                 case ExportTypes.Dim:
@@ -124,7 +124,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     txtLabelName.IsVisible = true;
                     lblArrayBase.IsVisible = true;
                     cmbArrayBase.IsVisible = true;
-                    CreateExportPath(".bas");
+                    CreateExportPath(ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument)).DocumentExtensions.First());
                     CreateExample_DIM();
                     break;
                 case ExportTypes.Data:
@@ -133,7 +133,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     btnOutputFile.IsVisible = true;
                     lblLabelName.IsVisible = true;
                     txtLabelName.IsVisible = true;
-                    CreateExportPath(".bas");
+                    CreateExportPath(ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument)).DocumentExtensions.First());
                     CreateExample_DATA();
                     break;
                 default:
@@ -380,13 +380,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 case ExportTypes.Asm:
                 case ExportTypes.Data:
                 case ExportTypes.Dim:
-                    fileTypes[0] = new FilePickerFileType("Basic files (*.bas)") { Patterns = new[] { "*.bas", "*.zxbas" } };
+                    fileTypes[0] = new FilePickerFileType("Basic files") { Patterns = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument)).DocumentExtensions };
                     break;
                 case ExportTypes.Bin:
-                    fileTypes[0] = new FilePickerFileType("Binary files (*.bin)") { Patterns = new[] { "*.bin" } };
+                    fileTypes[0] = new FilePickerFileType("Binary files") { Patterns = new[] { "*.bin" } };
                     break;
                 case ExportTypes.Tap:
-                    fileTypes[0] = new FilePickerFileType("Tape files (*.bin)") { Patterns = new[] { "*.tap" } };
+                    fileTypes[0] = new FilePickerFileType("Tape files") { Patterns = new[] { "*.tap" } };
                     break;
             }
 
