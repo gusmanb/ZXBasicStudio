@@ -9,22 +9,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
-using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
+using ZXBasicStudio.DocumentEditors.NextDows.log;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
+namespace ZXBasicStudio.IntegratedDocumentTypes.NextDows
 {
-    public class UDGDocument : IZXDocumentType
+    public class ZXFormsDocument : IZXDocumentType
     {
-        static readonly string[] _docExtensions = { ".gdu", ".udg" };
-        static readonly string _docName = "UDG file";
-        static readonly string _docDesc = "User Defined Graphics data (21 chars). Array of 168 bytes to use classical ZX Spectrum UDGs/GDUs.\nThe GDU editor allows you to create and modify graphics with the mouse and export in multiple formats.";
-        static readonly string _docCat = "Graphics";
-        static readonly string _docAspect = "/Svg/Documents/file-udg.svg";
-        static readonly Guid _docId = Guid.Parse("468D8D2B-8461-4950-A4C3-8B20454B851A");
+        static readonly string[] _docExtensions = { ".zxf" };
+        static readonly string _docName = "ZXForms file";
+        static readonly string _docDesc = "ZXForms files allow you to create and modify NextDows Forms definitios, known as ZXForms. NextDows is a brand new operating system based on windows environment for ZX Spectrum Next/N-GO devices and compatibles.";
+        static readonly string _docCat = "NextDows";
+        static readonly string _docAspect = "/Svg/Documents/file-zxforms.svg";
+        static readonly Guid _docId = Guid.Parse("03FD2BD3-F067-4123-B6DB-F5EFF91C87B4");
 
-        static readonly UDGDocumentFactory _factory = new UDGDocumentFactory();
+        static readonly ZXFormsDocumentFactory _factory = new ZXFormsDocumentFactory();
         Bitmap? _icon;
 
         public string[] DocumentExtensions => _docExtensions;
@@ -35,9 +35,10 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
 
         private static readonly ExportManager _exportManager = new ExportManager();
 
-        public UDGDocument()
+
+        public ZXFormsDocument()
         {
-            _exportManager.Initialize(DocumentEditors.ZXGraphics.neg.FileTypes.UDG);
+            _exportManager.Initialize(DocumentEditors.ZXGraphics.neg.FileTypes.NextDows_ZXForms);
         }
 
 
@@ -47,7 +48,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.ZXGraphics
             {
                 if (_icon == null)
                 {
-                    _icon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/zxGraphics_udg.png")));
+                    _icon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/zxForms.png")));
                 }
 
                 return _icon;

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
 using ZXBasicStudio.Dialogs;
 using ZXBasicStudio.DocumentModel.Classes;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 
 namespace ZXBasicStudio.BuildSystem
 {
@@ -379,7 +380,9 @@ namespace ZXBasicStudio.BuildSystem
 
             foreach (var fFile in fFiles)
             {
-                if (fFile.IsZXBasic() || fFile.IsZXAssembler())
+                var docType = ZXDocumentProvider.GetDocumentType(fFile);
+
+                if (docType is ZXBasicDocument || docType is ZXAssemblerDocument)
                     files.Add(new ZXCodeFile(fFile));
             }
 

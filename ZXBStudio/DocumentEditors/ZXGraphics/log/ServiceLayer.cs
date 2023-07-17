@@ -8,6 +8,10 @@ using ZXBasicStudio.Classes;
 using ZXBasicStudio.Common;
 using System.Runtime;
 using Newtonsoft.Json;
+using ZXBasicStudio.Common.TAPTools;
+using ZXBasicStudio.DocumentModel.Classes;
+using ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
@@ -53,15 +57,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             var ftc = new FileTypeConfig();
             ftc.FileName = filename;
 
-            switch (ext)
+            var docType = ZXDocumentProvider.GetDocumentType(filename);
+
+            switch (docType)
             {
-                case ZXExtensions.ZX_GRAPHICS_UDG:
-                case ZXExtensions.ZX_GRAPHICS_GDU:
+                case UDGDocument _:
                     ftc.FileType = FileTypes.UDG;
                     ftc.FirstIndex = 64;    // CHAR A
                     ftc.NumerOfPatterns = 21;
                     break;
-                case ZXExtensions.ZX_GRAPHICS_FNT:
+                case FontDocument _:
                     ftc.FileType = FileTypes.Font;
                     ftc.FirstIndex = 32;    // SPACE
                     ftc.NumerOfPatterns = 96;
@@ -69,7 +74,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             }
             return ftc;
         }
-
 
         /// <summary>
         /// Reads the binary content of a file
@@ -132,15 +136,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         {
             try
             {
-                var tapGen = new Common.cTapGenerator();
-                var fileTap = new Common.cTapGenerator.tTapFile()
-                {
-                    blockName = fileName,
-                    blockSize = data.Length,
-                    data = data,
-                    startAddress = address
-                };
-                return tapGen.createTap(fileTap);
+                var block = TAPBlock.CreateDataBlock(fileName, data, (ushort)address);
+                var file = new TAPFile();
+                file.Blocks.Add(block);
+                return file.Serialize();
             }
             catch (Exception ex)
             {
@@ -348,6 +347,24 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             }
         }
 
+        /// <summary>
+        /// Creates the default export config for an UDG/Font document
+        /// </summary>
+        /// <param name="fileName">Document file name</param>
+        /// <returns>The new export configuration</returns>
+        public static ExportConfig Export_GetDefaultConfig(string fileName)
+        {
+            var docType = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument));
+            var exportConfig = new ExportConfig();
+            exportConfig.ArrayBase = 0;
+            exportConfig.AutoExport = true;
+            exportConfig.ExportFilePath = fileName + docType.DocumentExtensions.First();
+            exportConfig.ExportType = ExportTypes.Dim;
+            exportConfig.LabelName = Path.GetFileNameWithoutExtension(fileName).Replace(" ", "_");
+            exportConfig.ZXAddress = 49152;
+            exportConfig.ZXFileName = exportConfig.LabelName;
+            return exportConfig;
+        }
 
         public static bool Export_SetConfigFile(string fileName, ExportConfig exportConfig)
         {
