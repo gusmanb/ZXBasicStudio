@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentModel.Classes;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 
 namespace ZXBasicStudio.BuildSystem
 {
@@ -50,9 +52,11 @@ namespace ZXBasicStudio.BuildSystem
 
             Directory = dName;
 
-            if (Name.IsZXBasic())
+            var docType = ZXDocumentProvider.GetDocumentType(Name);
+
+            if (docType is ZXBasicDocument)
                 FileType = ZXFileType.Basic;
-            else if (Name.IsZXAssembler())
+            else if (docType is ZXAssemblerDocument)
                 FileType = ZXFileType.Assembler;
             else
                 throw new ArgumentException("Invalid file");

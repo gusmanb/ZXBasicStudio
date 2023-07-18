@@ -25,6 +25,7 @@
     <Compile Remove="Classes\GLConsts.cs" />
     <Compile Remove="Classes\MicroTimer.cs" />
     <Compile Remove="Classes\ObjectTreeEventHandler.cs" />
+    <Compile Remove="Classes\ZXExtensions.cs" />
     <Compile Remove="Classes\ZXGlobalVariableMap.cs" />
     <Compile Remove="Classes\ZXLocalVariableMap.cs" />
     <Compile Remove="Controls\ZXLocalVariablesView.axaml.cs" />
@@ -42,13 +43,29 @@
     <None Remove="Assets\unknFile.png" />
     <None Remove="Assets\zxbFile.png" />
     <None Remove="Assets\zxbs.ico" />
+    <None Remove="Assets\zxForms.png" />
     <None Remove="Assets\zxGraphics_config.png" />
     <None Remove="Assets\zxGraphics_fnt.png" />
-    <None Remove="Assets\zxGraphics_gdu.png" />
     <None Remove="Assets\zxGraphics_map.png" />
     <None Remove="Assets\zxGraphics_spr.png" />
     <None Remove="Assets\zxGraphics_til.png" />
+    <None Remove="Assets\zxGraphics_udg.png" />
     <None Remove="Assets\zxtFile.png" />
+    <None Remove="DocumentEditors\NextDows\images\Box32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Button32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Check32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Circle32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Image32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Label32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Line32.png" />
+    <None Remove="DocumentEditors\NextDows\images\List32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Modal32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Panel32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Pointer32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Radio32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Select32.png" />
+    <None Remove="DocumentEditors\NextDows\images\Table32.png" />
+    <None Remove="DocumentEditors\NextDows\images\TextBox32.png" />
     <None Remove="Fonts\AlmaMono-Bold.otf" />
     <None Remove="Fonts\AlmaMono-Heavy.otf" />
     <None Remove="Fonts\AlmaMono-Light.otf" />
@@ -85,13 +102,17 @@
     <None Remove="Fonts\NimbusSanL-RegIta.ttf" />
     <None Remove="Svg\backward-solid.svg" />
     <None Remove="Svg\backward-step-solid.svg" />
+    <None Remove="Svg\Binary.svg" />
     <None Remove="Svg\box-open-solid.svg" />
     <None Remove="Svg\box-solid.svg" />
     <None Remove="Svg\boxes-stacked-solid.svg" />
     <None Remove="Svg\bug-solid.svg" />
+    <None Remove="Svg\buildexport.svg" />
     <None Remove="Svg\caret-down-solid.svg" />
     <None Remove="Svg\caret-up-solid.svg" />
     <None Remove="Svg\cassette-solid.svg" />
+    <None Remove="Svg\cassette.svg" />
+    <None Remove="Svg\check-alt-svgrepo-com.svg" />
     <None Remove="Svg\circle-minus-solid.svg" />
     <None Remove="Svg\circle-xmark-solid.svg" />
     <None Remove="Svg\clock-rotate-left-solid.svg" />
@@ -102,9 +123,15 @@
     <None Remove="Svg\diagram-project-plus-solid.svg" />
     <None Remove="Svg\diagram-project-solid.svg" />
     <None Remove="Svg\display-lines-solid.svg" />
+    <None Remove="Svg\Documents\file-font.svg" />
+    <None Remove="Svg\Documents\file-map.svg" />
+    <None Remove="Svg\Documents\file-sprite.svg" />
     <None Remove="Svg\Documents\file-text.svg" />
+    <None Remove="Svg\Documents\file-tile.svg" />
+    <None Remove="Svg\Documents\file-udg.svg" />
     <None Remove="Svg\Documents\file-zxasm.svg" />
     <None Remove="Svg\Documents\file-zxbasic.svg" />
+    <None Remove="Svg\Documents\file-zxforms.svg" />
     <None Remove="Svg\Documents\file-zxtape.svg" />
     <None Remove="Svg\dumpster-solid.svg" />
     <None Remove="Svg\eject-solid.svg" />
@@ -144,6 +171,9 @@
     <None Remove="Svg\square-plus-solid.svg" />
     <None Remove="Svg\stop-solid.svg" />
     <None Remove="Svg\tag-solid.svg" />
+    <None Remove="Svg\text-asm.svg" />
+    <None Remove="Svg\text-data.svg" />
+    <None Remove="Svg\text-dim.svg" />
     <None Remove="Svg\trash-can-regular.svg" />
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
@@ -206,6 +236,7 @@
     <None Remove="Svg\White\trash-can-regular.svg" />
     <None Remove="Svg\White\trash-solid.svg" />
     <None Remove="Svg\White\truck-fast-solid.svg" />
+    <None Remove="Svg\x-svgrepo-com.svg" />
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\asmFile.png" />
@@ -220,11 +251,27 @@
     <AvaloniaResource Include="Assets\zxbs.ico" />
     <AvaloniaResource Include="Assets\zxGraphics_config.png" />
     <AvaloniaResource Include="Assets\zxGraphics_fnt.png" />
-    <AvaloniaResource Include="Assets\zxGraphics_gdu.png" />
+    <AvaloniaResource Include="Assets\zxForms.png" />
+    <AvaloniaResource Include="Assets\zxGraphics_udg.png" />
     <AvaloniaResource Include="Assets\zxGraphics_map.png" />
     <AvaloniaResource Include="Assets\zxGraphics_spr.png" />
     <AvaloniaResource Include="Assets\zxGraphics_til.png" />
     <AvaloniaResource Include="Assets\zxtFile.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Box32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Button32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Check32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Circle32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Image32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Label32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Line32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\List32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Modal32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Panel32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Pointer32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Radio32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Select32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\Table32.png" />
+    <AvaloniaResource Include="DocumentEditors\NextDows\images\TextBox32.png" />
     <AvaloniaResource Include="Fonts\AlmaMono-Bold.otf" />
     <AvaloniaResource Include="Fonts\AlmaMono-Heavy.otf" />
     <AvaloniaResource Include="Fonts\AlmaMono-Light.otf" />
@@ -255,14 +302,23 @@
     <AvaloniaResource Include="Fonts\ConsolaMono.ttf" />
     <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\buildexport.svg" />
     <AvaloniaResource Include="Svg\caret-down-solid.svg" />
     <AvaloniaResource Include="Svg\caret-up-solid.svg" />
+    <AvaloniaResource Include="Svg\check-alt-svgrepo-com.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-font.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxforms.svg" />
     <AvaloniaResource Include="Svg\Documents\file-text.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-sprite.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-tile.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-map.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxtape.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-udg.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxbasic.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxasm.svg" />
-    <AvaloniaResource Include="Svg\Documents\file-zxtape.svg" />
     <AvaloniaResource Include="Svg\Export.svg" />
     <AvaloniaResource Include="Svg\keyboard-regular.svg" />
+    <AvaloniaResource Include="Svg\binary.svg" />
     <AvaloniaResource Include="Svg\Mask.svg" />
     <AvaloniaResource Include="Svg\minus-solid.svg" />
     <AvaloniaResource Include="Svg\MoveRight.svg" />
@@ -270,6 +326,9 @@
     <AvaloniaResource Include="Svg\ShiftRight.svg" />
     <AvaloniaResource Include="Svg\RotateRight.svg" />
     <AvaloniaResource Include="Svg\RotateLeft.svg" />
+    <AvaloniaResource Include="Svg\text-asm.svg" />
+    <AvaloniaResource Include="Svg\text-data.svg" />
+    <AvaloniaResource Include="Svg\text-dim.svg" />
     <AvaloniaResource Include="Svg\VMirror.svg" />
     <AvaloniaResource Include="Svg\HMirror.svg" />
     <AvaloniaResource Include="Svg\Paste.svg" />
@@ -395,6 +454,7 @@
     <AvaloniaResource Include="Svg\White\trash-can-regular.svg" />
     <AvaloniaResource Include="Svg\White\trash-solid.svg" />
     <AvaloniaResource Include="Svg\White\truck-fast-solid.svg" />
+    <AvaloniaResource Include="Svg\x-svgrepo-com.svg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="zxbs.ico" />
@@ -431,6 +491,18 @@
     <Compile Update="Dialogs\ZXNewFileDialog.axaml.cs">
       <DependentUpon>ZXNewFileDialog.axaml</DependentUpon>
     </Compile>
+    <Compile Update="DocumentEditors\NextDows\ZXFormsEditor.axaml.cs">
+      <DependentUpon>ZXFormsEditor.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpritePatternEditor.axaml.cs">
+      <DependentUpon>SpritePatternEditor.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpriteEditor.axaml.cs">
+      <DependentUpon>SpriteEditor.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\FontGDUExportDialog.axaml.cs">
+      <DependentUpon>FontGDUExportDialog.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>
     </Compile>
@@ -452,8 +524,8 @@
     <Compile Update="DocumentEditors\ZXGraphics\EditorControl.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="DocumentEditors\ZXGraphics\FontGDU.axaml.cs">
-      <DependentUpon>FontGDU.axaml</DependentUpon>
+    <Compile Update="DocumentEditors\ZXGraphics\FontGDUEditor.axaml.cs">
+      <DependentUpon>FontGDUEditor.axaml</DependentUpon>
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\PatternControl.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>

@@ -616,6 +616,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             if (!allowsBreakpoints || e.OffsetChangeMap == null || e.OffsetChangeMap.Count == 0)
                 return;
 
+            // TODO: DUEFECTU 2023.05.17 - if e.OffsetChangeMap.Count == 0, e.OffsetChangeMap[0].Offset throws a null reference exception
+            if (e.OffsetChangeMap.Count == 0)
+            {
+                return;
+            }
+
             int start = e.OffsetChangeMap[0].Offset;
             int firstLine = editor.Document.GetLineByOffset(start).LineNumber;
             bool changed = false;
@@ -658,6 +664,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         {
             if (!allowsBreakpoints || e.OffsetChangeMap == null || e.OffsetChangeMap.Count == 0)
                 return;
+
+            // TODO: DUEFECTU 2023.05.17 - if e.OffsetChangeMap.Count == 0, e.OffsetChangeMap[0].Offset throws a null reference exception
+            if (e.OffsetChangeMap.Count == 0)
+            {
+                return;
+            }
 
             int start = e.OffsetChangeMap[0].Offset;
             var firstLine = editor.Document.GetLineByOffset(start);

@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.DocumentModel.Classes;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 
 namespace ZXBasicStudio.Classes
 {
@@ -151,7 +153,9 @@ namespace ZXBasicStudio.Classes
             {
                 List<string> mainFiles = new List<string>();
 
-                foreach (var ext in ZXExtensions.ZXBasicFiles)
+                var docType = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument));
+
+                foreach (var ext in docType.DocumentExtensions)
                     mainFiles.AddRange(Directory.GetFiles(ProjectPath, $"main{ext}"));
 
                 if (mainFiles.Count > 1)

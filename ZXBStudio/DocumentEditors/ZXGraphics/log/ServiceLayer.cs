@@ -5,6 +5,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Common;
+using System.Runtime;
+using Newtonsoft.Json;
+using ZXBasicStudio.Common.TAPTools;
+using ZXBasicStudio.DocumentModel.Classes;
+using ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
@@ -15,6 +22,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
     public static class ServiceLayer
     {
         public static string LastError = "";
+        public static bool Initialized = false;
 
         private static DataLayer dataLayer = null;
 
@@ -33,6 +41,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     return false;
                 }
             }
+            Initialized = true;
             return true;
         }
 
@@ -48,43 +57,23 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             var ftc = new FileTypeConfig();
             ftc.FileName = filename;
 
-            switch (ext)
+            var docType = ZXDocumentProvider.GetDocumentType(filename);
+
+            switch (docType)
             {
-                case ZXExtensions.ZX_GRAPHICS_UDG:
-                case ZXExtensions.ZX_GRAPHICS_GDU:
-                    ftc.FileType = FileTypes.GDU;
+                case UDGDocument _:
+                    ftc.FileType = FileTypes.UDG;
                     ftc.FirstIndex = 64;    // CHAR A
                     ftc.NumerOfPatterns = 21;
                     break;
-                case ZXExtensions.ZX_GRAPHICS_FNT:
+                case FontDocument _:
                     ftc.FileType = FileTypes.Font;
                     ftc.FirstIndex = 32;    // SPACE
                     ftc.NumerOfPatterns = 96;
                     break;
-                case ZXExtensions.ZX_GRAPHICS_SPR:
-                    ftc.FileType = FileTypes.Sprite;
-                    ftc.FirstIndex = 0;
-                    ftc.NumerOfPatterns = 256;
-                    break;
-                case ZXExtensions.ZX_GRAPHICS_TIL:
-                    ftc.FileType = FileTypes.Tile;
-                    ftc.FirstIndex = 0;
-                    ftc.NumerOfPatterns = 256;
-                    break;
-                case ZXExtensions.ZX_GRAPHICS_MAP:
-                    ftc.FileType = FileTypes.Map;
-                    ftc.FirstIndex = 0;
-                    ftc.NumerOfPatterns = 0;
-                    break;
-                case ZXExtensions.ZX_GRAPHICS_GCFG:
-                    ftc.FileType = FileTypes.Config;
-                    ftc.FirstIndex = 0;
-                    ftc.NumerOfPatterns = 256;
-                    break;
             }
             return ftc;
         }
-
 
         /// <summary>
         /// Reads the binary content of a file
@@ -137,57 +126,41 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
 
         /// <summary>
+        /// Converts binary data to tap format binary data
+        /// </summary>
+        /// <param name="fileName">ZX Spectrum file name</param>
+        /// <param name="address">address of the binary data on ZX Spectrum</param>
+        /// <param name="data">Data to convert</param>
+        /// <returns>Array of bytes or null if error</returns>
+        public static byte[] Bin2Tap(string fileName, int address, byte[] data)
+        {
+            try
+            {
+                var block = TAPBlock.CreateDataBlock(fileName, data, (ushort)address);
+                var file = new TAPFile();
+                file.Blocks.Add(block);
+                return file.Serialize();
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR generating tap file: " + ex.Message + ex.StackTrace;
+                return null;
+            }
+        }
+
+
+        /// <summary>
         /// Save a file of type GDU or Font to disk
         /// </summary>
         /// <param name="fileType">File information</param>
         /// <param name="patterns">Pattens to save</param>
-        /// <returns>True if OK or FGalse if error</returns>
+        /// <returns>True if OK or False if error</returns>
         public static bool Files_Save_GDUorFont(FileTypeConfig fileType, IEnumerable<Pattern> patterns)
         {
             try
             {
-                if (fileType.FileType != FileTypes.GDU && fileType.FileType != FileTypes.Font)
-                {
-                    return false;
-                }
-
-                var data = new byte[fileType.NumerOfPatterns * 8];
-                int index = 0;
-                for(int idPattern=0; idPattern < fileType.NumerOfPatterns; idPattern++)
-                {
-                    var pattern=patterns.FirstOrDefault(d=>d.Id==idPattern);
-                    if (pattern == null)
-                    {
-                        for(int n=0; n<8; n++)
-                        {
-                            data[index] = 0;
-                            index++;
-                        }
-                    }
-                    else
-                    {
-                        for(int y=0; y<8; y++)
-                        {
-                            int b = 0;
-                            for(int x=0; x<8; x++)
-                            {
-                                var p = pattern.Data.FirstOrDefault(d => d.Y == y && d.X==x);
-                                if (p == null)
-                                {
-                                    continue;
-                                }
-                                if (p.ColorIndex == 1)
-                                {
-                                    b = b | (int)Math.Pow(2,(7-x));
-                                }
-                            }
-                            data[index] = (byte)b;
-                            index++;
-                        }
-                    }
-                }
-
-                return dataLayer.WriteFileData(fileType.FileName, data);
+                var data = Files_CreateBinData_GDUorFont(fileType, patterns);
+                return dataLayer.Files_WriteFileData(fileType.FileName, data);
             }
             catch (Exception ex)
             {
@@ -196,9 +169,354 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             }
         }
 
+
+        /// <summary>
+        /// Creates the binary data for a file of type GDU or Font to disk
+        /// </summary>
+        /// <param name="fileType">File information</param>
+        /// <param name="patterns">Pattens to use</param>
+        /// <returns>Arrfay of byte with the data ready to save on disk</returns>
+        public static byte[] Files_CreateBinData_GDUorFont(FileTypeConfig fileType, IEnumerable<Pattern> patterns)
+        {
+            try
+            {
+                if (fileType.FileType != FileTypes.UDG && fileType.FileType != FileTypes.Font)
+                {
+                    return null;
+                }
+
+                var data = new byte[fileType.NumerOfPatterns * 8];
+                int index = 0;
+                for (int idPattern = 0; idPattern < fileType.NumerOfPatterns; idPattern++)
+                {
+                    var pattern = patterns.FirstOrDefault(d => d.Id == idPattern);
+                    if (pattern == null)
+                    {
+                        for (int n = 0; n < 8; n++)
+                        {
+                            data[index] = 0;
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        for (int y = 0; y < 8; y++)
+                        {
+                            int b = 0;
+                            for (int x = 0; x < 8; x++)
+                            {
+                                var p = pattern.Data.FirstOrDefault(d => d.Y == y && d.X == x);
+                                if (p == null)
+                                {
+                                    continue;
+                                }
+                                if (p.ColorIndex == 1)
+                                {
+                                    b = b | (int)Math.Pow(2, (7 - x));
+                                }
+                            }
+                            data[index] = (byte)b;
+                            index++;
+                        }
+                    }
+                }
+
+                return data;
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR generating binary data: " + ex.Message + ex.StackTrace;
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Save binary data to a file
+        /// </summary>
+        /// <param name="fileName">File name with full path</param>
+        /// <param name="data">Data to save</param>
+        /// <returns>True if ok or false if error</returns>
+        public static bool Files_SaveFileData(string fileName, byte[] data)
+        {
+            try
+            {
+                return dataLayer.Files_WriteFileData(fileName, data);
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR saving data: " + ex.Message + ex.StackTrace;
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Save string data to a file
+        /// </summary>
+        /// <param name="fileName">File name with full path</param>
+        /// <param name="data">Data to save</param>
+        /// <returns>True if ok or false if error</returns>
+        public static bool Files_SaveFileString(string fileName, string data)
+        {
+            try
+            {
+                return dataLayer.Files_SetString(fileName, data);
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR saving data: " + ex.Message + ex.StackTrace;
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Create defalt data for .gdu or .fnt files
+        /// </summary>
+        /// <param name="fileType">File type</param>
+        /// <returns>Array of bytes with the data or null if the type is unsuported</returns>
         public static byte[] Files_CreateData(FileTypeConfig fileType)
         {
             return dataLayer.Files_CreateData(fileType);
         }
+
+
+        // <summary>
+        /// Rename a file
+        /// </summary>
+        /// <param name="oldName">Old filename</param>
+        /// <param name="newName">New filename</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool Files_Rename(string oldName, string newName)
+        {
+            if (!dataLayer.Files_Rename(oldName, newName))
+            {
+                LastError = dataLayer.LastError;
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Get all files oof a type, in a directory and his subdirectories
+        /// </summary>
+        /// <param name="path">Root path</param>
+        /// <param name="filetyle">FileType</param>
+        /// <returns>Array of strings with the fullpath filenames</returns>
+        public static string[] Files_GetAllConfigFiles(string path, FileTypes filetyle)
+        {
+            var lst = new List<string>();
+            switch (filetyle)
+            {
+                case FileTypes.UDG:
+                    dataLayer.Files_GetAllFileNames(path, ".udg.zbs", ref lst);
+                    dataLayer.Files_GetAllFileNames(path, ".gdu.zbs", ref lst);
+                    return lst.ToArray();
+                case FileTypes.Font:
+                    dataLayer.Files_GetAllFileNames(path, ".fnt.zbs", ref lst);
+                    return lst.ToArray();
+            }
+            return null;
+        }
+
+
+        /// <summary>
+        /// Returns the ExportConfig (.zbs) of a file
+        /// </summary>
+        /// <param name="fileName">Full path and name of the config file</param>
+        /// <returns>ExportConfig object or null if file not exists</returns>
+        public static ExportConfig Export_GetConfigFile(string fileName)
+        {
+            try
+            {
+                var jsonData = dataLayer.Files_GetString(fileName);
+                if (string.IsNullOrEmpty(jsonData))
+                {
+                    return null;
+                }
+
+                ExportConfig exportConfig = jsonData.Deserializar<ExportConfig>();
+                return exportConfig;
+            }
+            catch (Exception ex)
+            {
+                LastError = "Error deserializing \"" + fileName + "\" to ExportConfig";
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Creates the default export config for an UDG/Font document
+        /// </summary>
+        /// <param name="fileName">Document file name</param>
+        /// <returns>The new export configuration</returns>
+        public static ExportConfig Export_GetDefaultConfig(string fileName)
+        {
+            var docType = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument));
+            var exportConfig = new ExportConfig();
+            exportConfig.ArrayBase = 0;
+            exportConfig.AutoExport = true;
+            exportConfig.ExportFilePath = fileName + docType.DocumentExtensions.First();
+            exportConfig.ExportType = ExportTypes.Dim;
+            exportConfig.LabelName = Path.GetFileNameWithoutExtension(fileName).Replace(" ", "_");
+            exportConfig.ZXAddress = 49152;
+            exportConfig.ZXFileName = exportConfig.LabelName;
+            return exportConfig;
+        }
+
+        public static bool Export_SetConfigFile(string fileName, ExportConfig exportConfig)
+        {
+            try
+            {
+                if (exportConfig == null)
+                {
+                    return false;
+                }
+
+                var jsonData = exportConfig.Serializar();
+                return dataLayer.Files_SetString(fileName, jsonData);
+            }
+            catch (Exception ex)
+            {
+                LastError = "Error deserializing \"" + fileName + "\" to ExportConfig";
+                return false;
+            }
+        }
+
+
+        public static ZXBuildSettings GetProjectSettings()
+        {
+            return ZXProjectManager.Current.GetProjectSettings();
+        }
+
+
+        #region Palettes
+
+        private static PaletteColor[] DefaultColors = new PaletteColor[]
+        {
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0x00 },     // Black
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0xa0 },     // Blue
+            new PaletteColor() { Red=0xdc, Green=0x00, Blue=0x00 },     // Red
+            new PaletteColor() { Red=0xe4, Green=0x00, Blue=0xb4 },     // Magenta
+            new PaletteColor() { Red=0x00, Green=0xd4, Blue=0x00 },     // Green
+            new PaletteColor() { Red=0x00, Green=0xd4, Blue=0xd4 },     // Cyan
+            new PaletteColor() { Red=0xd0, Green=0xd0, Blue=0x00 },     // Yellow
+            new PaletteColor() { Red=0xc8, Green=0xc8, Blue=0xc8 },     // White
+            // Bright 1
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0x00 },     // Black
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0xac },     // Blue
+            new PaletteColor() { Red=0xf0, Green=0x00, Blue=0x00 },     // Red
+            new PaletteColor() { Red=0xfc, Green=0x00, Blue=0xdc },     // Magenta
+            new PaletteColor() { Red=0x00, Green=0xf0, Blue=0x00 },     // Green
+            new PaletteColor() { Red=0x00, Green=0xfc, Blue=0xfc },     // Cyan
+            new PaletteColor() { Red=0xfc, Green=0xfc, Blue=0x00 },     // Yellow
+            new PaletteColor() { Red=0xfc, Green=0xfc, Blue=0xfc }      // White
+        };
+
+
+        public static PaletteColor[] GetPalette(GraphicsModes mode)
+        {
+            switch (mode)
+            {
+                case GraphicsModes.Monochrome:
+                    return new PaletteColor[]
+                    {
+                        DefaultColors[7], DefaultColors[0]
+                    };
+
+                case GraphicsModes.ZXSpectrum:
+                    return DefaultColors;
+
+                default:
+                    // TODO: Next Palete
+                    return DefaultColors;
+            }
+        }
+
+        #endregion
+
+
+        #region Sprites
+
+        /// <summary>
+        /// Resizes the point data of the sprite to the new size
+        /// </summary>
+        /// <param name="sprite">Old sprite with new Width and Height properties set to target. Patterns will be updated.</param>
+        /// <param name="oldWidth">Old Width of the sprite, the new must set in sprite parameter</param>
+        /// <param name="oldHeight">Old Height of the spritye, the new must set in sprite parameter</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool SpriteData_Resize(ref Sprite sprite, int oldWidth, int oldHeight)
+        {
+            for (int p = 0; p < sprite.Patterns.Count; p++)
+            {
+                var pattern = sprite.Patterns[p];
+                var patList = pattern.Data.ToList();
+                for (int y = 0; y < sprite.Height; y++)
+                {
+                    for (int x = 0; x < sprite.Width; x++)
+                    {
+                        var point = patList.FirstOrDefault(d => d.X == x && d.Y == y);
+                        if (point == null)
+                        {
+                            patList.Add(new PointData()
+                            {
+                                ColorIndex = sprite.DefaultColor,
+                                X = x,
+                                Y = y
+                            });
+                        }
+                    }
+                }
+
+                var w = sprite.Width;
+                var h = sprite.Height;
+                patList.RemoveAll(d => d.X >= w || d.Y >= h);
+                sprite.Patterns[p].Data = patList.ToArray();
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Change the sprite mode
+        /// </summary>
+        /// <param name="sprite">Old sprite with new graphic mode property set to target. Patterns will be updated.</param>
+        /// <param name="oldMode">Old graphic mode, the new must set in sprite parameter</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool SpriteData_ChangeMode(ref Sprite sprite, GraphicsModes oldMode)
+        {
+            // TODO: Do it!!!
+            return true;
+        }
+
+
+        /// <summary>
+        /// Change the sprite mask parameter
+        /// </summary>
+        /// <param name="sprite">Old sprite with new mask status property set to target. Patterns will be updated.</param>
+        /// <param name="oldMasked">Old mask value, the new must set in sprite parameter</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool SpriteData_ChangeMasked(ref Sprite sprite, bool oldMasked)
+        {
+            // TODO: Do it!!!
+            return true;
+        }
+
+
+        /// <summary>
+        /// Change the sprite frames parameter
+        /// </summary>
+        /// <param name="sprite">Old sprite with new Frames property set to target. Patterns will be updated.</param>
+        /// <param name="oldFrames">Old Frames value, the new must set in sprite parameter</param>
+        /// <returns>True if OK or False if error</returns>
+        public static bool SpriteData_ChangeFrames(ref Sprite sprite, byte oldFrames)
+        {
+            // TODO: Do it!!!
+            return true;
+        }
+
+        #endregion
     }
 }

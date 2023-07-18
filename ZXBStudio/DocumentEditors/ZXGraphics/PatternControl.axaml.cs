@@ -7,6 +7,9 @@ using System.IO.Compression;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
+    /// <summary>
+    /// A single pattern into pattern panel
+    /// </summary>
     public partial class PatternControl : UserControl
     {
         public Action<PatternControl> callBackClik = null;
@@ -16,6 +19,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         public Pattern Pattern { get; set; }
 
+        /// <summary>
+        /// True if patternd is selected
+        /// </summary>
         public bool IsSelected
         {
             get

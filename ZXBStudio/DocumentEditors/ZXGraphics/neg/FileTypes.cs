@@ -11,11 +11,35 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
     /// </summary>
     public enum FileTypes
     {
-        GDU = 0,
+        /// <summary>
+        /// Not defined = None
+        /// </summary>
+        Undefined = 99,
+
+        /// <summary>
+        /// GDU or UDG
+        /// </summary>
+        UDG = 0,
+        /// <summary>
+        /// Estándar font
+        /// </summary>
         Font = 1,
+        /// <summary>
+        ///  Sprite format
+        /// </summary>
         Sprite = 2,
+        /// <summary>
+        /// Tiles format
+        /// </summary>
         Tile = 3,
+        /// <summary>
+        /// Maping data
+        /// </summary>
         Map = 4,
-        Config = 5
+
+        /// <summary>
+        /// Form definition for ZXForms on NextDows environment
+        /// </summary>
+        NextDows_ZXForms = 16
     }
 }

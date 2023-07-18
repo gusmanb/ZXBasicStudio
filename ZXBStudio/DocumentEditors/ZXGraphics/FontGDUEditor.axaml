@@ -1,0 +1,174 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:svg="using:Avalonia.Svg.Skia"
+             xmlns:local="using:ZXBasicStudio.DocumentEditors.ZXGraphics"
+             xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             Background="#ff202020"
+             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.FontGDUEditor">
+  <UserControl.Styles>
+    <Style Selector="Button.toolbar_r90">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="RenderTransform">
+        <Setter.Value>
+          <RotateTransform Angle="90"/>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style Selector="Button.toolbar_r270">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="RenderTransform">
+        <Setter.Value>
+          <RotateTransform Angle="270"/>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style Selector="Button.toolbar_hMirror">
+      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="RenderTransform">
+        <Setter.Value>
+          <ScaleTransform ScaleX="-1"/>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Styles>
+
+  <Grid Name="grdMain">
+    <Grid Name="grdEditor" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">
+
+      <zxd:ZXDockingContainer Name="dockLeft" DockingGroup="ZXGraphics" RowDefinitions="*">
+        <zxd:ZXDockingControl Name="dockPatterns" Title="Patterns" DockingGroup="ZXGraphics" DesiredFloatingSize="">
+          <zxd:ZXDockingControl.DockedControl>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+              <WrapPanel Orientation="Horizontal" Name="wpPatterns" Height="NaN" MinWidth="40" Background="#282828"/>
+            </ScrollViewer>
+          </zxd:ZXDockingControl.DockedControl>
+        </zxd:ZXDockingControl>
+      </zxd:ZXDockingContainer>
+
+      <GridSplitter ResizeDirection="Columns" Grid.Column="1" Classes="vertical"></GridSplitter>
+
+      <Grid Grid.Column="2" Grid.Row="1" RowDefinitions="Auto,*,Auto">
+        <WrapPanel Orientation="Horizontal" Grid.ColumnSpan="5" Margin="10" Background="#ff202020" Height="NaN">
+          <Button Classes="toolbar" Name="btnClear" ToolTip.Tip="Clear active patterns">
+            <svg:Svg Path="/Svg/Cancel.svg"></svg:Svg>
+          </Button>
+          <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+
+          <Button Classes="toolbar" Name="btnCut" ToolTip.Tip="Cut active patterns to clipboard">
+            <svg:Svg Path="/Svg/Cut.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnCopy" ToolTip.Tip="Copy active patterns to clipboard">
+            <svg:Svg Path="/Svg/Copy.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnPaste" ToolTip.Tip="Paste from clipboard to active patterns">
+            <svg:Svg Path="/Svg/Paste.svg"></svg:Svg>
+          </Button>
+          <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+
+          <Button Classes="toolbar" Name="btnHMirror" ToolTip.Tip="Horizontal mirror">
+            <svg:Svg Path="/Svg/HMirror.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar_r90" Name="btnVMirror" ToolTip.Tip="Vertical mirror">
+            <svg:Svg Path="/Svg/VMirror.svg"></svg:Svg>
+          </Button>
+          <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+
+          <Button Classes="toolbar" Name="btnRotateLeft" ToolTip.Tip="Rotate pattern to left">
+            <svg:Svg Path="/Svg/RotateLeft.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnRotateRight" ToolTip.Tip="Rotate pattern to right">
+            <svg:Svg Path="/Svg/RotateRight.svg"></svg:Svg>
+          </Button>
+          <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+
+          <Button Classes="toolbar_hMirror" Name="btnShiftLeft" ToolTip.Tip="Shift pattern to left (pixels that exit from the left reappear from the right)">
+            <svg:Svg Path="/Svg/ShiftRight.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnShiftRight" ToolTip.Tip="Shift pattern to right (pixels that exit from the right reappear from the left)">
+            <svg:Svg Path="/Svg/ShiftRight.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar_r270" Name="btnShiftUp" ToolTip.Tip="Shift pattern up (pixels that exit from the top reappear from the bottom)">
+            <svg:Svg Path="/Svg/ShiftRight.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar_r90" Name="btnShiftDown" ToolTip.Tip="Shift pattern down (pixels that exit from the bottom reappear from the top)">
+            <svg:Svg Path="/Svg/ShiftRight.svg"></svg:Svg>
+          </Button>
+          <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+
+          <Button Classes="toolbar_hMirror" Name="btnMoveLeft" ToolTip.Tip="Move pattern to left">
+            <svg:Svg Path="/Svg/MoveRight.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnMoveRight" ToolTip.Tip="Move pattern to right">
+            <svg:Svg Path="/Svg/MoveRight.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar_r270" Name="btnMoveUp" ToolTip.Tip="Move pattern up ">
+            <svg:Svg Path="/Svg/MoveRight.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar_r90" Name="btnMoveDown" ToolTip.Tip="Move pattern down">
+            <svg:Svg Path="/Svg/MoveRight.svg"></svg:Svg>
+          </Button>
+          <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+
+          <Button Classes="toolbar" Name="btnInvert" ToolTip.Tip="Invert pattern">
+            <svg:Svg Path="/Svg/Invert.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnMask" ToolTip.Tip="Mask pattern">
+            <svg:Svg Path="/Svg/Mask.svg"></svg:Svg>
+          </Button>
+          <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+
+          <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Build / Export">
+            <svg:Svg Path="/Svg/buildexport.svg"></svg:Svg>
+          </Button>
+        </WrapPanel>
+
+        <local:EditorControl Name="ctrEditor" Grid.Row="1" Background="#303030"/>
+
+        <WrapPanel Orientation="Horizontal" Background="#ff202020" Grid.Row="2" Margin="10,5,10,5" Height="NaN">
+          <TextBlock Name="txtZoom" Classes="dialog" Width="55">Zoom 24x</TextBlock>
+          <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" VerticalAlignment="Center"/>
+          <TextBlock Classes="dialog">Width</TextBlock>
+          <Border Classes="numericborder">
+            <NumericUpDown Classes="dialog" Name="txtEditorWidth" Minimum="1" Increment="1" Maximum="256" Value="1"/>
+          </Border>
+          <TextBlock Classes="dialog">Height</TextBlock>
+          <Border Classes="numericborder">
+            <NumericUpDown Classes="dialog" Name="txtEditorHeight" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
+          </Border>
+          <!--
+        <TextBlock>Paper</TextBlock>
+        <TextBlock>Ink</TextBlock>
+        <TextBlock>Bright</TextBlock>
+        -->
+        </WrapPanel>
+
+      </Grid>
+
+      <GridSplitter ResizeDirection="Columns" Grid.Column="3" Classes="vertical"></GridSplitter>
+
+      <zxd:ZXDockingContainer Name="dockRight" DockingGroup="ZXGraphics" Grid.Column="4" RowDefinitions="*">
+        <zxd:ZXDockingControl Name="dockPreview" Title="Preview" DockingGroup="ZXGraphics" DesiredFloatingSize="200,400">
+          <zxd:ZXDockingControl.DockedControl>
+            <local:PreviewControl Name="ctrlPreview"></local:PreviewControl>
+          </zxd:ZXDockingControl.DockedControl>
+        </zxd:ZXDockingControl>
+      </zxd:ZXDockingContainer>
+
+    </Grid>
+  </Grid>
+</UserControl>

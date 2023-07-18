@@ -10,7 +10,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Dialogs;
 using ZXBasicStudio.DocumentModel.Classes;
+using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 
 namespace ZXBasicStudio.BuildSystem
 {
@@ -31,6 +33,7 @@ namespace ZXBasicStudio.BuildSystem
 
                 Cleanup(project.ProjectPath);
                 ZXBuildSettings? settings = null;
+                settings = null;
                 string? mainFile = null;
 
                 if (string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbcPath) || string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbasmPath))
@@ -164,7 +167,14 @@ namespace ZXBasicStudio.BuildSystem
 
                 OutputLogWritter.WriteLine("Building program map...");
 
-                var codeFile = files.First(f => f.AbsolutePath == Path.GetFullPath(mainFile));
+                // TODO: DUEFECTU 2023.05.17: Bug for long path
+                var codeFile = files.FirstOrDefault(f => f.AbsolutePath == Path.GetFullPath(mainFile));
+                if (codeFile == null)
+                {
+                    Cleanup(project.ProjectPath);
+                    OutputLogWritter.WriteLine("Main file path not found. More than 256 chars?");
+                    return null;
+                }
 
                 var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -M MEMORY_MAP " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
@@ -199,7 +209,13 @@ namespace ZXBasicStudio.BuildSystem
                     return null;
                 }
 
-                var mainCodeFile = files.Where(f => Path.GetFullPath(mainFile.ToLower()) == Path.GetFullPath(f.AbsolutePath.ToLower())).First();
+                /// DUEFECTU: 2023.06.04 -> Bug
+                //var mainCodeFile = files.Where(f => Path.GetFullPath(mainFile.ToLower()) == Path.GetFullPath(f.AbsolutePath.ToLower())).First();
+                var mainCodeFile = files.Where(f => Path.GetFullPath(mainFile.ToLower()) == Path.GetFullPath(f.AbsolutePath.ToLower())).FirstOrDefault();
+                if (mainCodeFile == null)
+                {
+                    return null;
+                }
 
                 ZXBasicMap bMap = new ZXBasicMap(mainCodeFile, files, logOutput);
 
@@ -364,7 +380,9 @@ namespace ZXBasicStudio.BuildSystem
 
             foreach (var fFile in fFiles)
             {
-                if (fFile.IsZXBasic() || fFile.IsZXAssembler())
+                var docType = ZXDocumentProvider.GetDocumentType(fFile);
+
+                if (docType is ZXBasicDocument || docType is ZXAssemblerDocument)
                     files.Add(new ZXCodeFile(fFile));
             }
 

@@ -9,6 +9,8 @@ using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Configuration;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
+using ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics;
+using ZXBasicStudio.IntegratedDocumentTypes.NextDows;
 using ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder;
 
 namespace ZXBasicStudio.DocumentModel.Classes
@@ -27,6 +29,12 @@ namespace ZXBasicStudio.DocumentModel.Classes
             _docTypes.Add(new ZXTextDocument());
             _docTypes.Add(new ZXConfigurationDocument());
             _docTypes.Add(new ZXTapeBuilderDocument());
+            // ZXGraphics
+            _docTypes.Add(new UDGDocument());
+            _docTypes.Add(new FontDocument());
+            //_docTypes.Add(new SpriteDocument());
+            // NextDows
+            //_docTypes.Add(new ZXFormsDocument());
             //TODO: Load external document types
         }
 
@@ -100,9 +108,9 @@ namespace ZXBasicStudio.DocumentModel.Classes
             return _docTypes.Where(d => d.DocumentBuilder != null && d.DocumentBuildStage == Enums.ZXBuildStage.PostBuild).Select(d => d.DocumentBuilder);
         }
 
-        public static IZXDocumentType? GetDocumentTypeInstance(Type DocumentType)
+        public static IZXDocumentType GetDocumentTypeInstance(Type DocumentType)
         {
-            return _docTypes.FirstOrDefault(d => d.GetType() == DocumentType);
+            return _docTypes.First(d => d.GetType() == DocumentType);
         }
     }
 }

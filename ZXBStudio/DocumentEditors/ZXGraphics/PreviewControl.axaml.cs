@@ -8,16 +8,38 @@ using ZXBasicStudio.Common;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
+    /// <summary>
+    /// Preview panel
+    /// </summary>
     public partial class PreviewControl : UserControl
     {
+        /// <summary>
+        /// Delegate for get pattern
+        /// </summary>
         private Func<int, Pattern> callbackGetPattern = null;
+        
+        /// <summary>
+        /// Timer for animation
+        /// </summary>
         private DispatcherTimer tmr = null;
 
+        /// <summary>
+        /// Actual frame
+        /// </summary>
         private int currentFrame = 0;
+        /// <summary>
+        /// Speeds in milliseconds
+        /// </summary>
         private int[] speeds = new int[] { 1000, 500, 250, 200, 125, 100, 66, 50 };
+        /// <summary>
+        /// Zoom values
+        /// </summary>
         private int[] zooms = new int[] { 1, 2, 4 };
 
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public PreviewControl()
         {
             InitializeComponent();
@@ -28,6 +50,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        /// <summary>
+        /// Initializes the preview panel
+        /// </summary>
+        /// <param name="callbackGetPattern"></param>
+        /// <param name="maxPatterns"></param>
+        /// <returns></returns>
         public bool Initialize(Func<int, Pattern> callbackGetPattern, int maxPatterns)
         {
             this.callbackGetPattern = callbackGetPattern;
@@ -49,6 +77,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        /// <summary>
+        /// Timer tick event to refresh preview
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmr_Tick(object? sender, EventArgs e)
         {
             try
@@ -114,7 +147,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-
+        /// <summary>
+        /// Speed changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CmbSpeed_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (tmr == null)

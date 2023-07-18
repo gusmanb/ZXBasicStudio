@@ -19,6 +19,8 @@ namespace ZXBasicStudio.Emulator.Controls
 {
     public partial class ZXTapePlayer : UserControl
     {
+        static string[] tapFiles = { "*.tap", "*.tzx" };
+
         TapePlayer? _dataCorder;
         public TapePlayer? Datacorder 
         {
@@ -132,7 +134,7 @@ namespace ZXBasicStudio.Emulator.Controls
                 Title = "Select tape...",
                 FileTypeFilter = new[]
                 {
-                    new FilePickerFileType("Tape files") { Patterns = ZXExtensions.ZXTapeFiles.Select(t => "*" + t).ToArray() },
+                    new FilePickerFileType("Tape files") { Patterns = tapFiles },
                 }
             });
 

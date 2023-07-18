@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace ZXBasicStudio.Common.TAPTools
 {
+    /// <summary>
+    /// Standard tape block
+    /// </summary>
     public class TAPBlock : ITAPBlock
     {
+        /// <summary>
+        /// Tape header describing the content of the block
+        /// </summary>
         public TAPHeader Header { get; private set; }
+        /// <summary>
+        /// Binary data of the block
+        /// </summary>
         public TAPData Data { get; private set; }
 
         private TAPBlock(TAPHeader header, TAPData data)
@@ -16,7 +25,10 @@ namespace ZXBasicStudio.Common.TAPTools
             Header = header;
             Data = data;
         }
-
+        /// <summary>
+        /// Serialize the block as a byte array
+        /// </summary>
+        /// <returns>The block as a byte array</returns>
         public byte[] Serialize()
         {
             List<byte> data = new List<byte>();
@@ -32,6 +44,13 @@ namespace ZXBasicStudio.Common.TAPTools
             return data.ToArray();
         }
 
+        /// <summary>
+        /// Create a block that contains a basic program
+        /// </summary>
+        /// <param name="BlockName">Name of the block</param>
+        /// <param name="BasicData">Basic data in binary form</param>
+        /// <param name="AutoStartLine">Line number to autostart the program</param>
+        /// <returns>A new tape block</returns>
         public static TAPBlock CreateBasicBlock(string BlockName, byte[] BasicData, ushort? AutoStartLine)
         {
             var header = new TAPHeader
@@ -48,6 +67,13 @@ namespace ZXBasicStudio.Common.TAPTools
             return new TAPBlock(header, data);
         }
 
+        /// <summary>
+        /// Create a block that contains SCREEN data
+        /// </summary>
+        /// <param name="BlockName">Name of the block</param>
+        /// <param name="ScreenData">Screen data in binary form</param>
+        /// <returns>A new tape block</returns>
+        /// <exception cref="ArgumentException">Screen data must be exactly 6912 bytes</exception>
         public static TAPBlock CreateScreensBlock(string BlockName, byte[] ScreenData)
         {
             if (ScreenData.Length != 6912)
@@ -67,6 +93,13 @@ namespace ZXBasicStudio.Common.TAPTools
             return new TAPBlock(header, data);
         }
 
+        /// <summary>
+        /// Create a block of CODE data
+        /// </summary>
+        /// <param name="BlockName">Name of the block</param>
+        /// <param name="Data">Code data in binary form</param>
+        /// <param name="Address">Address of the block</param>
+        /// <returns>A new tape block</returns>
         public static TAPBlock CreateDataBlock(string BlockName, byte[] Data, ushort Address)
         {
             var header = new TAPHeader
