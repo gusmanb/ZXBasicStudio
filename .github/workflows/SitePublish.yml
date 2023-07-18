@@ -3,31 +3,35 @@ name: Publish website
 on:
   push:
     branches:
-      # NOTE: You may want to limit the trigger branch to be "main" or "master" etc.
-      - 'master'
-    paths:
-    - 'ZXBasicStudioSite/Publish/wwwroot/**'
-      
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  publish:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out
-        uses: actions/checkout@v3
+      # Checkout the code
+      - uses: actions/checkout@v2
 
-      - name: Publish site to GitHub Pages
-        uses: rayluo/github-pages-overwriter@v1.3
-
+      # Install .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
         with:
+          dotnet-version: 7.0.x
+          
+      # Install dotnet wasm buildtools workload
+      - name: Install .NET WASM Build Tools
+        run: dotnet workload install wasm-tools
+          
+      # Publishes Blazor project to the release-folder
+      - name: Publish .NET Core Project
+        run: dotnet publish ZXBasicStudioSite/ZXBasicStudioSite.csproj -c:Release -p:GHPages=true -o dist/Web --nologo
 
-          # Optional. Default value "." means the root directory of your project will be published.
-          # You can use whatever directory your project uses, for example "wwwroot".
-          # Such a directory does *not* have to already exist in your repo,
-          # it could be an output directory created dynamically by your static website builder.
-          source-directory: ZXBasicStudioSite/Publish/wwwroot
-
-          # Optional. Default value "gh_pages".
-          # It specifies the temporary branch which hosts the static website.
-          # Each build will OVERWRITE this branch.
-          target-branch: gh_pages
+      - name: Commit wwwroot to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh_pages
+          FOLDER: dist/Web/wwwroot
