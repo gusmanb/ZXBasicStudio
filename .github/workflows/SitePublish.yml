@@ -3,10 +3,13 @@ name: Publish website
 on:
   push:
     branches:
-      - main
+      - master
+    paths:
+      - ZXBasicStudioSite/**
   pull_request:
     branches:
-      - main
+      - master
+      - ZXBasicStudioSite/**
 
 jobs:
   deploy:
@@ -33,5 +36,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh_pages
+          BRANCH: gh-pages
           FOLDER: dist/Web/wwwroot
