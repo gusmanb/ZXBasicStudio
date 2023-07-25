@@ -109,9 +109,13 @@ namespace CoreSpectrum.Hardware
                             _memory.SetContents(chunk.Address, chunk.Data);
                         }
 
+                        var bankm = _memory.GetContents(0x5B5C, 1)[0];
+                        bankm |= 1 << 4;
+                        _memory.SetContents(0x5B5C, new byte[] { bankm });
+
                         mem.Map.SetActiveBank(_injectImage.InitialBank);
                         _z80.Registers.PC = _injectImage.Org;
-                        var sp = 0xFFFF;
+                        ushort sp = (ushort)(_injectImage.Org - 1);//_z80.Registers.SP;//0xFFFF;
                         byte[] retAddr = BitConverter.GetBytes(_injectPC);
                         sp -= 2;
                         _z80.Registers.SP = unchecked((short)sp);
