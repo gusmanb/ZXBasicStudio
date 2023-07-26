@@ -5,10 +5,8 @@ namespace CoreSpectrum.Hardware
 {
     public class Spectrum48k : SpectrumBase
     {
-        /// <summary>
-        /// PC safe for program injection
-        /// </summary>
-        ushort _injectPC;
+        const ushort MAIN_2 = 0x12AC;
+
         private static readonly MachineTimmings Timmings48k = new MachineTimmings 
         { 
             CpuClock = 3500000,
@@ -23,9 +21,8 @@ namespace CoreSpectrum.Hardware
 
         public override event EventHandler? ProgramReady;
 
-        public Spectrum48k(byte[][] RomSet, ushort InjectionAddress) : base(RomSet) 
+        public Spectrum48k(byte[][] RomSet) : base(RomSet) 
         {
-            _injectPC = InjectionAddress;
         }
 
         protected override MachineHardware GetHardware(byte[][] RomSet)
@@ -72,7 +69,7 @@ namespace CoreSpectrum.Hardware
         {
             if (_injecting)
             {
-                if (_z80.Registers.PC == _injectPC)
+                if (_z80.Registers.PC == MAIN_2)
                 {
                     if (_injectImage != null)
                     {
@@ -85,12 +82,9 @@ namespace CoreSpectrum.Hardware
 
                         //Clear stack and store RET address (to return to 48k basic)
                         var sp = 0xFFFF;
-
-                        byte[] retAddr = BitConverter.GetBytes(_injectPC);
                         sp -= 2;
-
                         _z80.Registers.SP = unchecked((short)sp);
-                        _memory.SetContents(sp, retAddr);
+                        _memory.SetUshort(sp, MAIN_2);
 
                         //Notify that the program is ready
                         if (ProgramReady != null)

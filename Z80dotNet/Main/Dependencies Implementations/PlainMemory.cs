@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http.Headers;
 
 namespace Konamiman.Z80dotNet
 {
@@ -73,6 +74,26 @@ namespace Konamiman.Z80dotNet
                 throw new IndexOutOfRangeException("startAddress cannot be negative");
 
             return memory.Skip(startAddress).Take(length).ToArray();
+        }
+
+        public void SetUshort(int startAddress, ushort value)
+        {
+            SetContents(startAddress, BitConverter.GetBytes(value));
+        }
+
+        public ushort GetUshort(int startAddress)
+        {
+            return BitConverter.ToUInt16(GetContents(startAddress, 2));
+        }
+
+        public void SetByte(int startAddress, byte value)
+        {
+            SetContents(startAddress, new byte[] { value });
+        }
+
+        public byte GetByte(int startAddress)
+        {
+            return GetContents(startAddress, 1)[0];
         }
     }
 }
