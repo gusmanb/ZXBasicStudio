@@ -109,7 +109,7 @@ namespace CoreSpectrum.Hardware
                 //Next we issue a CLEAR call and clear the memory to ORG-1.
                 //Once the clear has finished we inject our program, set in the stack the return address to MAIN and jump to it.
 
-                if (_injectImage == null)
+                if (_injectImage == null) //In case of having a null image, disable injection
                 {
                     _injecting = false;
                     _injectImage = null;
@@ -119,7 +119,7 @@ namespace CoreSpectrum.Hardware
                     return;
                 }
 
-                if (_z80.Registers.PC == _resetPC && !_on48mode) //Switch to 48k mode (without disabling banking)
+                if (_z80.Registers.PC == _resetPC && !_on48mode) //Switch to 48k mode without disabling banking.
                 {
                     var mem = (Memory128k)_memory;
 
@@ -132,19 +132,19 @@ namespace CoreSpectrum.Hardware
                     _z80.Registers.PC = 0;
                     _on48mode = true;
                 }
-                else if (_z80.Registers.PC == KEY_INPUT && _on48mode)
+                else if (_z80.Registers.PC == KEY_INPUT && _on48mode) //First entrance to keyboard routine, inject an "ENTER"
                 {
                     var flags = _memory.GetByte(((ushort)_z80.Registers.IY) + 1); //Get the FLAGS variable
                     flags |= (byte)(1 << 5); //Signal a key press
                     _memory.SetByte(((ushort)_z80.Registers.IY) + 1, flags); //Update flags
                     _memory.SetByte(LAST_K, KEY_RET); //Store a return in the LAST_K var
                 }
-                else if (_z80.Registers.PC == MAIN_3_END && _on48mode)
+                else if (_z80.Registers.PC == MAIN_3_END && _on48mode) //"ENTER" has been processed and we can call the "CLEAR" routine
                 {
                     _z80.Registers.BC = (short)(_injectImage.Org - 1); //Store in BC the clear address
                     _z80.ExecuteCall(CLEAR); //Call CLEAR
                 }
-                else if (_z80.Registers.PC == CLEAR_END && _on48mode) //Wait until CLEAR reaches its last instruction
+                else if (_z80.Registers.PC == CLEAR_END && _on48mode) //Wait until CLEAR reaches its last instruction and inject our program5
                 {
                     var mem = (Memory128k)_memory;
 
