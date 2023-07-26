@@ -133,6 +133,26 @@ namespace CoreSpectrum.Hardware
             }
         }
 
+        public void SetUshort(int startAddress, ushort value)
+        {
+            SetContents(startAddress, BitConverter.GetBytes(value));
+        }
+
+        public ushort GetUshort(int startAddress)
+        {
+            return BitConverter.ToUInt16(GetContents(startAddress, 2));
+        }
+
+        public void SetByte(int startAddress, byte value)
+        {
+            SetContents(startAddress, new byte[] { value });
+        }
+
+        public byte GetByte(int startAddress)
+        {
+            return GetContents(startAddress, 1)[0];
+        }
+
         public Span<byte> GetVideoMemory() 
         {
             return new Span<byte>(compositeMemory[MEMORY_TYPE_RAM][map.ActiveScreenPage], 0, 6912);

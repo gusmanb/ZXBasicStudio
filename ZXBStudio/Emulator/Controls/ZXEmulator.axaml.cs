@@ -144,9 +144,9 @@ namespace ZXBasicStudio.Emulator.Controls
                 throw new ArgumentException("Unknown Spectrum model!");
 
             if (Model == ZXSpectrumModel.Spectrum48k)
-                speccy = new Spectrum48k(ModelDefinition.RomSet, ModelDefinition.InjectAddress);
+                speccy = new Spectrum48k(ModelDefinition.RomSet);
             else
-                speccy = new Spectrum128k(ModelDefinition.RomSet, ModelDefinition.ResetAddress, ModelDefinition.InjectAddress);
+                speccy = new Spectrum128k(ModelDefinition.RomSet, ModelDefinition.ResetAddress);
 
             if (machine != null)
                 machine.Dispose();

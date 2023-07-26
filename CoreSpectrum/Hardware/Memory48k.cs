@@ -50,6 +50,27 @@ namespace CoreSpectrum.Hardware
             Buffer.BlockCopy(contents, startIndex, memory, startAddress, length ?? contents.Length);
         }
 
+        public void SetUshort(int startAddress, ushort value)
+        {
+            SetContents(startAddress, BitConverter.GetBytes(value));
+        }
+
+        public ushort GetUshort(int startAddress)
+        {
+            return BitConverter.ToUInt16(GetContents(startAddress, 2));
+        }
+
+        public void SetByte(int startAddress, byte value)
+        {
+            SetContents(startAddress, new byte[] { value });
+        }
+
+        public byte GetByte(int startAddress)
+        {
+            return GetContents(startAddress, 1)[0];
+        }
+
+
         public Span<byte> GetVideoMemory()
         {
             return new Span<byte>(memory, 0x4000, 6912);
