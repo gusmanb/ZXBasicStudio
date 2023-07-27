@@ -34,7 +34,7 @@ namespace ZXBasicStudio.DocumentModel.Classes
             _docTypes.Add(new FontDocument());
             //_docTypes.Add(new SpriteDocument());
             // NextDows
-            //_docTypes.Add(new ZXFormsDocument());
+            _docTypes.Add(new ZXFormsDocument());
             //TODO: Load external document types
         }
 

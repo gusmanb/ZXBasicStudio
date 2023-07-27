@@ -3,11 +3,13 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using System;
+using ZXBasicStudio.DocumentEditors.NextDows.neg;
 
 namespace ZXBasicStudio.DocumentEditors.NextDows
 {
     public partial class ZXFormsControl : UserControl
     {
+        public ControlsTypes ControlType { get; set; }
         public bool IsSelected
         {
             get
@@ -28,7 +30,6 @@ namespace ZXBasicStudio.DocumentEditors.NextDows
         private static IBrush color_Selected = new SolidColorBrush(new Color(255, 64, 64, 64));
 
         private Action<ZXFormsControl, string> callBackCommand = null;
-
 
         public ZXFormsControl()
         {
@@ -61,10 +62,11 @@ namespace ZXBasicStudio.DocumentEditors.NextDows
         }
 
 
-        public void Initialize(string imageName, string title, string description, Action<ZXFormsControl,string> callBackCommand)
+        public void Initialize(ControlsTypes controlType, string imageName, string title, string description, Action<ZXFormsControl,string> callBackCommand)
         {
             try
             {
+                this.ControlType = controlType;
                 this.callBackCommand = callBackCommand;
 
                 txtTitle.Text= title;

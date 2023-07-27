@@ -144,15 +144,15 @@
 
         <!-- Foot toobar -->
         <WrapPanel Orientation="Horizontal" Background="#ff202020" Grid.Row="2" Margin="10,5,10,5" Height="NaN">
-          <TextBlock Name="txtZoom" Classes="dialog">Zoom 24x</TextBlock>
-          <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" VerticalAlignment="Center"/>
+          <TextBlock Name="txtZoom" Classes="dialog" Width="55">Zoom 24x</TextBlock>
+          <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="3" VerticalAlignment="Center"/>
           <TextBlock Classes="dialog">Width</TextBlock>
           <Border Classes="numericborder">
-            <NumericUpDown Classes="dialog" Name="txtEditorWidth" Minimum="1" Increment="1" Maximum="640" Value="300"/>
+            <NumericUpDown Classes="dialog" Name="txtEditorWidth" Minimum="1" Increment="1" Maximum="640" Value="200"/>
           </Border>
           <TextBlock Classes="dialog">Height</TextBlock>
           <Border Classes="numericborder">
-            <NumericUpDown Classes="dialog" Name="txtEditorHeight" Minimum="1" Increment="1" Maximum="256" Value="226" VerticalAlignment="Center"/>
+            <NumericUpDown Classes="dialog" Name="txtEditorHeight" Minimum="1" Increment="1" Maximum="256" Value="150" VerticalAlignment="Center"/>
           </Border>
           <!--
         <TextBlock>Paper</TextBlock>
@@ -169,9 +169,7 @@
       <zxd:ZXDockingContainer Name="dockRight" DockingGroup="ZXGraphics" Grid.Column="4" RowDefinitions="*">
         <zxd:ZXDockingControl Name="dockProperties" Title="Properties" DockingGroup="ZXGraphics" DesiredFloatingSize="200,400">
           <zxd:ZXDockingControl.DockedControl>
-            <Grid>
-              <TextBlock>Properties...</TextBlock>
-            </Grid>
+            <local:PropertiesControl Name="ctrProperties"/>
             <!--
             <local:PreviewControl Name="ctrlPreview"></local:PreviewControl>
             -->

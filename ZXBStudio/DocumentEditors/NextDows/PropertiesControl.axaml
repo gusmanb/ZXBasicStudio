@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DocumentEditors.NextDows.PropertiesControl">
+  <StackPanel Orientation="Vertical">
+    <ComboBox Name="cmbControls"></ComboBox>
+    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+      <Label Grid.Row="0">Id</Label>
+      <TextBox Grid.Row="0" Grid.Column="1" Name="txtId" IsReadOnly="True"></TextBox>
+
+      <Label Grid.Row="1">Name</Label>
+      <TextBox Grid.Row="1" Grid.Column="1" Name="txtName"></TextBox>
+
+      <Label Grid.Row="2">Type</Label>
+      <TextBox Grid.Row="2" Grid.Column="1" Name="txtControlType" IsReadOnly="True"></TextBox>
+
+      <Label Grid.Row="3">Visible</Label>
+      <ComboBox Grid.Row="3" Grid.Column="1" Name="cmbVisible">
+        <ComboBoxItem>True</ComboBoxItem>
+        <ComboBoxItem>False</ComboBoxItem>
+      </ComboBox>
+
+      <Label Grid.Row="4">Container Id</Label>
+      <TextBox Grid.Row="4" Grid.Column="1" Name="txtContainerId"></TextBox>
+
+      <Label Grid.Row="5">Left (x)</Label>
+      <TextBox Grid.Row="5" Grid.Column="1" Name="txtLeft"></TextBox>
+
+      <Label Grid.Row="6">Top (y)</Label>
+      <TextBox Grid.Row="6" Grid.Column="1" Name="txtTop"></TextBox>
+
+      <Label Grid.Row="7">Width</Label>
+      <TextBox Grid.Row="7" Grid.Column="1" Name="txtWidth"></TextBox>
+
+      <Label Grid.Row="8">Height</Label>
+      <TextBox Grid.Row="8" Grid.Column="1" Name="txtHeight"></TextBox>
+
+      <Label Grid.Row="9">Ink</Label>
+      <TextBox Grid.Row="9" Grid.Column="1" Name="txtInk"></TextBox>
+
+      <Label Grid.Row="10">Paper</Label>
+      <TextBox Grid.Row="10" Grid.Column="1" Name="txtPaper"></TextBox>
+
+      <Label Grid.Row="11" Name="lblTextAlign">Text align</Label>
+      <ComboBox Grid.Row="11" Grid.Column="1" Name="cmbTextAlign">
+        <ComboBoxItem>Left</ComboBoxItem>
+        <ComboBoxItem>Center</ComboBoxItem>
+        <ComboBoxItem>Right</ComboBoxItem>
+      </ComboBox>
+
+      <Label Grid.Row="12" Name="lblText">Text</Label>
+      <TextBox Grid.Row="12" Grid.Column="1" Name="txtText"></TextBox>
+    </Grid>
+  </StackPanel>
+</UserControl>
