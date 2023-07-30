@@ -316,3 +316,4 @@ namespace ZXBasicStudio.DocumentEditors.NextDows
         }
     }
 }
+ 
