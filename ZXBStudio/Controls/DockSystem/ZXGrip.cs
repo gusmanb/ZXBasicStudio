@@ -9,18 +9,21 @@ using System.Threading.Tasks;
 
 namespace ZXBasicStudio.Controls.DockSystem
 {
-    public class ZXGrip : Border
+    public class ZXGrip : UserControl
     {
         public static StyledProperty<double> DotRadiusProperty = StyledProperty<double>.Register<ZXGrip, double>("DotRadius", 1);
-        public static StyledProperty<double> DotSpacingProperty = StyledProperty<double>.Register<ZXGrip, double>("DotSpacing", 5);
+        public static StyledProperty<Size> DotSpacingProperty = StyledProperty<Size>.Register<ZXGrip, Size>("DotSpacing", new Size(5,5));
         public static StyledProperty<IBrush> DotColorProperty = StyledProperty<IBrush>.Register<ZXGrip, IBrush>("DotRadius", Brushes.Black);
+        public static StyledProperty<Thickness> DotMarginProperty = StyledProperty<Thickness>.Register<ZXGrip, Thickness>("DotMargin", new Thickness(5));
+
+        bool _showDots = false;
 
         public double DotRadius 
         {
             get => GetValue(DotRadiusProperty);
             set => SetValue(DotRadiusProperty, value); 
         }
-        public double DotSpacing 
+        public Size DotSpacing 
         {
             get => GetValue(DotSpacingProperty);
             set => SetValue(DotSpacingProperty, value);
@@ -30,19 +33,42 @@ namespace ZXBasicStudio.Controls.DockSystem
             get => GetValue(DotColorProperty);
             set => SetValue(DotColorProperty, value);
         }
+        public Thickness DotMargin
+        {
+            get => GetValue(DotMarginProperty);
+            set => SetValue(DotMarginProperty, value);
+        }
+
+        internal bool ShowDots 
+        { 
+            get { return _showDots; } 
+            set 
+            { 
+                if (_showDots != value) 
+                { 
+                    _showDots = value;
+                    InvalidateVisual();
+                } 
+            } 
+        }
 
         public override void Render(DrawingContext context)
         {
             base.Render(context);
-            for (double y = DotRadius * 2; y < Bounds.Height; y += DotSpacing)
+
+            if (!_showDots)
+                return;
+
+            for (double y = DotMargin.Top; y < Bounds.Height - DotMargin.Bottom; y += DotSpacing.Height)
             {
-                double offset = y % 2 == 0 ? 0 : DotSpacing / 2.0;
+                double offset = y % 2 == 0 ? 0 : DotSpacing.Width / 2.0;
                 
-                for (double x = DotRadius * 2; x < Bounds.Width; x += DotSpacing)
+                for (double x = DotMargin.Left; x < Bounds.Width - DotMargin.Right; x += DotSpacing.Width)
                 {
                     context.DrawEllipse(DotColor, null, new Avalonia.Point(x + offset, y), DotRadius, DotRadius);                    
                 }
             }
         }
+        
     }
 }

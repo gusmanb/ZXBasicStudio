@@ -1,0 +1,57 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="230"
+        MinWidth="450" MaxWidth="450"
+        MinHeight="230" MaxHeight="230"
+        CanResize="false"
+        x:Class="ZXBasicStudio.DebuggingTools.Memory.Dialogs.ZXMemorySearchDialog"
+        Icon="/Assets/zxbs.ico" WindowStartupLocation="CenterOwner"
+        Title="Search memory">
+  <Window.Styles>
+    <Style Selector="RadioButton">
+      <Setter Property="Margin" Value="5"/>
+    </Style>
+    <Style Selector="CheckBox">
+      <Setter Property="Margin" Value="5"/>
+    </Style>
+  </Window.Styles>
+  <Grid RowDefinitions="Auto,10,Auto,Auto,Auto" Margin="10">
+    <Border BorderBrush="#444444" BorderThickness="1" CornerRadius="5" />
+    <StackPanel>
+      <TextBlock Margin="5">Search range</TextBlock>
+      <Grid ColumnDefinitions="Auto,*,Auto,*">
+        <TextBlock VerticalAlignment="Center" Margin="5">Start address:</TextBlock>
+        <Border Height="32" Grid.Column="1" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,5,15,5">
+          <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="0" Minimum="0" Maximum="65535" Name="nudStart"></NumericUpDown>
+        </Border>
+        <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="5">End address:</TextBlock>
+        <Border Height="32" Grid.Column="3" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,5,15,5">
+          <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="65535" Minimum="0" Maximum="65535" Name="nudEnd"></NumericUpDown>
+        </Border>
+      </Grid>
+    </StackPanel>
+    <Border BorderBrush="#444444" BorderThickness="1" CornerRadius="5" Grid.Row="2" />
+    <StackPanel Grid.Row="2">
+      <TextBlock Margin="5">Value type</TextBlock>
+      <StackPanel Orientation="Horizontal">
+        <RadioButton Name="rbByte" IsChecked="True" GroupName="rgType">Byte</RadioButton>
+        <RadioButton Name="rbShort" GroupName="rgType">Short</RadioButton>
+        <RadioButton Name="rbInt" GroupName="rgType">Integer</RadioButton>
+        <RadioButton Name="rbString" GroupName="rgType">String</RadioButton>
+        <CheckBox IsEnabled="{Binding !#rbString.IsChecked}" Name="cbSigned">Signed</CheckBox>
+        <CheckBox IsEnabled="{Binding !#rbString.IsChecked}" Name="cbHex">Hexadecimal</CheckBox>
+      </StackPanel>
+    </StackPanel>
+    <Grid ColumnDefinitions="Auto,*" Grid.Row="3" Margin="0,5,0,0">
+      <TextBlock VerticalAlignment="Center" Margin="5">Value:</TextBlock>
+      <TextBox CornerRadius="5" Grid.Column="1" Margin="5,5,0,5" Name="txtValue"></TextBox>
+    </Grid>
+    <StackPanel Margin="0,0,0,10" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnClose">Close</Button>
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnFindNext" IsEnabled="{Binding !!#txtValue.Text}">Find next</Button>
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnFind" IsEnabled="{Binding !!#txtValue.Text}">Find</Button>
+    </StackPanel>
+  </Grid>
+</Window>

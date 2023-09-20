@@ -3,11 +3,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:zxc="using:ZXBasicStudio.Controls"
+        xmlns:zxe="using:ZXBasicStudio.Emulator.Controls"
         xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
+        xmlns:zxdtv="using:ZXBasicStudio.DebuggingTools.Variables.Controls"
+        xmlns:zxdtr="using:ZXBasicStudio.DebuggingTools.Registers.Controls"
+        xmlns:zxdtm="using:ZXBasicStudio.DebuggingTools.Memory.Controls"
+        xmlns:zxdtt="using:ZXBasicStudio.DebuggingTools.TStates.Controls"
         xmlns:wnd="using:ZXBasicStudio.Classes"
         xmlns:svg="using:Avalonia.Svg.Skia"
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
         Width="1024" Height="768"
+        WindowState="Maximized"
         Icon="/Assets/zxbs.ico"
         x:Class="ZXBasicStudio.MainWindow"
         Title="ZXBasicStudio" WindowStartupLocation="CenterScreen">
@@ -17,37 +23,13 @@
         <Template>
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="{Binding $parent[1].Tag}" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-            <Button Height="16" Width="16" Padding="0,-3,0,0" 
-                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+            <Button Height="16" Width="16" Padding="0,-3,0,0"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                     HorizontalAlignment="Center" VerticalAlignment="Center"
                     Click="CloseFile" Grid.Column="1">x</Button>
           </Grid>
         </Template>
       </Setter>
-    </Style>
-    <Style Selector="Button.toolbar">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-    </Style>
-    <Style Selector="ToggleButton.toolbar">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-    </Style>
-    <Style Selector="Button.toolbar:disabled">
-      <Setter Property="Background" Value="#ff606060" />
-      <Setter Property="BorderBrush" Value="#ff606060" />
-    </Style>
-    <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#ffb0b0b0" />
-    </Style>
-    <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#ff606060" />
     </Style>
   </Window.Styles>
   <Grid Grid.Row="1" RowDefinitions="Auto,Auto,2*,4,*" ColumnDefinitions="0.6*,4,2*,4,*" Name="grdMain">
@@ -87,9 +69,16 @@
         <MenuItem Header="Dump memory" Name="mnuDumpMem" IsEnabled="{Binding EmulatorInfo.CanStep}" Icon="{SvgImage /Svg/White/dumpster-solid.svg}"></MenuItem>
         <MenuItem Header="Dump registers" Name="mnuDumpRegs" IsEnabled="{Binding EmulatorInfo.CanStep}" Icon="{SvgImage /Svg/White/dumpster-solid.svg}"></MenuItem>
         <Separator></Separator>
-        <MenuItem Header="Restore layout" Name="mnuRestoreLayout" Icon="{SvgImage /Svg/White/clock-rotate-left-solid.svg}"></MenuItem>
-        <Separator></Separator>
         <MenuItem Header="Options..." Name="mnuGlobalOptions" Icon="{SvgImage /Svg/White/gears-solid.svg}"></MenuItem>
+      </MenuItem>
+      <MenuItem Header="Views">
+        <MenuItem Header="Code view" Name="mnuCodeView" Icon="{SvgImage /Svg/White/layout-full-solid.svg}"></MenuItem>
+        <MenuItem Header="Project view" Name="mnuProjectView" Icon="{SvgImage /Svg/White/layout-explorer-solid.svg}"></MenuItem>
+        <MenuItem Header="Debug view" Name="mnuDebugView" Icon="{SvgImage /Svg/White/layout-debug-solid.svg}"></MenuItem>
+        <MenuItem Header="Play view" Name="mnuPlayView" Icon="{SvgImage /Svg/White/layout-play-solid.svg}"></MenuItem>
+        <MenuItem Header="All tools view" Name="mnuAllToolsView" Icon="{SvgImage /Svg/White/layout-alltools-solid.svg}"></MenuItem>
+        <Separator></Separator>
+        <MenuItem Header="Restore layout" Name="mnuRestoreLayout" Icon="{SvgImage /Svg/White/clock-rotate-left-solid.svg}"></MenuItem>
       </MenuItem>
     </Menu>
     <StackPanel Spacing="4" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5" Margin="10">
@@ -125,6 +114,14 @@
         <svg:Svg Path="/Svg/circle-xmark-solid.svg"></svg:Svg>
       </Button>
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <ComboBox Classes="toolbar" Grid.Row="1" Grid.Column="2" Name="cbModel" Width="110" SelectedIndex="0">
+        <ComboBoxItem>Spectrum 48k</ComboBoxItem>
+        <ComboBoxItem>Spectrum 128k</ComboBoxItem>
+        <ComboBoxItem>Spectrum +2</ComboBoxItem>
+      </ComboBox>
+      <Button Classes="toolbar" Name="btnPowerOn" IsEnabled="{Binding !EmulatorInfo.IsRunning}" ToolTip.Tip="Run emulator">
+        <svg:Svg Path="/Svg/power-off-solid.svg"></svg:Svg>
+      </Button>
       <Button Classes="toolbar" Name="btnRun" IsEnabled="{Binding EmulatorInfo.CanRun}" ToolTip.Tip="Build and run (F5)">
         <svg:Svg Path="/Svg/play-solid.svg"></svg:Svg>
       </Button>
@@ -146,32 +143,22 @@
       <Button Classes="toolbar" Name="btnStop" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Stop (F11)">
         <svg:Svg Path="/Svg/stop-solid.svg"></svg:Svg>
       </Button>
-      <Button Classes="toolbar" Name="btnTurbo" IsEnabled="{Binding EmulatorInfo.CanPause}" ToolTip.Tip="Turbo mode (F12)">
+      <Button Classes="toolbar" Name="btnTurbo" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Turbo mode (F12)">
         <svg:Svg Path="/Svg/truck-fast-solid.svg"></svg:Svg>
       </Button>
+      <Button Classes="toolbar" Name="btnTape" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Tape player">
+        <svg:Svg Path="/Svg/cassette-solid.svg"></svg:Svg>
+      </Button>
       <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <ToggleButton Classes="toolbar" Name="btnMapKeyboard" ToolTip.Tip="Map keyboard">
+        <svg:Svg Path="/Svg/keyboard-regular.svg"></svg:Svg>
+      </ToggleButton>
       <ToggleButton Classes="toolbar" Name="btnBorderless" ToolTip.Tip="Borderless mode">
         <svg:Svg Path="/Svg/maximize-solid.svg"></svg:Svg>
       </ToggleButton>
       <ToggleButton Classes="toolbar" Name="btnDirectScreen" ToolTip.Tip="Direct screen mode">
         <svg:Svg Path="/Svg/display-lines-solid.svg"></svg:Svg>
       </ToggleButton>
-      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
-      <Button Classes="toolbar" Name="btnFullLayout" ToolTip.Tip="Code mode">
-        <svg:Svg Path="/Svg/layout-full-solid.svg"></svg:Svg>
-      </Button>
-      <Button Classes="toolbar" Name="btnExplorerLayout" ToolTip.Tip="Project mode">
-        <svg:Svg Path="/Svg/layout-explorer-solid.svg"></svg:Svg>
-      </Button>
-      <Button Classes="toolbar" Name="btnDebugLayout" ToolTip.Tip="Project mode">
-        <svg:Svg Path="/Svg/layout-debug-solid.svg"></svg:Svg>
-      </Button>
-      <Button Classes="toolbar" Name="btnPlayLayout" ToolTip.Tip="Project mode">
-        <svg:Svg Path="/Svg/layout-play-solid.svg"></svg:Svg>
-      </Button>
-      <Button Classes="toolbar" Name="btnToolsLayout" ToolTip.Tip="Full mode">
-        <svg:Svg Path="/Svg/layout-alltools-solid.svg"></svg:Svg>
-      </Button>
     </StackPanel>
     <zxd:ZXDockingContainer Grid.Column="0" Grid.Row="2" Grid.RowSpan="3" Name="dockLeft" RowDefinitions="*">
       <zxd:ZXDockingControl Title="Project explorer" Name="projDock">
@@ -180,25 +167,27 @@
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
     </zxd:ZXDockingContainer>
+    <zxd:ZXCollapseButton CollapseDirection="Left" Grid.Column="1" Grid.Row="2"></zxd:ZXCollapseButton>
     <GridSplitter Classes="vertical" Grid.Column="1" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns" />
-    <TabControl Grid.Column="2" Grid.Row="2" Name="tcEditors" Items="{Binding EditItems}" />
+    <TabControl Grid.Column="2" Grid.Row="2" Name="tcEditors" ItemsSource="{Binding EditItems}" />
+    <zxd:ZXCollapseButton CollapseDirection="Right" GridColumn="4" Grid.Column="3" Grid.Row="2"></zxd:ZXCollapseButton>
     <GridSplitter Classes="vertical" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns"></GridSplitter>
     <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,*" Grid.RowSpan="3" Name="dockRight">
       <zxd:ZXDockingControl Title="Variables" Name="varsDock">
         <zxd:ZXDockingControl.DockedControl>
-          <zxc:ZXVariablesView Name="varsView"></zxc:ZXVariablesView>
+          <zxdtv:ZXVariablesView Name="varsView"></zxdtv:ZXVariablesView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
       <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
       <zxd:ZXDockingControl Title="T-States" Grid.Row="2" Name="tstatesDock">
         <zxd:ZXDockingControl.DockedControl>
-          <zxc:ZXTStatesView Name="statesView"></zxc:ZXTStatesView>
+          <zxdtt:ZXTStatesView Name="statesView"></zxdtt:ZXTStatesView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
       <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
       <zxd:ZXDockingControl Title="Registers" Grid.Row="4" Name="regsDock">
         <zxd:ZXDockingControl.DockedControl>
-          <zxc:ZXRegistersView Name="regView" AllowEdit="{Binding EmulatorInfo.CanStep}"></zxc:ZXRegistersView>
+          <zxdtr:ZXRegistersView Name="regView" AllowEdit="{Binding EmulatorInfo.CanStep}"></zxdtr:ZXRegistersView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
     </zxd:ZXDockingContainer>
@@ -207,7 +196,9 @@
       <zxd:ZXTabDockingContainer.DockedControls>
         <zxd:ZXDockingControl Title="Memory viewer" Name="memDock">
           <zxd:ZXDockingControl.DockedControl>
-            <zxc:ZXMemoryBlockView Name="memView" Background="#202020"></zxc:ZXMemoryBlockView>
+            <!--
+            <zxdtm:ZXMemoryBlockView Name="memView" Background="#202020"></zxdtm:ZXMemoryBlockView>-->
+            <zxdtm:ZXMemoryView Name="memView"></zxdtm:ZXMemoryView>
           </zxd:ZXDockingControl.DockedControl>
         </zxd:ZXDockingControl>
         <zxd:ZXDockingControl Title="Output" Name="outDock">
@@ -217,10 +208,10 @@
         </zxd:ZXDockingControl>
         <zxd:ZXDockingControl Title="Emulator" Name="emuDock">
           <zxd:ZXDockingControl.DockedControl>
-            <zxc:ZXEmulator Name="emu" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></zxc:ZXEmulator>
+            <zxe:ZXEmulator Name="emu" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></zxe:ZXEmulator>
           </zxd:ZXDockingControl.DockedControl>
         </zxd:ZXDockingControl>
       </zxd:ZXTabDockingContainer.DockedControls>
     </zxd:ZXTabDockingContainer>
-</Grid>
+  </Grid>
 </wnd:ZXWindowBase>

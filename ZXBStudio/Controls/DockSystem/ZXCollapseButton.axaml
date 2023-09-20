@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="8" d:DesignHeight="8"
+             x:Class="ZXBasicStudio.Controls.DockSystem.ZXCollapseButton" 
+             Width="8" Height="8" VerticalAlignment="Top"
+             ZIndex="1000" Background="Transparent">
+  <Button Name="btnCollapse" Padding="0" BorderThickness="0" Background="Transparent">
+    <Svg Name="svgImg" Path="/Svg/White/forward-step-solid.svg"></Svg>
+  </Button>
+</UserControl>

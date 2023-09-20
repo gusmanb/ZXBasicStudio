@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Extensions;
 
 namespace ZXBasicStudio.Dialogs
 {
@@ -35,7 +36,7 @@ namespace ZXBasicStudio.Dialogs
         {
             if (mem == null)
             {
-                await ShowError("Internal error", "Try to open the dialog again and if the error persists inform about this error.");
+                await this.ShowError("Internal error", "Try to open the dialog again and if the error persists inform about this error.");
                 return;
             }
 
@@ -43,13 +44,13 @@ namespace ZXBasicStudio.Dialogs
             int end = (int)(nudEnd?.Value ?? -1);
             if (start > end || start == -1 || end == -1)
             {
-                await ShowError("Invalid range", "Selected memory range is not valid, start must be lower than end.");
+                await this.ShowError("Invalid range", "Selected memory range is not valid, start must be lower than end.");
                 return;
             }
 
             if(string.IsNullOrWhiteSpace(txtPath.Text))
             {
-                await ShowError("Select file", "Select the file where to store the memory dump.");
+                await this.ShowError("Select file", "Select the file where to store the memory dump.");
                 return;
             }
 
@@ -78,7 +79,7 @@ namespace ZXBasicStudio.Dialogs
                     this.Close(true);
                 }
             }
-            catch(Exception ex) { await ShowError("Unexpected error", $"Unexpected error saving file: {ex.Message} - {ex.StackTrace}"); }
+            catch(Exception ex) { await this.ShowError("Unexpected error", $"Unexpected error saving file: {ex.Message} - {ex.StackTrace}"); }
         }
 
         private async void BtnSelectOutput_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -101,7 +102,7 @@ namespace ZXBasicStudio.Dialogs
                 if (ext != ".bin" && ext != ".hex")
                 {
                     txtPath.Text = "";
-                    await ShowError("Invalid file type", "Choose a .bin or .hex file.");
+                    await this.ShowError("Invalid file type", "Choose a .bin or .hex file.");
                     txtPath.Text = "";
                     return;
                 }

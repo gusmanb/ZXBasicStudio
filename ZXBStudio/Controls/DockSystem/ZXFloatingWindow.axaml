@@ -5,7 +5,7 @@
         xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ZXBasicStudio.Controls.DockSystem.ZXFloatingWindow"
-        Icon="/Assets/zxbs.ico"
+        Icon="/Assets/zxbs.ico" Topmost="True"
         Title="ZXBasicStudio" WindowStartupLocation="CenterScreen">
   <zxd:ZXTabDockingContainer TabsPosition="Bottom" Name="mainDock"></zxd:ZXTabDockingContainer>
 </Window>

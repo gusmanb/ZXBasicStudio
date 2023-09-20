@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DebuggingTools.Registers.Controls.ZXRegisterView">
+  <UserControl.Styles>
+    <Style Selector="TextBlock">
+      <Setter Property="Foreground" Value="#FFFFFFFF" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Padding" Value="2" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="#FF606060" />
+    </Style>
+  </UserControl.Styles>
+  <Panel Background="#FF606060">
+    <Grid ColumnDefinitions="*,*,*,*" DataContext="{Binding Item}">
+      <Border BorderBrush="Black" BorderThickness="1,1,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+         <TextBlock Text="{Binding Name}" Name="txtName" />
+      </Border>
+      <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1,1,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TextBlock Grid.Column="1" Text="{Binding Hex}" />
+      </Border>
+      <Border Grid.Column="2" BorderBrush="Black" BorderThickness="1,1,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TextBlock Grid.Column="2" Text="{Binding Signed}" />
+      </Border>
+      <Border Grid.Column="3" BorderBrush="Black" BorderThickness="1,1,1,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TextBlock Grid.Column="3" Text="{Binding Unsigned}" />
+      </Border>
+    </Grid>
+    <Border BorderBrush="Black" BorderThickness="1" CornerRadius="10" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#ff303030" Name="brdEdit" IsVisible="False">
+      <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
+        <TextBox VerticalAlignment="Center" Margin="10,0,5,0">New value (hex):</TextBox>
+        <TextBox Name="txtEdit" Margin="5,2,10,2" VerticalAlignment="Center" Background="White" Foreground="Black" Width="50" IsReadOnly="False" Padding="1">asas</TextBox>
+      </StackPanel>
+    </Border>
+  </Panel>
+</UserControl>

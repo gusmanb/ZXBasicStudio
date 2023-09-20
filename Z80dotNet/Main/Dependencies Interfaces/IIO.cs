@@ -8,6 +8,6 @@ namespace Konamiman.Z80dotNet
 {
     public interface IIO
     {
-        byte this[byte port, byte upperPart] { get; set; }
+        byte this[byte portLo, byte portHi] { get; set; }
     }
 }

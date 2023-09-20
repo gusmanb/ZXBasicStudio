@@ -8,16 +8,24 @@ namespace CoreSpectrum.SupportClasses
 {
     public class Tape
     {
-        List<TimedTapeBlock> _blocks = new List<TimedTapeBlock>();
+        TimedTapeBlock[] _blocks;
         public TimedTapeBlock[] Blocks { get { return _blocks.ToArray(); } }
+        TimedTapeBlock? currentBlock;
+        int currentBlockIndex = 0;
         public ulong Length { get; private set; }
         public Tape(TapeBlock[] Blocks)
         {
-            foreach (var block in Blocks)
-            {
-                var len = block.Length;
 
-                _blocks.Add(new TimedTapeBlock { Start = Length, Length = len, Block = block });
+            if (Blocks == null || Blocks.Length < 1)
+                throw new ArgumentException("At least one block must be provided.");
+
+            _blocks = new TimedTapeBlock[Blocks.Length];
+
+            for (int buc = 0; buc < _blocks.Length; buc++)
+            {
+                var cb = Blocks[buc];
+                var len = cb.Length;
+                _blocks[buc] = new TimedTapeBlock { Start = Length, Length = len, Block = cb };
                 Length += len;
             }
 
@@ -25,18 +33,34 @@ namespace CoreSpectrum.SupportClasses
 
         public bool GetValue(ulong TStates)
         {
-            var block = _blocks.FirstOrDefault(b => b.Start <= TStates && TStates < b.Start + b.Length);
+            if (currentBlock == null || currentBlock.Start > TStates)
+            {
+                currentBlock = _blocks[0];
+                currentBlockIndex = 0;
+            }
 
-            if (block == null)
+            while (currentBlockIndex < _blocks.Length && !(currentBlock.Start <= TStates && TStates < currentBlock.Start + currentBlock.Length))
+            {
+                currentBlockIndex += 1;
+                if (currentBlockIndex >= _blocks.Length)
+                    currentBlock = null;
+                else
+                    currentBlock = _blocks[currentBlockIndex];
+            }
+
+            if (currentBlock == null)
                 return false;
 
-            TStates -= block.Start;
-            return block.Block.Stream.GetValue(TStates);
+            if (currentBlock.Block.Stream == null)
+                return false;
+
+            TStates -= currentBlock.Start;
+            return currentBlock.Block.Stream.GetValue(TStates);
         }
 
         public int GetBlockIndex(ulong TStates)
         {
-            for (int buc = 0; buc < _blocks.Count; buc++)
+            for (int buc = 0; buc < _blocks.Length; buc++)
             {
                 var block = _blocks[buc];
                 if (block.Start <= TStates && TStates < block.Start + block.Length)
@@ -50,7 +74,7 @@ namespace CoreSpectrum.SupportClasses
         {
             public ulong Start { get; set; }
             public ulong Length { get; set; }
-            public TapeBlock Block { get; set; }
+            public required TapeBlock Block { get; set; }
         }
     }
 }

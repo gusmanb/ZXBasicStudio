@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:svg="using:Avalonia.Svg.Skia"
+             xmlns:neg="using:ZXBasicStudio.DocumentEditors.ZXGraphics.neg"
+             mc:Ignorable="d" d:DesignWidth="240" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.SelectExportTypeControl">
+  <StackPanel Orientation="Vertical">
+    <TextBlock FontSize="18" FontWeight="Bold">Format</TextBlock>
+
+    <ListBox Name="lstOptions">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <Grid ColumnDefinitions="64,140" Margin="4">
+            <Grid Background="#ffffff">
+              <svg:Svg Path="{Binding Image}" Width="64" Height="64"></svg:Svg>
+            </Grid>
+            <StackPanel Orientation="Vertical" Grid.Column="1"  Margin="4,0,0,0">
+              <TextBlock FontSize="14" FontWeight="Bold" Text="{Binding Name}"/>
+              <TextBlock TextWrapping="Wrap" Text="{Binding Description}"/>
+            </StackPanel>
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </StackPanel>
+
+</UserControl>

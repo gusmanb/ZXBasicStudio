@@ -276,6 +276,16 @@ namespace CoreSpectrum.Hardware
             ay.bit_a = ay.bit_b = ay.bit_c = ay.bit_n = false;
             ay.env_pos = ay.EnvNum = 0;
             ay.Cur_Seed = 0xffff;
+
+            ay.regs.tone_a = ay.regs.tone_b = ay.regs.tone_c = 0;
+            ay.regs.noise = 0;
+            ay.regs.R7_tone_a = ay.regs.R7_tone_b = ay.regs.R7_tone_c = false;
+            ay.regs.R7_noise_a = ay.regs.R7_noise_b = ay.regs.R7_noise_c = false;
+            ay.regs.vol_a = ay.regs.vol_b = ay.regs.vol_c = 0;
+            ay.regs.env_a = ay.regs.env_b = ay.regs.env_c = false;
+            ay.regs.env_freq = ay.regs.env_style = 0;
+
+            Array.Clear(ay.regs.regValues);
         }
 
         public static bool ayemu_set_chip_type(ayemu_ay_t ay, ayemu_chip_t type, int[]? custom_table)
@@ -626,6 +636,83 @@ namespace CoreSpectrum.Hardware
             return true;
         }
 
+        public static float ayemu_gen_sample(ayemu_ay_t ay)
+        {
+            if (!check_magic(ay))
+            {
+                return -1;
+            }
+
+            prepare_generation(ay);
+
+            int mix_r;
+            int mix_l = mix_r = 0;
+            int m;
+            for (m = 0; m < ay.ChipTacts_per_outcount; m++)
+            {
+                if (++ay.cnt_a >= ay.regs.tone_a)
+                {
+                    ay.cnt_a = 0;
+                    ay.bit_a = !ay.bit_a;
+                }
+
+                if (++ay.cnt_b >= ay.regs.tone_b)
+                {
+                    ay.cnt_b = 0;
+                    ay.bit_b = !ay.bit_b;
+                }
+
+                if (++ay.cnt_c >= ay.regs.tone_c)
+                {
+                    ay.cnt_c = 0;
+                    ay.bit_c = !ay.bit_c;
+                }
+
+                if (++ay.cnt_n >= ay.regs.noise * 2)
+                {
+                    ay.cnt_n = 0;
+                    ay.Cur_Seed = ay.Cur_Seed * 2 + 1 ^ (ay.Cur_Seed >> 16 ^ ay.Cur_Seed >> 13) & 1;
+                    ay.bit_n = (ay.Cur_Seed >> 16 & 1) != 0;
+                }
+
+                if (++ay.cnt_e >= ay.regs.env_freq)
+                {
+                    ay.cnt_e = 0;
+                    if (++ay.env_pos > 127)
+                    {
+                        ay.env_pos = 64;
+                    }
+                }
+
+                int tmpvol;
+                if ((ay.bit_a | !ay.regs.R7_tone_a) & (ay.bit_n | !ay.regs.R7_noise_a))
+                {
+                    tmpvol = ay.regs.env_a ? Envelope[ay.regs.env_style][ay.env_pos] : ay.regs.vol_a * 2 + 1;
+                    mix_l += ay.vols[0][tmpvol];
+                    mix_r += ay.vols[1][tmpvol];
+                }
+
+                if ((ay.bit_b | !ay.regs.R7_tone_b) & (ay.bit_n | !ay.regs.R7_noise_b))
+                {
+                    tmpvol = ay.regs.env_b ? Envelope[ay.regs.env_style][ay.env_pos] : ay.regs.vol_b * 2 + 1;
+                    mix_l += ay.vols[2][tmpvol];
+                    mix_r += ay.vols[3][tmpvol];
+                }
+
+                if ((ay.bit_c | !ay.regs.R7_tone_c) & (ay.bit_n | !ay.regs.R7_noise_c))
+                {
+                    tmpvol = ay.regs.env_c ? Envelope[ay.regs.env_style][ay.env_pos] : ay.regs.vol_c * 2 + 1;
+                    mix_l += ay.vols[4][tmpvol];
+                    mix_r += ay.vols[5][tmpvol];
+                }
+            }
+
+            mix_l /= ay.Amp_Global;
+            mix_r /= ay.Amp_Global;
+
+            float result = (mix_l + mix_r) / 65535.0f;
+            return result;
+        }
         private static bool check_magic(ayemu_ay_t ay)
         {
             return ay.magic == MAGIC1;

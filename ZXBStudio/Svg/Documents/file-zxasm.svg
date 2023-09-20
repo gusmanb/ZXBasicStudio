@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 384 512"
+   version="1.1"
+   id="svg12"
+   sodipodi:docname="file-zxasm.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs16" />
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#000000"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="true"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.0029297"
+     inkscape:cx="33.402142"
+     inkscape:cy="379.38851"
+     inkscape:window-width="1841"
+     inkscape:window-height="1270"
+     inkscape:window-x="1205"
+     inkscape:window-y="302"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg12" />
+  <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+  <path
+     d="M320 464c8.8 0 16-7.2 16-16V160H256c-17.7 0-32-14.3-32-32V48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320zM0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z"
+     id="path10"
+     style="fill:#ffffff" />
+  <g
+     aria-label="ZX
+ASM"
+     transform="scale(0.99478256,1.0052448)"
+     id="text176"
+     style="font-size:73.8973px;fill:#ffffff;stroke-width:6.15812">
+    <path
+       d="m 188.63939,329.19943 h -45.13941 v -10.06706 l 26.77334,-33.26822 h -25.47437 v -10.39181 h 42.39714 v 10.24748 l -26.73726,33.0878 h 28.18056 z"
+       style="font-weight:bold;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';text-align:center;text-anchor:middle"
+       id="path234" />
+    <path
+       d="m 246.94898,329.19943 h -16.0207 l -11.58254,-17.6805 -11.79903,17.6805 h -15.29905 l 19.05165,-27.062 -18.65474,-26.66509 h 15.98462 l 11.18563,16.74236 11.51037,-16.74236 h 15.33513 l -18.76298,26.12385 z"
+       style="font-weight:bold;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';text-align:center;text-anchor:middle"
+       id="path236" />
+    <path
+       d="M 160.58512,421.75249 H 146.2603 l -3.71651,-10.86089 h -19.91763 l -3.71652,10.86089 h -13.96399 l 19.84547,-53.72709 h 15.94853 z m -21.39702,-20.71145 -6.60313,-19.26815 -6.60313,19.26815 z"
+       style="font-weight:bold;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';text-align:center;text-anchor:middle"
+       id="path238" />
+    <path
+       d="m 211.31735,404.8658 q 0,7.93818 -6.74746,12.91759 -6.71137,4.94333 -18.25783,4.94333 -6.67529,0 -11.6547,-1.15465 -4.94332,-1.19073 -9.27324,-2.99486 V 405.6957 h 1.51547 q 4.29384,3.42785 9.59799,5.26807 5.34023,1.84021 10.24748,1.84021 1.26289,0 3.3196,-0.21649 2.05671,-0.2165 3.35569,-0.72165 1.58764,-0.64949 2.59795,-1.62372 1.0464,-0.97424 1.0464,-2.88662 0,-1.76805 -1.51547,-3.03094 -1.47939,-1.29898 -4.36601,-1.98455 -3.03094,-0.72165 -6.42271,-1.33506 -3.35569,-0.64949 -6.31447,-1.62372 -6.78354,-2.20104 -9.7784,-5.95364 -2.95878,-3.78868 -2.95878,-9.38149 0,-7.50519 6.71138,-12.23202 6.74746,-4.76292 17.31968,-4.76292 5.30415,0 10.46397,1.0464 5.1959,1.01032 8.98458,2.56187 v 12.37635 h -1.47939 q -3.24744,-2.59795 -7.97426,-4.32991 -4.69075,-1.76806 -9.59799,-1.76806 -1.73197,0 -3.46394,0.25258 -1.69589,0.2165 -3.28352,0.86599 -1.40723,0.54124 -2.41754,1.6598 -1.01032,1.08248 -1.01032,2.4897 0,2.12888 1.62372,3.28353 1.62372,1.11856 6.13406,2.05671 2.95878,0.6134 5.66498,1.19073 2.74228,0.57732 5.88147,1.58763 6.17014,2.02063 9.09283,5.52065 2.95878,3.46394 2.95878,9.02067 z"
+       style="font-weight:bold;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';text-align:center;text-anchor:middle"
+       id="path240" />
+    <path
+       d="m 277.13213,421.75249 h -13.78358 v -35.97442 l -9.95881,23.34548 h -9.56191 l -9.95881,-23.34548 v 35.97442 H 220.80709 V 368.0254 h 16.09287 l 12.08769,26.95375 12.05161,-26.95375 h 16.09287 z"
+       style="font-weight:bold;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';text-align:center;text-anchor:middle"
+       id="path242" />
+  </g>
+</svg>

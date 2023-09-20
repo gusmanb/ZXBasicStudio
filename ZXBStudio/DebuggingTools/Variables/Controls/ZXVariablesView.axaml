@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:zxdtv="using:ZXBasicStudio.DebuggingTools.Variables.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DebuggingTools.Variables.Controls.ZXVariablesView">
+  <UserControl.Styles>
+    <Style Selector="Expander:expanded /template/ Border#ExpanderContent">
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+  </UserControl.Styles>
+    <TreeView Background="#303030" 
+              Grid.Row="2" 
+              Grid.ColumnSpan="3" 
+              ItemsSource="{Binding variables}"
+              BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+              >
+      <TreeView.ItemTemplate>
+        <TreeDataTemplate ItemsSource="{Binding ChildProperties}">
+          <zxdtv:ZXVariablePropertyView 
+            PropertyName="{Binding PropertyName}" 
+            PropertyType="{Binding PropertyType}" 
+            PropertyValue="{Binding PropertyValue, Mode=TwoWay}"
+            SvgPath="{Binding SvgPath}"
+            Background="{Binding Background}" 
+            Editable="{Binding Editable}"
+            ArrayPath="{Binding ArrayPath}"
+            Variable="{Binding Variable}"
+            Memory="{Binding Memory}"
+            Registers="{Binding Registers}"
+            Margin="0,-2,0,-2" 
+            Padding="0"
+            ></zxdtv:ZXVariablePropertyView>
+        </TreeDataTemplate>
+      </TreeView.ItemTemplate>
+    </TreeView>
+</UserControl>

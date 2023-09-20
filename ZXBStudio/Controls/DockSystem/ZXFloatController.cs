@@ -1,9 +1,13 @@
-﻿using Avalonia.Media;
+﻿using Avalonia;
+using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ZXBasicStudio.Controls.DockSystem
 {
@@ -18,15 +22,40 @@ namespace ZXBasicStudio.Controls.DockSystem
         public static ZXFloatingWindow MakeFloating(ZXDockingControl Control)
         {
             ZXFloatingWindow window = new ZXFloatingWindow();
-            var size = Control.Bounds.Size;
+            var size = Control.DesiredFloatingSize ?? Control.Bounds.Size;
             window.Width = size.Width;
             window.Height = size.Height;
             window.Closing += Window_Closing;
             window.Closed += Window_Closed;
             window.DockingControlsChanged += Window_DockingControlsChanged;
             window.Show();
-            window.DockingContainer.AddToEnd(Control);
             windows.Add(window);
+            
+            Task.Run(async () => 
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var dp = Dispatcher.UIThread.DisableProcessing();
+
+                    if (Control.Parent != null)
+                    {
+                        var parent = Control.Parent as IZXDockingContainer;
+
+                        if (parent == null)
+                            throw new InvalidOperationException("Only controls without parent or in a dock container can be moved to another dock container.");
+
+                        parent.Remove(Control);
+                    }
+
+                    dp.Dispose();
+                });
+
+                await Dispatcher.UIThread.InvokeAsync(() => 
+                {
+                    window.DockingContainer.AddToEnd(Control);
+                });
+            });
+
             return window;
         }
 

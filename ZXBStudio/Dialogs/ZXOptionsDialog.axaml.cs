@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using System.IO;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Extensions;
 
 namespace ZXBasicStudio.Dialogs
 {
@@ -24,7 +25,13 @@ namespace ZXBasicStudio.Dialogs
             ckDisableAudio.IsChecked = ZXOptions.Current.AudioDisabled;
             ckWordWrap.IsChecked = ZXOptions.Current.WordWrap;
             ckCls.IsChecked = ZXOptions.Current.Cls;
+            btnKeybMap.Click += BtnKeybMap_Click;
+        }
 
+        private void BtnKeybMap_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dlg = new ZXKeybMappingDialog();
+            dlg.ShowDialog(this);
         }
 
         private async void BtnDefaultBuildConfig_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -84,17 +91,15 @@ namespace ZXBasicStudio.Dialogs
         {
             if (string.IsNullOrWhiteSpace(txtZxbc.Text) || !File.Exists(txtZxbc.Text))
             {
-                await ShowError("Invalid Zxbc.", "The selected path for Zxbc is invalid, check your settings and try again.");
+                await this.ShowError("Invalid Zxbc.", "The selected path for Zxbc is invalid, check your settings and try again.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtZxbasm.Text) || !File.Exists(txtZxbasm.Text))
             {
-                await ShowError("Invalid Zxbasm.", "The selected path for Zxbasm is invalid, check your settings and try again.");
+                await this.ShowError("Invalid Zxbasm.", "The selected path for Zxbasm is invalid, check your settings and try again.");
                 return;
             }
-
-            var opts = 
 
             ZXOptions.Current.ZxbcPath = txtZxbc.Text;
             ZXOptions.Current.ZxbasmPath= txtZxbasm.Text;

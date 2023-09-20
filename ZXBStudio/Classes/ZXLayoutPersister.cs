@@ -12,14 +12,12 @@ namespace ZXBasicStudio.Classes
 {
     public static class ZXLayoutPersister
     {
-        const string LayoutFile = "ZXBasicStudioLayout.json";
-
         public static void ResetLayout()
         {
             try
             {
-                if (File.Exists(LayoutFile))
-                    File.Delete(LayoutFile);
+                if (ZXApplicationFileProvider.Exists(ZXConstants.APPLAYOUT_FILE))
+                    ZXApplicationFileProvider.Delete(ZXConstants.APPLAYOUT_FILE);
             }
             catch { }
         }
@@ -68,24 +66,24 @@ namespace ZXBasicStudio.Classes
 
                 var content = JsonConvert.SerializeObject(layout, Formatting.Indented);
 
-                File.WriteAllText(LayoutFile, content);
+                ZXApplicationFileProvider.WriteAllText(ZXConstants.APPLAYOUT_FILE, content);
 
                 ZXFloatController.Dispose();
             }
             catch { }
         }
 
-        public static void RestoreLayout(Grid MainGrid, ZXDockingContainer LeftDock, ZXDockingContainer RightDock, ZXTabDockingContainer BottomDock)
+        public static void RestoreLayout(Grid MainGrid, ZXDockingContainer LeftDock, ZXDockingContainer RightDock, ZXTabDockingContainer BottomDock, ZXDockingControl[] StandaloneControls)
         {
             try
             {
                 if (Avalonia.Controls.Design.IsDesignMode)
                     return;
 
-                if (!File.Exists(LayoutFile))
+                if (!ZXApplicationFileProvider.Exists(ZXConstants.APPLAYOUT_FILE))
                     return;
 
-                ZXLayout? layout = JsonConvert.DeserializeObject<ZXLayout>(File.ReadAllText(LayoutFile));
+                ZXLayout? layout = JsonConvert.DeserializeObject<ZXLayout>(ZXApplicationFileProvider.ReadAllText(ZXConstants.APPLAYOUT_FILE));
 
                 if (layout == null)
                     return;
@@ -94,6 +92,8 @@ namespace ZXBasicStudio.Classes
                 MainGrid.ColumnDefinitions = new ColumnDefinitions(layout.MainColumns);
 
                 List<ZXDockingControl> controls = new List<ZXDockingControl>();
+
+                controls.AddRange(StandaloneControls);
 
                 var leftControls = LeftDock.Children?.Where(c => c is ZXDockingControl).Cast<ZXDockingControl>().ToArray();
                 if (leftControls != null)

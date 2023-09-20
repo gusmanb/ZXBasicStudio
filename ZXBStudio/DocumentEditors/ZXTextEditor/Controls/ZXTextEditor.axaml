@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:AvalonEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls.ZXTextEditor">
+  <Grid RowDefinitions="*,Auto">
+    <AvalonEdit:TextEditor Name="editor"
+                         HorizontalScrollBarVisibility="Auto"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         ShowLineNumbers="True"
+                         >
+      <AvalonEdit:TextEditor.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="Copy" Command="{Binding Copy}"></MenuItem>
+          <MenuItem Header="Cut" Command="{Binding Cut}"></MenuItem>
+          <MenuItem Header="Paste" Command="{Binding Paste}"></MenuItem>
+          <Separator></Separator>
+          <MenuItem Header="Undo" Command="{Binding Undo}"></MenuItem>
+          <MenuItem Header="Redo" Command="{Binding Redo}"></MenuItem>
+        </ContextMenu>
+      </AvalonEdit:TextEditor.ContextMenu>
+    </AvalonEdit:TextEditor>
+    <Grid Grid.Row="1" Background="Purple" Height="25" ColumnDefinitions="*,*">
+      <TextBlock Foreground="White" Name="txtStatus" Text="Ready" Margin="5 0 0 0" VerticalAlignment="Center" FontSize="12"/>
+      <TextBlock Grid.Column="1" Foreground="White" Name="txtSelection" Text="No text selected" Margin="0 0 5 0" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12"/>
+    </Grid>
+  </Grid>
+</UserControl>

@@ -16,11 +16,11 @@ namespace ZXBasicStudio.Classes
 
         static ZXOptions()
         {
-            if (File.Exists("ZXBasicStudioOptions.json"))
+            if (ZXApplicationFileProvider.Exists(ZXConstants.APPOPTIONS_FILE))
             {
                 try
                 {
-                    Current = JsonConvert.DeserializeObject<ZXOptions>(File.ReadAllText("ZXBasicStudioOptions.json")) ?? new ZXOptions();
+                    Current = JsonConvert.DeserializeObject<ZXOptions>(ZXApplicationFileProvider.ReadAllText(ZXConstants.APPOPTIONS_FILE)) ?? new ZXOptions();
                 }
                 catch { Current = new ZXOptions(); }
             }
@@ -30,7 +30,7 @@ namespace ZXBasicStudio.Classes
         public static void SaveCurrentSettings()
         {
             var settings = JsonConvert.SerializeObject(Current);
-            File.WriteAllText("ZXBasicStudioOptions.json", settings);
+            ZXApplicationFileProvider.WriteAllText(ZXConstants.APPOPTIONS_FILE, settings);
         }
         public string? ZxbasmPath { get; set; }
         public string? ZxbcPath { get; set; }

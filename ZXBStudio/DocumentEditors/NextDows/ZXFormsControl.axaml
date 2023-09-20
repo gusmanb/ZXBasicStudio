@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DocumentEditors.NextDows.ZXFormsControl"
+             HorizontalAlignment="Stretch" VerticalAlignment="Top">
+
+    <Grid ColumnDefinitions="32,4,*" RowDefinitions="*,2" Margin="2">
+      <Image Name="imgImage" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="32" Height="32"/>
+      <Grid Grid.Column="2" RowDefinitions="Auto,Auto">
+        <TextBlock Name="txtTitle" Grid.Row="0" FontWeight="Bold"></TextBlock>
+        <TextBlock Name="txtDescription" Grid.Row="1" TextWrapping="Wrap"></TextBlock>
+      </Grid>
+    </Grid>
+
+</UserControl>

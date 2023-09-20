@@ -23,7 +23,8 @@ namespace ZXBasicStudio.Classes
         public bool IgnoreCase { get; set; }
         public bool Strict { get; set; }
         public bool Headerless { get; set; }
-
+        public bool NextMode { get; set; }
+        public string? NextCmd { get; set; }
         public string GetSettings()
         {
             List<string> settings = new List<string>();
@@ -74,6 +75,7 @@ namespace ZXBasicStudio.Classes
 
         public string GetDebugSettings()
         {
+            /*
             List<string> settings = new List<string>();
 
             if (OptimizationLevel != null)
@@ -111,6 +113,52 @@ namespace ZXBasicStudio.Classes
 
             if (IgnoreCase)
                 settings.Add("-i");
+
+            if (Strict)
+                settings.Add("--strict");
+
+            settings.Add("+W150");
+
+            return string.Join(' ', settings);*/
+            List<string> settings = new List<string>();
+
+            if (OptimizationLevel != null)
+                settings.Add($"-O {OptimizationLevel}");
+
+            if (Origin != null)
+                settings.Add($"-S {Origin}");
+
+            if (SinclairMode)
+                settings.Add("-Z");
+            else
+            {
+                if (StrictBool)
+                    settings.Add("--strict-bool");
+
+                if (IgnoreCase)
+                    settings.Add("-i");
+
+                if (ArrayBase != null)
+                    settings.Add($"--array-base {ArrayBase}");
+
+                if (StringBase != null)
+                    settings.Add($"--string-base {StringBase}");
+            }
+
+            if (HeapSize != null)
+                settings.Add($"-H {HeapSize}");
+
+            if (EnableBreak)
+                settings.Add("--enable-break");
+
+            if (Explicit)
+                settings.Add("--explicit");
+
+            if (Defines != null)
+            {
+                foreach (var define in Defines)
+                    settings.Add($"-D {define}");
+            }
 
             if (Strict)
                 settings.Add("--strict");
