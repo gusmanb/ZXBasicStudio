@@ -3,6 +3,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
@@ -47,8 +48,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
             set
             {
-                _IsSelected = value;
-                Refresh();
+                if (_IsSelected != value)
+                {
+                    _IsSelected = value;
+                    Refresh();
+                }
             }
         }
 
@@ -163,13 +167,27 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     SpriteData.Palette = ServiceLayer.GetPalette(SpriteData.GraphicMode);
                 }
 
+                // Delete background
+                {
+                    var r = new Rectangle();
+                    r.Width = cnvPreview.Width;
+                    r.Height = cnvPreview.Height;
+                    r.Fill = new SolidColorBrush(new Color(255, 0x28, 0x28, 0x28));
+                    cnvPreview.Children.Add(r);
+                    Canvas.SetTop(r,0);
+                    Canvas.SetLeft(r,0);
+                }
+
+                cnvPreview.Width = SpriteData.Width * 4;
+                cnvPreview.Height = SpriteData.Height * 4;
+
                 for (int y = 0; y < SpriteData.Height; y++)
                 {
                     for (int x = 0; x < SpriteData.Width; x++)
                     {
                         int colorIndex = 0;
 
-                        var frame = SpriteData.Patterns[SpriteData.CurrentFrame];
+                        var frame = SpriteData.Patterns[0]; // SpriteData.CurrentFrame];
                         var p = frame.Data.FirstOrDefault(d => d.X == x && d.Y == y);
                         if (p != null)
                         {
@@ -255,8 +273,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 }
 
                 _SpriteData = sp;
-                CallBackCommand(this, "UPDATE");
-                Refresh();
+                //CallBackCommand?.Invoke(this, "UPDATE");
+                //Refresh();
                 newSprite = false;
                 SettingsChanged = false;
             }

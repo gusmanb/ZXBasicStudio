@@ -31,28 +31,20 @@
         <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="1" Maximum="192" Value="8" VerticalAlignment="Center"/>
       </Border>
 
-      <CheckBox Grid.Row="5" Grid.ColumnSpan="2" Classes="dialog" Name="chkMasked" Margin="8,2,0,4">Masked sprite</CheckBox>
-
-      <CheckBox Grid.Row="6" Grid.ColumnSpan="2" Classes="dialog" Name="chkExport" Margin="8,2,0,4">Export</CheckBox>
-
-      <TextBlock Grid.Row="7" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>
-      <Border Grid.Row="7" Grid.Column="1" Classes="numericborder">
+      <TextBlock Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>
+      <Border Grid.Row="5" Grid.Column="1" Classes="numericborder">
         <NumericUpDown Classes="dialog" Name="txtFrames" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
       </Border>
-
+      
+      <CheckBox Grid.Row="6" Grid.ColumnSpan="2" Classes="dialog" Name="chkMasked" Margin="8,2,0,4">Masked sprite</CheckBox>
+      
       <Grid Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
           <Button Classes="toolbar" Name="btnClone" ToolTip.Tip="Clone sprite" Margin="4,2,2,2">
             <svg:Svg Path="/Svg/Copy.svg"></svg:Svg>
           </Button>
-          <Button Classes="toolbar" Name="btnDelete" ToolTip.Tip="Delete sprite" Margin="4,2,2,2" IsVisible="False">
+          <Button Classes="toolbar" Name="btnDelete" ToolTip.Tip="Delete sprite" Margin="4,2,2,2">
             <svg:Svg Path="/Svg/trash-can-regular.svg"></svg:Svg>
-          </Button>
-          <Button Classes="toolbar" Name="btnApply" ToolTip.Tip="Apply settings" Margin="4,2,2,2" IsVisible="True">
-            <svg:Svg Path="/Svg/check-alt-svgrepo-com.svg"></svg:Svg>
-          </Button>
-          <Button Classes="toolbar" Name="btnCancel" ToolTip.Tip="Cancel changes" Margin="4,2,2,2" IsVisible="True">
-            <svg:Svg Path="/Svg/x-svgrepo-com.svg"></svg:Svg>
           </Button>
         </StackPanel>
       </Grid>

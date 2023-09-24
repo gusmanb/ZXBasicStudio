@@ -3,7 +3,9 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
@@ -27,7 +29,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 _SpriteData = value;
                 IsSelected = true;
-                ApplySettings(false);
+                //ApplySettings(false);
             }
         }
 
@@ -49,22 +51,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 _IsSelected = value;
                 Refresh();
-            }
-        }
-
-        /// <summary>
-        /// The settings has changed
-        /// </summary>
-        public bool SettingsChanged
-        {
-            get
-            {
-                return _SettingsChanged;
-            }
-            set
-            {
-                _SettingsChanged = value;
-                RefreshButtons();
             }
         }
 
@@ -102,8 +88,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.SpriteData = spriteData;
             this.CallBackCommand = callBackCommand;
 
-            btnApply.Tapped += BtnApply_Tapped;
-            btnCancel.Tapped += BtnCancel_Tapped;
             btnClone.Tapped += BtnClone_Tapped;
             btnDelete.Tapped += BtnDelete_Tapped;
 
@@ -111,7 +95,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             txtHeight.ValueChanged += TxtHeight_ValueChanged;
             txtName.TextChanged += TxtName_TextChanged;
             txtWidth.ValueChanged += TxtWidth_ValueChanged;
-            chkExport.IsCheckedChanged += ChkExport_IsCheckedChanged;
             chkMasked.IsCheckedChanged += ChkMasked_IsCheckedChanged;
             cmbMode.SelectionChanged += CmbMode_SelectionChanged;
 
@@ -143,8 +126,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 {
                     pnlProperties.IsVisible = true;
                 }
-
-                RefreshButtons();
 
                 txtFrames.Value = SpriteData.Frames;
                 txtHeight.Value = SpriteData.Height;
@@ -178,15 +159,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-        private void RefreshButtons()
-        {
-            btnApply.IsVisible = _SettingsChanged;
-            btnCancel.IsVisible = _SettingsChanged;
-            btnClone.IsVisible = !newSprite;
-            btnDelete.IsVisible = !_SettingsChanged;
-        }
-
-
         public void Select()
         {
             _IsSelected = true;
@@ -195,6 +167,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        /*
         public void ApplySettings(bool askForApply)
         {
             if (SpriteData == null)
@@ -245,12 +218,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 }
 
                 _SpriteData = sp;
-                CallBackCommand(this, "UPDATE");
+                CallBackCommand?.Invoke(this, "UPDATE");
                 Refresh();
                 newSprite = false;
-                SettingsChanged = false;
             }
         }
+        */
 
         #endregion
 
@@ -289,12 +262,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Id = 0,
                 Name = "",
                 Number = "0",
-                Data = new PointData[64]
+                Data = new PointData[SpriteData.Width * SpriteData.Height]
             };
             int dir = 0;
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < SpriteData.Height; y++)
             {
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < SpriteData.Width; x++)
                 {
                     pat.Data[dir] = new PointData()
                     {
@@ -309,47 +282,123 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        private void ResizePattern()
+        {
+            var patterns = new List<Pattern>();
+            foreach (var pattern in SpriteData.Patterns)
+            {
+                var pat = new Pattern()
+                {
+                    Id = pattern.Id,
+                    Name = pattern.Name,
+                    Number = pattern.Number,
+                    Data = new PointData[SpriteData.Width * SpriteData.Height]
+                };
+                int dir = 0;
+                for (int y = 0; y < SpriteData.Height; y++)
+                {
+                    for (int x = 0; x < SpriteData.Width; x++)
+                    {
+                        var oldData = pattern.Data.FirstOrDefault(d => d.X == x && d.Y == y);
+                        if (oldData == null)
+                        {
+                            pat.Data[dir] = new PointData()
+                            {
+                                X = x,
+                                Y = y,
+                                ColorIndex = 0
+                            };
+                        }
+                        else
+                        {
+                            pat.Data[dir] = oldData.Clonar<PointData>();
+                        }
+                        dir++;
+                    }
+                }
+                patterns.Add(pat);
+            }
+            SpriteData.Patterns = patterns;
+            CallBackCommand(this, "REFRESH");
+        }
+
         #endregion
 
 
         #region Button events
 
-        private void ChkExport_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            SpriteData.Export = chkExport.IsChecked.ToBoolean();
-        }
-
 
         private void ChkMasked_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            SettingsChanged = true;
+            var value = chkMasked.IsChecked.ToBoolean();
+            if (SpriteData.Masked != value)
+            {
+                SpriteData.Masked = value;
+                Refresh();
+                CallBackCommand(this, "REFRESH");
+            }
         }
 
 
         private void CmbMode_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            SettingsChanged = true;
+            var value = (GraphicsModes)cmbMode.SelectedIndex;
+            if (SpriteData.GraphicMode != value)
+            {
+                SpriteData.GraphicMode = value;
+                Refresh();
+                CallBackCommand(this, "REFRESH");
+            }
         }
 
 
         private void TxtWidth_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
         {
-            SettingsChanged = true;
+            var value = txtWidth.Text.ToInteger();
+            if (SpriteData.Width != value)
+            {
+                SpriteData.Width = value;
+                ResizePattern();
+                Refresh();
+            }
         }
 
         private void TxtHeight_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
         {
-            SettingsChanged = true;
+            var value = txtHeight.Text.ToInteger();
+            if (SpriteData.Height != value)
+            {
+                SpriteData.Height = value;
+                ResizePattern();
+                Refresh();
+            }
         }
 
         private void TxtName_TextChanged(object? sender, TextChangedEventArgs e)
         {
-            SpriteData.Name = txtName.Text;
+            var value = txtName.Text;
+            if (SpriteData.Name != value)
+            {
+                SpriteData.Name = value;
+                Refresh();
+                CallBackCommand(this, "REFRESH");
+            }
         }
 
         private void TxtFrames_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
         {
-            SettingsChanged = true;
+            var value = txtFrames.Text.ToByte();
+            if (SpriteData.Frames != value)
+            {
+                SpriteData.Frames = value;
+                while (SpriteData.Patterns.Count < SpriteData.Frames)
+                {
+                    SpriteData.Patterns.Add(CreatePattern());
+                }
+                SpriteData.CurrentFrame = (byte)(SpriteData.Frames - 1);
+                Refresh();
+                CallBackCommand(this, "REFRESH");
+            }
         }
 
 
@@ -362,19 +411,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void BtnClone_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             CallBackCommand(this, "CLONE");
-        }
-
-
-        private void BtnCancel_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
-        {
-            Refresh();
-            SettingsChanged = false;
-        }
-
-
-        private void BtnApply_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
-        {
-            ApplySettings(true);
         }
 
         #endregion

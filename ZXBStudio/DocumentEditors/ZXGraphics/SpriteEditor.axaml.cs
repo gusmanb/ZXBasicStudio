@@ -13,6 +13,9 @@ using AvaloniaEdit.Folding;
 using Avalonia.Threading;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using ShimSkiaSharp;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -107,6 +110,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             1,2,4,8,16,24,32,48,64
         };
 
+        private byte actualFrame = 0;
+
         private FoldingManager? fManager;
         private DispatcherTimer? updateFoldingsTimer;
 
@@ -119,24 +124,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             try
             {
-                // TODO: Implement save
+                var data = SpritePatternsList.Select(d => d.SpriteData).Serializar();
+                if (!ServiceLayer.Files_SaveFileString(FileName, data))
+                {
+                    return false;
+                };
 
-                //if (!Modified)
-                //{
-                //    return true;
-                //}
-
-
-                //if (!ServiceLayer.Files_Save_GDUorFont(fileType, patterns.Select(d => d.Pattern)))
-                //{
-                //    OutputLog.WriteLine($"Error saving file {fileType.FileName}: " + ServiceLayer.LastError);
-                //    return false;
-                //}
-                //_Modified = false;
-
-                //OutputLog.WriteLine($"File {fileType.FileName} saved successfully.");
-                //DocumentSaved?.Invoke(this, EventArgs.Empty);
-                return false;
+                _Modified = false;
+                DocumentSaved?.Invoke(this, EventArgs.Empty);
+                return true;
             }
             catch (Exception ex)
             {
@@ -185,7 +181,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         public SpriteEditor(string fileName)
         {
             InitializeComponent();
-            Initialize(fileName);
+            new Thread(()=>Initialize(fileName)).Start();
         }
 
 
@@ -196,6 +192,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <returns>True if OK, or False if error</returns>
         public bool Initialize(string fileName)
         {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                _Initialize(fileName);
+            });
+            return true;
+        }
+
+
+        private void _Initialize(string fileName)
+        {
             _Modified = false;
 
             ServiceLayer.Initialize();
@@ -203,18 +209,40 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             FileName = fileName;
 
             SpritePatternsList = new List<SpritePatternControl>();
-            SpriteList_AddSprite();
 
-            ctrEditor.Initialize(Editor_Command);
-            ctrlPreview.Initialize(null, SpritePreview_Command);
-            ctrlProperties.Initialize(null, SpriteProperties_Command);
+            var data = ServiceLayer.GetFileData(fileName);
+            if (data != null)
+            {
+                var dataS = Encoding.UTF8.GetString(data);
+                if (!string.IsNullOrEmpty(dataS))
+                {
+                    Sprite[] sprites = dataS.Deserializar<Sprite[]>();
+                    foreach (var sprite in sprites)
+                    {
+                        var spc = new SpritePatternControl();
+                        spc.Initialize(sprite, SpriteList_Command);
+                        SpritePatternsList.Add(spc);
+                        wpSpriteList.Children.Add(spc);
+                    }
+                }
+            }
+
+            if (SpritePatternsList.Count == 0)
+            {
+                SpriteList_AddSprite();
+                ctrlEditor.Initialize(Editor_Command);
+                ctrlPreview.Initialize(null);
+                ctrlProperties.Initialize(null, SpriteProperties_Command);
+            }
+            else
+            {
+                ctrlEditor.Initialize(Editor_Command);
+                ctrlPreview.Initialize(SpritePatternsList[0].SpriteData);
+                ctrlProperties.Initialize(SpritePatternsList[0].SpriteData, SpriteProperties_Command);
+            }
 
             sldZoom.PropertyChanged += SldZoom_PropertyChanged;
-#if NO
-            CreatePatterns();
-
-            txtEditorWidth.ValueChanged += TxtEditorWidth_ValueChanged;
-            txtEditorHeight.ValueChanged += TxtEditorHeight_ValueChanged;
+            sldFrame.PropertyChanged += SldFrame_PropertyChanged;
 
             btnClear.Tapped += BtnClear_Tapped;
             btnCut.Tapped += BtnCut_Tapped;
@@ -235,8 +263,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnInvert.Tapped += BtnInvert_Tapped;
             btnMask.Tapped += BtnMask_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
-#endif
-            return true;
+
+            Refresh();
+            _Modified = false;
         }
 
 
@@ -248,49 +277,61 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 case "ADD":
                     SpriteList_AddSprite();
-                    ctrEditor.SpriteData = sender.SpriteData;
+                    ctrlEditor.SpriteData = sender.SpriteData;
                     ctrlPreview.SpriteData = sender.SpriteData;
+                    ctrlPreview.Refresh();
                     ctrlProperties.SpriteData = sender.SpriteData;
-                    SpriteList_Modified();
+                    SpriteList_Modified(sender.SpriteData);
                     break;
                 case "SELECTED":
                     SpriteList_Unselect(sender);
-                    ctrEditor.SpriteData = sender.SpriteData;
+                    ctrlEditor.SpriteData = sender.SpriteData;
                     ctrlPreview.SpriteData = sender.SpriteData;
+                    ctrlPreview.Refresh();
                     ctrlProperties.SpriteData = sender.SpriteData;
                     ctrlProperties.Refresh();
-                    break;                
+                    break;
             }
         }
 
 
-        private void SpritePreview_Command(SpritePreviewControl sender,string command)
+        private void SpritePreview_Command(SpritePreviewControl sender, string command)
         {
 
         }
 
 
-        private void SpriteProperties_Command(SpritePropertiesControl sender,string command)
+        private void SpriteProperties_Command(SpritePropertiesControl sender, string command)
         {
             switch (command)
             {
                 case "DELETE":
                     {
-                        var sprite = SpritePatternsList.FirstOrDefault(d => d.SpriteData!=null && d.SpriteData.Id == sender.SpriteData.Id);
+                        var sprite = SpritePatternsList.FirstOrDefault(d => d.SpriteData != null && d.SpriteData.Id == sender.SpriteData.Id);
                         if (sprite != null)
                         {
-                        SpriteList_Delete(sprite);
-                        SpriteList_Modified();
+                            SpriteList_Delete(sprite);
+                            SpriteList_Modified(sender.SpriteData);
                         }
                     }
                     break;
                 case "CLONE":
                     SpriteList_Clone(sender.SpriteData);
-                    SpriteList_Modified();
+                    SpriteList_Modified(sender.SpriteData);
                     break;
-                case "UPDATE":
-                    ctrEditor.SpriteData = sender.SpriteData;
-                    SpriteList_Modified();
+                case "REFRESH":
+                    ctrlEditor.SpriteData = sender.SpriteData;
+                    SpriteList_Modified(sender.SpriteData);
+                    if (ctrlEditor.SpriteData.CurrentFrame !=actualFrame)
+                    {
+                        actualFrame = ctrlEditor.SpriteData.CurrentFrame;
+                        if (sldFrame.Maximum < actualFrame)
+                        {
+                            sldFrame.Maximum = actualFrame;
+                        }
+                        sldFrame.Value = actualFrame;
+                        Refresh();
+                    }
                     break;
             }
         }
@@ -347,6 +388,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             SpritePatternsList.Remove(control);
             wpSpriteList.Children.Remove(control);
+            ctrlEditor.SpriteData = null;
+            ctrlPreview.SpriteData = null;
+            ctrlProperties.SpriteData = null;
             control = null;
         }
 
@@ -360,7 +404,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 return;
             }
-            var sd=spriteData.Clonar<Sprite>();
+            var sd = spriteData.Clonar<Sprite>();
             sd.Id = id;
             sd.Name = spriteData.Name + " - copy";
             spc.SpriteData = sd;
@@ -374,13 +418,26 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-        private void SpriteList_Modified()
+        private void SpriteList_Modified(Sprite spriteData)
         {
-            if(!_Modified){
+            if (!_Modified)
+            {
                 _Modified = true;
-                DocumentModified.Invoke(this, EventArgs.Empty);
+                DocumentModified?.Invoke(this, EventArgs.Empty);
+            }
+
+            if (spriteData == null)
+            {
+                return;
+            }
+            var ctrl = SpritePatternsList.FirstOrDefault(d => d.SpriteData.Id == spriteData.Id);
+            if (ctrl != null)
+            {
+                ctrl.SpriteData = spriteData;
+                ctrl.Refresh();
             }
         }
+
         #endregion
 
 
@@ -396,7 +453,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         if (cur != null)
                         {
                             cur.Refresh();
-                            SpriteList_Modified();
+                            SpriteList_Modified(sender.SpriteData);
+                            ctrlProperties.SpriteData = sender.SpriteData;
+                            ctrlPreview.SpriteData = sender.SpriteData;
                         }
                     }
                     break;
@@ -404,6 +463,24 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
         #endregion
+
+
+        #region Main editor
+
+
+        private void Refresh()
+        {
+            txtFrame.Text = "Frame " + actualFrame.ToString();
+            if (ctrlProperties.SpriteData != null)
+            {
+                sldFrame.Maximum = ctrlProperties.SpriteData.Frames;
+            }
+            else
+            {
+                sldFrame.Maximum = 0;
+            }
+            sldFrame.UpdateLayout();
+        }
 
 
         /// <summary>
@@ -422,169 +499,31 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             z = zooms[z - 1];
             txtZoom.Text = "Zoom " + z.ToString() + "x";
-            ctrEditor.Zoom = z;
+            ctrlEditor.Zoom = z;
         }
 
 
-#if NO
-        /// <summary>
-        /// Create patterns
-        /// </summary>
-        public void CreatePatterns()
+        private void SldFrame_PropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
         {
-            if (patterns == null)
+            byte v = (byte)sldFrame.Value;
+            if (ctrlProperties.SpriteData == null || v < 0 || v >= (ctrlProperties.SpriteData.Frames))
             {
-                // Create patterns if not exist
-                patterns = new PatternControl[fileType.NumerOfPatterns];
-                //int x = 0;
-                //int y = 0;
-                for (int n = 0; n < fileType.NumerOfPatterns; n++)
-                {
-                    var ctrl = new PatternControl();
-                    wpPatterns.Children.Add(ctrl);
-                    patterns[n] = ctrl;
-                }
-                patterns[0].IsSelected = true;
+                return;
             }
-
-            // Update patterns
-            for (int n = 0; n < patterns.Length; n++)
+            actualFrame = v;
+            if (ctrlEditor.SpriteData != null)
             {
-                var p = new Pattern();
-                p.Id = n;
-                p.Number = "";
-                switch (fileType.FileType)
-                {
-                    case FileTypes.UDG:
-                        {
-                            var id = n;
-                            p.Number = id.ToString();
-                            var c = Convert.ToChar(n + 65);
-                            p.Name = c.ToString();
-                        }
-                        break;
-                    case FileTypes.Font:
-                        {
-                            var id = n + 32;
-                            p.Number = id.ToString();
-                            var c = Convert.ToChar(n + 32);
-                            p.Name = c.ToString();
-                        }
-                        break;
-                    default:
-                        p.Number = n.ToString();
-                        p.Name = "";
-                        break;
-                }
-                p.Data = ServiceLayer.Binary2PointData(n, fileData, 0, 0);
-                patterns[n].Initialize(p, Pattern_Click);
-                patterns[n].Refresh();
+                ctrlEditor.SpriteData.CurrentFrame = actualFrame;
+                ctrlEditor.Refresh();
             }
-            ctrEditor.Initialize(0, GetPattern, SetPattern);
+            Refresh();
         }
 
-
-        /// <summary>
-        /// Click on the pattern
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        private void Pattern_Click(PatternControl selectedPattern)
-        {
-            foreach (var pattern in patterns)
-            {
-                pattern.IsSelected = false;
-            }
-            selectedPattern.IsSelected = true;
-            ctrEditor.IdPattern = selectedPattern.Pattern.Id;
-        }
-
-
-        /// <summary>
-        /// Height changed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TxtEditorHeight_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
-        {
-            int h = txtEditorHeight.Text.ToInteger();
-            ctrEditor.ItemsHeight = h;
-        }
-
-
-        /// <summary>
-        /// Width changed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TxtEditorWidth_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
-        {
-            int w = txtEditorWidth.Text.ToInteger();
-            ctrEditor.ItemsWidth = w;
-        }
-
-
-
-        /// <summary>
-        /// Get pattern from his id
-        /// </summary>
-        /// <param name="id">Id of the pattern to recover</param>
-        /// <returns>Pattern or null if no pattern</returns>
-        private Pattern GetPattern(int id)
-        {
-            var pat = patterns.FirstOrDefault(d => d.Pattern.Id == id);
-            if (pat != null)
-            {
-                return pat.Pattern;
-            }
-            return null;
-        }
-
-
-        /// <summary>
-        /// Set pattern
-        /// </summary>
-        /// <param name="id">Id of the pattern to set</param>
-        /// <param name="pattern">Pattern to set</param>
-        private void SetPattern(int id, Pattern pattern)
-        {
-            if (!_Modified)
-            {
-                _Modified = true;
-                DocumentModified?.Invoke(this, EventArgs.Empty);
-            }
-
-            var pat = patterns.FirstOrDefault(d => d.Pattern.Id == pattern.Id);
-            if (pat != null)
-            {
-                pat.Pattern = pattern;
-                pat.Refresh();
-            }
-        }
-
-#endif
-
-        /// <summary>
-        /// Save the actual document to disk
-        /// </summary>
-        /// <returns>True if ook or false if error</returns>
-        public bool SaveDocument()
-        {
-            // TODO: Save document
-            //if (!ServiceLayer.Files_Save_GDUorFont(fileType, patterns?.Select(d => d.Pattern)))
-            //{
-            //    return false;
-            //};
-
-            //_Modified = false;
-            //DocumentSaved?.Invoke(this, EventArgs.Empty);
-            return true;
-        }
+        #endregion
 
 
         #region ToolBar
 
-#if NO
         /// <summary>
         /// Clear click
         /// </summary>
@@ -592,7 +531,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnClear_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.Clear();
+            this.ctrlEditor.Clear();
         }
 
         /// <summary>
@@ -602,14 +541,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnCut_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.Cut();
+            this.ctrlEditor.Cut();
         }
 
 
         //Copy click
         private void BtnCopy_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.Copy();
+            this.ctrlEditor.Copy();
         }
 
 
@@ -620,7 +559,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnPaste_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.Paste();
+            this.ctrlEditor.Paste();
         }
 
 
@@ -631,7 +570,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnHMirror_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.HorizontalMirror();
+            this.ctrlEditor.HorizontalMirror();
         }
 
 
@@ -642,7 +581,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnVMirror_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.VerticalMirror();
+            this.ctrlEditor.VerticalMirror();
         }
 
 
@@ -653,7 +592,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnRotateLeft_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.RotateLeft();
+            this.ctrlEditor.RotateLeft();
         }
 
 
@@ -664,7 +603,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnRotateRight_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.RotateRight();
+            this.ctrlEditor.RotateRight();
         }
 
 
@@ -675,7 +614,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnShiftUp_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.ShiftUp();
+            this.ctrlEditor.ShiftUp();
         }
 
 
@@ -686,7 +625,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnShiftRight_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.ShiftRight();
+            this.ctrlEditor.ShiftRight();
         }
 
 
@@ -697,7 +636,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnShiftDown_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.ShiftDown();
+            this.ctrlEditor.ShiftDown();
         }
 
 
@@ -708,7 +647,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnShiftLeft_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.ShiftLeft();
+            this.ctrlEditor.ShiftLeft();
         }
 
 
@@ -719,7 +658,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnMoveUp_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.MoveUp();
+            this.ctrlEditor.MoveUp();
         }
 
 
@@ -730,7 +669,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnMoveRight_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.MoveRight();
+            this.ctrlEditor.MoveRight();
         }
 
 
@@ -741,7 +680,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnMoveDown_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.MoveDown();
+            this.ctrlEditor.MoveDown();
         }
 
 
@@ -752,7 +691,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnMoveLeft_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.MoveLeft();
+            this.ctrlEditor.MoveLeft();
         }
 
 
@@ -763,7 +702,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnInvert_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.Invert();
+            this.ctrlEditor.Invert();
         }
 
 
@@ -774,18 +713,19 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="e"></param>
         private void BtnMask_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            this.ctrEditor.Mask();
+            this.ctrlEditor.Mask();
         }
 
 
         private void BtnExport_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             var dlg = new FontGDUExportDialog();
-            dlg.Initialize(fileType, patterns.Select(d=>d.Pattern).ToArray());
-            dlg.ShowDialog(this.VisualRoot as Window);
+            // TODO: Export...
+            //dlg.Initialize(fileType, patterns.Select(d=>d.Pattern).ToArray());
+            //dlg.ShowDialog(this.VisualRoot as Window);
         }
-#endif
-        #endregion
+
+       #endregion
 
 
     }

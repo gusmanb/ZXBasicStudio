@@ -4,8 +4,13 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Xml.Schema;
+using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
+using ZXBasicStudio.Extensions;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -25,7 +30,19 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             set
             {
                 _SpriteData = value;
-                Refresh();
+                if (_SpriteData == null)
+                {
+                    lastId = null;
+                }
+                else
+                {
+                    if (lastId != _SpriteData.Id)
+                    {
+                        _SpriteData.CurrentFrame = 0;
+                        lastId = _SpriteData.Id;
+                    }
+                }
+                Refresh(true);
             }
         }
 
@@ -42,7 +59,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             set
             {
                 _Zoom = value;
-                Refresh();
+                Refresh(true);
             }
         }
 
@@ -64,7 +81,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private Sprite _SpriteData = null;
         private int _Zoom = 24;
-        private Action<SpritePatternEditor,string> CallBackCommand = null;
+        private Action<SpritePatternEditor, string> CallBackCommand = null;
+        private int? lastId = null;
 
         /// <summary>
         /// True when mouse left button is pressed
@@ -104,7 +122,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         /// <param name="callBackCommand">CallBack for commands: "REFRESH"</param>
         /// <returns>True if OK or False if error</returns>
-        public bool Initialize(Action<SpritePatternEditor,string> callBackCommand)
+        public bool Initialize(Action<SpritePatternEditor, string> callBackCommand)
         {
             this.CallBackCommand = callBackCommand;
             return true;
@@ -114,8 +132,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <summary>
         /// Refresh the draw area
         /// </summary>
-        public void Refresh()
-        {
+        public void Refresh(bool callBack = false)
+        {            
             cnvEditor.Children.Clear();
             if (SpriteData == null)
             {
@@ -150,13 +168,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 }
             }
 
-            for (int oy = 0; oy < SpriteData.Height; oy+=8)
+            for (int oy = 0; oy < SpriteData.Height; oy += 8)
             {
-                for (int ox = 0; ox < SpriteData.Width; ox+=8)
+                for (int ox = 0; ox < SpriteData.Width; ox += 8)
                 {
                     var r = new Rectangle();
-                    int mx = (ox+8) > SpriteData.Width ? (SpriteData.Width %8) : 8;
-                    int my = (oy+8) > SpriteData.Height ? (SpriteData.Height %8) : 8;
+                    int mx = (ox + 8) > SpriteData.Width ? (SpriteData.Width % 8) : 8;
+                    int my = (oy + 8) > SpriteData.Height ? (SpriteData.Height % 8) : 8;
                     r.Width = (_Zoom * mx) + 1;
                     r.Height = (_Zoom * my) + 1;
                     r.Stroke = Brushes.Red;
@@ -169,6 +187,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
             cnvEditor.Width = (_Zoom * SpriteData.Width);
             cnvEditor.Height = (_Zoom * SpriteData.Height);
+
+            if (callBack)
+            {
+                CallBackCommand?.Invoke(this, "REFRESH");
+            }
         }
 
         #endregion
@@ -256,19 +279,19 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             x = x / _Zoom;
             y = y / _Zoom;
 
-            if (x < 0 || y < 0 || x>=SpriteData.Width || y>=SpriteData.Height)
+            if (x < 0 || y < 0 || x >= SpriteData.Width || y >= SpriteData.Height)
             {
                 return;
             }
 
-            var p = SpriteData.Patterns[SpriteData.CurrentFrame].Data.FirstOrDefault(d=>d.X==x && d.Y==y);
+            var p = SpriteData.Patterns[SpriteData.CurrentFrame].Data.FirstOrDefault(d => d.X == x && d.Y == y);
             if (p == null)
             {
                 return;
             }
 
             p.ColorIndex = value;
-            Refresh();
+            Refresh(false);
 
             if (tmr == null)
             {
@@ -277,13 +300,619 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 tmr.Interval = TimeSpan.FromMilliseconds(250);
             }
             tmr.Stop();
-            tmr.Start();            
+            tmr.Start();
         }
 
         private void Tmr_Tick(object? sender, EventArgs e)
         {
-            CallBackCommand?.Invoke(this,"REFRESH");
+            Refresh(true);
             tmr.Stop();
+        }
+
+        #endregion
+
+
+        #region Icon actions
+
+
+        /// <summary>
+        /// Clear sprite
+        /// </summary>
+        public void Clear()
+        {
+            foreach (var p in SpriteData.Patterns[SpriteData.CurrentFrame].Data)
+            {
+                p.ColorIndex = SecondaryColorIndex;
+            }
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Cut patterns to clipboard
+        /// </summary>
+        public void Cut()
+        {
+            Copy();
+            Clear();
+        }
+
+
+        /// <summary>
+        /// Copy patterns to clipboard
+        /// </summary>
+        public void Copy()
+        {
+            var patterns = new Pattern[1] { SpriteData.Patterns[SpriteData.CurrentFrame] };
+            TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(patterns.Serializar()).Wait();
+        }
+
+
+        /// <summary>
+        /// Paste patterns from clipboard
+        /// </summary>
+        public async void Paste()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var cbData = await TopLevel.GetTopLevel(this).Clipboard.GetTextAsync();
+            if (string.IsNullOrEmpty(cbData))
+            {
+                return;
+            }
+            var cbPatterns = cbData.Deserializar<Pattern[]>();
+            if (cbPatterns == null)
+            {
+                return;
+            }
+
+            if (cbPatterns.Length == 1)
+            {
+                SpriteData.Patterns[SpriteData.CurrentFrame].Data = cbPatterns[0].Data;
+            }
+            else
+            {
+                // Create an empty pattern
+                var pat2 = pattern.Clonar<Pattern>();
+                {
+                    var lstPat2 = new List<PointData>();
+                    for (int y = 0; y < SpriteData.Height; y++)
+                    {
+                        for (int x = 0; x < SpriteData.Width; x++)
+                        {
+                            lstPat2.Add(new PointData()
+                            {
+                                ColorIndex = 0,
+                                X = x,
+                                Y = y
+                            });
+                        }
+                    }
+                    pat2.Data = lstPat2.ToArray();
+                }
+
+                int ox = 0;
+                int oy = 0;
+                for (int n = 0; n < cbPatterns.Length; n++)
+                {
+                    for (int py = 0; py < 8; py++)
+                    {
+                        for (int px = 0; px < 8; px++)
+                        {
+                            var po = cbPatterns[n].Data.FirstOrDefault(d => d.X == px && d.Y == py);
+                            if (po != null)
+                            {
+                                var pd = pat2.Data.FirstOrDefault(d => d.X == px + ox && d.Y == py + oy);
+                                if (pd != null)
+                                {
+                                    pd.ColorIndex = po.ColorIndex;
+                                }
+                            }
+                        }
+                    }
+                    ox += 8;
+                    if (ox >= SpriteData.Width)
+                    {
+                        ox = 0;
+                        oy += 8;
+                    }
+                }
+                SpriteData.Patterns[SpriteData.CurrentFrame].Data = pat2.Data;
+            }
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Horizontal mirror of selected patterns
+        /// </summary>
+        public void HorizontalMirror()
+        {
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            var pat1 = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pat2 = pat1.Clonar<Pattern>();
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pat1);
+                    SetPointValue(maxWidth - x - 1, y, pd1, ref pat2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pat2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Vertical mirror of selected patterns
+        /// </summary>
+        public void VerticalMirror()
+        {
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            var pat1 = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pat2 = pat1.Clonar<Pattern>();
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pat1);
+                    SetPointValue(x, maxHeight - y - 1, pd1, ref pat2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pat2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Rotate left of selected patterns
+        /// </summary>
+        public void RotateLeft()
+        {
+            if (SpriteData.Width != SpriteData.Height)
+            {
+                Window.GetTopLevel(this)?.ShowError("Can't do this!", "Only square graphics can be rotated (with the same width as height).");
+                return;
+            }
+
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    SetPointValue(y, maxWidth - x - 1, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Rotate right of selected patterns
+        /// </summary>
+        public void RotateRight()
+        {
+            if (SpriteData.Width != SpriteData.Height)
+            {
+                Window.GetTopLevel(this)?.ShowError("Can't do this!", "Only square graphics can be rotated (with the same width as height).");
+                return;
+            }
+
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    SetPointValue(maxHeight - y - 1, x, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Move up and put the disappearing pixels at the bottom.
+        /// </summary>
+        public void ShiftUp()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    int y2 = y - 1;
+                    if (y2 < 0)
+                    {
+                        y2 = maxHeight - 1;
+                    }
+                    SetPointValue(x, y2, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Move right and put the disappearing pixels at the left.
+        /// </summary>
+        public void ShiftRight()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    int x2 = x + 1;
+                    if (x2 >= maxWidth)
+                    {
+                        x2 = 0;
+                    }
+                    SetPointValue(x2, y, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Move down and put the disappearing pixels at the top.
+        /// </summary>
+        public void ShiftDown()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    int y2 = y + 1;
+                    if (y2 >= maxHeight)
+                    {
+                        y2 = 0;
+                    }
+                    SetPointValue(x, y2, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Move left and put the disappearing pixels at the right.
+        /// </summary>
+        public void ShiftLeft()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    int x2 = x - 1;
+                    if (x2 < 0)
+                    {
+                        x2 = maxWidth - 1;
+                    }
+                    SetPointValue(x2, y, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Move up
+        /// </summary>
+        public void MoveUp()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    int y2 = y - 1;
+                    if (y2 < 0)
+                    {
+                        y2 = maxHeight - 1;
+                        pd1.ColorIndex = 0;
+                    }
+                    SetPointValue(x, y2, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Move rigth
+        /// </summary>
+        public void MoveRight()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    int x2 = x + 1;
+                    if (x2 >= maxWidth)
+                    {
+                        x2 = 0;
+                        pd1.ColorIndex = 0;
+                    }
+                    SetPointValue(x2, y, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Move down
+        /// </summary>
+        public void MoveDown()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    int y2 = y + 1;
+                    if (y2 >= maxHeight)
+                    {
+                        y2 = 0;
+                        pd1.ColorIndex = 0;
+                    }
+                    SetPointValue(x, y2, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Move left
+        /// </summary>
+        public void MoveLeft()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    int x2 = x - 1;
+                    if (x2 < 0)
+                    {
+                        x2 = maxWidth - 1;
+                        pd1.ColorIndex = 0;
+                    }
+                    SetPointValue(x2, y, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Invert pixels
+        /// </summary>
+        public void Invert()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            var pattern2 = pattern.Clonar<Pattern>();
+
+            int maxWidth = SpriteData.Width;
+            int maxHeight = SpriteData.Height;
+            for (int y = 0; y < maxHeight; y++)
+            {
+                for (int x = 0; x < maxWidth; x++)
+                {
+                    var pd1 = GetPointValue(x, y, pattern);
+                    if (pd1.ColorIndex == 0)
+                    {
+                        pd1.ColorIndex = 1;
+                    }
+                    else
+                    {
+                        pd1.ColorIndex = 0;
+                    }
+                    SetPointValue(x, y, pd1, ref pattern2);
+                }
+            }
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Create a mask
+        /// </summary>
+        public void Mask()
+        {
+            var pattern = SpriteData.Patterns[SpriteData.CurrentFrame];
+            int maxX = (SpriteData.Width) - 1;
+            int maxY = (SpriteData.Height) - 1;
+
+            var pattern2 = new Pattern()
+            {
+                Id = pattern.Id,
+                Name = pattern.Name,
+                Number = pattern.Number
+            };
+            var pdLst = new List<PointData>();
+            for (int y = 0; y <= maxY; y++)
+            {
+                for (int x = 0; x <= maxX; x++)
+                {
+                    var pd = new PointData()
+                    {
+                        ColorIndex = 0,
+                        X = x,
+                        Y = y
+                    };
+                    pdLst.Add(pd);
+                }
+            }
+            pattern2.Data = pdLst.ToArray();
+
+            _Mask(0, 0, ref pattern, ref pattern2);
+            _Mask(maxX, 0, ref pattern, ref pattern2);
+            _Mask(0, maxY, ref pattern, ref pattern2);
+            _Mask(maxX, maxY, ref pattern, ref pattern2);
+            SpriteData.Patterns[SpriteData.CurrentFrame] = pattern2;
+            Refresh(true);
+        }
+
+
+        /// <summary>
+        /// Create a mask (fills pattern2 from pattern1 data) called recursively
+        /// </summary>
+        /// <param name="x">Coord x</param>
+        /// <param name="y">Coord Y</param>
+        /// <param name="pattern1">Original patterns</param>
+        /// <param name="pattern2">Void pattens</param>
+        private void _Mask(int x, int y, ref Pattern pattern1, ref Pattern pattern2)
+        {
+            var p1 = GetPointValue(x, y, pattern1);
+            if (p1 == null || p1.ColorIndex != 0)
+            {
+                return;
+            }
+            var p2 = GetPointValue(x, y, pattern2);
+            if (p2 == null || p2.ColorIndex != 0)
+            {
+                return;
+            }
+            p2.ColorIndex = 1;
+            SetPointValue(x, y, p2, ref pattern2);
+
+            if (x > 1)
+            {
+                _Mask(x - 1, y, ref pattern1, ref pattern2);
+            }
+            if (x < (SpriteData.Width) - 1)
+            {
+                _Mask(x + 1, y, ref pattern1, ref pattern2);
+            }
+            if (y > 1)
+            {
+                _Mask(x, y - 1, ref pattern1, ref pattern2);
+            }
+            if (y < (SpriteData.Height) - 1)
+            {
+                _Mask(x, y + 1, ref pattern1, ref pattern2);
+            }
+        }
+
+
+        /// <summary>
+        /// Get a point (pixel) from the selected pattern
+        /// </summary>
+        /// <param name="x">X coord</param>
+        /// <param name="y">Y coord</param>
+        /// <param name="pattern">Pattern to use</param>
+        /// <returns>Point data or null if no data</returns>
+        private PointData GetPointValue(int x, int y, Pattern pattern)
+        {
+            var p = pattern.Data.FirstOrDefault(d => d.X == x && d.Y == y);
+            if (p == null)
+            {
+                p = new PointData()
+                {
+                    ColorIndex = SecondaryColorIndex,
+                    X = x,
+                    Y = y
+                };
+            }
+            return p;
+        }
+
+
+        /// <summary>
+        /// Set a point (pixel) from the selected pattern
+        /// </summary>
+        /// <param name="x">X coord</param>
+        /// <param name="y">Y coord</param>
+        /// <param name="pointData">PointData to set</param>
+        /// <param name="pattern">Pattern to use</param>
+        private void SetPointValue(int x, int y, PointData pointData, ref Pattern pattern)
+        {
+            var p = pattern.Data.FirstOrDefault(d => d.X == x && d.Y == y);
+            if (p == null)
+            {
+                var data = pattern.Data.ToList();
+                p = new PointData()
+                {
+                    ColorIndex = pointData.ColorIndex,
+                    X = x,
+                    Y = y
+                };
+                data.Add(p);
+                pattern.Data = data.ToArray();
+            }
+            else
+            {
+                p.ColorIndex = pointData.ColorIndex;
+            }
         }
 
         #endregion
