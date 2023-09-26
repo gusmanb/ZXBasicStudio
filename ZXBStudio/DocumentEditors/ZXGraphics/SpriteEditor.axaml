@@ -133,7 +133,7 @@
           <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
           <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Export pattern">
-            <svg:Svg Path="/Svg/Export.svg"></svg:Svg>
+            <svg:Svg Path="/Svg/buildexport.svg"></svg:Svg>
           </Button>
         </WrapPanel>
 

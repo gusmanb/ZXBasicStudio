@@ -10,7 +10,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>zxbs.ico</ApplicationIcon>
-    <Version>0.1.23.0920</Version>
+    <Version>0.1.23.0923</Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
@@ -168,6 +168,7 @@
     <None Remove="Svg\rectangle-list-solid.svg" />
     <None Remove="Svg\rectangle-xmark-solid.svg" />
     <None Remove="Svg\scissors-solid.svg" />
+    <None Remove="Svg\Seal.svg" />
     <None Remove="Svg\square-minus-solid.svg" />
     <None Remove="Svg\square-plus-solid.svg" />
     <None Remove="Svg\stop-solid.svg" />
@@ -324,6 +325,7 @@
     <AvaloniaResource Include="Svg\minus-solid.svg" />
     <AvaloniaResource Include="Svg\MoveRight.svg" />
     <AvaloniaResource Include="Svg\Invert.svg" />
+    <AvaloniaResource Include="Svg\Seal.svg" />
     <AvaloniaResource Include="Svg\ShiftRight.svg" />
     <AvaloniaResource Include="Svg\RotateRight.svg" />
     <AvaloniaResource Include="Svg\RotateLeft.svg" />
@@ -494,6 +496,9 @@
     </Compile>
     <Compile Update="DocumentEditors\NextDows\ZXFormsEditor.axaml.cs">
       <DependentUpon>ZXFormsEditor.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpriteExportDialog.axaml.cs">
+      <DependentUpon>SpriteExportDialog.axaml</DependentUpon>
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\SpritePatternEditor.axaml.cs">
       <DependentUpon>SpritePatternEditor.axaml</DependentUpon>

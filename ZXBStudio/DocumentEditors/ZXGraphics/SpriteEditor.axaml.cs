@@ -181,7 +181,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         public SpriteEditor(string fileName)
         {
             InitializeComponent();
-            new Thread(()=>Initialize(fileName)).Start();
+            new Thread(() => Initialize(fileName)).Start();
         }
 
 
@@ -322,7 +322,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 case "REFRESH":
                     ctrlEditor.SpriteData = sender.SpriteData;
                     SpriteList_Modified(sender.SpriteData);
-                    if (ctrlEditor.SpriteData.CurrentFrame !=actualFrame)
+                    if (ctrlEditor.SpriteData.CurrentFrame != actualFrame)
                     {
                         actualFrame = ctrlEditor.SpriteData.CurrentFrame;
                         if (sldFrame.Maximum < actualFrame)
@@ -354,6 +354,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     {
                         spc.SpriteData.Name = "Sprite " + spc.SpriteData.Id.ToString();
                     }
+                    spc.SpriteData.Export = true;
                     selectedSprite = spc;
                     break;
                 }
@@ -719,13 +720,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void BtnExport_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            var dlg = new FontGDUExportDialog();
-            // TODO: Export...
-            //dlg.Initialize(fileType, patterns.Select(d=>d.Pattern).ToArray());
-            //dlg.ShowDialog(this.VisualRoot as Window);
+            var dlg = new SpriteExportDialog();
+            dlg.Initialize(FileName, SpritePatternsList.Select(d=>d.SpriteData));
+            dlg.ShowDialog(this.VisualRoot as Window);
         }
 
-       #endregion
+        #endregion
 
 
     }

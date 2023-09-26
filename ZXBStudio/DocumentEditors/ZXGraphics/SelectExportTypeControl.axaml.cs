@@ -43,10 +43,43 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         public SelectExportTypeControl()
         {
             InitializeComponent();
-            InitializeGUI();
         }
 
-        void InitializeGUI()
+
+        public bool InitializeSprite()
+        {
+            ExportTypesList = new List<ExportTypeDescrioptionItem>();
+            ExportTypesList.Add(new ExportTypeDescrioptionItem()
+            {
+                Description = "Boriel Basic's PutChars embeded library.",
+                ExportType = ExportTypes.PutChars,
+                Image = "/Svg/Seal.svg",
+                Name = "PutChars"
+            });
+            ExportTypesList.Add(new ExportTypeDescrioptionItem()
+            {
+                Description = "Dr. Gusman GuSprites library.",
+                ExportType = ExportTypes.GUSprite,
+                Image = "/Svg/binary.svg",
+                Name = "GuSprites"
+            });
+            ExportTypesList.Add(new ExportTypeDescrioptionItem()
+            {
+                Description = "FourSpriter from Mojon Twins allow to draw up to four sprites of 16x16 pixels with background preservation.",
+                ExportType = ExportTypes.FourSprites,
+                Image = "/Svg/binary.svg",
+                Name = "FourSpriter"
+            });
+
+            lstOptions.ItemsSource = ExportTypesList;
+
+            lstOptions.SelectionChanged += LstOptions_SelectionChanged;
+
+            return true;
+        }
+
+
+        public bool InitializeFontGDU()
         {
             ExportTypesList = new List<ExportTypeDescrioptionItem>();
             ExportTypesList.Add(new ExportTypeDescrioptionItem()
@@ -88,6 +121,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             lstOptions.ItemsSource = ExportTypesList;
 
             lstOptions.SelectionChanged += LstOptions_SelectionChanged;
+
+            return true;
         }
 
         public bool Initialize(Action<ExportTypes> callbackSelectionChanged)

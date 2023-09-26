@@ -40,5 +40,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
         /// 0=0, 1=1, 2=From project settings
         /// </summary>
         public int ArrayBase { get; set; }
+
+        /// <summary>
+        /// Include size at the beginning of definition
+        /// </summary>
+        public bool IncludeSize { get; set; }
+        /// <summary>
+        /// Include attributes at the end of definition
+        /// </summary>
+        public bool IncludeAttr { get; set; }
     }
 }

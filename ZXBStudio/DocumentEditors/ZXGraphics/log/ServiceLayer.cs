@@ -12,6 +12,8 @@ using ZXBasicStudio.Common.TAPTools;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
+using System.Drawing.Imaging;
+using Avalonia.Metadata;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
@@ -232,6 +234,50 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
 
         /// <summary>
+        /// Creates the binary data for a file of type sprite or tile de arriba hacia abajo
+        /// </summary>
+        /// <param name="fileType">File information</param>
+        /// <param name="sprite">Sprite or tile data</param>
+        /// <returns>Arrfay of byte with the data ready to save on disk</returns>
+        public static byte[] Files_CreateBinDataUpDown(Pattern pattern, int width, int height, ExportConfig export)
+        {
+            try
+            {
+                List<byte> data = new List<byte>();
+
+                for (int column = 0; column < width; column++)
+                {
+                    int xx = column * 8;
+                    for (int row = 0; row < height; row++)
+                    {
+                        int b = 0;
+                        for (int x = 0; x < 8; x++)
+                        {
+                            var p = pattern.Data.FirstOrDefault(d => d.Y == row && d.X == (xx + x));
+                            if (p == null)
+                            {
+                                continue;
+                            }
+                            if (p.ColorIndex == 1)
+                            {
+                                b = b | (int)Math.Pow(2, (7 - x));
+                            }
+                        }
+                        data.Add((byte)b);
+                    }
+                }
+
+                return data.ToArray();
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR generating binary data: " + ex.Message + ex.StackTrace;
+                return null;
+            }
+        }
+
+
+        /// <summary>
         /// Save binary data to a file
         /// </summary>
         /// <param name="fileName">File name with full path</param>
@@ -352,7 +398,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         /// </summary>
         /// <param name="fileName">Document file name</param>
         /// <returns>The new export configuration</returns>
-        public static ExportConfig Export_GetDefaultConfig(string fileName)
+        public static ExportConfig Export_FontGDU_GetDefaultConfig(string fileName)
         {
             var docType = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument));
             var exportConfig = new ExportConfig();
@@ -365,6 +411,25 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             exportConfig.ZXFileName = exportConfig.LabelName;
             return exportConfig;
         }
+
+
+        /// <summary>
+        /// Creates the default export config for an UDG/Font document
+        /// </summary>
+        /// <param name="fileName">Document file name</param>
+        /// <returns>The new export configuration</returns>
+        public static ExportConfig Export_Sprite_GetDefaultConfig(string fileName)
+        {
+            var docType = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument));
+            var exportConfig = new ExportConfig();
+            exportConfig.ArrayBase = 0;
+            exportConfig.AutoExport = true;
+            exportConfig.ExportFilePath = fileName + docType.DocumentExtensions.First();
+            exportConfig.ExportType = ExportTypes.PutChars;
+            exportConfig.LabelName = Path.GetFileNameWithoutExtension(fileName).Replace(" ", "_") + "_";
+            return exportConfig;
+        }
+
 
         public static bool Export_SetConfigFile(string fileName, ExportConfig exportConfig)
         {

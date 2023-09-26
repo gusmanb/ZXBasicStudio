@@ -20,14 +20,18 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
-    public partial class FontGDUExportDialog : Window
+    public partial class SpriteExportDialog : Window
     {
+        private string fileName = "";
+        private IEnumerable<Sprite> sprites = null;
+
+
         private FileTypeConfig fileType = null;
         private Pattern[] patterns = null;
         private ExportConfig exportConfig = null;
 
 
-        public FontGDUExportDialog()
+        public SpriteExportDialog()
         {
             InitializeComponent();
 
@@ -40,26 +44,24 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-        public bool Initialize(FileTypeConfig fileType, Pattern[] patterns)
+        public bool Initialize(string fileName, IEnumerable<Sprite> spritesData)
         {
-            this.fileType = fileType;
-            this.patterns = patterns;
+            this.fileName = fileName;
+            this.sprites = spritesData;
 
             this.cmbSelectExportType.Initialize(ExportType_Changed);
-            exportConfig = ServiceLayer.Export_GetConfigFile(fileType.FileName + ".zbs");
+            exportConfig = ServiceLayer.Export_GetConfigFile(fileName + ".zbs");
             if (exportConfig == null)
-                exportConfig = ServiceLayer.Export_FontGDU_GetDefaultConfig(fileType.FileName);
+            {
+                exportConfig = ServiceLayer.Export_Sprite_GetDefaultConfig(fileName);
+            }
 
-            cmbSelectExportType.InitializeFontGDU();
-
-            txtLabelName.Text = exportConfig.LabelName;
-            txtMemoryAddr.Text = exportConfig.ZXAddress.ToString();
+            cmbSelectExportType.InitializeSprite();
             txtOutputFile.Text = exportConfig.ExportFilePath;
-            txtZXFile.Text = exportConfig.ZXFileName;
+            txtLabelName.Text = exportConfig.LabelName;
             chkAuto.IsChecked = exportConfig.AutoExport;
             cmbSelectExportType.ExportType = exportConfig.ExportType;
             cmbArrayBase.SelectedIndex = exportConfig.ArrayBase.ToInteger();
-
             return true;
         }
 
@@ -74,70 +76,35 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             chkAuto.IsVisible = true;
 
-            lblOutputFile.IsVisible = false;
-            txtOutputFile.IsVisible = false;
-            btnOutputFile.IsVisible = false;
+            lblOutputFile.IsVisible = true;
+            txtOutputFile.IsVisible = true;
+            btnOutputFile.IsVisible = true;
 
-            lblLabelName.IsVisible = false;
-            txtLabelName.IsVisible = false;
+            lblLabelName.IsVisible = true;
+            txtLabelName.IsVisible = true;
 
-            lblZXFile.IsVisible = false;
-            txtZXFile.IsVisible = false;
+            lblArrayBase.IsVisible = true;
+            cmbArrayBase.IsVisible = true;
 
-            lblMemoryAddr.IsVisible = false;
-            txtMemoryAddr.IsVisible = false;
-
-            lblArrayBase.IsVisible = false;
-            cmbArrayBase.IsVisible = false;
+            bool canExport = false;
+            if (sprites == null || sprites.Where(d => d != null && d.Export).Count() == 0)
+            {
+                txtError.IsVisible = true;
+            }
+            else
+            {
+                canExport = true;
+                txtError.IsVisible = false;
+            }
 
             switch (exportType)
             {
-                case ExportTypes.Bin:
-                    lblOutputFile.IsVisible = true;
-                    txtOutputFile.IsVisible = true;
-                    btnOutputFile.IsVisible = true;
-                    CreateExportPath(".bin");
-                    CreateExample_BIN();
-                    break;
-                case ExportTypes.Tap:
-                    lblOutputFile.IsVisible = true;
-                    txtOutputFile.IsVisible = true;
-                    btnOutputFile.IsVisible = true;
-                    lblZXFile.IsVisible = true;
-                    txtZXFile.IsVisible = true;
-                    lblMemoryAddr.IsVisible = true;
-                    txtMemoryAddr.IsVisible = true;
-                    CreateExportPath(".tap");
-                    CreateExample_TAP();
-                    break;
-                case ExportTypes.Asm:
-                    lblOutputFile.IsVisible = true;
-                    txtOutputFile.IsVisible = true;
-                    btnOutputFile.IsVisible = true;
-                    lblLabelName.IsVisible = true;
-                    txtLabelName.IsVisible = true;
-                    CreateExportPath(ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument)).DocumentExtensions.First());
-                    CreateExample_ASM();
-                    break;
-                case ExportTypes.Dim:
-                    lblOutputFile.IsVisible = true;
-                    txtOutputFile.IsVisible = true;
-                    btnOutputFile.IsVisible = true;
-                    lblLabelName.IsVisible = true;
-                    txtLabelName.IsVisible = true;
-                    lblArrayBase.IsVisible = true;
-                    cmbArrayBase.IsVisible = true;
-                    CreateExportPath(ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument)).DocumentExtensions.First());
-                    CreateExample_DIM();
-                    break;
-                case ExportTypes.Data:
-                    lblOutputFile.IsVisible = true;
-                    txtOutputFile.IsVisible = true;
-                    btnOutputFile.IsVisible = true;
-                    lblLabelName.IsVisible = true;
-                    txtLabelName.IsVisible = true;
-                    CreateExportPath(ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument)).DocumentExtensions.First());
-                    CreateExample_DATA();
+                case ExportTypes.PutChars:
+                    CreateExportPath(".bas");
+                    if (canExport)
+                    {
+                        CreateExample_PutChars();
+                    }
                     break;
                 default:
                     grdOptions.IsVisible = false;
@@ -157,7 +124,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 {
                     spName = spName.Substring(0, 10);
                 }
-                txtZXFile.Text = spName;
             }
         }
 
@@ -166,6 +132,55 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
 
         #region Examples
+
+        private void GetConfigFromUI()
+        {
+            if (exportConfig == null)
+            {
+                exportConfig = new ExportConfig();
+                exportConfig.ArrayBase = cmbArrayBase.SelectedIndex.ToInteger();
+                exportConfig.AutoExport = chkAuto.IsChecked == true;
+                exportConfig.ExportFilePath = txtOutputFile.Text.ToStringNoNull();
+                exportConfig.ExportType = cmbSelectExportType.ExportType;
+                exportConfig.LabelName = txtLabelName.Text.ToStringNoNull();
+                exportConfig.ZXAddress = 0;
+                exportConfig.ZXFileName = "";
+            }
+        }
+
+        private void CreateExample_PutChars()
+        {
+            if (sprites == null || sprites.Count() == 0)
+            {
+                txtCode.Text = "";
+            }
+
+            GetConfigFromUI();
+            var sb = new StringBuilder();
+            sb.AppendLine("'- Includes -----------------------------------------------");
+            sb.AppendLine("#INCLUDE <putchars.bas>");
+            sb.AppendLine("");
+            sb.AppendLine(ExportManager.Export_Sprite_PutChars(txtOutputFile.Text, sprites, exportConfig));
+            sb.AppendLine("");
+            sb.AppendLine("'- Draw sprite --------------------------------------------");
+
+            var sprite = sprites.ElementAt(0);
+            sb.AppendLine(string.Format(
+                "putChars(10,5,{0},{1},@{2}{3}({4}))",
+                sprite.Width / 8,
+                sprite.Height / 8,
+                exportConfig.LabelName,
+                sprite.Name.Replace(" ", "_"),
+                sprite.Frames == 1 ? "0" : "0,0"));
+            sb.AppendLine("");
+
+            txtCode.Text = sb.ToString();
+        }
+
+        #endregion
+
+
+        #region OLD Examples
 
         private void CreateExample_BIN()
         {
@@ -357,8 +372,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             exportConfig.AutoExport = chkAuto.IsChecked.ToBoolean();
             exportConfig.ExportFilePath = txtOutputFile.Text;
             exportConfig.LabelName = txtLabelName.Text;
-            exportConfig.ZXAddress = txtMemoryAddr.Text.ToInteger();
-            exportConfig.ZXFileName = txtZXFile.Text;
         }
 
         #endregion

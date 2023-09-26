@@ -37,7 +37,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
 
                 File.Create(Path).Dispose();
 
-                var config = ServiceLayer.Export_GetDefaultConfig(Path);
+                var config = ServiceLayer.Export_FontGDU_GetDefaultConfig(Path);
                 if (!ServiceLayer.Files_SaveFileString(Path + ".zbs", JsonConvert.SerializeObject(config)))
                 {
                     OutputLog.WriteLine(ServiceLayer.LastError);

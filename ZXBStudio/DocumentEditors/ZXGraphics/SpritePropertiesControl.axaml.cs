@@ -91,12 +91,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnClone.Tapped += BtnClone_Tapped;
             btnDelete.Tapped += BtnDelete_Tapped;
 
-            txtFrames.ValueChanged += TxtFrames_ValueChanged;
-            txtHeight.ValueChanged += TxtHeight_ValueChanged;
             txtName.TextChanged += TxtName_TextChanged;
-            txtWidth.ValueChanged += TxtWidth_ValueChanged;
-            chkMasked.IsCheckedChanged += ChkMasked_IsCheckedChanged;
             cmbMode.SelectionChanged += CmbMode_SelectionChanged;
+            txtWidth.ValueChanged += TxtWidth_ValueChanged;
+            txtHeight.ValueChanged += TxtHeight_ValueChanged;
+            txtFrames.ValueChanged += TxtFrames_ValueChanged;
+            chkMasked.IsCheckedChanged += ChkMasked_IsCheckedChanged;
+            chkExport.IsCheckedChanged += ChkExport_IsCheckedChanged;            
 
             _SettingsChanged = false;
             newSprite = true;
@@ -105,7 +106,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             return true;
         }
-
+        
 
         public void Refresh()
         {
@@ -132,8 +133,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 txtId.Text = SpriteData.Id == -1 ? "---" : SpriteData.Id.ToString();
                 txtName.Text = SpriteData.Name;
                 txtWidth.Value = SpriteData.Width;
-                chkMasked.IsCancel = SpriteData.Masked;
+                chkMasked.IsChecked = SpriteData.Masked;
                 cmbMode.SelectedIndex = (byte)SpriteData.GraphicMode;
+                chkExport.IsChecked= SpriteData.Export;
 
                 if (SpriteData.Patterns == null || SpriteData.Patterns.Count == 0)
                 {
@@ -336,6 +338,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 SpriteData.Masked = value;
                 Refresh();
                 CallBackCommand(this, "REFRESH");
+            }
+        }
+
+
+        private void ChkExport_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var value = chkExport.IsChecked.ToBoolean();
+            if (SpriteData.Export != value)
+            {
+                SpriteData.Export = value;
             }
         }
 
