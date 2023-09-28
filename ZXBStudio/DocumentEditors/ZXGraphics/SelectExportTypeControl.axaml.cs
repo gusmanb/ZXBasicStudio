@@ -56,6 +56,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Image = "/Svg/Seal.svg",
                 Name = "PutChars"
             });
+            /*
             ExportTypesList.Add(new ExportTypeDescrioptionItem()
             {
                 Description = "Dr. Gusman GuSprites library.",
@@ -70,7 +71,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Image = "/Svg/binary.svg",
                 Name = "FourSpriter"
             });
-
+            */
             lstOptions.ItemsSource = ExportTypesList;
 
             lstOptions.SelectionChanged += LstOptions_SelectionChanged;

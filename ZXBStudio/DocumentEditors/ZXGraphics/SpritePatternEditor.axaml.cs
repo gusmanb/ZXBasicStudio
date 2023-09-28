@@ -140,6 +140,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 return;
             }
 
+            cnvEditor.Children.Clear();
             for (int oy = 0; oy < SpriteData.Height; oy++)
             {
                 for (int ox = 0; ox < SpriteData.Width; ox++)

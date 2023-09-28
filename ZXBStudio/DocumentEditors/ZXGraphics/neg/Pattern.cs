@@ -27,5 +27,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
         /// Point data, usually 1x8 in classic mode
         /// </summary>
         public PointData[] Data { get; set; }
+        /// <summary>
+        /// Point data in raw format, used to save and load file
+        /// </summary>
+        public int[] RawData { get; set; }
     }
 }

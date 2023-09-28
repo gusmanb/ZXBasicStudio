@@ -73,6 +73,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     ftc.FirstIndex = 32;    // SPACE
                     ftc.NumerOfPatterns = 96;
                     break;
+                case SpriteDocument:
+                    ftc.FileType = FileTypes.Sprite;
+                    break;
+
             }
             return ftc;
         }
@@ -244,8 +248,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             try
             {
                 List<byte> data = new List<byte>();
-
-                for (int column = 0; column < width; column++)
+                for (int column = 0; column < (width/8); column++)
                 {
                     int xx = column * 8;
                     for (int row = 0; row < height; row++)
@@ -253,12 +256,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                         int b = 0;
                         for (int x = 0; x < 8; x++)
                         {
-                            var p = pattern.Data.FirstOrDefault(d => d.Y == row && d.X == (xx + x));
-                            if (p == null)
-                            {
-                                continue;
-                            }
-                            if (p.ColorIndex == 1)
+                            var dir = (row * width) + xx + x;
+                            var p = pattern.RawData[dir];
+                            if (p == 1)
                             {
                                 b = b | (int)Math.Pow(2, (7 - x));
                             }
@@ -363,6 +363,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                 case FileTypes.Font:
                     dataLayer.Files_GetAllFileNames(path, ".fnt.zbs", ref lst);
                     return lst.ToArray();
+                case FileTypes.Sprite:
+                    dataLayer.Files_GetAllFileNames(path, ".spr.zbs", ref lst);
+                    return lst.ToArray();
             }
             return null;
         }
@@ -424,7 +427,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             var exportConfig = new ExportConfig();
             exportConfig.ArrayBase = 0;
             exportConfig.AutoExport = true;
-            exportConfig.ExportFilePath = fileName + docType.DocumentExtensions.First();
+            exportConfig.ExportFilePath = fileName + ".bas";
             exportConfig.ExportType = ExportTypes.PutChars;
             exportConfig.LabelName = Path.GetFileNameWithoutExtension(fileName).Replace(" ", "_") + "_";
             return exportConfig;

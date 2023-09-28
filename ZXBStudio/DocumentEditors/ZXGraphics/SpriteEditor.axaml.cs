@@ -124,8 +124,50 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             try
             {
-                var data = SpritePatternsList.Select(d => d.SpriteData).Serializar();
-                if (!ServiceLayer.Files_SaveFileString(FileName, data))
+                var masterList = SpritePatternsList.Select(d => d.SpriteData).ToArray();
+                var sprList = new List<Sprite>();
+                foreach (var spr in masterList)
+                {
+                    sprList.Add(spr.Clonar<Sprite>());
+                }
+                foreach (Sprite spr in sprList)
+                {
+                    if (spr == null)
+                    {
+                        continue;
+                    }
+
+                    for (int fn = 0; fn < spr.Frames; fn++)
+                    {
+                        Pattern pat = spr.Patterns[fn];
+                        pat.RawData = new int[spr.Width * spr.Height];
+                        int index = 0;
+                        for (int y = 0; y < spr.Height; y++)
+                        {
+                            for (int x = 0; x < spr.Width; x++)
+                            {
+                                var pd = pat.Data.FirstOrDefault(d => d.X == x && d.Y == y);
+                                if (pd == null)
+                                {
+                                    pat.RawData[index] = 0;
+                                }
+                                else
+                                {
+                                    pat.RawData[index] = pd.ColorIndex;
+                                }
+                                index++;
+                            }
+                        }
+                        pat.Data = null;
+                    }
+                    if (spr.Frames < spr.Patterns.Count())
+                    {
+                        spr.Patterns = spr.Patterns.Take(spr.Frames).ToList();
+                    }
+                }
+
+                var dataJSon = sprList.Serializar();
+                if (!ServiceLayer.Files_SaveFileString(FileName, dataJSon))
                 {
                     return false;
                 };
@@ -217,6 +259,39 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 if (!string.IsNullOrEmpty(dataS))
                 {
                     Sprite[] sprites = dataS.Deserializar<Sprite[]>();
+
+                    foreach (var spr in sprites)
+                    {
+                        if (spr == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (var pat in spr.Patterns)
+                        {
+                            if (pat.RawData == null)
+                            {
+                                continue;
+                            }
+                            pat.Data = new PointData[spr.Width * spr.Height];
+                            int index = 0;
+                            for (int y = 0; y < spr.Height; y++)
+                            {
+                                for (int x = 0; x < spr.Width; x++)
+                                {
+                                    pat.Data[index] = new PointData()
+                                    {
+                                        X = x,
+                                        Y = y,
+                                        ColorIndex = pat.RawData[index]
+                                    };
+                                    index++;
+                                }
+                            }
+                            pat.RawData = null;
+                        }
+                    }
+
                     foreach (var sprite in sprites)
                     {
                         var spc = new SpritePatternControl();
@@ -471,6 +546,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void Refresh()
         {
+            Debug.WriteLine("{0}> SpriteEditor.Refresh", DateTime.Now.ToString("HH:mm:ss"));
             txtFrame.Text = "Frame " + actualFrame.ToString();
             if (ctrlProperties.SpriteData != null)
             {
@@ -507,7 +583,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void SldFrame_PropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
         {
             byte v = (byte)sldFrame.Value;
-            if (ctrlProperties.SpriteData == null || v < 0 || v >= (ctrlProperties.SpriteData.Frames))
+            if (actualFrame == v || ctrlProperties.SpriteData == null || v < 0 || v >= (ctrlProperties.SpriteData.Frames))
             {
                 return;
             }
@@ -721,7 +797,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void BtnExport_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             var dlg = new SpriteExportDialog();
-            dlg.Initialize(FileName, SpritePatternsList.Select(d=>d.SpriteData));
+            dlg.Initialize(FileName, SpritePatternsList.Select(d => d.SpriteData));
             dlg.ShowDialog(this.VisualRoot as Window);
         }
 

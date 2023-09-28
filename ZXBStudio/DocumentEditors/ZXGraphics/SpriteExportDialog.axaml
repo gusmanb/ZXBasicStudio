@@ -39,12 +39,9 @@
                 <ComboBoxItem>1</ComboBoxItem>
                 <ComboBoxItem>From project settings</ComboBoxItem>
               </ComboBox>
-              
-              <TextBlock Name="lblSize" Grid.Row="6" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Include size at beginning:</TextBlock>
-              <CheckBox Name="chkSize" Grid.Row="6" Grid.Column="1" Classes="dialog"></CheckBox>
 
-              <TextBlock Name="lblAttr" Grid.Row="7" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Include attributes at the end:</TextBlock>
-              <CheckBox Name="chkAttr" Grid.Row="7" Grid.Column="1" Classes="dialog"></CheckBox>
+              <TextBlock Name="lblAttr" Grid.Row="6" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Export attributes</TextBlock>
+              <CheckBox Name="chkAttr" Grid.Row="6" Grid.Column="1" Classes="dialog"></CheckBox>
             </Grid>
 
             <TextBlock Name="txtError" FontSize="14" Foreground="Red" Margin="0,16,0,16" IsVisible="False">

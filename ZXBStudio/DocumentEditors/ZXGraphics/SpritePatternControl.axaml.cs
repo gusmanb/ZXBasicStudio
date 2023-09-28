@@ -181,6 +181,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 cnvPreview.Width = SpriteData.Width * 4;
                 cnvPreview.Height = SpriteData.Height * 4;
 
+                cnvPreview.Children.Clear();
                 for (int y = 0; y < SpriteData.Height; y++)
                 {
                     for (int x = 0; x < SpriteData.Width; x++)
@@ -200,8 +201,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
                         var palette = SpriteData.Palette[colorIndex];
                         r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
-                        var r2 = r.Clonar<Rectangle>();
-
                         cnvPreview.Children.Add(r);
                         Canvas.SetTop(r, y * 4);
                         Canvas.SetLeft(r, x * 4);

@@ -160,7 +160,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             sb.AppendLine("'- Includes -----------------------------------------------");
             sb.AppendLine("#INCLUDE <putchars.bas>");
             sb.AppendLine("");
-            sb.AppendLine(ExportManager.Export_Sprite_PutChars(txtOutputFile.Text, sprites, exportConfig));
+            sb.AppendLine(ExportManager.Export_Sprite_PutChars(exportConfig, sprites));
             sb.AppendLine("");
             sb.AppendLine("'- Draw sprite --------------------------------------------");
 
@@ -180,190 +180,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         #endregion
 
 
-        #region OLD Examples
-
-        private void CreateExample_BIN()
-        {
-            var sb = new StringBuilder();
-
-            switch (fileType.FileType)
-            {
-                case FileTypes.Font:
-                    sb.AppendLine("' Example of use of custom font type");
-                    sb.AppendLine("POKE (uinteger 23606, @MyFont-256)");
-                    sb.AppendLine("PRINT \"Hello World!\"");
-                    sb.AppendLine("STOP");
-                    sb.AppendLine("");
-                    sb.AppendLine("' Don't let the execution thread bypass the ASM");
-                    sb.AppendLine("");
-                    sb.AppendLine("MyFont:");
-                    sb.AppendLine("ASM");
-                    sb.AppendLine("\tincbin \"MyFont.fnt\"");
-                    sb.AppendLine("END ASM");
-                    sb.AppendLine("");
-                    break;
-                case FileTypes.UDG:
-                    sb.AppendLine("' Example of use of UDG/GDU");
-                    sb.AppendLine("POKE (uinteger 23675, @MyUDG)");
-                    sb.AppendLine("PRINT \"UDG/GDU Table\"");
-                    sb.AppendLine("FOR n=0 TO 20");
-                    sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
-                    sb.AppendLine("NEXT n");
-                    sb.AppendLine("STOP");
-                    sb.AppendLine("");
-                    sb.AppendLine("' Don't let the execution thread bypass the ASM");
-                    sb.AppendLine("");
-                    sb.AppendLine("MyUDG:");
-                    sb.AppendLine("ASM");
-                    sb.AppendLine("\tincbin \"MyUDG.fnt\"");
-                    sb.AppendLine("END ASM");
-                    sb.AppendLine("");
-                    break;
-            }
-            txtCode.Text = sb.ToString();
-        }
-
-
-        private void CreateExample_TAP()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("' Example of use of tap");
-            sb.AppendLine("");
-            sb.AppendLine("' Load data from .tap");
-            sb.AppendLine("load \"\" code 60000");
-
-            switch (fileType.FileType)
-            {
-                case FileTypes.Font:
-                    sb.AppendLine("POKE (uinteger 23606, 60000-256)");
-                    sb.AppendLine("PRINT \"Hello World!\"");
-                    sb.AppendLine("STOP");
-                    sb.AppendLine("");
-                    break;
-                case FileTypes.UDG:
-                    sb.AppendLine("POKE (uinteger 23675, 60000)");
-                    sb.AppendLine("PRINT \"UDG/GDU Table\"");
-                    sb.AppendLine("FOR n=0 TO 20");
-                    sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
-                    sb.AppendLine("NEXT n");
-                    sb.AppendLine("STOP");
-                    sb.AppendLine("");
-                    break;
-            }
-            txtCode.Text = sb.ToString();
-        }
-
-
-        private void CreateExample_ASM()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("' Example of use of the asm format");
-            if (fileType.FileType == FileTypes.Font)
-            {
-                sb.AppendLine(string.Format("POKE (uinteger 23606, @{0}-256)", txtLabelName.Text));
-                sb.AppendLine("PRINT \"Hello World!\"");
-                sb.AppendLine("STOP");
-            }
-            else
-            {
-                sb.AppendLine(string.Format("POKE (uinteger 23675, @{0})", txtLabelName.Text));
-                sb.AppendLine("PRINT \"UDG/GDU Table\"");
-                sb.AppendLine("FOR n=0 TO 20");
-                sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
-                sb.AppendLine("NEXT n");
-                sb.AppendLine("STOP");
-            }
-            sb.AppendLine("");
-
-            sb.Append(ExportManager.Export_ASM(fileType, patterns, txtLabelName.Text));
-
-            txtCode.Text = sb.ToString();
-        }
-
-
-        private void CreateExample_DIM()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("' Example of use of the embedded format");
-            sb.AppendLine("DIM n as ubyte");
-            sb.AppendLine(ExportManager.Export_DIM(fileType, patterns, txtLabelName.Text, exportConfig.ArrayBase));
-            switch (fileType.FileType)
-            {
-                case FileTypes.UDG:
-                    sb.AppendLine(string.Format("POKE (uinteger 23675, @{0})", txtLabelName.Text));
-                    sb.AppendLine("PRINT \"UDG/GDU Table\"");
-                    sb.AppendLine("FOR n=0 TO 20");
-                    sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
-                    sb.AppendLine("NEXT n");
-                    sb.AppendLine("STOP");
-                    break;
-                case FileTypes.Font:
-                    sb.AppendLine(string.Format("POKE (uinteger 23606, @{0}-256)", txtLabelName.Text));
-                    sb.AppendLine("PRINT \"Hello World!\"");
-                    sb.AppendLine("STOP");
-                    break;
-            }
-            sb.AppendLine("");
-
-            txtCode.Text = sb.ToString();
-        }
-
-
-        private void CreateExample_DATA()
-        {
-            int la = 168;
-            switch (fileType.FileType)
-            {
-                case FileTypes.UDG:
-                    la = 168;
-                    break;
-                case FileTypes.Font:
-                    la = 768;
-                    break;
-            }
-
-            var sb = new StringBuilder();
-            sb.AppendLine("' Example of use of the DATA format");
-            sb.AppendLine("DIM dir AS UINTEGER = $c000");
-            sb.AppendLine("DIM n AS UINTEGER");
-            sb.AppendLine("DIM d AS UBYTE");
-            sb.AppendLine("");
-            sb.AppendLine("RESTORE " + txtLabelName.Text);
-            sb.AppendLine(string.Format("FOR n=0 to {0}", la));
-            sb.AppendLine("\tREAD d");
-            sb.AppendLine("\tPOKE dir,d");
-            sb.AppendLine("\tdir=dir+1");
-            sb.AppendLine("NEXT n");
-            sb.AppendLine("");
-            switch (fileType.FileType)
-            {
-                case FileTypes.Font:
-                    sb.AppendLine("POKE (uinteger 23606, $c000-256)");
-                    sb.AppendLine("PRINT \"Hello World!\"");
-                    sb.AppendLine("STOP");
-                    break;
-                case FileTypes.UDG:
-                    sb.AppendLine("POKE (uinteger 23675, $c000)");
-                    sb.AppendLine("PRINT \"UDG/GDU Table\"");
-                    sb.AppendLine("FOR n=0 TO 20");
-                    sb.AppendLine("     PRINT (144+n);\" - \";CHR(n+65);\": \";CHR(144+n)");
-                    sb.AppendLine("NEXT n");
-                    sb.AppendLine("STOP");
-                    break;
-            }
-            sb.AppendLine("");
-
-            sb.AppendLine(ExportManager.Export_DATA(fileType, patterns, txtLabelName.Text));
-
-            txtCode.Text = sb.ToString();
-        }
-
+        #region Export
 
         private void Export()
         {
+            GetConfigFromUI();
             var em = new ExportManager();
-            em.Initialize(fileType.FileType);
-            em.Export(exportConfig, fileType, patterns);
+            em.Initialize(FileTypes.Sprite);
+            em.ExportSprites(exportConfig, sprites);
         }
 
 
@@ -382,7 +206,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void BtnSave_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             GetExportOptions();
-            ServiceLayer.Export_SetConfigFile(fileType.FileName + ".zbs", exportConfig);
+            ServiceLayer.Export_SetConfigFile(fileName + ".zbs", exportConfig);
             Export();
             this.Close();
         }
@@ -391,20 +215,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             var fileTypes = new FilePickerFileType[2];
             fileTypes[1] = new FilePickerFileType("All files") { Patterns = new[] { "*", "*.*" } };
-            switch (exportConfig.ExportType)
-            {
-                case ExportTypes.Asm:
-                case ExportTypes.Data:
-                case ExportTypes.Dim:
-                    fileTypes[0] = new FilePickerFileType("Basic files") { Patterns = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument)).DocumentExtensions };
-                    break;
-                case ExportTypes.Bin:
-                    fileTypes[0] = new FilePickerFileType("Binary files") { Patterns = new[] { "*.bin" } };
-                    break;
-                case ExportTypes.Tap:
-                    fileTypes[0] = new FilePickerFileType("Tape files") { Patterns = new[] { "*.tap" } };
-                    break;
-            }
+            fileTypes[0]= new FilePickerFileType("Sprite files") { Patterns = new[] { "*.spr" } };
 
             var select = await StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
             {
@@ -445,10 +256,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             var idx = cmbArrayBase.SelectedIndex;
             exportConfig.ArrayBase = idx;
-            if (exportConfig.ExportType == ExportTypes.Dim)
-            {
-                CreateExample_DIM();
-            }
         }
 
         #endregion

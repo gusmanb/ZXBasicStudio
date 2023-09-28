@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
@@ -55,8 +56,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.SpriteData = spriteData;
 
             this.cmbSpeed.SelectionChanged += CmbSpeed_SelectionChanged;
-            tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[1]), DispatcherPriority.Normal, Refresh);
-            cmbSpeed.SelectedIndex = 1;
+            if (tmr == null)
+            {
+                tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[1]), DispatcherPriority.Normal, Refresh);
+                cmbSpeed.SelectedIndex = 1;
+            }
 
             return true;
         }
@@ -78,17 +82,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             try
             {
-                // Delete background
-                {
-                    var r = new Rectangle();
-                    r.Width = cnvPreview.Width * 4;
-                    r.Height = cnvPreview.Height * 4;
-                    r.Fill = new SolidColorBrush(new Color(255, 0x28, 0x28, 0x28));
-                    cnvPreview.Children.Add(r);
-                    Canvas.SetTop(r, 0);
-                    Canvas.SetLeft(r, 0);
-                }
-
                 if (SpriteData == null || SpriteData.Patterns == null || SpriteData.Patterns.Count == 0)
                 {
                     if (tmr != null)
@@ -96,6 +89,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         tmr.Stop();
                         tmr = null;
                     }
+
+                    // Delete background
+                    {
+                        var r = new Rectangle();
+                        r.Width = cnvPreview.Width * 4;
+                        r.Height = cnvPreview.Height * 4;
+                        r.Fill = new SolidColorBrush(new Color(255, 0x28, 0x28, 0x28));
+                        cnvPreview.Children.Add(r);
+                        Canvas.SetTop(r, 0);
+                        Canvas.SetLeft(r, 0);
+                    }
+
                     return;
                 }
 
@@ -112,6 +117,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 cnvPreview.Width = SpriteData.Width * 4;
                 cnvPreview.Height = SpriteData.Height * 4;
 
+                cnvPreview.Children.Clear();
                 for (int y = 0; y < SpriteData.Height; y++)
                 {
                     for (int x = 0; x < SpriteData.Width; x++)
@@ -131,7 +137,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
                         var palette = SpriteData.Palette[colorIndex];
                         r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
-                        var r2 = r.Clonar<Rectangle>();
+                        //var r2 = r.Clonar<Rectangle>();
 
                         cnvPreview.Children.Add(r);
                         Canvas.SetTop(r, y * 4);
@@ -139,7 +145,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     }
                 }
             }
-            catch { }
+            catch(Exception ex) 
+            {
+            }
         }        
 
     }
