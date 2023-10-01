@@ -249,7 +249,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         {
             try
             {
-                pattern.RawData = PointData2RawData(pattern.Data, width, height);
                 List<byte> data = new List<byte>();
                 for (int column = 0; column < (width / 8); column++)
                 {

@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using ShimSkiaSharp;
+using Avalonia.Interactivity;
+using Avalonia.Input;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -137,12 +139,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         continue;
                     }
 
-                    for (int fn = 0; fn < spr.Frames; fn++)
-                    {
-                        Pattern pat = spr.Patterns[fn];
-                        pat.RawData = ServiceLayer.PointData2RawData(pat.Data, spr.Width, spr.Height);
-                        pat.Data = null;
-                    }
                     if (spr.Frames < spr.Patterns.Count())
                     {
                         spr.Patterns = spr.Patterns.Take(spr.Frames).ToList();
@@ -243,24 +239,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 {
                     Sprite[] sprites = dataS.Deserializar<Sprite[]>();
 
-                    foreach (var spr in sprites)
-                    {
-                        if (spr == null)
-                        {
-                            continue;
-                        }
-
-                        foreach (var pat in spr.Patterns)
-                        {
-                            if (pat.RawData == null)
-                            {
-                                continue;
-                            }
-                            pat.Data = ServiceLayer.RawData2PointData(pat.RawData, spr.Width, spr.Height);
-                            pat.RawData = null;
-                        }
-                    }
-
                     foreach (var sprite in sprites)
                     {
                         var spc = new SpritePatternControl();
@@ -315,6 +293,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             if (SpritePatternsList.Count > 1) {
                 SpriteList_Command(SpritePatternsList.ElementAt(0), "SELECTED");
             }
+
+            this.AddHandler(KeyDownEvent, SpriteEditor_KeyDown, handledEventsToo: true);
+        }
+
+        private void SpriteEditor_KeyDown(KeyEventArgs args)
+        {
+            // TODO: Process event
+            throw new NotImplementedException();
         }
 
         #region Color

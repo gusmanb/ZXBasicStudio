@@ -142,10 +142,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     SpriteData.Patterns = new List<Pattern>();
                     SpriteData.Patterns.Add(new Pattern()
                     {
-                        Data = new PointData[0],
+                        Data = null,
                         Id = 0,
                         Name = "",
-                        Number = ""
+                        Number = "",
+                        RawData=new int[64]
                     });
                 }
                 if (SpriteData.Palette == null || SpriteData.Palette.Length == 0)
@@ -264,27 +265,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Id = 0,
                 Name = "",
                 Number = "0",
-                Data = new PointData[SpriteData.Width * SpriteData.Height]
-            };
-            int dir = 0;
-            for (int y = 0; y < SpriteData.Height; y++)
-            {
-                for (int x = 0; x < SpriteData.Width; x++)
-                {
-                    pat.Data[dir] = new PointData()
-                    {
-                        X = x,
-                        Y = y,
-                        ColorIndex = 0
-                    };
-                    dir++;
-                }
-            }
+                Data = null,
+                RawData=new int[SpriteData.Width * SpriteData.Height]
+            };            
             return pat;
         }
 
 
-        private void ResizePattern()
+        private void ResizePattern(int oldWidth, int oldHeight)
         {
             var patterns = new List<Pattern>();
             foreach (var pattern in SpriteData.Patterns)
@@ -294,28 +282,20 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     Id = pattern.Id,
                     Name = pattern.Name,
                     Number = pattern.Number,
-                    Data = new PointData[SpriteData.Width * SpriteData.Height]
+                    RawData = new int[SpriteData.Width * SpriteData.Height]
                 };
-                int dir = 0;
                 for (int y = 0; y < SpriteData.Height; y++)
                 {
                     for (int x = 0; x < SpriteData.Width; x++)
                     {
-                        var oldData = pattern.Data.FirstOrDefault(d => d.X == x && d.Y == y);
-                        if (oldData == null)
+                        int dir = (y * SpriteData.Width) + x;
+                        int colorIndex = 0;
+                        if (x < oldWidth && y < oldHeight)
                         {
-                            pat.Data[dir] = new PointData()
-                            {
-                                X = x,
-                                Y = y,
-                                ColorIndex = 0
-                            };
+                            colorIndex = pattern.RawData[(y * oldWidth) + x];
                         }
-                        else
-                        {
-                            pat.Data[dir] = oldData.Clonar<PointData>();
-                        }
-                        dir++;
+
+                        pat.RawData[(y * SpriteData.Width) + x] = colorIndex;
                     }
                 }
                 patterns.Add(pat);
@@ -370,8 +350,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             var value = txtWidth.Text.ToInteger();
             if (SpriteData.Width != value)
             {
+                int oldWidth = SpriteData.Width;
+                int oldHeight = SpriteData.Height;
                 SpriteData.Width = value;
-                ResizePattern();
+                ResizePattern(oldWidth,oldHeight);
                 Refresh();
             }
         }
@@ -381,8 +363,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             var value = txtHeight.Text.ToInteger();
             if (SpriteData.Height != value)
             {
+                int oldWidth = SpriteData.Width;
+                int oldHeight = SpriteData.Height;
                 SpriteData.Height = value;
-                ResizePattern();
+                ResizePattern(oldWidth,oldHeight);
                 Refresh();
             }
         }

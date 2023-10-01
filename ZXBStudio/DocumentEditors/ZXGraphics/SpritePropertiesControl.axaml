@@ -23,12 +23,12 @@
 
       <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Width:</TextBlock>
       <Border Grid.Row="3" Grid.Column="1" Classes="numericborder">
-        <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="256" Value="8" VerticalAlignment="Center"/>
+        <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="64" Value="8" VerticalAlignment="Center"/>
       </Border>
 
       <TextBlock Grid.Row="4" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Height:</TextBlock>
       <Border Grid.Row="4" Grid.Column="1" Classes="numericborder">
-        <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="1" Maximum="192" Value="8" VerticalAlignment="Center"/>
+        <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="8" Maximum="64" Value="8" VerticalAlignment="Center"/>
       </Border>
 
       <TextBlock Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>

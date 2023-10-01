@@ -156,7 +156,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     SpriteData.Patterns = new List<Pattern>();
                     SpriteData.Patterns.Add(new Pattern()
                     {
-                        Data = new PointData[0],
+                        RawData = new int[64],
                         Id = 0,
                         Name = "",
                         Number = ""
@@ -182,31 +182,28 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 cnvPreview.Height = SpriteData.Height * 4;
 
                 cnvPreview.Children.Clear();
+                int index = 0;
+                var frame = SpriteData.Patterns[0];
                 for (int y = 0; y < SpriteData.Height; y++)
                 {
                     for (int x = 0; x < SpriteData.Width; x++)
                     {
-                        int colorIndex = 0;
-                        var frame = SpriteData.Patterns[0];
-                        var p = frame.Data.FirstOrDefault(d => d.X == x && d.Y == y);
-                        if (p != null)
-                        {
-                            colorIndex = p.ColorIndex;
-                        }
-
+                        var p = frame.RawData[index];
                         var r = new Rectangle();
                         r.Width = 4;
                         r.Height = 4;
-
-                        var palette = SpriteData.Palette[colorIndex];
+                        var palette = SpriteData.Palette[p];
                         r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
                         cnvPreview.Children.Add(r);
                         Canvas.SetTop(r, y * 4);
                         Canvas.SetLeft(r, x * 4);
+                        index++;
                     }
                 }
             }
-            catch { }
+            catch(Exception ex)
+            {
+            }
             finally
             {
                 refreshing = false;
@@ -315,22 +312,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Id = 0,
                 Name = "",
                 Number = "0",
-                Data = new PointData[64]
+                RawData = new int[64]
             };
-            int dir = 0;
-            for (int y = 0; y < 8; y++)
-            {
-                for (int x = 0; x < 8; x++)
-                {
-                    pat.Data[dir] = new PointData()
-                    {
-                        X = x,
-                        Y = y,
-                        ColorIndex = 0
-                    };
-                    dir++;
-                }
-            }
             return pat;
         }
 

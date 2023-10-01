@@ -133,7 +133,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// Refresh the draw area
         /// </summary>
         public void Refresh(bool callBack = false)
-        {            
+        {
             cnvEditor.Children.Clear();
             if (SpriteData == null)
             {
@@ -145,14 +145,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 for (int ox = 0; ox < SpriteData.Width; ox++)
                 {
-                    int colorIndex = 0;
 
                     var frame = SpriteData.Patterns[SpriteData.CurrentFrame];
-                    var p = frame.Data.FirstOrDefault(d => d.X == ox && d.Y == oy);
-                    if (p != null)
-                    {
-                        colorIndex = p.ColorIndex;
-                    }
+                    int colorIndex = frame.RawData[(SpriteData.Width * oy) + ox];
 
                     var r = new Rectangle();
                     r.Width = _Zoom + 1;
@@ -285,13 +280,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 return;
             }
 
-            var p = SpriteData.Patterns[SpriteData.CurrentFrame].Data.FirstOrDefault(d => d.X == x && d.Y == y);
-            if (p == null)
-            {
-                return;
-            }
+            SpriteData.Patterns[SpriteData.CurrentFrame].RawData[(SpriteData.Width * y) + x] = value;
 
-            p.ColorIndex = value;
             Refresh(false);
 
             if (tmr == null)
@@ -374,50 +364,49 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 // Create an empty pattern
                 var pat2 = pattern.Clonar<Pattern>();
-                {
-                    var lstPat2 = new List<PointData>();
-                    for (int y = 0; y < SpriteData.Height; y++)
-                    {
-                        for (int x = 0; x < SpriteData.Width; x++)
-                        {
-                            lstPat2.Add(new PointData()
-                            {
-                                ColorIndex = 0,
-                                X = x,
-                                Y = y
-                            });
-                        }
-                    }
-                    pat2.Data = lstPat2.ToArray();
-                }
+                pat2.RawData = new int[SpriteData.Width * SpriteData.Height];
 
-                int ox = 0;
-                int oy = 0;
-                for (int n = 0; n < cbPatterns.Length; n++)
+                if (cbPatterns[0].RawData == null)
                 {
-                    for (int py = 0; py < 8; py++)
+                    // Paste from PointData
+                    int ox = 0;
+                    int oy = 0;
+                    for (int n = 0; n < cbPatterns.Length; n++)
                     {
-                        for (int px = 0; px < 8; px++)
+                        for (int py = 0; py < 8; py++)
                         {
-                            var po = cbPatterns[n].Data.FirstOrDefault(d => d.X == px && d.Y == py);
-                            if (po != null)
+                            for (int px = 0; px < 8; px++)
                             {
-                                var pd = pat2.Data.FirstOrDefault(d => d.X == px + ox && d.Y == py + oy);
-                                if (pd != null)
+                                var po = cbPatterns[n].Data.FirstOrDefault(d => d.X == px && d.Y == py);
+                                if (po != null)
                                 {
-                                    pd.ColorIndex = po.ColorIndex;
+                                    var pd = pat2.Data.FirstOrDefault(d => d.X == px + ox && d.Y == py + oy);
+                                    if (pd != null)
+                                    {
+                                        pd.ColorIndex = po.ColorIndex;
+                                    }
                                 }
                             }
                         }
+                        ox += 8;
+                        if (ox >= SpriteData.Width)
+                        {
+                            ox = 0;
+                            oy += 8;
+                        }
                     }
-                    ox += 8;
-                    if (ox >= SpriteData.Width)
+                    SpriteData.Patterns[SpriteData.CurrentFrame].Data = pat2.Data;
+                }
+                else
+                {
+                    // Paste from RawData
+                    var dat = SpriteData.Patterns[SpriteData.CurrentFrame].RawData;
+                    var cbDat = cbPatterns[0].RawData;
+                    for (int n = 0; n < cbDat.Length && n < dat.Length; n++)
                     {
-                        ox = 0;
-                        oy += 8;
+                        dat[n] = cbDat[n];
                     }
                 }
-                SpriteData.Patterns[SpriteData.CurrentFrame].Data = pat2.Data;
             }
             Refresh(true);
         }
@@ -656,7 +645,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     if (y2 < 0)
                     {
                         y2 = maxHeight - 1;
-                        pd1.ColorIndex = 0;
+                        pd1 = 0;
                     }
                     SetPointValue(x, y2, pd1, ref pattern2);
                 }
@@ -685,7 +674,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     if (x2 >= maxWidth)
                     {
                         x2 = 0;
-                        pd1.ColorIndex = 0;
+                        pd1 = 0;
                     }
                     SetPointValue(x2, y, pd1, ref pattern2);
                 }
@@ -714,7 +703,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     if (y2 >= maxHeight)
                     {
                         y2 = 0;
-                        pd1.ColorIndex = 0;
+                        pd1 = 0;
                     }
                     SetPointValue(x, y2, pd1, ref pattern2);
                 }
@@ -743,7 +732,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     if (x2 < 0)
                     {
                         x2 = maxWidth - 1;
-                        pd1.ColorIndex = 0;
+                        pd1 = 0;
                     }
                     SetPointValue(x2, y, pd1, ref pattern2);
                 }
@@ -768,13 +757,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 for (int x = 0; x < maxWidth; x++)
                 {
                     var pd1 = GetPointValue(x, y, pattern);
-                    if (pd1.ColorIndex == 0)
+                    if (pd1 == PrimaryColorIndex)
                     {
-                        pd1.ColorIndex = 1;
+                        pd1 = SecondaryColorIndex;
                     }
-                    else
+                    else if (pd1 == SecondaryColorIndex)
                     {
-                        pd1.ColorIndex = 0;
+                        pd1 = PrimaryColorIndex;
                     }
                     SetPointValue(x, y, pd1, ref pattern2);
                 }
@@ -797,23 +786,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 Id = pattern.Id,
                 Name = pattern.Name,
-                Number = pattern.Number
+                Number = pattern.Number,
+                RawData = new int[SpriteData.Width * SpriteData.Height]
             };
-            var pdLst = new List<PointData>();
-            for (int y = 0; y <= maxY; y++)
-            {
-                for (int x = 0; x <= maxX; x++)
-                {
-                    var pd = new PointData()
-                    {
-                        ColorIndex = 0,
-                        X = x,
-                        Y = y
-                    };
-                    pdLst.Add(pd);
-                }
-            }
-            pattern2.Data = pdLst.ToArray();
 
             _Mask(0, 0, ref pattern, ref pattern2);
             _Mask(maxX, 0, ref pattern, ref pattern2);
@@ -834,16 +809,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void _Mask(int x, int y, ref Pattern pattern1, ref Pattern pattern2)
         {
             var p1 = GetPointValue(x, y, pattern1);
-            if (p1 == null || p1.ColorIndex != 0)
+            if (p1 != 0)
             {
                 return;
             }
             var p2 = GetPointValue(x, y, pattern2);
-            if (p2 == null || p2.ColorIndex != 0)
+            if (p2 != 0)
             {
                 return;
             }
-            p2.ColorIndex = 1;
+            p2 = 1;
             SetPointValue(x, y, p2, ref pattern2);
 
             if (x > 1)
@@ -872,19 +847,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="y">Y coord</param>
         /// <param name="pattern">Pattern to use</param>
         /// <returns>Point data or null if no data</returns>
-        private PointData GetPointValue(int x, int y, Pattern pattern)
+        private int GetPointValue(int x, int y, Pattern pattern)
         {
-            var p = pattern.Data.FirstOrDefault(d => d.X == x && d.Y == y);
-            if (p == null)
+            if (x < 0 || y < 0 || x > (SpriteData.Width - 1) || y > (SpriteData.Height - 1))
             {
-                p = new PointData()
-                {
-                    ColorIndex = SecondaryColorIndex,
-                    X = x,
-                    Y = y
-                };
+                return SecondaryColorIndex;
             }
-            return p;
+            return pattern.RawData[(SpriteData.Width * y) + x];
         }
 
 
@@ -893,27 +862,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         /// <param name="x">X coord</param>
         /// <param name="y">Y coord</param>
-        /// <param name="pointData">PointData to set</param>
+        /// <param name="colorIndex">Color index to set</param>
         /// <param name="pattern">Pattern to use</param>
-        private void SetPointValue(int x, int y, PointData pointData, ref Pattern pattern)
+        private void SetPointValue(int x, int y, int colorIndex, ref Pattern pattern)
         {
-            var p = pattern.Data.FirstOrDefault(d => d.X == x && d.Y == y);
-            if (p == null)
+            if (x < 0 || y < 0 || x > (SpriteData.Width - 1) || y > (SpriteData.Height - 1))
             {
-                var data = pattern.Data.ToList();
-                p = new PointData()
-                {
-                    ColorIndex = pointData.ColorIndex,
-                    X = x,
-                    Y = y
-                };
-                data.Add(p);
-                pattern.Data = data.ToArray();
+                return;
             }
-            else
-            {
-                p.ColorIndex = pointData.ColorIndex;
-            }
+            pattern.RawData[(SpriteData.Width * y) + x] = colorIndex;
         }
 
         #endregion

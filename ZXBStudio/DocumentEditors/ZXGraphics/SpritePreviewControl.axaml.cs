@@ -78,7 +78,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-        public void Refresh(object? sender=null, EventArgs e=null)
+        public void Refresh(object? sender = null, EventArgs e = null)
         {
             try
             {
@@ -119,41 +119,39 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 cnvPreview.Height = SpriteData.Height * 4;
 
                 cnvPreview.Children.Clear();
+                int index = 0;
+                var frame = SpriteData.Patterns[frameNumber];
+
+                int zoom = 4;                
+
                 for (int y = 0; y < SpriteData.Height; y++)
                 {
                     for (int x = 0; x < SpriteData.Width; x++)
                     {
-                        int colorIndex = 0;
-
-                        var frame = SpriteData.Patterns[frameNumber];
-                        var p = frame.Data.FirstOrDefault(d => d.X == x && d.Y == y);
-                        if (p != null)
-                        {
-                            colorIndex = p.ColorIndex;
-                        }
+                        int p = frame.RawData[index];
+                        var palette = SpriteData.Palette[p];
 
                         var r = new Rectangle();
-                        r.Width = 4;
-                        r.Height = 4;
+                        r.Width = zoom;
+                        r.Height = zoom;
 
-                        var palette = SpriteData.Palette[colorIndex];
                         r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
-                        //var r2 = r.Clonar<Rectangle>();
 
                         cnvPreview.Children.Add(r);
-                        Canvas.SetTop(r, y * 4);
-                        Canvas.SetLeft(r, x * 4);
+                        Canvas.SetTop(r, y * zoom);
+                        Canvas.SetLeft(r, x * zoom);
+                        index++;
                     }
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
             }
             if (tmr != null)
             {
                 tmr.Start();
             }
-        }        
+        }
 
     }
 }
