@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentEditors.ZXGraphics;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Enums;
@@ -40,19 +41,10 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
 
         static readonly ZXKeybCommand[] _editCommands = new ZXKeybCommand[]
         {
-            ZXTextEditor.keyboardCommands["Save"],
-            ZXTextEditor.keyboardCommands["Copy"],
-            ZXTextEditor.keyboardCommands["Cut"],
-            ZXTextEditor.keyboardCommands["Paste"],
-            ZXTextEditor.keyboardCommands["Select"],
-            ZXTextEditor.keyboardCommands["Undo"],
-            ZXTextEditor.keyboardCommands["Redo"],
-            ZXTextEditor.keyboardCommands["Find"],
-            ZXTextEditor.keyboardCommands["Replace"],
-            ZXTextEditor.keyboardCommands["Collapse"],
-            ZXTextEditor.keyboardCommands["Expand"],
-            ZXTextEditor.keyboardCommands["Comment"],
-            ZXTextEditor.keyboardCommands["Uncomment"]
+            FontGDUEditor.keyboardCommands["Save"],
+            FontGDUEditor.keyboardCommands["Copy"],
+            FontGDUEditor.keyboardCommands["Cut"],
+            FontGDUEditor.keyboardCommands["Paste"],
         };
 
 

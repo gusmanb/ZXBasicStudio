@@ -13,6 +13,9 @@ using AvaloniaEdit.Folding;
 using Avalonia.Threading;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding;
 using Avalonia.Input;
+using System.Collections.Generic;
+using AvaloniaEdit;
+using System.Reflection;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -241,8 +244,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnMask.Tapped += BtnMask_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
 
-            this.KeyDown += Keyboard_Down;
-            ctrEditor.KeyDown += Keyboard_Down;
+            InitializeShortcuts();
+
+            this.AddHandler(KeyDownEvent, Keyboard_Down, handledEventsToo: true);
+            this.Focus();
 
             return true;
         }
@@ -660,12 +665,46 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         #region Keyboard shortcus
 
+        private Dictionary<Guid, Action> _keybCommands = new Dictionary<Guid, Action>();
+
+        internal static Dictionary<string, ZXKeybCommand> keyboardCommands = new Dictionary<string, ZXKeybCommand> {
+            { "Save", new ZXKeybCommand{ CommandId = Guid.Parse("87f7d73b-d28a-44f4-ba0c-41baa4de238c"), CommandName = "Save", Key = Key.S, Modifiers = KeyModifiers.Control } },
+            { "Copy",new ZXKeybCommand{ CommandId = Guid.Parse("fee014bb-222b-42e3-80f3-048325b70e34"), CommandName = "Copy", Key = Key.C, Modifiers = KeyModifiers.Control } },
+            { "Cut",new ZXKeybCommand{ CommandId = Guid.Parse("1edf352f-238b-421e-b69f-613dc63c0e47"), CommandName = "Cut", Key = Key.X, Modifiers = KeyModifiers.Control } },
+            { "Paste", new ZXKeybCommand{ CommandId = Guid.Parse("f5d450b0-d126-4f62-885b-b3e28e638542"), CommandName = "Paste", Key = Key.V, Modifiers = KeyModifiers.Control } }
+        };
+
+
+        private void InitializeShortcuts()
+        {
+            DisableCommand(ApplicationCommands.Cut);
+            DisableCommand(ApplicationCommands.Copy);
+            DisableCommand(ApplicationCommands.Paste);
+
+            _keybCommands = new Dictionary<Guid, Action>()
+            {
+                { keyboardCommands["Save"].CommandId, () => { RequestSaveDocument?.Invoke(this, EventArgs.Empty); } },
+                { keyboardCommands["Copy"].CommandId, () => { ctrEditor.Copy(); } },
+                { keyboardCommands["Cut"].CommandId, () => { ctrEditor.Cut();} },
+                { keyboardCommands["Paste"].CommandId, () => { ctrEditor.Paste(); } }
+            };
+        }
+
+        private void DisableCommand(RoutedCommand cut)
+        {
+            var field = typeof(RoutedCommand).GetField("<Gesture>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            KeyGesture g = new KeyGesture(Key.None, KeyModifiers.None);
+            field.SetValue(cut, g);
+        }
+
         private void Keyboard_Down(object? sender, Avalonia.Input.KeyEventArgs e)
         {
             var commandId = ZXKeybMapper.GetCommandId(documentTypeId, e.Key, e.KeyModifiers);
 
-            //if (commandId != null && _keybCommands.ContainsKey(commandId.Value))
-            //    _keybCommands[commandId.Value]();
+            if (commandId != null && _keybCommands.ContainsKey(commandId.Value))
+            {
+                _keybCommands[commandId.Value]();
+            }
         }
 
         #endregion

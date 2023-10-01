@@ -295,6 +295,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
 
             this.AddHandler(KeyDownEvent, SpriteEditor_KeyDown, handledEventsToo: true);
+            this.Focus();
         }
 
         private void SpriteEditor_KeyDown(object sender, KeyEventArgs args)
