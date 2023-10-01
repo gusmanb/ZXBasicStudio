@@ -297,10 +297,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.AddHandler(KeyDownEvent, SpriteEditor_KeyDown, handledEventsToo: true);
         }
 
-        private void SpriteEditor_KeyDown(KeyEventArgs args)
+        private void SpriteEditor_KeyDown(object sender, KeyEventArgs args)
         {
             // TODO: Process event
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         #region Color
