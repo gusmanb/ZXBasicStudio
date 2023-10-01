@@ -10,7 +10,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>zxbs.ico</ApplicationIcon>
-    <Version>0.1.23.0929</Version>
+    <Version>0.1.23.0930</Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
@@ -496,6 +496,9 @@
     </Compile>
     <Compile Update="DocumentEditors\NextDows\ZXFormsEditor.axaml.cs">
       <DependentUpon>ZXFormsEditor.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\ColorPickerDialog.axaml.cs">
+      <DependentUpon>ColorPickerDialog.axaml</DependentUpon>
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\SpriteExportDialog.axaml.cs">
       <DependentUpon>SpriteExportDialog.axaml</DependentUpon>

@@ -9,6 +9,7 @@
   <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,*">
     <TextBlock Classes="dialog" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">Speed</TextBlock>
     <ComboBox Classes="dialog" Name="cmbSpeed" Grid.Column="1" Grid.Row="0">
+      <ComboBoxItem>Disabled</ComboBoxItem>
       <ComboBoxItem>1 fps (1000ms)</ComboBoxItem>
       <ComboBoxItem IsSelected="True">2 fps (500ms)</ComboBoxItem>
       <ComboBoxItem>4 fps (250ms)</ComboBoxItem>

@@ -144,10 +144,10 @@
           <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" VerticalAlignment="Center"/>
           <TextBlock Name="txtFrame" Classes="dialog" Width="55" Margin="8,4,0,0">Frame</TextBlock>
           <Slider Name="sldFrame" Width="100" Minimum="0" Maximum="0" Value="0" VerticalAlignment="Center"/>
-          <Button Classes="toobar" Margin="8,0,0,0">Paper</Button>
-          <Button Classes="toobar" Margin="8,0,0,0">Ink</Button>
-          <Button Classes="toobar" Margin="8,0,0,0">Bright</Button>
-          <Button Classes="toobar" Margin="8,0,0,0">Flash</Button>
+          <Button Name="btnPaper" Classes="toobar" Margin="8,0,0,0">Paper</Button>
+          <Button Name="btnInk" Classes="toobar" Margin="8,0,0,0">Ink</Button>
+          <Button Name="btnBright" Classes="toobar" Margin="8,0,0,0">Bright</Button>
+          <Button Name="btnFlash" Classes="toobar" Margin="8,0,0,0">Flash</Button>
         </WrapPanel>
 
       </Grid>

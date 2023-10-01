@@ -34,7 +34,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <summary>
         /// Speeds in milliseconds
         /// </summary>
-        private int[] speeds = new int[] { 1000, 500, 250, 200, 125, 100, 66, 50 };
+        private int[] speeds = new int[] { 600000, 1000, 500, 250, 200, 125, 100, 66, 50 };
 
         #endregion
 
@@ -58,8 +58,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.cmbSpeed.SelectionChanged += CmbSpeed_SelectionChanged;
             if (tmr == null)
             {
-                tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[1]), DispatcherPriority.Normal, Refresh);
-                cmbSpeed.SelectedIndex = 1;
+                tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[2]), DispatcherPriority.Normal, Refresh);
+                cmbSpeed.SelectedIndex = 2;
             }
 
             return true;
@@ -71,7 +71,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             var s = cmbSpeed.SelectedIndex.ToInteger();
             if (s < 0 || s >= speeds.Length)
             {
-                s = 1;
+                s = 2;
             }
             speed = s;
             tmr.Interval = TimeSpan.FromMilliseconds(speeds[speed]);
@@ -108,6 +108,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 {
                     tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[speed]), DispatcherPriority.Normal, Refresh);
                 }
+                tmr.Stop();
 
                 frameNumber++;
                 if (frameNumber >= SpriteData.Frames)
@@ -147,6 +148,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
             catch(Exception ex) 
             {
+            }
+            if (tmr != null)
+            {
+                tmr.Start();
             }
         }        
 

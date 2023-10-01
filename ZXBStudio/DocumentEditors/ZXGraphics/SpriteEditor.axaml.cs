@@ -140,24 +140,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     for (int fn = 0; fn < spr.Frames; fn++)
                     {
                         Pattern pat = spr.Patterns[fn];
-                        pat.RawData = new int[spr.Width * spr.Height];
-                        int index = 0;
-                        for (int y = 0; y < spr.Height; y++)
-                        {
-                            for (int x = 0; x < spr.Width; x++)
-                            {
-                                var pd = pat.Data.FirstOrDefault(d => d.X == x && d.Y == y);
-                                if (pd == null)
-                                {
-                                    pat.RawData[index] = 0;
-                                }
-                                else
-                                {
-                                    pat.RawData[index] = pd.ColorIndex;
-                                }
-                                index++;
-                            }
-                        }
+                        pat.RawData = ServiceLayer.PointData2RawData(pat.Data, spr.Width, spr.Height);
                         pat.Data = null;
                     }
                     if (spr.Frames < spr.Patterns.Count())
@@ -273,21 +256,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             {
                                 continue;
                             }
-                            pat.Data = new PointData[spr.Width * spr.Height];
-                            int index = 0;
-                            for (int y = 0; y < spr.Height; y++)
-                            {
-                                for (int x = 0; x < spr.Width; x++)
-                                {
-                                    pat.Data[index] = new PointData()
-                                    {
-                                        X = x,
-                                        Y = y,
-                                        ColorIndex = pat.RawData[index]
-                                    };
-                                    index++;
-                                }
-                            }
+                            pat.Data = ServiceLayer.RawData2PointData(pat.RawData, spr.Width, spr.Height);
                             pat.RawData = null;
                         }
                     }
@@ -339,9 +308,37 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnMask.Tapped += BtnMask_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
 
+            btnPaper.Click += BtnPaper_Click;            
             Refresh();
             _Modified = false;
+
+            if (SpritePatternsList.Count > 1) {
+                SpriteList_Command(SpritePatternsList.ElementAt(0), "SELECTED");
+            }
         }
+
+        #region Color
+
+        private void BtnPaper_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dlg = new ColorPickerDialog();
+            var ac = new AttributeColor()
+            {
+                Bright = false,
+                Flash = false,
+                Ink = ctrlEditor.PrimaryColorIndex,
+                Paper = ctrlEditor.SecondaryColorIndex
+            };
+            dlg.Initialize(ac, ctrlEditor.SpriteData.Palette,ctrlEditor.SpriteData.GraphicMode,ColorPicker_Action);
+            dlg.ShowDialog(this.VisualRoot as Window);
+        }
+
+        private void ColorPicker_Action(string arg1, AttributeColor color)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
 
         #region SpriteList

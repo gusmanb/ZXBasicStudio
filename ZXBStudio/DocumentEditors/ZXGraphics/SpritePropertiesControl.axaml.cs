@@ -358,6 +358,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             if (SpriteData.GraphicMode != value)
             {
                 SpriteData.GraphicMode = value;
+                SpriteData.Palette = ServiceLayer.GetPalette(SpriteData.GraphicMode);
                 Refresh();
                 CallBackCommand(this, "REFRESH");
             }
