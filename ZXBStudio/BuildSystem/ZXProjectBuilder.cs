@@ -281,6 +281,11 @@ namespace ZXBasicStudio.BuildSystem
 
                 return program;
             }
+            catch (LineOutOfRangeException ex)
+            {
+                OutputLogWritter.WriteLine($"Found invalid program: {ex.Message}");
+                return null;
+            }
             catch (Exception ex)
             {
                 OutputLogWritter.WriteLine($"Exception: {ex.Message} {ex.StackTrace}");
@@ -346,6 +351,11 @@ namespace ZXBasicStudio.BuildSystem
                 OutputLogWritter.WriteLine("Program exported successfully.");
 
                 return true;
+            }
+            catch (LineOutOfRangeException ex)
+            {
+                OutputLogWritter.WriteLine($"Found invalid program: {ex.Message}");
+                return false;
             }
             catch (Exception ex)
             {
