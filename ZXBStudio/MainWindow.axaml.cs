@@ -102,6 +102,8 @@ namespace ZXBasicStudio
         ZXTapePlayer _player;
         ZXDockingControl _playerDock;
 
+        ZXDocumentEditorBase? _activeEditor = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -233,6 +235,43 @@ namespace ZXBasicStudio
                         SwapFullScreen();} },
             };
             #endregion
+
+            tcEditors.SelectionChanged += TcEditors_SelectionChanged;
+        }
+
+        private void TcEditors_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var activated = e.AddedItems.OfType<TabItem>().FirstOrDefault();
+            var deactivated = e.RemovedItems.OfType<TabItem>().FirstOrDefault();
+
+            if (deactivated != null)
+            {
+                var editor = deactivated.Content as ZXDocumentEditorBase;
+
+                if (editor != null)
+                {
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(100);
+                        Dispatcher.UIThread.Invoke(() => editor.Deactivated());
+                    });
+                }
+
+            }
+
+            if (activated != null)
+            {
+                var editor = activated.Content as ZXDocumentEditorBase;
+
+                if (editor != null)
+                {
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(100);
+                        Dispatcher.UIThread.Invoke(() => editor.Activated());
+                    });
+                }
+            }
         }
 
         protected override void OnMeasureInvalidated()

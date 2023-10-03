@@ -65,5 +65,21 @@ namespace ZXBasicStudio.DocumentModel.Classes
         /// IDisposable implementation. All derived classes need to implement it in order to at least clear the event handlers
         /// </summary>
         public abstract void Dispose();
+
+        /// <summary>
+        /// Called when the document is activated (shown to the user)
+        /// </summary>
+        public virtual void Activated()
+        {
+            
+        }
+
+        /// <summary>
+        /// Called when the document is deactivated (hidden from the user)
+        /// </summary>
+        public virtual void Deactivated()
+        {
+
+        }
     }
 }
