@@ -35,7 +35,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
 
         #region ZXDocumentBase properties
-
+        
         public override string DocumentName
         {
             get
@@ -58,7 +58,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             get
             {
                 return _Modified;
-            }
+            }            
         }
 
         private bool _Modified = false;
@@ -169,6 +169,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             return true;
         }
 
+
+        public override void Dispose()
+        {
+        }
 
         #endregion
 

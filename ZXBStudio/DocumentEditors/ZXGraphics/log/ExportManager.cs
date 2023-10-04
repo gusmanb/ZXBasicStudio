@@ -60,6 +60,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                 {
                     continue;
                 }
+                var patterns = CreatePatterns(fileTypeConfig, fileData);
 
                 switch (fileTypeConfig.FileType)
                 {
@@ -67,15 +68,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     case FileTypes.UDG:
                         {
                             var patterns = CreatePatterns(fileTypeConfig, fileData);
-                            Export(exportConfig, fileTypeConfig, patterns);
+                Export(exportConfig, fileTypeConfig, patterns);
                             return true;
-                        }
+            }
                     case FileTypes.Sprite:
                         {
                             var sprites = CreateSprites(fileData);
                             ExportSprites(exportConfig,sprites);
-                            return true;
-                        }
+            return true;
+        }
 
                 }
 

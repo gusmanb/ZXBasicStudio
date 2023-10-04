@@ -82,23 +82,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding
                     }
                 }
 
-                /*
-                string startType = start.Groups[3].Value.ToLower();
-                string endType = end.Groups[2].Value.ToLower();
-
-                string name = "";
-
-                if (start.Groups[2].Success)
-                    name += start.Groups[2].Value + " ";
-
-                name += start.Groups[3].Value + " ";
-
-                if (start.Groups[4].Success)
-                    name += start.Groups[4].Value.Trim() + " ";
-
-                name += start.Groups[5].Value;
-                */
-
                 var name = "...";
 
                 int subOffset = start.Value.EndsWith("\r") ? -1 : 0;

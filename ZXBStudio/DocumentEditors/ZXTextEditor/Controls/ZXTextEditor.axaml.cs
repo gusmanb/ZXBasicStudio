@@ -779,5 +779,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         }
         #endregion
 
+        public override void Activated()
+        {
+            editor.TextArea.Focus();
+        }
+
     }
 }

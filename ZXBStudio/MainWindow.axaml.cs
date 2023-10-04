@@ -30,7 +30,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Metadata;
 using System.Resources;
 using System.Runtime.InteropServices;
@@ -103,14 +102,11 @@ namespace ZXBasicStudio
         ZXTapePlayer _player;
         ZXDockingControl _playerDock;
 
+        ZXDocumentEditorBase? _activeEditor = null;
+
         public MainWindow()
         {
             InitializeComponent();
-
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            // Obtiene la información de versión del ensamblado
-            var version = assembly.GetName().Version.ToString();
-            this.Title = "ZXBasicStudio with ZXGraphics v" + version + "-beta";
 
             GlobalKeybHandler.KeyUp += GlobalKeyUp;
 
@@ -239,6 +235,43 @@ namespace ZXBasicStudio
                         SwapFullScreen();} },
             };
             #endregion
+
+            tcEditors.SelectionChanged += TcEditors_SelectionChanged;
+        }
+
+        private void TcEditors_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var activated = e.AddedItems.OfType<TabItem>().FirstOrDefault();
+            var deactivated = e.RemovedItems.OfType<TabItem>().FirstOrDefault();
+
+            if (deactivated != null)
+            {
+                var editor = deactivated.Content as ZXDocumentEditorBase;
+
+                if (editor != null)
+                {
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(100);
+                        Dispatcher.UIThread.Invoke(() => editor.Deactivated());
+                    });
+                }
+
+            }
+
+            if (activated != null)
+            {
+                var editor = activated.Content as ZXDocumentEditorBase;
+
+                if (editor != null)
+                {
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(100);
+                        Dispatcher.UIThread.Invoke(() => editor.Activated());
+                    });
+                }
+            }
         }
 
         protected override void OnMeasureInvalidated()

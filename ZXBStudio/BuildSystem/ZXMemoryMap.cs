@@ -37,6 +37,13 @@ namespace ZXBasicStudio.BuildSystem
 
                 var file = files[fileId];
 
+                if (!ushort.TryParse(address, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out var _))
+                { 
+                
+                    throw new LineOutOfRangeException($"Invalid address {address} in {file.Name} at line {lineNumber}.");
+                
+                }
+
                 var line = new ZXCodeLine(file.FileType, file.AbsolutePath, int.Parse(lineNumber), ushort.Parse(address, System.Globalization.NumberStyles.HexNumber));
                 lines.Add(line);
             }
@@ -50,5 +57,10 @@ namespace ZXBasicStudio.BuildSystem
                     lines.Remove(dline);
             }
         }
+    }
+
+    public class LineOutOfRangeException : Exception 
+    {
+        public LineOutOfRangeException(string message) : base(message) { }
     }
 }

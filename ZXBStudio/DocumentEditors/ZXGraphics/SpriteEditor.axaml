@@ -139,7 +139,7 @@
         </WrapPanel>
 
         <local:SpritePatternEditor Name="ctrlEditor" Grid.Row="1" Background="#303030"/>
-
+        
         <WrapPanel Orientation="Horizontal" Background="#ff202020" Grid.Row="2" Margin="10,5,10,5" Height="NaN">
           <TextBlock Name="txtZoom" Classes="dialog" Width="54">Zoom 24x</TextBlock>
           <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" VerticalAlignment="Center"/>
@@ -167,10 +167,10 @@
           <GridSplitter ResizeDirection="Rows" Grid.Row="1" Classes="horizontal"></GridSplitter>
 
           <zxd:ZXDockingControl Grid.Row="2" Name="dockProperties" Title="Properties" DockingGroup="ZXGraphics2" DesiredFloatingSize="200,400">
-            <zxd:ZXDockingControl.DockedControl>
+          <zxd:ZXDockingControl.DockedControl>
               <local:SpritePropertiesControl Name="ctrlProperties"/>
-            </zxd:ZXDockingControl.DockedControl>
-          </zxd:ZXDockingControl>
+          </zxd:ZXDockingControl.DockedControl>
+        </zxd:ZXDockingControl>
         </Grid>
 
       </zxd:ZXDockingContainer>
