@@ -22,8 +22,8 @@
         <Template>
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="{Binding $parent[1].Tag}" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-            <Button Height="16" Width="16" Padding="0,-3,0,0" 
-                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+            <Button Height="16" Width="16" Padding="0,-3,0,0"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                     HorizontalAlignment="Center" VerticalAlignment="Center"
                     Click="CloseFile" Grid.Column="1">x</Button>
           </Grid>
@@ -212,5 +212,5 @@
         </zxd:ZXDockingControl>
       </zxd:ZXTabDockingContainer.DockedControls>
     </zxd:ZXTabDockingContainer>
-</Grid>
+  </Grid>
 </wnd:ZXWindowBase>

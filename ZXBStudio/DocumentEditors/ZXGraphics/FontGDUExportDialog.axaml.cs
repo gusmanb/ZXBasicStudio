@@ -48,7 +48,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.cmbSelectExportType.Initialize(ExportType_Changed);
             exportConfig = ServiceLayer.Export_GetConfigFile(fileType.FileName + ".zbs");
             if (exportConfig == null)
-                exportConfig = ServiceLayer.Export_GetDefaultConfig(fileType.FileName);
+                exportConfig = ServiceLayer.Export_FontGDU_GetDefaultConfig(fileType.FileName);
+
+            cmbSelectExportType.InitializeFontGDU();
 
             txtLabelName.Text = exportConfig.LabelName;
             txtMemoryAddr.Text = exportConfig.ZXAddress.ToString();
@@ -57,6 +59,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             chkAuto.IsChecked = exportConfig.AutoExport;
             cmbSelectExportType.ExportType = exportConfig.ExportType;
             cmbArrayBase.SelectedIndex = exportConfig.ArrayBase.ToInteger();
+
             return true;
         }
 

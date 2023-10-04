@@ -67,6 +67,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
 
         Guid IZXDocumentType.DocumentTypeId => _docId;
 
-        ZXKeybCommand[]? IZXDocumentType.EditorCommands => new ZXKeybCommand[0];
+        ZXKeybCommand[]? IZXDocumentType.EditorCommands => new ZXKeybCommand[]
+        {
+
+        };
     }
 }

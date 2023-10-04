@@ -12,10 +12,17 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
     public enum ExportTypes
     {
         None,
+
+        // Fonts and UDGs/GDUs
         Bin,
         Tap,
         Asm,
         Dim,
-        Data
+        Data,
+
+        // Sprites
+        PutChars,
+        GUSprite,
+        FourSprites
     }
 }

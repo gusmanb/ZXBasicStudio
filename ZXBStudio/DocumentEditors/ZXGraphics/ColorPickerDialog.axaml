@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:ZXBasicStudio.DocumentEditors.ZXGraphics"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="501"
+        Width="800" Height="501"
+        Icon="/Assets/zxbs.ico"
+        x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.ColorPickerDialog"
+        Title="Graphics build/export options" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  
+  <Grid Name="grdMain" RowDefinitions="Auto,8,Auto,*,Auto" ColumnDefinitions="*,8,*,8,Auto" Margin="10" >
+    <Canvas Name="cnvInk" Grid.Column="0" Grid.Row="2"/>
+    <Canvas Name="cnvPaper" Grid.Column="2" Grid.Row="2"/>
+  </Grid>
+
+</Window>

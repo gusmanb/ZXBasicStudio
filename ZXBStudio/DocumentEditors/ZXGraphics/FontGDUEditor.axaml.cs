@@ -12,6 +12,10 @@ using ZXBasicStudio.Classes;
 using AvaloniaEdit.Folding;
 using Avalonia.Threading;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding;
+using Avalonia.Input;
+using System.Collections.Generic;
+using AvaloniaEdit;
+using System.Reflection;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -117,6 +121,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private FoldingManager? fManager;
         private DispatcherTimer? updateFoldingsTimer;
 
+        private Guid documentTypeId = Guid.Empty;
+
         #endregion
 
 
@@ -164,10 +170,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-        public override void Dispose()
-        {
-        }
-
         #endregion
 
 
@@ -187,9 +189,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// Constructor
         /// </summary>
         /// <param name="fileName">Name of the file</param>
-        public FontGDUEditor(string fileName)
+        public FontGDUEditor(string fileName, Guid documentTypeId)
         {
             InitializeComponent();
+            this.documentTypeId = documentTypeId;
             Initialize(fileName);
         }
 
@@ -240,7 +243,44 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnInvert.Tapped += BtnInvert_Tapped;
             btnMask.Tapped += BtnMask_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
+
+            InitializeShortcuts();
+
+            this.AddHandler(KeyDownEvent, Keyboard_Down, handledEventsToo: true);
+            this.Focus();
+
             return true;
+        }
+
+
+        public override void Dispose()
+        {
+            sldZoom.PropertyChanged -= SldZoom_PropertyChanged;
+            txtEditorWidth.ValueChanged -= TxtEditorWidth_ValueChanged;
+            txtEditorHeight.ValueChanged -= TxtEditorHeight_ValueChanged;
+
+            btnClear.Tapped -= BtnClear_Tapped;
+            btnCut.Tapped -= BtnCut_Tapped;
+            btnCopy.Tapped -= BtnCopy_Tapped;
+            btnPaste.Tapped -= BtnPaste_Tapped;
+            btnHMirror.Tapped -= BtnHMirror_Tapped;
+            btnVMirror.Tapped -= BtnVMirror_Tapped;
+            btnRotateLeft.Tapped -= BtnRotateLeft_Tapped;
+            btnRotateRight.Tapped -= BtnRotateRight_Tapped;
+            btnShiftUp.Tapped -= BtnShiftUp_Tapped;
+            btnShiftRight.Tapped -= BtnShiftRight_Tapped;
+            btnShiftDown.Tapped -= BtnShiftDown_Tapped;
+            btnShiftLeft.Tapped -= BtnShiftLeft_Tapped;
+            btnMoveUp.Tapped -= BtnMoveUp_Tapped;
+            btnMoveRight.Tapped -= BtnMoveRight_Tapped;
+            btnMoveDown.Tapped -= BtnMoveDown_Tapped;
+            btnMoveLeft.Tapped -= BtnMoveLeft_Tapped;
+            btnInvert.Tapped -= BtnInvert_Tapped;
+            btnMask.Tapped -= BtnMask_Tapped;
+            btnExport.Tapped -= BtnExport_Tapped;
+
+            this.KeyDown -= Keyboard_Down;
+            ctrEditor.KeyDown -= Keyboard_Down;
         }
 
 
@@ -615,13 +655,127 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void BtnExport_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
+            Export();
+        }
+
+
+        private void Export()
+        {
             var dlg = new FontGDUExportDialog();
-            dlg.Initialize(fileType, patterns.Select(d=>d.Pattern).ToArray());
+            dlg.Initialize(fileType, patterns.Select(d => d.Pattern).ToArray());
             dlg.ShowDialog(this.VisualRoot as Window);
+        }
+
+
+        private void ZoomIn()
+        {
+            int v = sldZoom.Value.ToInteger();
+            if (v < zooms.Length - 1)
+            {
+                sldZoom.Value = v - 1;
+            }
+        }
+
+
+        private void ZoomOut()
+        {
+            int v = sldZoom.Value.ToInteger();
+            if (v > 0)
+            {
+                sldZoom.Value = v - 1;
+            }
+
         }
 
         #endregion
 
 
+        #region Keyboard shortcus
+
+        private Dictionary<Guid, Action> _keybCommands = new Dictionary<Guid, Action>();
+
+        internal static Dictionary<string, ZXKeybCommand> keyboardCommands = new Dictionary<string, ZXKeybCommand> {
+            { "Save", new ZXKeybCommand{ CommandId = Guid.Parse("87f7d73b-d28a-44f4-ba0c-41baa4de238c"), CommandName = "Save", Key = Key.S, Modifiers = KeyModifiers.Control } },
+            { "Copy",new ZXKeybCommand{ CommandId = Guid.Parse("fee014bb-222b-42e3-80f3-048325b70e34"), CommandName = "Copy", Key = Key.C, Modifiers = KeyModifiers.Control } },
+            { "Cut",new ZXKeybCommand{ CommandId = Guid.Parse("1edf352f-238b-421e-b69f-613dc63c0e47"), CommandName = "Cut", Key = Key.X, Modifiers = KeyModifiers.Control } },
+            { "Paste", new ZXKeybCommand{ CommandId = Guid.Parse("f5d450b0-d126-4f62-885b-b3e28e638542"), CommandName = "Paste", Key = Key.V, Modifiers = KeyModifiers.Control } },
+            { "Undo", new ZXKeybCommand{ CommandId = Guid.Parse("912c1887-ab37-4c0a-9aee-65d84b4521c7"), CommandName = "Undo", Key = Key.Z, Modifiers = KeyModifiers.Control } },
+            { "Redo", new ZXKeybCommand{ CommandId = Guid.Parse("c5c506f0-d5e4-429f-ad21-af8cee7d1d9a"), CommandName = "Redo", Key = Key.Z, Modifiers = KeyModifiers.Control | KeyModifiers.Shift } },
+
+            { "Clear", new ZXKeybCommand{ CommandId = Guid.Parse("246e1449-0a64-4327-a8d1-f1dbecbc69d2"), CommandName = "Clear", Key = Key.Q, Modifiers = KeyModifiers.Control | KeyModifiers.Shift } },
+            { "Rotate Right", new ZXKeybCommand{ CommandId = new Guid("490e8830-f268-48f3-8989-92d6e22b8790"), CommandName = "Rotate Right", Key = Key.R, Modifiers = KeyModifiers.None } },
+            { "Rotate Left", new ZXKeybCommand{ CommandId = new Guid("1da1bae1-2242-4061-9fa2-9265fc7f74b1"), CommandName = "Rotate Left", Key = Key.R, Modifiers = KeyModifiers.Shift } },
+            { "Horizontal Mirror", new ZXKeybCommand{ CommandId = new Guid("aad6fb75-15c7-4f09-aa1c-af1e1b62f849"), CommandName = "Horizontal Mirror", Key = Key.H, Modifiers = KeyModifiers.None } },
+            { "Vertical Mirror", new ZXKeybCommand{ CommandId = new Guid("3e20f906-c2e5-46b1-aa6d-8ee503769917"), CommandName = "Vertical Mirror", Key = Key.V, Modifiers = KeyModifiers.None } },
+            { "Shift Up", new ZXKeybCommand{ CommandId = new Guid("7a2f0381-b603-4c5f-aefd-08ebafc74e5c"), CommandName = "Shift Up", Key = Key.Up, Modifiers = KeyModifiers.None } },
+            { "Shift Right", new ZXKeybCommand{ CommandId = new Guid("75a310dd-66ec-41a5-bc8d-1b3408fd4f41"), CommandName = "Shift Right", Key = Key.Right, Modifiers = KeyModifiers.None } },
+            { "Shift Down", new ZXKeybCommand{ CommandId = new Guid("2a73e9cd-f318-4a15-bdc7-daf35429c6e5"), CommandName = "Shift Down", Key = Key.Down, Modifiers = KeyModifiers.None } },
+            { "Shift Left", new ZXKeybCommand{ CommandId = new Guid("1c8f1ec5-596c-4e7f-9fb6-9d5ff527b37a"), CommandName = "Shift Left", Key = Key.Left, Modifiers = KeyModifiers.None } },
+            { "Move Up", new ZXKeybCommand{ CommandId = new Guid("6c202c3d-921f-43f7-b810-33febc8ad947"), CommandName = "Move Up", Key = Key.Up, Modifiers = KeyModifiers.Shift } },
+            { "Move Right", new ZXKeybCommand{ CommandId = new Guid("8e2e96d0-0aa4-426e-a340-32cb53368000"), CommandName = "Move Right", Key = Key.Right, Modifiers = KeyModifiers.Shift } },
+            { "Move Down", new ZXKeybCommand{ CommandId = new Guid("bdd1c206-e3ec-4a7d-8e61-42b620097b31"), CommandName = "Move Down", Key = Key.Down, Modifiers = KeyModifiers.Shift } },
+            { "Move Left", new ZXKeybCommand{ CommandId = new Guid("6a6b98cf-5427-4d85-a230-6ab18544e312"), CommandName = "Move Left", Key = Key.Left, Modifiers = KeyModifiers.Shift } },
+            { "Invert", new ZXKeybCommand{ CommandId = new Guid("e88125e8-f671-4085-ae8c-8d1f4866738a"), CommandName = "Invert", Key = Key.I, Modifiers = KeyModifiers.None } },
+            { "Mask", new ZXKeybCommand{ CommandId = new Guid("efd5a1f4-cab8-4003-8370-8adf81176081"), CommandName = "Mask", Key = Key.M, Modifiers = KeyModifiers.None } },
+            { "Export", new ZXKeybCommand{ CommandId = new Guid("321119c0-5c9b-40b5-9385-a62ca013f83c"), CommandName = "Export", Key = Key.E, Modifiers = KeyModifiers.None } },
+            { "Zoom In", new ZXKeybCommand{ CommandId = new Guid("7e958c3d-c135-46b2-b041-63b8c7828787"), CommandName = "Zoom In", Key = Key.Add, Modifiers = KeyModifiers.None } },
+            { "Zoom Out", new ZXKeybCommand{ CommandId = new Guid("d69843bb-8ad0-4eea-be58-29646dddaeed"), CommandName = "Zoom Out", Key = Key.Subtract, Modifiers = KeyModifiers.None } },
+        };
+
+
+        private void InitializeShortcuts()
+        {
+            DisableCommand(ApplicationCommands.Cut);
+            DisableCommand(ApplicationCommands.Copy);
+            DisableCommand(ApplicationCommands.Paste);
+
+            _keybCommands = new Dictionary<Guid, Action>()
+            {
+                { keyboardCommands["Save"].CommandId, () => { RequestSaveDocument?.Invoke(this, EventArgs.Empty); } },
+                { keyboardCommands["Copy"].CommandId, () => { ctrEditor.Copy(); } },
+                { keyboardCommands["Cut"].CommandId, () => { ctrEditor.Cut(); } },
+                { keyboardCommands["Paste"].CommandId, () => { ctrEditor.Paste(); } },
+                { keyboardCommands["Undo"].CommandId, () => { ctrEditor.Undo(); } },
+                { keyboardCommands["Redo"].CommandId, () => { ctrEditor.Redo(); } },
+
+                { keyboardCommands["Clear"].CommandId, () => { ctrEditor.Clear(); } },
+                { keyboardCommands["Rotate Right"].CommandId, () => { ctrEditor.RotateRight(); } },
+                { keyboardCommands["Rotate Left"].CommandId, () => { ctrEditor.RotateLeft(); } },
+                { keyboardCommands["Horizontal Mirror"].CommandId, () => { ctrEditor.HorizontalMirror(); } },
+                { keyboardCommands["Vertical Mirror"].CommandId, () => { ctrEditor.VerticalMirror(); } },
+                { keyboardCommands["Shift Up"].CommandId, () => { ctrEditor.ShiftUp(); } },
+                { keyboardCommands["Shift Right"].CommandId, () => { ctrEditor.ShiftRight(); } },
+                { keyboardCommands["Shift Down"].CommandId, () => { ctrEditor.ShiftDown(); } },
+                { keyboardCommands["Shift Left"].CommandId, () => { ctrEditor.ShiftLeft(); } },
+                { keyboardCommands["Move Up"].CommandId, () => { ctrEditor.MoveUp(); } },
+                { keyboardCommands["Move Right"].CommandId, () => { ctrEditor.MoveRight(); } },
+                { keyboardCommands["Move Down"].CommandId, () => { ctrEditor.MoveDown(); } },
+                { keyboardCommands["Move Left"].CommandId, () => { ctrEditor.MoveLeft(); } },
+                { keyboardCommands["Invert"].CommandId, () => { ctrEditor.Invert(); } },
+                { keyboardCommands["Mask"].CommandId, () => { ctrEditor.Mask(); } },
+                { keyboardCommands["Export"].CommandId, () => { Export(); } },
+                { keyboardCommands["Zoom In"].CommandId, () => { ZoomIn(); } },
+                { keyboardCommands["Zoom Out"].CommandId, () => { ZoomOut(); } },
+            };
+        }
+
+        private void DisableCommand(RoutedCommand cut)
+        {
+            var field = typeof(RoutedCommand).GetField("<Gesture>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            KeyGesture g = new KeyGesture(Key.None, KeyModifiers.None);
+            field.SetValue(cut, g);
+        }
+
+        private void Keyboard_Down(object? sender, Avalonia.Input.KeyEventArgs e)
+        {
+            var commandId = ZXKeybMapper.GetCommandId(documentTypeId, e.Key, e.KeyModifiers);
+
+            if (commandId != null && _keybCommands.ContainsKey(commandId.Value))
+            {
+                _keybCommands[commandId.Value]();
+            }
+        }
+
+        #endregion
     }
 }

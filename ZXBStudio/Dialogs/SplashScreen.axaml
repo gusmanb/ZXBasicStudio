@@ -11,6 +11,8 @@
         SystemDecorations="None"
 		    Topmost="True">
   <Border BorderBrush="Black" BorderThickness="2">
-    <Image Source="/Assets/LogoBig.png"></Image>
+    <Grid RowDefinitions="*,Auto">
+      <Image Grid.RowSpan="2" Source="/Assets/LogoBig.png"></Image>      
+    </Grid>
   </Border>
 </Window>

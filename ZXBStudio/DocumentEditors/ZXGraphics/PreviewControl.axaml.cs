@@ -17,7 +17,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// Delegate for get pattern
         /// </summary>
         private Func<int, Pattern> callbackGetPattern = null;
-        
+
         /// <summary>
         /// Timer for animation
         /// </summary>
@@ -160,6 +160,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
 
             var sel = cmbSpeed.SelectedIndex;
+            if (sel < 0)
+            {
+                sel = 2;
+            }
             int speed = speeds[sel];
             tmr.Interval = TimeSpan.FromMilliseconds(speed);
         }
