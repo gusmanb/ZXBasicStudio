@@ -170,6 +170,20 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        public override void Activated()
+        {
+            this.Focus();
+            ctrlPreview.Start();
+            base.Activated();
+        }
+
+
+        public override void Deactivated()
+        {
+            ctrlPreview.Stop();
+            base.Deactivated();
+        }
+
         #endregion
 
 

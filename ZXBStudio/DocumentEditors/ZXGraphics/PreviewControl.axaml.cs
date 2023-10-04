@@ -77,6 +77,27 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        public void Start()
+        {
+            if (tmr == null)
+            {
+                tmr = new DispatcherTimer();
+                tmr.Interval = TimeSpan.FromMilliseconds(500);
+                tmr.Tick += tmr_Tick;
+            }
+            tmr.Start();
+        }
+
+
+        public void Stop()
+        {
+            if (tmr != null)
+            {
+                tmr.Stop();
+            }
+        }
+
+
         /// <summary>
         /// Timer tick event to refresh preview
         /// </summary>
