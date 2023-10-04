@@ -170,6 +170,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                         p.Name = "";
                         break;
                 }
+                p.Data = ServiceLayer.Binary2PointData(n, fileData, 0, 0);
                 patterns.Add(p);
             }
             return patterns.ToArray();

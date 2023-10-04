@@ -36,7 +36,7 @@
         <NumericUpDown Classes="dialog" Name="txtFrames" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
       </Border>
       
-      <CheckBox IsVisible="false" Grid.Row="6" Grid.ColumnSpan="2" Classes="dialog" Name="chkMasked" Margin="8,2,0,4">Masked sprite</CheckBox>
+      <CheckBox Grid.Row="6" Grid.ColumnSpan="2" Classes="dialog" Name="chkMasked" Margin="8,2,0,4">Masked sprite (pair frames)</CheckBox>
       <CheckBox Grid.Row="7" Grid.ColumnSpan="2" Classes="dialog" Name="chkExport" Margin="8,2,0,4">Include in the export</CheckBox>
       
       <Grid Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">

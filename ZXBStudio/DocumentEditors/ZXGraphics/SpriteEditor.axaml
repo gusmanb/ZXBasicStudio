@@ -48,8 +48,8 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid Name="grdMain">
-    <Grid Name="grdEditor" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">
+  <Grid Name="grdMain" RowDefinitions="*,Auto">
+    <Grid Name="grdEditor" Grid.RowSpan="2" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">
 
       <zxd:ZXDockingContainer Name="dockLeft" DockingGroup="ZXGraphics" RowDefinitions="*">
         <zxd:ZXDockingControl Name="dockPatterns" Title="Sprite list" DockingGroup="ZXGraphics" DesiredFloatingSize="">
@@ -176,5 +176,7 @@
       </zxd:ZXDockingContainer>
 
     </Grid>
+
+    <local:ColorPickerControl Name="ctrlColorPicker" Grid.Row="1" IsVisible="false"/>
   </Grid>
 </UserControl>

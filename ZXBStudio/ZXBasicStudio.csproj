@@ -500,6 +500,9 @@
     <Compile Update="DocumentEditors\ZXGraphics\ColorPickerDialog.axaml.cs">
       <DependentUpon>ColorPickerDialog.axaml</DependentUpon>
     </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\ColorPickerControl.axaml.cs">
+      <DependentUpon>ColorPickerControl.axaml</DependentUpon>
+    </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\SpriteExportDialog.axaml.cs">
       <DependentUpon>SpriteExportDialog.axaml</DependentUpon>
     </Compile>

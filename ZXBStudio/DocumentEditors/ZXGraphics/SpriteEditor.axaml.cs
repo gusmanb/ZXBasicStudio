@@ -286,11 +286,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnMask.Tapped += BtnMask_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
 
-            btnPaper.Click += BtnPaper_Click;            
+            btnPaper.Click += BtnPaper_Click;
             Refresh();
             _Modified = false;
 
-            if (SpritePatternsList.Count > 1) {
+            if (SpritePatternsList.Count > 1)
+            {
                 SpriteList_Command(SpritePatternsList.ElementAt(0), "SELECTED");
             }
 
@@ -308,16 +309,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void BtnPaper_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            var dlg = new ColorPickerDialog();
-            var ac = new AttributeColor()
-            {
-                Bright = false,
-                Flash = false,
-                Ink = ctrlEditor.PrimaryColorIndex,
-                Paper = ctrlEditor.SecondaryColorIndex
-            };
-            dlg.Initialize(ac, ctrlEditor.SpriteData.Palette,ctrlEditor.SpriteData.GraphicMode,ColorPicker_Action);
-            dlg.ShowDialog(this.VisualRoot as Window);
+            var sprite = ctrlEditor.SpriteData;
+            ctrlColorPicker.IsVisible = true;
+            ctrlColorPicker.Inicialize(sprite.GraphicMode, sprite.Palette, ctrlEditor.PrimaryColorIndex, ctrlEditor.SecondaryColorIndex,ctrlEditor.Bright,ctrlEditor.Flash);
         }
 
         private void ColorPicker_Action(string arg1, AttributeColor color)

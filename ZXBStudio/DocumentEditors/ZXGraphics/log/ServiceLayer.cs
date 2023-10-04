@@ -578,17 +578,32 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                         for (int i = 0; i < 256; i++)
                         {
                             r = (i >> 5);
+                            r = r * 37;
+                            if (r > 255)
+                            {
+                                r=255;
+                            }
                             g = ((i >> 2) & 0x07);
+                            g = g * 37;
+                            if (g > 255)
+                            {
+                                g = 255;
+                            }
                             b = (i & 0x07);
                             if (b != 0)
                             {
                                 b++;
                             }
+                            b = b * 37;
+                            if (b > 255)
+                            {
+                                b = 255;
+                            }
                             pal[i] = new PaletteColor()
                             {
-                                Blue = (byte)(((double)b)*37),
-                                Green = (byte)(((double)g)*37),
-                                Red = (byte)(((double)r)*37)
+                                Blue = (byte)b,
+                                Green = (byte)g,
+                                Red = (byte)r
                             };
                         }
                         return pal;

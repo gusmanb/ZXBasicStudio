@@ -65,6 +65,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private bool newSprite = true;
         private Sprite _SpriteData = null;
 
+        private byte[] ZX2NextColors = new byte[] { 0, 2, 160, 162, 20, 22, 180, 227, 0, 3, 224, 226, 28, 31, 252, 255 };
+
         #endregion
 
 
@@ -97,7 +99,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             txtHeight.ValueChanged += TxtHeight_ValueChanged;
             txtFrames.ValueChanged += TxtFrames_ValueChanged;
             chkMasked.IsCheckedChanged += ChkMasked_IsCheckedChanged;
-            chkExport.IsCheckedChanged += ChkExport_IsCheckedChanged;            
+            chkExport.IsCheckedChanged += ChkExport_IsCheckedChanged;
 
             _SettingsChanged = false;
             newSprite = true;
@@ -106,7 +108,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             return true;
         }
-        
+
 
         public void Refresh()
         {
@@ -135,7 +137,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 txtWidth.Value = SpriteData.Width;
                 chkMasked.IsChecked = SpriteData.Masked;
                 cmbMode.SelectedIndex = (byte)SpriteData.GraphicMode;
-                chkExport.IsChecked= SpriteData.Export;
+                chkExport.IsChecked = SpriteData.Export;
 
                 if (SpriteData.Patterns == null || SpriteData.Patterns.Count == 0)
                 {
@@ -146,7 +148,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         Id = 0,
                         Name = "",
                         Number = "",
-                        RawData=new int[64]
+                        RawData = new int[64]
                     });
                 }
                 if (SpriteData.Palette == null || SpriteData.Palette.Length == 0)
@@ -167,96 +169,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             _IsSelected = true;
             Refresh();
             CallBackCommand(this, "SELECTED");
-        }
-
-
-        /*
-        public void ApplySettings(bool askForApply)
-        {
-            if (SpriteData == null)
-            {
-                return;
-            }
-            else
-            {
-                var sp = SpriteData.Clonar<Sprite>();
-                sp.Frames = txtFrames.Value.ToByte();
-                sp.GraphicMode = (GraphicsModes)cmbMode.SelectedIndex;
-                sp.Height = txtHeight.Value.ToByte();
-                sp.Masked = chkMasked.IsChecked.ToBoolean();
-                sp.Name = txtName.Text;
-                sp.Width = txtWidth.Value.ToByte();
-
-                if (sp.Width != SpriteData.Width || sp.Height != SpriteData.Height)
-                {
-                    if (!ServiceLayer.SpriteData_Resize(ref sp, SpriteData.Width, SpriteData.Height))
-                    {
-                        // TODO: Report error
-                        return;
-                    }
-                }
-                if (sp.GraphicMode != SpriteData.GraphicMode)
-                {
-                    if (!ServiceLayer.SpriteData_ChangeMode(ref sp, SpriteData.GraphicMode))
-                    {
-                        // TODO: Report error
-                        return;
-                    }
-                }
-                if (sp.Masked != SpriteData.Masked)
-                {
-                    if (!ServiceLayer.SpriteData_ChangeMasked(ref sp, SpriteData.Masked))
-                    {
-                        // TODO: Report error
-                        return;
-                    }
-                }
-                if (sp.Frames != SpriteData.Frames)
-                {
-                    if (!ServiceLayer.SpriteData_ChangeFrames(ref sp, SpriteData.Frames))
-                    {
-                        // TODO: Report error
-                        return;
-                    }
-                }
-
-                _SpriteData = sp;
-                CallBackCommand?.Invoke(this, "UPDATE");
-                Refresh();
-                newSprite = false;
-            }
-        }
-        */
+        }        
 
         #endregion
 
 
         #region Private methods
-
-        private void AddNew()
-        {
-            var sp = new Sprite()
-            {
-                CurrentFrame = 0,
-                DefaultColor = 0,
-                Frames = 1,
-                GraphicMode = GraphicsModes.Monochrome,
-                Height = 8,
-                Id = -1,
-                Masked = false,
-                Name = "",
-                Patterns = new List<Pattern>(),
-                Width = 8
-            };
-            sp.Palette = ServiceLayer.GetPalette(sp.GraphicMode);
-            sp.Patterns.Add(CreatePattern());
-            SpriteData = sp;
-            _IsSelected = true;
-            Refresh();
-
-            CallBackCommand?.Invoke(this, "ADD");
-        }
-
 
         private Pattern CreatePattern()
         {
@@ -266,8 +184,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Name = "",
                 Number = "0",
                 Data = null,
-                RawData=new int[SpriteData.Width * SpriteData.Height]
-            };            
+                RawData = new int[SpriteData.Width * SpriteData.Height]
+            };
             return pat;
         }
 
@@ -337,10 +255,153 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             var value = (GraphicsModes)cmbMode.SelectedIndex;
             if (SpriteData.GraphicMode != value)
             {
+                ChangeMode(SpriteData.GraphicMode, value);
                 SpriteData.GraphicMode = value;
                 SpriteData.Palette = ServiceLayer.GetPalette(SpriteData.GraphicMode);
                 Refresh();
                 CallBackCommand(this, "REFRESH");
+            }
+        }
+
+
+        private void ChangeMode(GraphicsModes oldMode, GraphicsModes newMode)
+        {
+            // TODO: Improve conversion...
+            if (oldMode == newMode)
+            {
+                return;
+            }
+            if (oldMode == GraphicsModes.Monochrome)
+            {
+                switch (newMode)
+                {
+                    case GraphicsModes.ZXSpectrum:
+                        {                            
+                            foreach (var frame in SpriteData.Patterns)
+                            {
+                                for (int n = 0; n < frame.RawData.Length; n++)
+                                {
+                                    var o = frame.RawData[n];
+                                    if (o == 0)
+                                    {
+                                        frame.RawData[n] = 7;
+                                    }
+                                    else
+                                    {
+                                        frame.RawData[n] = 0;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case GraphicsModes.Next:
+                        {
+                            foreach (var frame in SpriteData.Patterns)
+                            {
+                                for (int n = 0; n < frame.RawData.Length; n++)
+                                {
+                                    var o = frame.RawData[n];
+                                    if (o == 0)
+                                    {
+                                        frame.RawData[n] = 227;
+                                    }
+                                    else
+                                    {
+                                        frame.RawData[n] = 0;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            else if (oldMode == GraphicsModes.ZXSpectrum)
+            {
+                switch (newMode)
+                {
+                    case GraphicsModes.Monochrome:
+                        {
+                            foreach (var frame in SpriteData.Patterns)
+                            {
+                                for (int n = 0; n < frame.RawData.Length; n++)
+                                {
+                                    var o = frame.RawData[n];
+                                    if (o == 0)
+                                    {
+                                        frame.RawData[n] = 1;
+                                    }
+                                    else
+                                    {
+                                        frame.RawData[n] = 0;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case GraphicsModes.Next:
+                        {
+                            foreach (var frame in SpriteData.Patterns)
+                            {
+                                for (int n = 0; n < frame.RawData.Length; n++)
+                                {
+                                    var o = frame.RawData[n];
+                                    if (o == 0)
+                                    {
+                                        frame.RawData[n] = 7;
+                                    }
+                                    else
+                                    {
+                                        frame.RawData[n] = 0;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            else if (oldMode == GraphicsModes.Next)
+            {
+                switch (newMode)
+                {
+                    case GraphicsModes.Monochrome:
+                        {
+                            foreach (var frame in SpriteData.Patterns)
+                            {
+                                for (int n = 0; n < frame.RawData.Length; n++)
+                                {
+                                    var o = frame.RawData[n];
+                                    if (o == 0)
+                                    {
+                                        frame.RawData[n] = 1;
+                                    }
+                                    else
+                                    {
+                                        frame.RawData[n] = 0;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case GraphicsModes.ZXSpectrum:
+                        {
+                            foreach (var frame in SpriteData.Patterns)
+                            {
+                                for (int n = 0; n < frame.RawData.Length; n++)
+                                {
+                                    var o = frame.RawData[n];
+                                    if (o == 0)
+                                    {
+                                        frame.RawData[n] = 0;
+                                    }
+                                    else
+                                    {
+                                        frame.RawData[n] = 7;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
             }
         }
 
@@ -353,7 +414,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 int oldWidth = SpriteData.Width;
                 int oldHeight = SpriteData.Height;
                 SpriteData.Width = value;
-                ResizePattern(oldWidth,oldHeight);
+                ResizePattern(oldWidth, oldHeight);
                 Refresh();
             }
         }
@@ -366,7 +427,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 int oldWidth = SpriteData.Width;
                 int oldHeight = SpriteData.Height;
                 SpriteData.Height = value;
-                ResizePattern(oldWidth,oldHeight);
+                ResizePattern(oldWidth, oldHeight);
                 Refresh();
             }
         }

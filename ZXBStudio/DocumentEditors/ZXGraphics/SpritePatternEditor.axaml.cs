@@ -75,6 +75,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         public int SecondaryColorIndex { get; set; }
 
+        public bool Bright { get; set; }
+        public bool Flash { get; set; }
+
         #endregion
 
 
