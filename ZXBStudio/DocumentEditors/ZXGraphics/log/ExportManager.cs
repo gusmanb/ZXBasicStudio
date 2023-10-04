@@ -60,7 +60,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                 {
                     continue;
                 }
-                var patterns = CreatePatterns(fileTypeConfig, fileData);
 
                 switch (fileTypeConfig.FileType)
                 {
@@ -68,15 +67,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     case FileTypes.UDG:
                         {
                             var patterns = CreatePatterns(fileTypeConfig, fileData);
-                Export(exportConfig, fileTypeConfig, patterns);
+                            Export(exportConfig, fileTypeConfig, patterns);
                             return true;
-            }
+                        }
                     case FileTypes.Sprite:
                         {
                             var sprites = CreateSprites(fileData);
-                            ExportSprites(exportConfig,sprites);
-            return true;
-        }
+                            ExportSprites(exportConfig, sprites);
+                            return true;
+                        }
 
                 }
 
@@ -477,7 +476,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                         "DIM {0}{1}({2}) AS UByte => {{ _",
                         exportConfig.LabelName,
                         sprite.Name.Replace(" ", "_"),
-                        ((sprite.Width / 8) * sprite.Height) -1 + min));
+                        ((sprite.Width / 8) * sprite.Height) - 1 + min));
                 }
                 else
                 {
@@ -486,7 +485,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                         exportConfig.LabelName,
                         sprite.Name.Replace(" ", "_"),
                         sprite.Frames - 1 + min,
-                        ((sprite.Width / 8) * sprite.Height) -1 + min));
+                        ((sprite.Width / 8) * sprite.Height) - 1 + min));
                 }
 
                 for (int n = 0; n < sprite.Patterns.Count; n++)

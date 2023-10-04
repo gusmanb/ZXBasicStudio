@@ -13,7 +13,6 @@
         xmlns:svg="using:Avalonia.Svg.Skia"
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
         Width="1024" Height="768"
-        WindowState="Maximized"
         Icon="/Assets/zxbs.ico"
         x:Class="ZXBasicStudio.MainWindow"
         Title="ZXBasicStudio" WindowStartupLocation="CenterScreen">

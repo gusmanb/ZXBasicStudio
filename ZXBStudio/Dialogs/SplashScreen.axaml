@@ -12,11 +12,7 @@
 		    Topmost="True">
   <Border BorderBrush="Black" BorderThickness="2">
     <Grid RowDefinitions="*,Auto">
-      <Image Grid.RowSpan="2" Source="/Assets/LogoBig.png"></Image>
-      <StackPanel Orientation="Vertical" Grid.Row="1">
-        <TextBlock Grid.Row="1">With ZX Graphics by DuefectuCorp</TextBlock>
-        <TextBlock Name="txtVersion"/>
-      </StackPanel>
+      <Image Grid.RowSpan="2" Source="/Assets/LogoBig.png"></Image>      
     </Grid>
   </Border>
 </Window>

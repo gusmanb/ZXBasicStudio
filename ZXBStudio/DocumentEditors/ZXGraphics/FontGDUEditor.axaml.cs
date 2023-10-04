@@ -170,10 +170,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-        public override void Dispose()
-        {
-        }
-
         #endregion
 
 
