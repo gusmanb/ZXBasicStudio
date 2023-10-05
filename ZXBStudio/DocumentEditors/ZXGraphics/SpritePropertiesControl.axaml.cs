@@ -169,7 +169,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             _IsSelected = true;
             Refresh();
             CallBackCommand(this, "SELECTED");
-        }        
+        }
 
         #endregion
 
@@ -259,7 +259,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 SpriteData.GraphicMode = value;
                 SpriteData.Palette = ServiceLayer.GetPalette(SpriteData.GraphicMode);
                 Refresh();
-                CallBackCommand(this, "REFRESH");
+                CallBackCommand(this, "CHANGEMODE");
             }
         }
 
@@ -276,21 +276,37 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 switch (newMode)
                 {
                     case GraphicsModes.ZXSpectrum:
-                        {                            
+                        {
                             foreach (var frame in SpriteData.Patterns)
                             {
+                                if (frame.Attributes == null)
+                                {
+                                    int cW = SpriteData.Width / 8;
+                                    int cH = SpriteData.Height / 8;
+                                    frame.Attributes = new AttributeColor[cW * cH];
+                                    for (int n = 0; n < frame.Attributes.Length; n++)
+                                    {
+                                        frame.Attributes[n] = new AttributeColor()
+                                        {
+                                            Ink = 0,
+                                            Paper = 7
+                                        };
+                                    }
+                                }
+                                /*
                                 for (int n = 0; n < frame.RawData.Length; n++)
                                 {
                                     var o = frame.RawData[n];
                                     if (o == 0)
                                     {
-                                        frame.RawData[n] = 7;
+                                        frame.RawData[n] = 1;
                                     }
                                     else
                                     {
                                         frame.RawData[n] = 0;
                                     }
                                 }
+                                */
                             }
                         }
                         break;
@@ -323,6 +339,20 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         {
                             foreach (var frame in SpriteData.Patterns)
                             {
+                                if (frame.Attributes == null)
+                                {
+                                    int cW = SpriteData.Width / 8;
+                                    int cH = SpriteData.Height / 8;
+                                    frame.Attributes = new AttributeColor[cW * cH];
+                                    for (int n = 0; n < frame.Attributes.Length; n++)
+                                    {
+                                        frame.Attributes[n] = new AttributeColor()
+                                        {
+                                            Ink = 0,
+                                            Paper = 7
+                                        };
+                                    }
+                                }
                                 for (int n = 0; n < frame.RawData.Length; n++)
                                 {
                                     var o = frame.RawData[n];
@@ -347,7 +377,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                                     var o = frame.RawData[n];
                                     if (o == 0)
                                     {
-                                        frame.RawData[n] = 7;
+                                        frame.RawData[n] = 227;
                                     }
                                     else
                                     {
@@ -386,6 +416,20 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         {
                             foreach (var frame in SpriteData.Patterns)
                             {
+                                if (frame.Attributes == null)
+                                {
+                                    int cW = SpriteData.Width / 8;
+                                    int cH = SpriteData.Height / 8;
+                                    frame.Attributes = new AttributeColor[cW * cH];
+                                    for (int n = 0; n < frame.Attributes.Length; n++)
+                                    {
+                                        frame.Attributes[n] = new AttributeColor()
+                                        {
+                                            Ink = 0,
+                                            Paper = 7
+                                        };
+                                    }
+                                }
                                 for (int n = 0; n < frame.RawData.Length; n++)
                                 {
                                     var o = frame.RawData[n];
@@ -395,7 +439,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                                     }
                                     else
                                     {
-                                        frame.RawData[n] = 7;
+                                        frame.RawData[n] = 1;
                                     }
                                 }
                             }

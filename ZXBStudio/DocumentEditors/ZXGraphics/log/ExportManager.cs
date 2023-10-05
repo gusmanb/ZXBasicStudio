@@ -382,7 +382,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             try
             {
                 var dataS = Encoding.UTF8.GetString(fileData);
-                var sprites = dataS.Deserializar<Sprite[]>();
+                var sprites = dataS.Deserializar<Sprite[]>();                
                 return sprites;
             }
             catch

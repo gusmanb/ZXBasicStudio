@@ -66,6 +66,25 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        public void Start()
+        {
+            if (tmr == null)
+            {
+                tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[2]), DispatcherPriority.Normal, Refresh);
+            }
+            tmr.Start();
+        }
+
+
+        public void Stop()
+        {
+            if (tmr != null)
+            {
+                tmr.Stop();
+            }
+        }
+
+
         private void CmbSpeed_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             var s = cmbSpeed.SelectedIndex.ToInteger();
@@ -128,14 +147,39 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 {
                     for (int x = 0; x < SpriteData.Width; x++)
                     {
-                        int p = frame.RawData[index];
-                        var palette = SpriteData.Palette[p];
+                        int colorIndex = frame.RawData[index];
+                        //var palette = SpriteData.Palette[colorIndex];
 
                         var r = new Rectangle();
                         r.Width = zoom;
                         r.Height = zoom;
 
-                        r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
+                        switch (SpriteData.GraphicMode)
+                        {
+                            case GraphicsModes.ZXSpectrum:
+                                {
+                                    var attr = GetAttribute(frame, x, y);
+                                    PaletteColor palette = null;
+                                    if (colorIndex == 0)
+                                    {
+                                        palette = SpriteData.Palette[attr.Paper];
+                                    }
+                                    else
+                                    {
+                                        palette = SpriteData.Palette[attr.Ink];
+                                    }
+                                    r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
+                                }
+                                break;
+                            case GraphicsModes.Monochrome:
+                            case GraphicsModes.Next:
+                                {
+                                    var palette = SpriteData.Palette[colorIndex];
+                                    r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
+                                }
+                                break;
+
+                        }
 
                         cnvPreview.Children.Add(r);
                         Canvas.SetTop(r, y * zoom);
@@ -153,5 +197,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
         }
 
+
+        private AttributeColor GetAttribute(Pattern pattern, int x, int y)
+        {
+            int cW = SpriteData.Width / 8;
+            int cX = x / 8;
+            int cY = y / 8;
+            return pattern.Attributes[(cY * cW) + cX];
+        }
     }
 }
