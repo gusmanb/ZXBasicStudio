@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -53,6 +54,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Refresh();
             }
         }
+
+
+        public int PrimaryColor = 1;
+        public int SecondaryColor = 0;
 
         #endregion
 
@@ -184,8 +189,17 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 Name = "",
                 Number = "0",
                 Data = null,
-                RawData = new int[SpriteData.Width * SpriteData.Height]
+                RawData = new int[SpriteData.Width * SpriteData.Height],
+                Attributes = new AttributeColor[(SpriteData.Width * SpriteData.Height) / 8]
             };
+            for (int n = 0; n < pat.Attributes.Length; n++)
+            {
+                pat.Attributes[n] = new AttributeColor()
+                {
+                    Paper = SecondaryColor,
+                    Ink = PrimaryColor
+                };
+            }
             return pat;
         }
 
@@ -200,8 +214,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     Id = pattern.Id,
                     Name = pattern.Name,
                     Number = pattern.Number,
-                    RawData = new int[SpriteData.Width * SpriteData.Height]
+                    RawData = new int[SpriteData.Width * SpriteData.Height],
+                    Attributes = new AttributeColor[(SpriteData.Width / 8) * (SpriteData.Height / 8)]
                 };
+                for (int n = 0; n < pat.Attributes.Length; n++)
+                {
+                    pat.Attributes[n] = new AttributeColor()
+                    {
+                        Paper = SecondaryColor,
+                        Ink = PrimaryColor
+                    };
+                }
+
                 for (int y = 0; y < SpriteData.Height; y++)
                 {
                     for (int x = 0; x < SpriteData.Width; x++)
@@ -216,6 +240,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         pat.RawData[(y * SpriteData.Width) + x] = colorIndex;
                     }
                 }
+
                 patterns.Add(pat);
             }
             SpriteData.Patterns = patterns;

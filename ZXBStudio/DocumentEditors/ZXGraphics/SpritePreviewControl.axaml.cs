@@ -129,11 +129,19 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 }
                 tmr.Stop();
 
-                frameNumber++;
+                if (SpriteData.Masked)
+                {
+                    frameNumber += 2;
+                }
+                else
+                {
+                    frameNumber++;
+                }
                 if (frameNumber >= SpriteData.Frames)
                 {
                     frameNumber = 0;
                 }
+
                 cnvPreview.Width = SpriteData.Width * 4;
                 cnvPreview.Height = SpriteData.Height * 4;
 
@@ -141,7 +149,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 int index = 0;
                 var frame = SpriteData.Patterns[frameNumber];
 
-                int zoom = 4;                
+                int zoom = 4;
 
                 for (int y = 0; y < SpriteData.Height; y++)
                 {

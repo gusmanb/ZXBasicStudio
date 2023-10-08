@@ -18,7 +18,7 @@
       <ComboBox Name="cmbMode" Classes="dialog" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" MaxWidth="Infinity" Margin="4,0,0,2">
         <ComboBoxItem>Monochrome</ComboBoxItem>
         <ComboBoxItem>ZX Spectrum</ComboBoxItem>
-        <ComboBoxItem>Next (256 colors)</ComboBoxItem>
+        <!--<ComboBoxItem>Next (256 colors)</ComboBoxItem>-->
       </ComboBox>
 
       <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Width:</TextBlock>

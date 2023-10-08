@@ -264,7 +264,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     foreach (var sprite in sprites)
                     {
                         // Check attributes for ZX Spectrum mode
-                        if (sprite!=null && sprite.GraphicMode == GraphicsModes.ZXSpectrum)
+                        if (sprite != null && sprite.GraphicMode == GraphicsModes.ZXSpectrum)
                         {
                             foreach (var pattern in sprite.Patterns)
                             {
@@ -273,10 +273,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                                     int cW = sprite.Width / 8;
                                     int cH = sprite.Height / 8;
                                     pattern.Attributes = new AttributeColor[cW * cH];
-                                    foreach (var attr in pattern.Attributes)
+                                    for (int n = 0; n < pattern.Attributes.Length; n++)
                                     {
-                                        attr.Ink = 1;
-                                        attr.Paper = 0;
+                                        pattern.Attributes[n] = new AttributeColor()
+                                        {
+                                            Ink = 1,
+                                            Paper = 0
+                                        };
                                     }
                                 }
                             }
@@ -383,6 +386,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void UpdateColorPanel()
         {
             var sprite = ctrlEditor.SpriteData;
+            if (sprite == null)
+            {
+                return;
+            }
             switch (sprite.GraphicMode)
             {
                 case GraphicsModes.Monochrome:
@@ -425,7 +432,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void ColorPickerInk_Action(string command, int indexColor)
         {
-            ctrlEditor.PrimaryColorIndex= indexColor;
+            ctrlEditor.PrimaryColorIndex = indexColor;
             UpdateColorPanel();
         }
 
@@ -640,6 +647,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             cur.Refresh();
                             SpriteList_Modified(sender.SpriteData);
                             ctrlProperties.SpriteData = sender.SpriteData;
+                            ctrlProperties.PrimaryColor = sender.PrimaryColorIndex;
+                            ctrlProperties.SecondaryColor = sender.SecondaryColorIndex;
                             ctrlPreview.SpriteData = sender.SpriteData;
                         }
                     }
