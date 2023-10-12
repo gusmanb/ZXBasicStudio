@@ -661,7 +661,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             var pattern = sprite.Patterns[n];
             var data = ServiceLayer.Files_CreateBinDataUpDown(pattern, sprite.Width, sprite.Height, exportConfig);
 
-            if (sprite.Frames > 1)
+            if (sprite.Frames > 1 &&
+                !(sprite.Frames == 2 && sprite.Masked))
             {
                 if (n > firstItem)
                 {

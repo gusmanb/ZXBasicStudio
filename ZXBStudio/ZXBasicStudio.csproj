@@ -10,7 +10,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>zxbs.ico</ApplicationIcon>
-    <Version>0.1.23.1008</Version>
+    <Version>0.1.23.1012</Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
