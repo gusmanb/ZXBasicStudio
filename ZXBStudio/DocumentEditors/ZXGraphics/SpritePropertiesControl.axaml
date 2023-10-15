@@ -41,6 +41,9 @@
       
       <Grid Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
+          <Button Classes="toolbar" Name="btnInsert" ToolTip.Tip="Insert frame" Margin="4,2,2,2">
+            <svg:Svg Path="/Svg/square-plus-solid.svg"></svg:Svg>
+          </Button>
           <Button Classes="toolbar" Name="btnClone" ToolTip.Tip="Clone sprite" Margin="4,2,2,2">
             <svg:Svg Path="/Svg/Copy.svg"></svg:Svg>
           </Button>

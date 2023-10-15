@@ -95,6 +95,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.SpriteData = spriteData;
             this.CallBackCommand = callBackCommand;
 
+            btnInsert.Tapped += BtnInsert_Tapped;
             btnClone.Tapped += BtnClone_Tapped;
             btnDelete.Tapped += BtnDelete_Tapped;
 
@@ -538,6 +539,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void BtnClone_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
             CallBackCommand(this, "CLONE");
+        }
+
+        private void BtnInsert_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
+        {
+            CallBackCommand(this, "INSERT");
         }
 
         #endregion

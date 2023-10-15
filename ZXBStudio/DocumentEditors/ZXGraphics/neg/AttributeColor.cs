@@ -21,6 +21,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
                 {
                     Bright = true;
                 }
+                else
+                {
+                    Bright = false;
+                }
                 if (Bright)
                 {
                     atr += 0b01000000;

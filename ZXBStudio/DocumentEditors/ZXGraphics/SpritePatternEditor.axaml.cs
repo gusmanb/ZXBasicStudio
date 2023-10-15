@@ -437,7 +437,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         public void Clear()
         {
             if (SpriteData == null || SpriteData.Patterns == null ||
-                SpriteData.CurrentFrame >= (SpriteData.Patterns.Count - 1) ||
+                SpriteData.CurrentFrame >= (SpriteData.Patterns.Count) ||
                 SpriteData.Patterns[SpriteData.CurrentFrame].RawData == null)
             {
                 return;

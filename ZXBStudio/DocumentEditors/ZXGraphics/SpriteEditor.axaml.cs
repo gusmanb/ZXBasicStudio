@@ -268,10 +268,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         {
                             foreach (var pattern in sprite.Patterns)
                             {
+                                int cW = sprite.Width / 8;
+                                int cH = sprite.Height / 8;
+                                int l = cW * cH;
                                 if (pattern.Attributes == null)
                                 {
-                                    int cW = sprite.Width / 8;
-                                    int cH = sprite.Height / 8;
                                     pattern.Attributes = new AttributeColor[cW * cH];
                                     for (int n = 0; n < pattern.Attributes.Length; n++)
                                     {
@@ -281,6 +282,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                                             Paper = 0
                                         };
                                     }
+                                }
+                                if (pattern.Attributes.Length != l)
+                                {
+                                    pattern.Attributes = pattern.Attributes.Take(l).ToArray();
                                 }
                             }
                         }
@@ -485,6 +490,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         }
                     }
                     break;
+                case "INSERT":
+                    SpriteList_Insert(sender.SpriteData);
+                    SpriteList_Modified(sender.SpriteData);
+                    break;
                 case "CLONE":
                     SpriteList_Clone(sender.SpriteData);
                     SpriteList_Modified(sender.SpriteData);
@@ -584,6 +593,25 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             ctrlPreview.SpriteData = null;
             ctrlProperties.SpriteData = null;
             control = null;
+        }
+
+
+        private void SpriteList_Insert(Sprite spriteData)
+        {
+            var current = spriteData.CurrentFrame;
+            var curPat = spriteData.Patterns[current];
+
+            var pat = curPat.Clonar<Pattern>();
+            pat.RawData = new int[pat.RawData.Length];
+
+            var pats = spriteData.Patterns.Take(current).ToList();
+            pats.Add(pat);
+            pats.AddRange(spriteData.Patterns.Skip(current));
+            spriteData.Patterns = pats;
+            spriteData.Frames++;
+            ctrlProperties.Refresh();
+            ctrlEditor.Refresh();
+            sldFrame.Maximum = spriteData.Frames;
         }
 
 
