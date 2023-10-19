@@ -84,25 +84,40 @@ namespace ZXBasicStudio.Classes
                 var settings = config.WindowSettings[this.GetType().FullName];
                 this.Width = settings.Width;
                 this.Height = settings.Height;
-                this.WindowState = settings.State;
+                Task.Run(async () => 
+                {
+                    await Task.Delay(500);
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        this.WindowState = settings.State;
+                    });
+                });
             }
         }
 
         protected override void OnClosing(WindowClosingEventArgs e)
         {
             base.OnClosing(e);
-            if (PersistBounds)
+            if (PersistBounds && this.WindowState != WindowState.Minimized)
             {
                 WindowStatus status = new WindowStatus { Height = this.Height, Width = this.Width, State = this.WindowState };
                 config.WindowSettings[this.GetType().FullName] = status;
-                File.WriteAllText(ZXConstants.APPSETTINGS_FILE, JsonConvert.SerializeObject(config, jSettings));
+                config.PersistSettings();
             }
         }
 
         class AppConfig
         {
             public string AppName { get; set; } = Assembly.GetEntryAssembly().FullName;
+            private object locker = new object();
             public Dictionary<string, WindowStatus> WindowSettings { get; set; } = new Dictionary<string, WindowStatus>();
+            public void PersistSettings()
+            {
+                lock (locker)
+                {
+                    ZXApplicationFileProvider.WriteAllText(ZXConstants.APPSETTINGS_FILE, JsonConvert.SerializeObject(this, jSettings));
+                }
+            }
         }
 
         public class WindowStatus

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -31,10 +32,12 @@ namespace ZXBasicStudio.Classes
 
                 var windows = ZXFloatController.Windows.Select(w => new ZXLayoutWindow 
                 { 
-                    Top = w.Position.Y,
-                    Left = w.Position.X,
+                    Top = w.LastGoodPosition.Y,
+                    Left = w.LastGoodPosition.X,
                     Width = w.ClientSize.Width,
                     Height = w.ClientSize.Height,
+                    WindowState = w.WindowState,
+                    TopMost = w.Topmost,
                     DockedControls = w.DockingContainer.DockingControls
                     .Where(c => c is ZXDockingControl && c.Name != null)
                     .Select(c => c.Name ?? "")
@@ -148,6 +151,19 @@ namespace ZXBasicStudio.Classes
                         wind.Position = new Avalonia.PixelPoint(window.Left, window.Top);
                         wind.Width = window.Width;
                         wind.Height = window.Height;
+                        wind.Topmost = window.TopMost;
+
+                        if (window.WindowState != WindowState.Minimized)
+                        {
+                            Task.Run(async () =>
+                            {
+                                await Task.Delay(500);
+                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                {
+                                    wind.WindowState = window.WindowState;
+                                });
+                            });
+                        }
 
                         foreach (var ctrl in window.DockedControls.Skip(1))
                         {
@@ -181,6 +197,7 @@ namespace ZXBasicStudio.Classes
         public required double Width { get; set; }
         public required double Height { get; set; }
         public required string[] DockedControls { get; set; }
-
+        public required WindowState WindowState { get; set; }
+        public required bool TopMost { get; set; }
     }
 }

@@ -28,7 +28,7 @@ public class MsBoxStandardViewModel : AbstractMsBoxViewModel, ISetFullApi<Button
     public void SetFullApi(IFullApi<ButtonResult> fullApi)
     {
         _fullApi = fullApi;
-        base.SetCopy(fullApi);
+        //base.SetCopy(fullApi);
     }
 
     public bool IsOkShowed { get; private set; }

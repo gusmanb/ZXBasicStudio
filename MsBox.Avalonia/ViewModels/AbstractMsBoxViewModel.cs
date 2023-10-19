@@ -15,12 +15,12 @@ namespace MsBox.Avalonia.ViewModels;
 
 public abstract class AbstractMsBoxViewModel : INotifyPropertyChanged, IInput
 {
-    private  ICopy _copy;
+    //private  ICopy _copy;
     
-    protected void SetCopy(ICopy copy)
-    {
-        _copy = copy;
-    }
+    //protected void SetCopy(ICopy copy)
+    //{
+    //    _copy = copy;
+    //}
     protected AbstractMsBoxViewModel(AbstractMessageBoxParams @params, Icon icon = Icon.None, Bitmap bitmap = null)
     {
 
@@ -111,10 +111,10 @@ public abstract class AbstractMsBoxViewModel : INotifyPropertyChanged, IInput
 
     #endregion
 
-    public Task Copy()
-    {
-        return _copy.Copy();
-    }
+    //public Task Copy()
+    //{
+    //    return _copy.Copy();
+    //}
 
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
