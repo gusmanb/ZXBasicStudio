@@ -71,6 +71,11 @@ namespace ZXBasicStudio
             new ZXKeybCommand { CommandId = Guid.Parse("cf0216e0-3180-4429-8e09-664e6262dbd9"), CommandName = "Stop emulation", Key = Key.F11, Modifiers = KeyModifiers.None },
             new ZXKeybCommand { CommandId = Guid.Parse("703808fa-abec-4c65-940b-16544c2bd93d"), CommandName = "Turbo mode", Key = Key.F12, Modifiers = KeyModifiers.None },
             new ZXKeybCommand { CommandId = Guid.Parse("077a0fb9-34a4-461b-9f44-8f3472f9e872"), CommandName = "Swap fullscreen mode", Key = Key.Enter, Modifiers = KeyModifiers.Alt },
+            new ZXKeybCommand { CommandId = Guid.Parse("573741e3-5e26-4195-aa89-c49066a28762"), CommandName = "Code View", Key = Key.F8, Modifiers = KeyModifiers.Control | KeyModifiers.Shift },
+            new ZXKeybCommand { CommandId = Guid.Parse("0aa2887d-4fb7-4234-81c1-c07efbf02eb3"), CommandName = "Project View", Key = Key.F9, Modifiers = KeyModifiers.Control | KeyModifiers.Shift },
+            new ZXKeybCommand { CommandId = Guid.Parse("7b50369f-3f48-4653-99c1-26e566691e3c"), CommandName = "Debug View", Key = Key.F10, Modifiers = KeyModifiers.Control | KeyModifiers.Shift },
+            new ZXKeybCommand { CommandId = Guid.Parse("86b341a1-8d07-4af2-b4b0-ca953cd3dbc0"), CommandName = "Play View", Key = Key.F11, Modifiers = KeyModifiers.Control | KeyModifiers.Shift },
+            new ZXKeybCommand { CommandId = Guid.Parse("424f7395-c29d-44f9-8f9e-43b8891ec261"), CommandName = "All tools View", Key = Key.F12, Modifiers = KeyModifiers.Control | KeyModifiers.Shift },
         };
 
         Dictionary<Guid, Action> _shortcuts = new Dictionary<Guid, Action>();
@@ -233,6 +238,16 @@ namespace ZXBasicStudio
                 { Guid.Parse("077a0fb9-34a4-461b-9f44-8f3472f9e872"), () => {
                     if (EmulatorInfo.IsRunning)
                         SwapFullScreen();} },
+                { Guid.Parse("573741e3-5e26-4195-aa89-c49066a28762"), () => {
+                        FullLayout(this, new RoutedEventArgs()); }},
+                { Guid.Parse("0aa2887d-4fb7-4234-81c1-c07efbf02eb3"), () => {
+                        ExplorerLayout(this, new RoutedEventArgs()); }},
+                { Guid.Parse("7b50369f-3f48-4653-99c1-26e566691e3c"), () => {
+                        DebugLayout(this, new RoutedEventArgs()); }},
+                { Guid.Parse("86b341a1-8d07-4af2-b4b0-ca953cd3dbc0"), () => {
+                        PlayLayout(this, new RoutedEventArgs()); }},
+                { Guid.Parse("424f7395-c29d-44f9-8f9e-43b8891ec261"), () => {
+                        ToolsLayout(this, new RoutedEventArgs()); }},
             };
             #endregion
 
