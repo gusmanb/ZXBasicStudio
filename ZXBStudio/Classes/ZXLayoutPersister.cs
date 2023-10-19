@@ -37,6 +37,7 @@ namespace ZXBasicStudio.Classes
                     Width = w.ClientSize.Width,
                     Height = w.ClientSize.Height,
                     WindowState = w.WindowState,
+                    TopMost = w.Topmost,
                     DockedControls = w.DockingContainer.DockingControls
                     .Where(c => c is ZXDockingControl && c.Name != null)
                     .Select(c => c.Name ?? "")
@@ -150,6 +151,7 @@ namespace ZXBasicStudio.Classes
                         wind.Position = new Avalonia.PixelPoint(window.Left, window.Top);
                         wind.Width = window.Width;
                         wind.Height = window.Height;
+                        wind.Topmost = window.TopMost;
 
                         if (window.WindowState != WindowState.Minimized)
                         {
@@ -196,5 +198,6 @@ namespace ZXBasicStudio.Classes
         public required double Height { get; set; }
         public required string[] DockedControls { get; set; }
         public required WindowState WindowState { get; set; }
+        public required bool TopMost { get; set; }
     }
 }

@@ -1,5 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Platform;
 using System;
 using System.Diagnostics;
 
@@ -13,12 +16,27 @@ namespace ZXBasicStudio.Controls.DockSystem
         PixelPoint lastGood = new PixelPoint();
         public PixelPoint LastGoodPosition { get { return lastGood; } }
 
+        public HorizontalAlignment PinLocation { get; private set; } = HorizontalAlignment.Left;
+
         public ZXFloatingWindow()
         {
+
+            DataContext = this;
+
             InitializeComponent();
             DockingContainer.DockingControlsChanged += DockingContainer_DockingControlsChanged;
             this.PositionChanged += ZXFloatingWindow_PositionChanged;
             this.SizeChanged += ZXFloatingWindow_SizeChanged;
+
+            if(OperatingSystem.IsMacOS())
+                PinLocation = HorizontalAlignment.Right;
+
+            btnPin.Click += BtnPin_Click;
+        }
+
+        private void BtnPin_Click(object? sender, RoutedEventArgs e)
+        {
+            this.Topmost = !this.Topmost;
         }
 
         private void ZXFloatingWindow_SizeChanged(object? sender, SizeChangedEventArgs e)
@@ -32,8 +50,6 @@ namespace ZXBasicStudio.Controls.DockSystem
 
             if (screen.WorkingArea.Intersects(rectBounds))
                 lastGood = this.Position;
-            else
-                Debug.Print("NO INTERSECT");
         }
 
         private void ZXFloatingWindow_PositionChanged(object? sender, PixelPointEventArgs e)
@@ -47,8 +63,6 @@ namespace ZXBasicStudio.Controls.DockSystem
 
             if (screen.WorkingArea.Intersects(rectBounds))
                 lastGood = this.Position;
-            else
-                Debug.Print("NO INTERSECT");
         }
 
         private void DockingContainer_DockingControlsChanged(object? sender, EventArgs e)
