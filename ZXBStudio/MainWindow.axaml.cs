@@ -2023,6 +2023,14 @@ namespace ZXBasicStudio
 
             base.OnClosing(e);
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            ZXFloatController.Dispose();
+        }
+
         #endregion
 
         #region Global keyb handling
