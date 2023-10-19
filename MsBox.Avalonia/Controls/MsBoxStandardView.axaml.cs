@@ -12,6 +12,7 @@ public partial class MsBoxStandardView : UserControl, IFullApi<ButtonResult>, IS
 {
     private ButtonResult _buttonResult;
     private Action _closeAction;
+    private ICopy _copy;
 
     public MsBoxStandardView()
     {
@@ -28,10 +29,10 @@ public partial class MsBoxStandardView : UserControl, IFullApi<ButtonResult>, IS
         return _buttonResult;
     }
 
-    public Task Copy()
-    {
-        throw new System.NotImplementedException();
-    }
+    //public Task Copy()
+    //{
+    //    throw new System.NotImplementedException();
+    //}
 
     public void Close()
     {
