@@ -1,4 +1,6 @@
 ﻿using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
@@ -12,37 +14,74 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
 {
     public class ZXBasicCompletionData : ICompletionData
     {
-        public IImage? Image { get; set; }
 
-        public required string? Text { get; set; }
+        static IImage keywordIcon;
+        static IImage typeIcon;
+        static IImage directiveIcon;
 
-        public object? Content { get { return new internalIcompletion {  Content = Text }; } }
-
-        public object? Description { get; set; }
-
-        public double Priority { get; set; }
-
-        public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
+        static ZXBasicCompletionData()
         {
-            textArea.Document.Replace(completionSegment, this.Text);
+            keywordIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/KeywordIcon.png")));
+            typeIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/TypeIcon.png")));
+            directiveIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/DirectiveIcon.png")));
         }
 
-        class internalIcompletion : ICompletionData
+        public ZXBasicCompletionData(ZXBasicCompletionType DataType, string Text, string Description)
         {
-            public IImage Image { get { return null; } }
+            this.Text = Text;
+            this.Description = Description;
 
-            public string Text { get { return null; } }
-
-            public object Content { get; set; }
-
-            public object Description { get { return null; } }
-
-            public double Priority { get { return 0; } }
-
-            public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
+            switch(DataType)
             {
-                throw new NotImplementedException();
+                case ZXBasicCompletionType.Keyword:
+                    Image = keywordIcon;
+                    Priority = 3;
+                    break;
+                case ZXBasicCompletionType.Type:
+                    Image = typeIcon;
+                    Priority = 2;
+                    break;
+                case ZXBasicCompletionType.Directive:
+                    Image = directiveIcon;
+                    Priority = 1;
+                    break;
+                default:
+                    throw new InvalidCastException("Invalid ZXBasicCompletionType");
             }
         }
+
+        public IImage Image { get; }
+
+        public string Text { get; }
+
+        public object Content => Text;
+
+        public object Description { get; }
+
+        public double Priority { get; } = 0;
+
+        public void Complete(TextArea textArea, ISegment completionSegment,
+            EventArgs insertionRequestEventArgs)
+        {
+            textArea.Document.Replace(completionSegment, Text);
+        }
     }
+
+    public enum ZXBasicCompletionType
+    {
+        Keyword,
+        //Function,
+        //Variable,
+        //Constant,
+        Type,
+        //Label,
+        //Macro,
+        //Operator,
+        Directive,
+        //Comment,
+        //String,
+        //Number,
+        //Other
+    }
+
 }

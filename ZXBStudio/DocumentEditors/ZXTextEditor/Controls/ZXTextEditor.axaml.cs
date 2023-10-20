@@ -33,6 +33,7 @@ using System.Reflection;
 using AvaloniaEdit.Search;
 using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Utils;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 {
@@ -50,8 +51,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         protected virtual AbstractFoldingStrategy? foldingStrategy { get { return null; } }
         protected virtual Regex? regCancelBreakpoint { get { return null; } }
         protected virtual char? commentChar { get { return null; } }
-        protected virtual ICompletionData[] CompletionData { get { return null; } }
-
 
         internal static Dictionary<string, ZXKeybCommand> keyboardCommands = new Dictionary<string, ZXKeybCommand> {
             { "Save", new ZXKeybCommand{ CommandId = Guid.Parse("87f7d73b-d28a-44f4-ba0c-41baa4de238c"), CommandName = "Save", Key = Key.S, Modifiers = KeyModifiers.Control } },
@@ -82,6 +81,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         Guid _docTypeId;
 
         Dictionary<Guid, Action> _keybCommands = new Dictionary<Guid, Action>();
+
+        CompletionWindow? completionWindow;
 
         #endregion
 
@@ -158,7 +159,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             editor.TextArea.LayoutUpdated += TextArea_LayoutUpdated;
             editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
             editor.TextArea.SelectionChanged += TextArea_SelectionChanged;
-            //editor.TextArea.TextEntered += TextArea_TextEntered;
+            editor.TextArea.KeyDown += TextArea_KeyDown;
+            editor.TextArea.TextEntering += TextArea_TextEntering;
 
             if (langDef != null)
             {
@@ -193,6 +195,88 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 bpMargin?.Breakpoints.Add(bp);
         }
 
+        #region Completion
+
+        protected virtual IEnumerable<ICompletionData> ShouldComplete(IDocument Document, int Line, int Column, char? RequestedChar, bool ByRequest)
+        {
+            return null;
+        }
+
+        private void TextArea_TextEntering(object? sender, TextInputEventArgs e)
+        {
+
+            if (e.Text == null || e.Text.Length == 0)
+                return;
+
+            if (completionWindow == null && !string.IsNullOrWhiteSpace(e.Text) && !char.IsNumber(e.Text[0]))
+            {
+                var d = (IDocument)editor.Document;
+                var completionData = ShouldComplete(editor.Document, editor.TextArea.Caret.Line, editor.TextArea.Caret.Column - 1, e.Text[0], false);
+
+                if (completionData != null)
+                    ShowCompletion(completionData, false);
+            }
+            else if (completionWindow != null && !char.IsLetterOrDigit(e.Text[0]))
+                completionWindow.CompletionList.RequestInsertion(e);
+             
+        }
+
+        private void TextArea_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space && e.KeyModifiers == KeyModifiers.Control)
+            {
+                e.Handled = true;
+                var completionData = ShouldComplete(editor.Document, editor.TextArea.Caret.Line, editor.TextArea.Caret.Offset, null, true);
+
+                if (completionData != null)
+                    ShowCompletion(completionData, true);
+            }
+        }
+
+        private void ShowCompletion(IEnumerable<ICompletionData> completions, bool requested)
+        {
+            if (completionWindow == null)
+            {
+                completionWindow = new CompletionWindow(editor.TextArea);
+
+                ICompletionData? selectedItem = null;
+
+                if (requested)
+                {
+                    var line = editor.Document.GetLineByNumber(editor.TextArea.Caret.Line);
+                    var text = editor.Document.GetText(line);
+
+                    int offset = editor.TextArea.Caret.Offset;
+
+                    int pos = editor.TextArea.Caret.Column - 1;
+
+                    while (pos > 0 && char.IsLetterOrDigit(text[pos - 1]))
+                    {
+                        offset--;
+                        pos--;
+                    }
+
+                    completionWindow.StartOffset = offset;
+                    completionWindow.EndOffset = editor.TextArea.Caret.Offset;
+
+                    string itemText = editor.Document.GetText(offset, editor.TextArea.Caret.Offset - offset);
+
+                    selectedItem = completions.OrderByDescending(c => c.Priority).ThenBy(c => c.Text).FirstOrDefault(c => c.Text.ToLower().StartsWith(itemText));
+                }
+
+                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                data.AddRange(completions);
+                completionWindow.Show();
+                completionWindow.CompletionList.SelectedItem = selectedItem;
+                completionWindow.Closed += delegate
+                {
+                    completionWindow = null;
+                };
+            }
+        }
+
+        #endregion
+
         private void TextArea_SelectionChanged(object? sender, EventArgs e)
         {
             if (editor.TextArea.Selection.Length == 0)
@@ -209,35 +293,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         }
 
         #endregion
-
-        //#region Completion
-        //CompletionWindow? completionWindow;
-
-        //private void TextArea_TextEntered(object? sender, TextInputEventArgs e)
-        //{
-        //    if (CompletionData != null && e.Text == " ")
-        //    {
-        //        // Open code completion after the user has pressed dot:
-        //        completionWindow = new CompletionWindow(editor.TextArea);
-        //        IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-        //        data.Add(new MyCompletionData("Item1"));
-        //        data.Add(new MyCompletionData("Item2"));
-        //        data.Add(new MyCompletionData("Item3"));
-        //        completionWindow.Show();
-        //        completionWindow.Closed += delegate {
-        //            completionWindow = null;
-        //        };
-        //        /*
-        //        completionWindow = new CompletionWindow(editor.TextArea);
-        //        completionWindow.CompletionList.CompletionData.AddRange(CompletionData);
-        //        completionWindow.Show();
-        //        completionWindow.Closed += delegate {
-        //            completionWindow = null;
-        //        };*/
-        //    }
-        //}
-
-        //#endregion
 
         #region Shortcut management
 

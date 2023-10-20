@@ -37,10 +37,13 @@
     <None Remove="Assets\asmFile.png" />
     <None Remove="Assets\cfgFile.png" />
     <None Remove="Assets\debug.png" />
+    <None Remove="Assets\DirectiveIcon.png" />
     <None Remove="Assets\folder.png" />
+    <None Remove="Assets\KeywordIcon.png" />
     <None Remove="Assets\LogoBig.png" />
     <None Remove="Assets\logoSmall.png" />
     <None Remove="Assets\txtFile.png" />
+    <None Remove="Assets\TypeIcon.png" />
     <None Remove="Assets\unknFile.png" />
     <None Remove="Assets\zxbFile.png" />
     <None Remove="Assets\zxbs.ico" />
@@ -247,10 +250,13 @@
     <AvaloniaResource Include="Assets\asmFile.png" />
     <AvaloniaResource Include="Assets\cfgFile.png" />
     <AvaloniaResource Include="Assets\debug.png" />
+    <AvaloniaResource Include="Assets\DirectiveIcon.png" />
     <AvaloniaResource Include="Assets\folder.png" />
+    <AvaloniaResource Include="Assets\KeywordIcon.png" />
     <AvaloniaResource Include="Assets\LogoBig.png" />
     <AvaloniaResource Include="Assets\logoSmall.png" />
     <AvaloniaResource Include="Assets\txtFile.png" />
+    <AvaloniaResource Include="Assets\TypeIcon.png" />
     <AvaloniaResource Include="Assets\unknFile.png" />
     <AvaloniaResource Include="Assets\zxbFile.png" />
     <AvaloniaResource Include="Assets\zxbs.ico" />
