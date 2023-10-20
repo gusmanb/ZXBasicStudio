@@ -18,7 +18,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         static ZXBasicDefinition def = new ZXBasicDefinition();
         static ZXBasicFoldingStrategy strategy = new ZXBasicFoldingStrategy();
         static Regex regCancel = new Regex("^(\\s*'|((\\s*|_)REM\\s)|^\\s*$)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-        static ZXBasicCompletionData[] keywords = new ZXBasicCompletionData[] 
+        static ZXBasicCompletionData[] basicKeywords = new ZXBasicCompletionData[] 
         {
             /*
              * List of keywords
@@ -147,8 +147,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "BORDER", "Sets the border color."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "BRIGHT", "Sets the text color to bright."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "BXOR", "Performs a bitwise XOR operation."),
-            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "BYREF", "Declares a parameter as passed by reference."),
-            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "BYVAL", "Declares a parameter as passed by value."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "CAST", "Casts a variable to a different type."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "CHR", "Returns a string containing the character represented by the specified ASCII code."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "CIRCLE", "Draws a circle."),
@@ -164,7 +162,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "DRAW", "Draws a line."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "ELSE", "Starts an alternative block of code."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "ELSEIF", "Starts an alternative block of code."),
-            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "END", "Ends a block of code."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "END", "Terminates the program."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "END ASM", "Ends a block of assembler."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "END FUNCTION", "Ends a function."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "END SUB", "Ends a subfunction."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "ENDIF", "Ends an alternative block of code."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "ERROR", "Returns the last error number."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "EXIT", "Exits a loop."),
@@ -235,6 +236,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
 
         };
+        static ZXBasicCompletionData[] basicModifiers = new ZXBasicCompletionData[] 
+        {
+            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "BYREF", "Declares a parameter as passed by reference."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "BYVAL", "Declares a parameter as passed by value.")
+        };
+        static ZXBasicCompletionData[] keywords;
+
         static ZXBasicCompletionData[] types = new ZXBasicCompletionData[]
         {
             /*
@@ -303,7 +311,137 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
         };
 
-        static Regex matchType = new Regex("\\ as$", RegexOptions.IgnoreCase);
+        static ZXBasicCompletionData[] assemblerKeywords = new ZXBasicCompletionData[] 
+        {
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ADC", "Add with carry."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ADD", "Add."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "AND", "Logical AND."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "BIT", "Test bit."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "CALL", "Call routine."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "CCF", "Complement carry flag."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "CP", "Compare."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "CPD", "Compare with decrement."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "CPDR", "Compare with decrement and repeat."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "CPI", "Compare with increment."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "CPIR", "Compare with increment and repeat."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "CPL", "Complement A."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "DAA", "Decimal adjust A."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "DEC", "Decrement."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "DI", "Disable interrupts."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "DJNZ", "Decrement B and jump if not zero."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "EI", "Enable interrupts."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "EX", "Exchange registers."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "EXX", "Exchange registers multiple."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "HALT", "Halt."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IM", "Interrupt mode."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IN", "Input from port."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "INC", "Increment."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IND", "Input from port with decrement."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "INDR", "Input from port with decrement and repeat."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "INI", "Input from port with increment."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "INIR", "Input from port with increment and repeat."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "JP", "Jump."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "JR", "Jump relative."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "LD", "Load."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "LDD", "Load with decrement."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "LDDR", "Load with decrement and repeat."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "LDI", "Load with increment."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "LDIR", "Load with increment and repeat."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "NEG", "Negate."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "NOP", "No operation."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "OR", "Logical OR."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "OTDR", "Output to port with decrement and repeat."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "OTIR", "Output to port with increment and repeat."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "OUT", "Output to port."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "OUTD", "Output to port with decrement."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "OUTI", "Output to port with increment."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "POP", "Pop."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "PUSH", "Push."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RES", "Reset bit."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RET", "Return."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RETI", "Return from interrupt."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RETN", "Return from non-maskable interrupt."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RL", "Rotate left."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RLA", "Rotate left through carry."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RLC", "Rotate left with carry."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RLCA", "Rotate left with carry."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RLD", "Rotate left digit."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RR", "Rotate right."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RRA", "Rotate right through carry."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RRC", "Rotate right with carry."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RRCA", "Rotate right with carry."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RRD", "Rotate right digit."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "RST", "Restart."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SBC", "Subtract with carry."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SCF", "Set carry flag."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SET", "Set bit."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SLA", "Shift left arithmetic."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SLL", "Shift left logical."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SRA", "Shift right arithmetic."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SRL", "Shift right logical."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SUB", "Subtract."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "XOR", "Logical XOR."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "DB", "Define byte."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "DW", "Define word."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "DS", "Define space."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "EQU", "Define symbol."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "END", "End assembly."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ORG", "Set origin."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ASM", "End assembly."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ALIGN", "Align section."),
+        };
+        static ZXBasicCompletionData[] assemblerRegisters = new ZXBasicCompletionData[]
+        {
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "AF", "Register pair."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "BC", "Register pair."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "DE", "Register pair."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "HL", "Register pair."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IX", "Index register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IY", "Index register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "SP", "Stack pointer."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "PC", "Program counter."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "A", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "B", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "C", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "D", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "E", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "H", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "L", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "I", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "R", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "F", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IXH", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IXL", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IYH", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IYL", "Register."),
+        };
+        static ZXBasicCompletionData[] assembler;
+
+        static Regex regType = new Regex("\\ as$", RegexOptions.IgnoreCase);
+        static Regex regDots = new Regex(":\\s*$", RegexOptions.IgnoreCase);
+        static Regex regPar = new Regex("((^|\\ )sub|(^|\\ )function).*?\\(\\s*([^\\)]*,)?$", RegexOptions.IgnoreCase);
+        static Regex regStartAsm = new Regex("^\\s*asm\\s*$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        static Regex regEndAsm = new Regex("^\\s*end\\s+asm\\s*$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        static Regex regStartMultiComment = new Regex("/'", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        static Regex regEndMultiComment = new Regex("'/", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        static Regex regComment = new Regex("(^|\\s|:)'", RegexOptions.IgnoreCase);
+        static Regex regCommentAsm = new Regex(";", RegexOptions.IgnoreCase);
+        static Regex regEnd = new Regex("^\\s*end\\s*$", RegexOptions.IgnoreCase);
+
+        static ZXBasicEditor()
+        {
+            List<ZXBasicCompletionData> asmMerged = new List<ZXBasicCompletionData>();
+            asmMerged.AddRange(assemblerKeywords);
+            asmMerged.AddRange(assemblerRegisters);
+            assembler = asmMerged.ToArray();
+
+            List<ZXBasicCompletionData> basicMerged = new List<ZXBasicCompletionData>();
+            basicMerged.AddRange(basicKeywords);
+            basicMerged.AddRange(basicModifiers);
+            keywords = basicMerged.ToArray();
+        }
+
+
 
         protected override LanguageDefinitionBase? langDef => def;
         protected override IBrush? searchMarkerBrush => Brushes.Red;
@@ -311,43 +449,179 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         protected override char? commentChar => '\'';
         protected override Regex? regCancelBreakpoint => regCancel;
         protected override bool allowsBreakpoints => true;
-
+        protected override string? HelpUrl => "https://zxbasic.readthedocs.io/en/docs/search.html?q={0}";
         public ZXBasicEditor() : base() { }
         public ZXBasicEditor(string DocumentPath) : base(DocumentPath, ZXBasicDocument.Id) { }
 
-        protected override IEnumerable<ICompletionData> ShouldComplete(IDocument Document, int Line, int Column, char? RequestedChar, bool ByRequest)
+        protected override IEnumerable<ICompletionData>? ShouldComplete(IDocument Document, int Line, int Column, char? RequestedChar, bool ByRequest)
         {
-            if (ByRequest)
-            {
-                List<ICompletionData> allData = new List<ICompletionData>();
-                allData.AddRange(keywords);
-                allData.AddRange(types);
-                allData.AddRange(directives);
-                return allData;
-            }
-
             var line = Document.GetLineByNumber(Line);
             var text = Document.GetText(line.Offset, line.Length);
 
             string preText = text.Substring(0, Column);
             string postText = text.Substring(Column);
 
-            if(string.IsNullOrWhiteSpace(preText))
+            var context = GetContext(Document, line.Offset + Column);
+
+            if (ByRequest)
+            {
+
+                switch (context)
+                {
+                    case ContextType.Basic:
+
+                        if (regComment.IsMatch(preText))
+                            return null;
+
+                        List<ICompletionData> allData = new List<ICompletionData>();
+                        allData.AddRange(keywords);
+                        allData.AddRange(types);
+                        allData.AddRange(directives);
+                        return allData;
+
+                    case ContextType.Assembler:
+
+                        if (regCommentAsm.IsMatch(preText))
+                            return null;
+                        
+                        return assembler;
+
+                    case ContextType.Comment:
+                        return null;
+                }
+
+                
+            }
+
+            if (context == ContextType.Comment)
+                return null;
+
+            string trimmed = preText.Trim();
+
+            if(context == ContextType.Assembler)
+            {
+                if (!char.IsLetter(RequestedChar ?? ' ') || regCommentAsm.IsMatch(trimmed))
+                    return null;
+
+                if (string.IsNullOrWhiteSpace(trimmed))
+                    PrioritizeAssemblerKeywords();
+                else
+                    PrioritizeAssemblerRegisters();
+
+                return assembler;
+            }
+
+
+            if (string.IsNullOrWhiteSpace(preText))
             {
                 if (RequestedChar == '#')
                     return directives;
 
+                if (!char.IsLetter(RequestedChar ?? ' '))
+                {
+                    return null;
+                }
+
+                if (regComment.IsMatch(trimmed))
+                    return null;
+
+                PrioritizeBasicKeywords();
                 return keywords;
             }
 
-            string trimmed = preText.Trim();
+            if (context == ContextType.Assembler)
+                return null;
 
-            if (matchType.IsMatch(trimmed))
+            if (regType.IsMatch(trimmed))
             {
                 return types;
             }
 
+            if(regDots.IsMatch(trimmed))
+            {
+                PrioritizeBasicKeywords();
+                return keywords;
+            }
+
+            if(regPar.IsMatch(trimmed))
+            {
+                PrioritizeBasicModifiers();
+                return keywords;
+            }
+
+            if(regEnd.IsMatch(trimmed))
+            {
+                PrioritizeBasicKeywords();
+                return keywords;
+            }
+
             return null;
+        }
+
+        private void PrioritizeBasicModifiers()
+        {
+            foreach (var item in basicKeywords)
+                item.Priority = 5;
+
+            foreach (var item in basicModifiers)
+                item.Priority = 10;
+        }
+
+        private void PrioritizeBasicKeywords()
+        {
+            foreach (var item in basicKeywords)
+                item.Priority = 10;
+
+            foreach (var item in basicModifiers)
+                item.Priority = 5;
+        }
+
+        private void PrioritizeAssemblerRegisters()
+        {
+            foreach (var item in assemblerKeywords)
+                item.Priority = 5;
+
+            foreach (var item in assemblerRegisters)
+                item.Priority = 10;
+        }
+
+        private void PrioritizeAssemblerKeywords()
+        {
+            foreach (var item in assemblerKeywords)
+                item.Priority = 10;
+
+            foreach(var item in assemblerRegisters)
+                item.Priority = 5;
+        }
+
+        private ContextType GetContext(IDocument Document, int Offset)
+        {
+            var text = Document.GetText(0, Offset);
+
+            var lastStartMultiComment = regStartMultiComment.Matches(text).LastOrDefault();
+            var lastEndMultiComment = regEndMultiComment.Matches(text).LastOrDefault();
+
+            if(lastStartMultiComment != null && (lastEndMultiComment == null || lastStartMultiComment.Index > lastEndMultiComment.Index))
+            {
+                return ContextType.Comment;
+            }
+
+            var lastAsm = regStartAsm.Matches(text).LastOrDefault();
+            var lastEndAsm = regEndAsm.Matches(text).LastOrDefault();
+            
+            if(lastAsm != null && (lastEndAsm == null || lastAsm.Index > lastEndAsm.Index))
+            {
+                return ContextType.Assembler;
+            }
+
+            return ContextType.Basic;
+        }
+
+        enum ContextType
+        {
+            Basic,
+            Assembler,
+            Comment
         }
     }
 }

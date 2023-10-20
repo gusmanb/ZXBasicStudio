@@ -34,6 +34,7 @@ using AvaloniaEdit.Search;
 using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Utils;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
 
 namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 {
@@ -51,6 +52,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         protected virtual AbstractFoldingStrategy? foldingStrategy { get { return null; } }
         protected virtual Regex? regCancelBreakpoint { get { return null; } }
         protected virtual char? commentChar { get { return null; } }
+        protected virtual string? HelpUrl { get { return null; } }
 
         internal static Dictionary<string, ZXKeybCommand> keyboardCommands = new Dictionary<string, ZXKeybCommand> {
             { "Save", new ZXKeybCommand{ CommandId = Guid.Parse("87f7d73b-d28a-44f4-ba0c-41baa4de238c"), CommandName = "Save", Key = Key.S, Modifiers = KeyModifiers.Control } },
@@ -197,7 +199,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
         #region Completion
 
-        protected virtual IEnumerable<ICompletionData> ShouldComplete(IDocument Document, int Line, int Column, char? RequestedChar, bool ByRequest)
+        protected virtual IEnumerable<ICompletionData>? ShouldComplete(IDocument Document, int Line, int Column, char? RequestedChar, bool ByRequest)
         {
             return null;
         }
@@ -226,7 +228,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             if (e.Key == Key.Space && e.KeyModifiers == KeyModifiers.Control)
             {
                 e.Handled = true;
-                var completionData = ShouldComplete(editor.Document, editor.TextArea.Caret.Line, editor.TextArea.Caret.Offset, null, true);
+                var completionData = ShouldComplete(editor.Document, editor.TextArea.Caret.Line, editor.TextArea.Caret.Column - 1, null, true);
 
                 if (completionData != null)
                     ShowCompletion(completionData, true);
@@ -259,7 +261,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                     completionWindow.StartOffset = offset;
                     completionWindow.EndOffset = editor.TextArea.Caret.Offset;
 
-                    string itemText = editor.Document.GetText(offset, editor.TextArea.Caret.Offset - offset);
+                    string itemText = editor.Document.GetText(offset, editor.TextArea.Caret.Offset - offset).ToLower();
 
                     selectedItem = completions.OrderByDescending(c => c.Priority).ThenBy(c => c.Text).FirstOrDefault(c => c.Text.ToLower().StartsWith(itemText));
                 }
@@ -268,10 +270,55 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 data.AddRange(completions);
                 completionWindow.Show();
                 completionWindow.CompletionList.SelectedItem = selectedItem;
+                completionWindow.KeyDown += (s, e) =>
+                {
+                    if (e.Key == Key.F1 && completionWindow.CompletionList.SelectedItem != null)
+                    {
+                        var item = completionWindow.CompletionList.SelectedItem;
+                        var topic = item.Text;
+                        OpenHelp(topic);
+                        e.Handled = true;
+                    }
+                };
                 completionWindow.Closed += delegate
                 {
                     completionWindow = null;
                 };
+            }
+        }
+
+        private void OpenHelp(string Topic)
+        {
+
+            if (HelpUrl == null)
+                return;
+
+            string url = string.Format(HelpUrl, Topic);
+
+            try
+            {
+                ProcessStartInfo processInfo = new()
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                };
+
+                Process.Start(processInfo);
+            }
+            catch
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", url);
+                }
+                else
+                {
+                    return;
+                }
             }
         }
 

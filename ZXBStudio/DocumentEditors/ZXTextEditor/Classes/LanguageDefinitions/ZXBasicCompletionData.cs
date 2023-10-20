@@ -18,12 +18,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
         static IImage keywordIcon;
         static IImage typeIcon;
         static IImage directiveIcon;
-
+        static IImage assemblerIcon;
         static ZXBasicCompletionData()
         {
             keywordIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/KeywordIcon.png")));
             typeIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/TypeIcon.png")));
             directiveIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/DirectiveIcon.png")));
+            assemblerIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/AssemblerIcon.png")));
         }
 
         public ZXBasicCompletionData(ZXBasicCompletionType DataType, string Text, string Description)
@@ -35,15 +36,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
             {
                 case ZXBasicCompletionType.Keyword:
                     Image = keywordIcon;
-                    Priority = 3;
                     break;
                 case ZXBasicCompletionType.Type:
                     Image = typeIcon;
-                    Priority = 2;
                     break;
                 case ZXBasicCompletionType.Directive:
                     Image = directiveIcon;
-                    Priority = 1;
+                    break;
+                case ZXBasicCompletionType.Assembler:
+                    Image = assemblerIcon;
                     break;
                 default:
                     throw new InvalidCastException("Invalid ZXBasicCompletionType");
@@ -58,7 +59,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
 
         public object Description { get; }
 
-        public double Priority { get; } = 0;
+        public double Priority { get; set; }
 
         public void Complete(TextArea textArea, ISegment completionSegment,
             EventArgs insertionRequestEventArgs)
@@ -82,6 +83,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
         //String,
         //Number,
         //Other
+        Assembler
     }
 
 }
