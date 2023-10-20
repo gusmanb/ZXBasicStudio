@@ -92,6 +92,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 s = 2;
             }
+            if(SpriteData.Width>32 || SpriteData.Height > 32)
+            {
+                if (s > 2)
+                {
+                    s = 2;
+                }
+            }
             speed = s;
             tmr.Interval = TimeSpan.FromMilliseconds(speeds[speed]);
         }
