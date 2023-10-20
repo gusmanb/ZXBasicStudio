@@ -434,6 +434,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         static Regex regSubcall = new Regex("^\\s*(stdcall|fastcall)\\s*$", RegexOptions.IgnoreCase);
         static Regex regFor = new Regex("(^\\s*|:\\s*)for\\s+[^\\s]+\\s*=\\s*[^\\s]+\\s+(to(\\s+[^\\s]+\\s+)?)?$", RegexOptions.IgnoreCase);
         static Regex regVar = new Regex("(((^\\s*|:\\s*)dim)|(\\(\\s*(byref|byval)))\\s+[^\\s]+\\s+$", RegexOptions.IgnoreCase);
+        static Regex regFunction = new Regex("(^|\\s+)function\\s+[^\\s]+\\s*\\([^\\)]*\\)\\s+$", RegexOptions.IgnoreCase);
+
         static ZXBasicEditor()
         {
             List<ZXBasicCompletionData> asmMerged = new List<ZXBasicCompletionData>();
@@ -575,6 +577,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             }
 
             if (regVar.IsMatch(preText))
+            {
+                PrioritizeBasicKeywords();
+                return keywords;
+            }
+
+            if (regFunction.IsMatch(preText))
             {
                 PrioritizeBasicKeywords();
                 return keywords;
