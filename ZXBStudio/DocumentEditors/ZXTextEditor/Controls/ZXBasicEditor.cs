@@ -173,7 +173,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "FASTCALL", "Declares a function or subroutine."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "FLASH", "Sets the text style to flash."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "FOR", "Starts a loop."),
-            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "FUNCTION", "Declares a function."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "GO", "Jumps to a line number."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "GOTO", "Jumps to a line number."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "GOSUB", "Jumps to a subroutine."),
@@ -220,7 +219,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "STEP", "Sets the step value for a loop."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "STOP", "Stops execution."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "STR", "Returns a string representation of a number."),
-            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "SUB", "Declares a subroutine."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "TAB", "Sets the cursor position."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "TAN", "Returns the tangent of a number."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "THEN", "Starts an alternative block of code."),
@@ -234,6 +232,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "WHILE", "Starts a loop."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "XOR", "Performs a bitwise XOR operation."),
 
+
+        };
+        static ZXBasicCompletionData[] basicSubroutines = new ZXBasicCompletionData[]
+        {
+            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "SUB", "Declares a subroutine."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Keyword, "FUNCTION", "Declares a function."),
 
         };
         static ZXBasicCompletionData[] basicModifiers = new ZXBasicCompletionData[] 
@@ -427,6 +431,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         static Regex regComment = new Regex("(^|\\s|:)'", RegexOptions.IgnoreCase);
         static Regex regCommentAsm = new Regex(";", RegexOptions.IgnoreCase);
         static Regex regEnd = new Regex("^\\s*end\\s*$", RegexOptions.IgnoreCase);
+        static Regex regSubcall = new Regex("^\\s*(stdcall|fastcall)\\s*$", RegexOptions.IgnoreCase);
 
         static ZXBasicEditor()
         {
@@ -437,6 +442,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
             List<ZXBasicCompletionData> basicMerged = new List<ZXBasicCompletionData>();
             basicMerged.AddRange(basicKeywords);
+            basicMerged.AddRange(basicSubroutines);
             basicMerged.AddRange(basicModifiers);
             keywords = basicMerged.ToArray();
         }
@@ -555,12 +561,33 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 return keywords;
             }
 
+            if(regSubcall.IsMatch(trimmed))
+            {
+                PrioritizeBasicSubroutines();
+                return keywords;
+            }
+
             return null;
+        }
+
+        private void PrioritizeBasicSubroutines()
+        {
+            foreach (var item in basicKeywords)
+                item.Priority = 5;
+
+            foreach (var item in basicSubroutines)
+                item.Priority = 10;
+
+            foreach (var item in basicModifiers)
+                item.Priority = 5;
         }
 
         private void PrioritizeBasicModifiers()
         {
             foreach (var item in basicKeywords)
+                item.Priority = 5;
+
+            foreach (var item in basicSubroutines)
                 item.Priority = 5;
 
             foreach (var item in basicModifiers)
@@ -570,6 +597,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         private void PrioritizeBasicKeywords()
         {
             foreach (var item in basicKeywords)
+                item.Priority = 10;
+
+            foreach (var item in basicSubroutines)
                 item.Priority = 10;
 
             foreach (var item in basicModifiers)
