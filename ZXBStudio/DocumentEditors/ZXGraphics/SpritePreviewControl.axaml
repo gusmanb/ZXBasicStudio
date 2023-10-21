@@ -20,7 +20,9 @@
       <ComboBoxItem>20 fps (50ms)</ComboBoxItem>
     </ComboBox>
 
+    <!--
     <Canvas Name="cnvPreview" Grid.ColumnSpan="2" Grid.Row="1" Width="32" Height="32" Background="#c0c0c0"></Canvas>
-
+    -->
+    <Image Name="imgPreview" Grid.ColumnSpan="2" Grid.Row="1" Width="32" Height="32" RenderOptions.BitmapInterpolationMode="None"></Image>
   </Grid>
 </UserControl>
