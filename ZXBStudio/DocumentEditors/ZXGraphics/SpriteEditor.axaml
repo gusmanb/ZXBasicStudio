@@ -174,10 +174,8 @@
 
       <GridSplitter ResizeDirection="Columns" Grid.Column="3" Classes="vertical"></GridSplitter>
 
-      <zxd:ZXDockingContainer Name="dockRight" DockingGroup="ZXGraphics" Grid.Column="4" RowDefinitions="*">
-        <Grid RowDefinitions="120,4,*">
-
-          <zxd:ZXDockingControl Grid.Row="0" Name="dockPreview" Title="Preview" DockingGroup="ZXGraphics2" DesiredFloatingSize="200,400">
+        <zxd:ZXDockingContainer Name="dockRight" DockingGroup="ZXGraphics" Grid.Column="4" RowDefinitions="*,4,4*" Background="Red">
+          <zxd:ZXDockingControl Grid.Row="0" Name="dockPreview" Title="Preview" DockingGroup="ZXGraphics" DesiredFloatingSize="200,400">
             <zxd:ZXDockingControl.DockedControl>
               <local:SpritePreviewControl Name="ctrlPreview"></local:SpritePreviewControl>
             </zxd:ZXDockingControl.DockedControl>
@@ -185,13 +183,11 @@
 
           <GridSplitter ResizeDirection="Rows" Grid.Row="1" Classes="horizontal"></GridSplitter>
 
-          <zxd:ZXDockingControl Grid.Row="2" Name="dockProperties" Title="Properties" DockingGroup="ZXGraphics2" DesiredFloatingSize="200,400">
+          <zxd:ZXDockingControl Grid.Row="2" Name="dockProperties" Title="Properties" DockingGroup="ZXGraphics" DesiredFloatingSize="200,400">
             <zxd:ZXDockingControl.DockedControl>
               <local:SpritePropertiesControl Name="ctrlProperties"/>
             </zxd:ZXDockingControl.DockedControl>
           </zxd:ZXDockingControl>
-        </Grid>
-
       </zxd:ZXDockingContainer>
 
     </Grid>

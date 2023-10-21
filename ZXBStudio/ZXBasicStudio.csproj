@@ -527,6 +527,9 @@
     <Compile Update="DocumentEditors\ZXGraphics\SpritePreviewControl.axaml.cs">
       <DependentUpon>SpritePreviewControl.axaml</DependentUpon>
     </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\ZXGridImageView.axaml.cs">
+      <DependentUpon>ZXGridImageView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>
     </Compile>

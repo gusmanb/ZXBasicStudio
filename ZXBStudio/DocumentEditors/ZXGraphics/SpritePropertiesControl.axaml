@@ -5,7 +5,7 @@
              xmlns:svg="using:Avalonia.Svg.Skia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.SpritePropertiesControl"
-             HorizontalAlignment="Stretch">
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
   <ScrollViewer>
     <Grid Name="pnlProperties" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="0,0,0,4">
       <TextBlock Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Id:</TextBlock>
