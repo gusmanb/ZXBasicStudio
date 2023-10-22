@@ -27,10 +27,17 @@ namespace ZXBasicStudio.Emulator.Controls
             get { return isRunning; } 
             set 
             { 
-                isRunning = value; 
+                isRunning = value;
 
-                if(isRunning)
-                    RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.None);
+                if (!antiAlias)
+                {
+
+                    if (isRunning)
+                        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.None);
+                    else
+                        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
+
+                }
                 else
                     RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
 
@@ -67,6 +74,33 @@ namespace ZXBasicStudio.Emulator.Controls
                     turbo = value;
 
                 }
+            }
+        }
+
+        bool antiAlias = false;
+
+        public bool AntiAlias
+        {
+            get 
+            {
+                return antiAlias;
+            }
+
+            set 
+            {
+                antiAlias = value;
+
+                if (!antiAlias)
+                {
+
+                    if (isRunning)
+                        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.None);
+                    else
+                        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
+
+                }
+                else
+                    RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
             }
         }
 

@@ -90,6 +90,8 @@ namespace ZXBasicStudio.Emulator.Controls
 
         public bool EnableKeyMapping { get { return mapper.Active; } set { mapper.Active = value; } }
 
+        public bool AntiAlias { get { return emuScr.AntiAlias; } set { emuScr.AntiAlias = value; } }
+
         #region Events
 
         public event EventHandler<BreakpointEventArgs>? Breakpoint;

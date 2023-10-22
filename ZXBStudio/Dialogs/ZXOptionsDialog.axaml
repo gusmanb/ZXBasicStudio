@@ -4,13 +4,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wnd="using:ZXBasicStudio.Classes"
         mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
-        MinWidth="300" MaxWidth="300"
-        MinHeight="370" MaxHeight="370"
+        MinWidth="330" MaxWidth="330"
+        MinHeight="420" MaxHeight="420"
         x:Class="ZXBasicStudio.Dialogs.ZXOptionsDialog"
         CanResize="False"
         Icon="/Assets/zxbs.ico"
         Title="General options" WindowStartupLocation="CenterOwner">
-  <Grid ColumnDefinitions="*,5*,8*,2*,*" RowDefinitions="*,*,*,*,*,*,1.5*,1.5*,1.5*">
+  <Grid ColumnDefinitions="*,7*,8*,2*,*" RowDefinitions="*,*,*,*,*,*,*,*,1.5*,1.5*,1.5*">
     <TextBlock Classes="dialog" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">ZXBC path:</TextBlock>
     <TextBox Classes="dialog" Grid.Row="0" Grid.Column="2" Name="txtZxbc" IsReadOnly="True"></TextBox>
     <Button Classes="dialog" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Name="btnSelectZxbc">...</Button>
@@ -27,9 +27,16 @@
     <CheckBox Classes="dialog" Name="ckDisableAudio" Grid.Column="2" Grid.Row="4"></CheckBox>
     <TextBlock Classes="dialog" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center">CLS before run:</TextBlock>
     <CheckBox Classes="dialog" Name="ckCls" Grid.Column="2" Grid.Row="5"></CheckBox>
-    <Button Classes="dialog" Grid.Row="6" Grid.Column="2" Padding="6" VerticalAlignment="Center" Name="btnKeybMap">Keyboard mappings</Button>
-    <Button Classes="dialog" Grid.Row="7" Grid.Column="2" Padding="6" VerticalAlignment="Center" Name="btnDefaultBuildConfig">Default build options</Button>
-    <StackPanel Margin="0,0,0,10" Grid.Row="8" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right">
+
+    <TextBlock Classes="dialog" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center">Borderless borderless:</TextBlock>
+    <CheckBox Classes="dialog" Name="ckBorderless" Grid.Column="2" Grid.Row="6"></CheckBox>
+    
+    <TextBlock Classes="dialog" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center">Antialias rendering:</TextBlock>
+    <CheckBox Classes="dialog" Name="ckAntiAlias" Grid.Column="2" Grid.Row="7"></CheckBox>
+    
+    <Button Classes="dialog" Grid.Row="8" Grid.Column="2" Padding="6" VerticalAlignment="Center" Name="btnKeybMap">Keyboard mappings</Button>
+    <Button Classes="dialog" Grid.Row="9" Grid.Column="2" Padding="6" VerticalAlignment="Center" Name="btnDefaultBuildConfig">Default build options</Button>
+    <StackPanel Margin="0,0,0,10" Grid.Row="10" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right">
       <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnCancel">Cancel</Button>
       <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnAccept">Accept</Button>
     </StackPanel>

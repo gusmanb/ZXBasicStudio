@@ -194,9 +194,17 @@ namespace ZXBasicStudio
             emu.ExceptionTrapped += Emu_ExceptionTrapped;
             #endregion
 
+            #region Attach editors view events
+            tcEditors.SelectionChanged += TcEditors_SelectionChanged;
+            #endregion
+
+            #region Debugging tools initialization
             regView.Registers = emu.Registers;
             memView.Initialize(emu.Memory);
             CreateRomBreakpoints();
+            #endregion
+
+            #region Player intialization
 
             _player = new ZXTapePlayer();
             _player.Datacorder = emu.Datacorder;
@@ -207,7 +215,8 @@ namespace ZXBasicStudio
             _playerDock.DesiredFloatingSize = new Size(230, 270);
             _playerDock.Name = "TapePlayerDock";
 
-            ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom, new[] { _playerDock });
+            #endregion
+
             #region Shortcut initialization
             _shortcuts = new Dictionary<Guid, Action>()
             {
@@ -251,69 +260,13 @@ namespace ZXBasicStudio
             };
             #endregion
 
-            tcEditors.SelectionChanged += TcEditors_SelectionChanged;
-        }
+            #region Default emulator settings
+            btnBorderless.IsChecked = emu.Borderless = ZXOptions.Current.Borderless;
+            emu.AntiAlias = ZXOptions.Current.AntiAlias;
+            #endregion
 
-        private void TcEditors_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            var activated = e.AddedItems.OfType<TabItem>().FirstOrDefault();
-            var deactivated = e.RemovedItems.OfType<TabItem>().FirstOrDefault();
-
-            if (deactivated != null)
-            {
-                var editor = deactivated.Content as ZXDocumentEditorBase;
-
-                if (editor != null)
-                {
-                    Task.Run(async () =>
-                    {
-                        await Task.Delay(100);
-                        Dispatcher.UIThread.Invoke(() => editor.Deactivated());
-                    });
-                }
-
-            }
-
-            if (activated != null)
-            {
-                var editor = activated.Content as ZXDocumentEditorBase;
-
-                if (editor != null)
-                {
-                    Task.Run(async () =>
-                    {
-                        await Task.Delay(100);
-                        Dispatcher.UIThread.Invoke(() => editor.Activated());
-                    });
-                }
-            }
-        }
-
-        protected override void OnMeasureInvalidated()
-        {
-            
-            base.OnMeasureInvalidated();
-        }
-
-        private void BtnMapKeyboard_Click(object? sender, RoutedEventArgs e)
-        {
-            emu.EnableKeyMapping = btnMapKeyboard.IsChecked ?? false;
-        }
-
-        private void PowerOn(object? sender, RoutedEventArgs e)
-        {
-            CheckSpectrumModel();
-            emu.Start();
-            EmulatorInfo.IsRunning = true;
-        }
-
-
-        private void ShowTapePlayer(object? sender, RoutedEventArgs e)
-        {
-            if (!_player.IsAttachedToVisualTree())
-                ZXFloatController.MakeFloating(_playerDock);
-
-            _player.Datacorder = emu.Datacorder;
+            //Layout restoration
+            ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom, new[] { _playerDock });
         }
 
         #region File manipulation
@@ -949,9 +902,26 @@ namespace ZXBasicStudio
                     FileInfo.FileLoaded = false;
             }
         }
-    #endregion
+        #endregion
 
         #region Emulator control
+
+        private void PowerOn(object? sender, RoutedEventArgs e)
+        {
+            CheckSpectrumModel();
+            emu.Start();
+            EmulatorInfo.IsRunning = true;
+        }
+
+
+        private void ShowTapePlayer(object? sender, RoutedEventArgs e)
+        {
+            if (!_player.IsAttachedToVisualTree())
+                ZXFloatController.MakeFloating(_playerDock);
+
+            _player.Datacorder = emu.Datacorder;
+        }
+
         private void DirectScreen(object? sender, RoutedEventArgs e)
         {
             emu.DirectMode = btnDirectScreen.IsChecked ?? false;
@@ -1602,6 +1572,40 @@ namespace ZXBasicStudio
         #endregion
 
         #region Editor control
+        private void TcEditors_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var activated = e.AddedItems.OfType<TabItem>().FirstOrDefault();
+            var deactivated = e.RemovedItems.OfType<TabItem>().FirstOrDefault();
+
+            if (deactivated != null)
+            {
+                var editor = deactivated.Content as ZXDocumentEditorBase;
+
+                if (editor != null)
+                {
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(100);
+                        Dispatcher.UIThread.Invoke(() => editor.Deactivated());
+                    });
+                }
+
+            }
+
+            if (activated != null)
+            {
+                var editor = activated.Content as ZXDocumentEditorBase;
+
+                if (editor != null)
+                {
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(100);
+                        Dispatcher.UIThread.Invoke(() => editor.Activated());
+                    });
+                }
+            }
+        }
 
         private void BtnRemoveBreakpoints_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
@@ -1724,6 +1728,7 @@ namespace ZXBasicStudio
         {
             var dlg = new ZXOptionsDialog();
             await dlg.ShowDialog(this);
+            emu.AntiAlias = ZXOptions.Current.AntiAlias;
         }
 
         private async void RestoreLayout(object? sender, RoutedEventArgs e)
@@ -1771,6 +1776,11 @@ namespace ZXBasicStudio
         #endregion
 
         #region General functions
+        private void BtnMapKeyboard_Click(object? sender, RoutedEventArgs e)
+        {
+            emu.EnableKeyMapping = btnMapKeyboard.IsChecked ?? false;
+        }
+
         private async void DumpRegisters(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             var select = await StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions

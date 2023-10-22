@@ -25,6 +25,9 @@ namespace ZXBasicStudio.Dialogs
             ckDisableAudio.IsChecked = ZXOptions.Current.AudioDisabled;
             ckWordWrap.IsChecked = ZXOptions.Current.WordWrap;
             ckCls.IsChecked = ZXOptions.Current.Cls;
+            ckBorderless.IsChecked = ZXOptions.Current.Borderless;
+            ckAntiAlias.IsChecked = ZXOptions.Current.AntiAlias;
+
             btnKeybMap.Click += BtnKeybMap_Click;
         }
 
@@ -107,9 +110,12 @@ namespace ZXBasicStudio.Dialogs
             ZXOptions.Current.AudioDisabled = ckDisableAudio.IsChecked ?? false;
             ZXOptions.Current.WordWrap = ckWordWrap.IsChecked ?? false;
             ZXOptions.Current.Cls = ckCls.IsChecked ?? false;
+            ZXOptions.Current.Borderless = ckBorderless.IsChecked ?? false;
+            ZXOptions.Current.AntiAlias = ckAntiAlias.IsChecked ?? false;
 
             if (bsett != null)
                 ZXOptions.Current.DefaultBuildSettings = bsett;
+
             ZXOptions.SaveCurrentSettings();
             this.Close(true);
         }
