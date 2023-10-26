@@ -46,6 +46,7 @@
           <MenuItem Header="Project" IsEnabled="{Binding FileInfo.ProjectLoaded}" Name="mnuCloseProject" Icon="{SvgImage /Svg/White/diagram-project-cross-solid.svg}"></MenuItem>
           <MenuItem Header="File" IsEnabled="{Binding FileInfo.FileLoaded}" Name="mnuCloseFile" Icon="{SvgImage /Svg/White/file-circle-xmark-solid.svg}"></MenuItem>
         </MenuItem>
+          <MenuItem Header="Exit" Name="mnuExitApplication" Icon="{svg:SvgImage /Svg/White/exit-solid.svg}"></MenuItem>
       </MenuItem>
       <MenuItem Header="Project">
         <MenuItem Header="Configure project" IsEnabled="{Binding FileInfo.ProjectLoaded}" Name="mnuConfigureProject" Icon="{SvgImage /Svg/White/gears-solid.svg}"></MenuItem>

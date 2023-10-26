@@ -135,6 +135,7 @@ namespace ZXBasicStudio
             mnuSaveFile.Click += SaveFile;
             mnuCloseProject.Click += CloseProject;
             mnuCloseFile.Click += CloseFile;
+            mnuExitApplication.Click += ExitApplication;
             mnuConfigureProject.Click += ConfigureProject;
             mnuBuild.Click += Build;
             mnuBuildRun.Click += BuildAndRun;
@@ -2051,6 +2052,28 @@ namespace ZXBasicStudio
 
             if (cmd != null && _shortcuts.ContainsKey(cmd.Value))
                 _shortcuts[cmd.Value]();
+        }
+
+        #endregion
+
+        #region Application control
+
+        private async void ExitApplication(object?  sender, Avalonia.Interactivity.RoutedEventArgs? e)
+        {
+            if (openDocuments.Any(e => e.Modified))
+            {
+                var resConfirm = await this.ShowConfirm("Modified documents", "Some documents have been modified but not saved, if you close the project all the changes will be lost, are you sure you want to close the project?");
+
+                if (!resConfirm)
+                    return;
+            }
+
+            foreach (var doc in openDocuments)
+                doc.CloseDocument(outLog.Writer, true);
+
+            ZXProjectManager.CloseProject();
+            
+            Close();
         }
 
         #endregion

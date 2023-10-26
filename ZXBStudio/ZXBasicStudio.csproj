@@ -315,6 +315,7 @@
     <AvaloniaResource Include="Fonts\ConsolaMono.ttf" />
     <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\White\exit-solid.svg" />
     <AvaloniaResource Include="Svg\buildexport.svg" />
     <AvaloniaResource Include="Svg\caret-down-solid.svg" />
     <AvaloniaResource Include="Svg\caret-up-solid.svg" />
