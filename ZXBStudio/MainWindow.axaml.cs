@@ -172,6 +172,8 @@ namespace ZXBasicStudio
             btnNextInstruction.Click += AssemblerStepEmulator;
             btnNextLine.Click += BasicStepEmulator;
             btnStop.Click += StopEmulator;
+            btnFontIncrease.Click += BtnFontIncrease_Click;
+            btnFontDecrease.Click += BtnFontDecrease_Click;
             btnCollapse.Click += BtnCollapse_Click;
             btnExpand.Click += BtnExpand_Click;
             btnComment.Click += BtnComment_Click;
@@ -1623,6 +1625,56 @@ namespace ZXBasicStudio
             UpdateUserBreakpoints();
         }
 
+        private void BtnFontIncrease_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            foreach (var tab in editTabs)
+            {
+                if (tab.IsSelected)
+                {
+                    var editor = tab.Content as ZXTextEditor;
+                    if (editor != null)
+                    {
+                        editor.FontIncrease();
+                        Task.Run(async () =>
+                        {
+                            await Task.Delay(100);
+                            await Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                editor.Focus();
+                                editor.FocusText();
+                            });
+
+                        });
+                    }
+                }
+            }
+        }
+        
+        private void BtnFontDecrease_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            foreach (var tab in editTabs)
+            {
+                if (tab.IsSelected)
+                {
+                    var editor = tab.Content as ZXTextEditor;
+                    if (editor != null)
+                    {
+                        editor.FontDecrease();
+                        Task.Run(async () =>
+                        {
+                            await Task.Delay(100);
+                            await Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                editor.Focus();
+                                editor.FocusText();
+                            });
+
+                        });
+                    }
+                }
+            }
+        }
+        
         private void BtnUncomment_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             foreach (var tab in editTabs)
