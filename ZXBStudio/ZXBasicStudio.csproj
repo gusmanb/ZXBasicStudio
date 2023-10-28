@@ -315,6 +315,7 @@
     <AvaloniaResource Include="Fonts\ConsolaMono.ttf" />
     <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\White\exit-solid.svg" />
     <AvaloniaResource Include="Svg\buildexport.svg" />
     <AvaloniaResource Include="Svg\caret-down-solid.svg" />
     <AvaloniaResource Include="Svg\caret-up-solid.svg" />
@@ -410,6 +411,8 @@
     <AvaloniaResource Include="Svg\trash-can-regular.svg" />
     <AvaloniaResource Include="Svg\trash-solid.svg" />
     <AvaloniaResource Include="Svg\truck-fast-solid.svg" />
+    <AvaloniaResource Include="Svg\font-increase.svg" />
+    <AvaloniaResource Include="Svg\font-decrease.svg" />
     <AvaloniaResource Include="Svg\White\backward-solid.svg" />
     <AvaloniaResource Include="Svg\White\backward-step-solid.svg" />
     <AvaloniaResource Include="Svg\White\box-open-solid.svg" />

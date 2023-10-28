@@ -602,6 +602,17 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             foreach (var fold in fManager.AllFoldings)
                 fold.IsFolded = false;
         }
+        
+        public void FontIncrease()
+        {
+            editor.FontSize++;
+        }
+        
+        public void FontDecrease()
+        {
+            editor.FontSize--;
+        }
+        
         public void CommentSelection()
         {
             if (editor.IsReadOnly || commentChar == null || editor.TextArea.Selection == null)
