@@ -110,6 +110,8 @@ namespace ZXBasicStudio
 
         ZXDocumentEditorBase? _activeEditor = null;
 
+        bool skipCloseCheck = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -2083,12 +2085,36 @@ namespace ZXBasicStudio
 
         protected override void OnClosing(WindowClosingEventArgs e)
         {
+            if (openDocuments.Any(e => e.Modified) && !skipCloseCheck && e.CloseReason != WindowCloseReason.OSShutdown)
+            {
+                if (openDocuments.Any(e => e.Modified))
+                {
+                    e.Cancel = true;
+                    Dispatcher.UIThread.InvokeAsync(async () =>
+                    {
+                        var resConfirm = await this.ShowConfirm("Modified documents", "Some documents have been modified but not saved, if you close the project all the changes will be lost, are you sure you want to close the project?");
+
+                        if (resConfirm)
+                        {
+                            foreach (var doc in openDocuments)
+                                doc.CloseDocument(outLog.Writer, true);
+
+                            ZXProjectManager.CloseProject();
+
+                            skipCloseCheck = true;
+                            Close();
+                        }
+                    });
+                }
+            }
+
             emu.Stop();
 
             if (!skipLayout)
                 ZXLayoutPersister.SaveLayout(grdMain, dockLeft, dockRight, dockBottom);
 
             base.OnClosing(e);
+            
         }
 
         protected override void OnClosed(EventArgs e)
@@ -2116,19 +2142,6 @@ namespace ZXBasicStudio
 
         private async void ExitApplication(object?  sender, Avalonia.Interactivity.RoutedEventArgs? e)
         {
-            if (openDocuments.Any(e => e.Modified))
-            {
-                var resConfirm = await this.ShowConfirm("Modified documents", "Some documents have been modified but not saved, if you close the project all the changes will be lost, are you sure you want to close the project?");
-
-                if (!resConfirm)
-                    return;
-            }
-
-            foreach (var doc in openDocuments)
-                doc.CloseDocument(outLog.Writer, true);
-
-            ZXProjectManager.CloseProject();
-            
             Close();
         }
 
