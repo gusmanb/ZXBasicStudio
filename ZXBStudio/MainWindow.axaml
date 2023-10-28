@@ -81,7 +81,7 @@
         <MenuItem Header="Restore layout" Name="mnuRestoreLayout" Icon="{SvgImage /Svg/White/clock-rotate-left-solid.svg}"></MenuItem>
       </MenuItem>
     </Menu>
-    <StackPanel Spacing="4" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5" Margin="10">
+    <StackPanel Spacing="2" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="5" Margin="5">
       <Button Classes="toolbar" Name="btnOpenProject" ToolTip.Tip="Open project">
         <svg:Svg Path="/Svg/diagram-project-solid.svg"></svg:Svg>
       </Button>
@@ -97,7 +97,7 @@
       <Button Classes="toolbar" Name="btnSaveAll" IsEnabled="{Binding FileInfo.FileLoaded}" ToolTip.Tip="Save all files">
         <svg:Svg Path="/Svg/floppy-multiple-disk-solid.svg"></svg:Svg>
       </Button>
-      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <Line StartPoint="0,0" EndPoint="0,24" Stroke="White" Margin="5,0,5,0"></Line>
       <Button Classes="toolbar" Name="btnFontIncrease" IsEnabled="{Binding FileInfo.FileLoaded}" ToolTip.Tip="Font size increase">
       <svg:Svg Path="/Svg/font-increase.svg"></svg:Svg>
       </Button>
@@ -119,8 +119,8 @@
       <Button Classes="toolbar" Name="btnRemoveBreakpoints" IsEnabled="{Binding FileInfo.ProjectLoaded}" ToolTip.Tip="Remove all breakpoints">
         <svg:Svg Path="/Svg/circle-xmark-solid.svg"></svg:Svg>
       </Button>
-      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
-      <ComboBox Classes="toolbar" Grid.Row="1" Grid.Column="2" Name="cbModel" Width="110" SelectedIndex="0">
+      <Line StartPoint="0,0" EndPoint="0,24" Stroke="White" Margin="5,0,5,0"></Line>
+      <ComboBox Classes="toolbar" Grid.Row="1" Grid.Column="2" Name="cbModel" Width="110" SelectedIndex="0" FontSize="10">
         <ComboBoxItem>Spectrum 48k</ComboBoxItem>
         <ComboBoxItem>Spectrum 128k</ComboBoxItem>
         <ComboBoxItem>Spectrum +2</ComboBoxItem>
@@ -155,7 +155,7 @@
       <Button Classes="toolbar" Name="btnTape" IsEnabled="{Binding EmulatorInfo.IsRunning}" ToolTip.Tip="Tape player">
         <svg:Svg Path="/Svg/cassette-solid.svg"></svg:Svg>
       </Button>
-      <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+      <Line StartPoint="0,0" EndPoint="0,24" Stroke="White" Margin="5,0,5,0"></Line>
       <ToggleButton Classes="toolbar" Name="btnMapKeyboard" ToolTip.Tip="Map keyboard">
         <svg:Svg Path="/Svg/keyboard-regular.svg"></svg:Svg>
       </ToggleButton>
