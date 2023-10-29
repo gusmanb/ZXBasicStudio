@@ -18,6 +18,7 @@ using CoreSpectrum.Debug;
 using CoreSpectrum.Enums;
 using CoreSpectrum.SupportClasses;
 using HarfBuzzSharp;
+using Metsys.Bson;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SkiaSharp;
@@ -55,6 +56,8 @@ namespace ZXBasicStudio
 {
     public partial class MainWindow : ZXWindowBase //, IObserver<RawInputEventArgs>
     {
+        const string repoUrl = "https://github.com/gusmanb/ZXBasicStudio";
+        const string zxbHelpUrl = "https://zxbasic.readthedocs.io/en/docs/";   
 
         #region Shortcut handling
 
@@ -62,7 +65,6 @@ namespace ZXBasicStudio
 
         internal static ZXKeybCommand[] KeybCommands =
         {
-            new ZXKeybCommand { CommandId = Guid.Parse("21bc5c34-df5e-449e-a826-88e1f42d7810"), CommandName = "Exit application", Key = Key.None, Modifiers = KeyModifiers.None },
             new ZXKeybCommand { CommandId = Guid.Parse("62c23849-7312-41ac-8788-9f6d851cc3b9"), CommandName = "Build and run", Key = Key.F5, Modifiers = KeyModifiers.None },
             new ZXKeybCommand { CommandId = Guid.Parse("d9222ec4-5d7a-4b04-b9e3-e29d6d8bca78"), CommandName = "Build and debug", Key = Key.F6, Modifiers = KeyModifiers.None },
             new ZXKeybCommand { CommandId = Guid.Parse("57aff55a-f4a1-4a57-a532-a38117e1a532"), CommandName = "Pause emulation", Key = Key.F7, Modifiers = KeyModifiers.None },
@@ -77,6 +79,7 @@ namespace ZXBasicStudio
             new ZXKeybCommand { CommandId = Guid.Parse("7b50369f-3f48-4653-99c1-26e566691e3c"), CommandName = "Debug View", Key = Key.F10, Modifiers = KeyModifiers.Control | KeyModifiers.Shift },
             new ZXKeybCommand { CommandId = Guid.Parse("86b341a1-8d07-4af2-b4b0-ca953cd3dbc0"), CommandName = "Play View", Key = Key.F11, Modifiers = KeyModifiers.Control | KeyModifiers.Shift },
             new ZXKeybCommand { CommandId = Guid.Parse("424f7395-c29d-44f9-8f9e-43b8891ec261"), CommandName = "All tools View", Key = Key.F12, Modifiers = KeyModifiers.Control | KeyModifiers.Shift },
+            new ZXKeybCommand { CommandId = Guid.Parse("21bc5c34-df5e-449e-a826-88e1f42d7810"), CommandName = "Exit application", Key = Key.None, Modifiers = KeyModifiers.None }
         };
 
         Dictionary<Guid, Action> _shortcuts = new Dictionary<Guid, Action>();
@@ -158,7 +161,9 @@ namespace ZXBasicStudio
             mnuAllToolsView.Click += ToolsLayout;
             mnuDebugView.Click += DebugLayout;
             mnuPlayView.Click += PlayLayout;
-
+            mnuRepo.Click += OpenRepository;
+            mnuZXHelp.Click += OpenZXHelp;
+            mnuAbout.Click += OpenAbout;
             #endregion
 
             #region Attach toolbar events
@@ -276,6 +281,22 @@ namespace ZXBasicStudio
 
             //Layout restoration
             ZXLayoutPersister.RestoreLayout(grdMain, dockLeft, dockRight, dockBottom, new[] { _playerDock });
+        }
+
+        private void OpenAbout(object? sender, RoutedEventArgs e)
+        {
+            ZXAboutDialog zXAboutDialog = new ZXAboutDialog();
+            zXAboutDialog.ShowDialog(this);
+        }
+
+        private void OpenZXHelp(object? sender, RoutedEventArgs e)
+        {
+            OpenUrl(zxbHelpUrl);
+        }
+
+        private void OpenRepository(object? sender, RoutedEventArgs e)
+        {
+            OpenUrl(repoUrl);
         }
 
         #region File manipulation
@@ -1838,6 +1859,39 @@ namespace ZXBasicStudio
         private void BtnMapKeyboard_Click(object? sender, RoutedEventArgs e)
         {
             emu.EnableKeyMapping = btnMapKeyboard.IsChecked ?? false;
+        }
+
+        private void OpenUrl(string Url)
+        {
+
+            if (string.IsNullOrWhiteSpace(Url))
+                return;
+
+            try
+            {
+                ProcessStartInfo processInfo = new()
+                {
+                    FileName = Url,
+                    UseShellExecute = true
+                };
+
+                Process.Start(processInfo);
+            }
+            catch
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("xdg-open", Url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", Url);
+                }
+                else
+                {
+                    return;
+                }
+            }
         }
 
         private async void DumpRegisters(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
