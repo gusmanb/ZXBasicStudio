@@ -1,4 +1,4 @@
-# ZXBasicStudio
+# ZX Basic Studio
 ZX Basic Studio is a project created and led by **El Dr. Gusman**, and is available at https://github.com/gusmanb/ZXBasicStudio.
 
 # Beta 1.0 released!
