@@ -17,7 +17,7 @@
              FontFamily="{Binding FontFamily}"
              Padding="15">
     <UserControl.KeyBindings>
-        <KeyBinding Gesture="Ctrl+C" Command="{Binding Copy}" />
+      <!--<KeyBinding Gesture="Ctrl+C" Command="{Binding Copy}" />-->
         <KeyBinding Gesture="Enter" Command="{Binding EnterClickCommand}" />
         <KeyBinding Gesture="Escape" Command="{Binding EscClickCommand}" />
     </UserControl.KeyBindings>

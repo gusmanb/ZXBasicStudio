@@ -20,7 +20,7 @@ public class MsBoxCustomViewModel : AbstractMsBoxViewModel, ISetFullApi<string>
     public void SetFullApi(IFullApi<string> fullApi)
     {
         _fullApi = fullApi;
-        base.SetCopy(fullApi);
+        //base.SetCopy(fullApi);
     }
 
     public IEnumerable<ButtonDefinition> ButtonDefinitions { get; }

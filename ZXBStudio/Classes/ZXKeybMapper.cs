@@ -69,7 +69,7 @@ namespace ZXBasicStudio.Classes
             if (!mappings.ContainsKey(SourceId))
                 return null;
 
-            return mappings[SourceId].FirstOrDefault(m => m.Key == Key && m.Modifiers == Modifiers)?.CommandId;
+            return mappings[SourceId].FirstOrDefault(m => m.Key != Key.None && m.Key == Key && m.Modifiers == Modifiers)?.CommandId;
         }
         public static bool UpdateCommands(Guid SourceId, ZXKeybCommand[] Commands)
         {

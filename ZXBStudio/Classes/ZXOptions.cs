@@ -38,6 +38,8 @@ namespace ZXBasicStudio.Classes
         public bool WordWrap { get; set; } = true;
         public bool AudioDisabled { get; set; }
         public bool Cls { get; set; }
+        public bool Borderless { get; set; }
+        public bool AntiAlias { get; set; }
         public ZXBuildSettings? DefaultBuildSettings { get; set; }
     }
 }

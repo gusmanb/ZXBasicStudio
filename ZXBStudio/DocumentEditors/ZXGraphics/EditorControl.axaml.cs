@@ -118,6 +118,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             cnvEditor.PointerPressed += CnvEditor_PointerPressed;
             cnvEditor.PointerReleased += CnvEditor_PointerReleased;
             cnvEditor.PointerExited += CnvEditor_PointerExited;
+            cnvEditor.KeyDown += CnvEditor_KeyDown;
+        }
+
+        private void CnvEditor_KeyDown(object? sender, KeyEventArgs e)
+        {
+            
         }
 
 
@@ -313,6 +319,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 {
                     if (pointData.ColorIndex != value)
                     {
+                        operations.Add(new Operation()
+                        {
+                            X = mx.ToInteger(),
+                            Y = my.ToInteger(),
+                            ColorIndex = pointData.ColorIndex
+                        });
                         pointData.ColorIndex = value;
                         callBackSetPattern(id, pattern);
                         Refresh();
@@ -323,6 +335,44 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
 
         #region Toolbar
+
+        private List<Operation> operations = new List<Operation>();
+        private List<Operation> operationsDeleted = new List<Operation>();
+
+        public void Undo()
+        {
+            // Get last operation
+            var op = operations.LastOrDefault();
+            if (op != null)
+            {
+                // Move from operations to operationsDeleted
+                operations.Remove(op);
+                // Restore point value (Undo)
+                SetPoint(op.X, op.Y, op.ColorIndex);
+                // Remove new operation (Undo don't add operation)
+                var op2 = operations.LastOrDefault();
+                if (op2 != null)
+                {
+                    operations.Remove(op2);
+                    operationsDeleted.Add(op2);
+                }
+            }
+        }
+
+
+        public void Redo()
+        {
+            // Get last undo operation
+            var op = operationsDeleted.LastOrDefault();
+            if (op != null)
+            {
+                // Delete from operationsDeleted
+                operationsDeleted.Remove(op);
+                // Set point value (Undo)
+                SetPoint(op.X, op.Y, op.ColorIndex);                
+            }
+        }
+
 
         /// <summary>
         /// Clear active patterns

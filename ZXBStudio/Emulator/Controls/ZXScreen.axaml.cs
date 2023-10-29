@@ -22,7 +22,28 @@ namespace ZXBasicStudio.Emulator.Controls
         Bitmap logoBitmap;
 
         bool isRunning;
-        public bool IsRunning { get { return isRunning; } set { isRunning = value; InvalidateVisual(); } }
+        public bool IsRunning 
+        { 
+            get { return isRunning; } 
+            set 
+            { 
+                isRunning = value;
+
+                if (!antiAlias)
+                {
+
+                    if (isRunning)
+                        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.None);
+                    else
+                        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
+
+                }
+                else
+                    RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
+
+                InvalidateVisual(); 
+            } 
+        }
 
         DateTime? lastTurboUpdate;
         bool turbo = false;
@@ -53,6 +74,33 @@ namespace ZXBasicStudio.Emulator.Controls
                     turbo = value;
 
                 }
+            }
+        }
+
+        bool antiAlias = false;
+
+        public bool AntiAlias
+        {
+            get 
+            {
+                return antiAlias;
+            }
+
+            set 
+            {
+                antiAlias = value;
+
+                if (!antiAlias)
+                {
+
+                    if (isRunning)
+                        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.None);
+                    else
+                        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
+
+                }
+                else
+                    RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
             }
         }
 
@@ -109,6 +157,8 @@ namespace ZXBasicStudio.Emulator.Controls
 
                 if (IsRunning)
                 {
+                    
+
                     var scale = Bounds.Width / buffer.PixelSize.Width;
                     if (buffer.PixelSize.Height * scale > Bounds.Height)
                         scale = Bounds.Height / buffer.PixelSize.Height;

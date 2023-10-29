@@ -12,6 +12,10 @@ using ZXBasicStudio.Common.TAPTools;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
+using System.Drawing.Imaging;
+using Avalonia.Metadata;
+using Avalonia.Controls.Shapes;
+using AvaloniaEdit;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
@@ -53,7 +57,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         /// <returns>FileTypes, 5 (config) for other files</returns>
         public static FileTypeConfig GetFileType(string filename)
         {
-            var ext = Path.GetExtension(filename).ToLower();
+            var ext = System.IO.Path.GetExtension(filename).ToLower();
             var ftc = new FileTypeConfig();
             ftc.FileName = filename;
 
@@ -71,6 +75,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     ftc.FirstIndex = 32;    // SPACE
                     ftc.NumerOfPatterns = 96;
                     break;
+                case SpriteDocument:
+                    ftc.FileType = FileTypes.Sprite;
+                    break;
+
             }
             return ftc;
         }
@@ -232,6 +240,115 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
 
         /// <summary>
+        /// Creates the binary data for a file of type sprite or tile de arriba hacia abajo
+        /// </summary>
+        /// <param name="fileType">File information</param>
+        /// <param name="sprite">Sprite or tile data</param>
+        /// <returns>Arrfay of byte with the data ready to save on disk</returns>
+        public static byte[] Files_CreateBinDataUpDown(Pattern pattern, int width, int height, ExportConfig export)
+        {
+            try
+            {
+                List<byte> data = new List<byte>();
+                for (int column = 0; column < (width / 8); column++)
+                {
+                    int xx = column * 8;
+                    for (int row = 0; row < height; row++)
+                    {
+                        int b = 0;
+                        for (int x = 0; x < 8; x++)
+                        {
+                            var dir = (row * width) + xx + x;
+                            var p = pattern.RawData[dir];
+                            if (p == 1)
+                            {
+                                b = b | (int)Math.Pow(2, (7 - x));
+                            }
+                        }
+                        data.Add((byte)b);
+                    }
+                }
+
+                return data.ToArray();
+            }
+            catch (Exception ex)
+            {
+                LastError = "ERROR generating binary data: " + ex.Message + ex.StackTrace;
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Converts RawData to PointData
+        /// </summary>
+        /// <param name="rawData">Data to convert</param>
+        /// <param name="width">Width of the pattern</param>
+        /// <param name="height">Height of the pattern</param>
+        /// <returns>Array of PointData</returns>
+        public static PointData[] RawData2PointData(int[] rawData, int width, int height)
+        {
+            int size = width * height;
+            var pointData = new PointData[size];
+            int index = 0;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    pointData[index] = new PointData()
+                    {
+                        X = x,
+                        Y = y,
+                        ColorIndex = rawData[index]
+                    };
+                    index++;
+                    if (index >= size)
+                    {
+                        return pointData;
+                    }
+                }
+            }
+            return pointData;
+        }
+
+
+        /// <summary>
+        /// Converts PointData array to RawData
+        /// </summary>
+        /// <param name="pointData">Data to convert</param>
+        /// <param name="width">Width of the pattern</param>
+        /// <param name="height">Height of the pattern</param>
+        /// <returns>RawData</returns>
+        public static int[] PointData2RawData(PointData[] pointData, int width, int height)
+        {
+            int size = width * height;
+            var rawData = new int[size];
+            int index = 0;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var pd = pointData.FirstOrDefault(d => d.X == x && d.Y == y);
+                    if (pd == null)
+                    {
+                        rawData[index] = 0;
+                    }
+                    else
+                    {
+                        rawData[index] = pd.ColorIndex;
+                    }
+                    index++;
+                    if (index >= size)
+                    {
+                        return rawData;
+                    }
+                }
+            }
+            return rawData;
+        }
+
+
+        /// <summary>
         /// Save binary data to a file
         /// </summary>
         /// <param name="fileName">File name with full path</param>
@@ -317,6 +434,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                 case FileTypes.Font:
                     dataLayer.Files_GetAllFileNames(path, ".fnt.zbs", ref lst);
                     return lst.ToArray();
+                case FileTypes.Sprite:
+                    dataLayer.Files_GetAllFileNames(path, ".spr.zbs", ref lst);
+                    return lst.ToArray();
             }
             return null;
         }
@@ -352,7 +472,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         /// </summary>
         /// <param name="fileName">Document file name</param>
         /// <returns>The new export configuration</returns>
-        public static ExportConfig Export_GetDefaultConfig(string fileName)
+        public static ExportConfig Export_FontGDU_GetDefaultConfig(string fileName)
         {
             var docType = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument));
             var exportConfig = new ExportConfig();
@@ -360,11 +480,30 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             exportConfig.AutoExport = true;
             exportConfig.ExportFilePath = fileName + docType.DocumentExtensions.First();
             exportConfig.ExportType = ExportTypes.Dim;
-            exportConfig.LabelName = Path.GetFileNameWithoutExtension(fileName).Replace(" ", "_");
+            exportConfig.LabelName = System.IO.Path.GetFileNameWithoutExtension(fileName).Replace(" ", "_");
             exportConfig.ZXAddress = 49152;
             exportConfig.ZXFileName = exportConfig.LabelName;
             return exportConfig;
         }
+
+
+        /// <summary>
+        /// Creates the default export config for an UDG/Font document
+        /// </summary>
+        /// <param name="fileName">Document file name</param>
+        /// <returns>The new export configuration</returns>
+        public static ExportConfig Export_Sprite_GetDefaultConfig(string fileName)
+        {
+            var docType = ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXBasicDocument));
+            var exportConfig = new ExportConfig();
+            exportConfig.ArrayBase = 0;
+            exportConfig.AutoExport = true;
+            exportConfig.ExportFilePath = fileName + ".bas";
+            exportConfig.ExportType = ExportTypes.PutChars;
+            exportConfig.LabelName = System.IO.Path.GetFileNameWithoutExtension(fileName).Replace(" ", "_") + "_";
+            return exportConfig;
+        }
+
 
         public static bool Export_SetConfigFile(string fileName, ExportConfig exportConfig)
         {
@@ -429,9 +568,46 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                 case GraphicsModes.ZXSpectrum:
                     return DefaultColors;
 
+                case GraphicsModes.Next:
                 default:
-                    // TODO: Next Palete
-                    return DefaultColors;
+                    {
+                        var pal = new PaletteColor[256];
+                        int r = 0;
+                        int g = 0;
+                        int b = 0;
+                        for (int i = 0; i < 256; i++)
+                        {
+                            r = (i >> 5);
+                            r = r * 37;
+                            if (r > 255)
+                            {
+                                r = 255;
+                            }
+                            g = ((i >> 2) & 0x07);
+                            g = g * 37;
+                            if (g > 255)
+                            {
+                                g = 255;
+                            }
+                            b = (i & 0x07);
+                            if (b != 0)
+                            {
+                                b++;
+                            }
+                            b = b * 37;
+                            if (b > 255)
+                            {
+                                b = 255;
+                            }
+                            pal[i] = new PaletteColor()
+                            {
+                                Blue = (byte)b,
+                                Green = (byte)g,
+                                Red = (byte)r
+                            };
+                        }
+                        return pal;
+                    }
             }
         }
 

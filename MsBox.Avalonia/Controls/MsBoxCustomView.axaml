@@ -15,9 +15,9 @@
              MaxHeight="{Binding MaxHeight}"
              Height="{Binding Height}"
              FontFamily="{Binding FontFamily}">
-    <UserControl.KeyBindings>
+  <!-- <UserControl.KeyBindings>
         <KeyBinding Gesture="Ctrl+C" Command="{Binding Copy}" />
-    </UserControl.KeyBindings>
+    </UserControl.KeyBindings> -->
     <UserControl.Styles>
         <Style Selector="TextBox.styled">
             <Setter Property="BorderThickness" Value="0" />

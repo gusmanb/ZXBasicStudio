@@ -6,80 +6,49 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.SpritePropertiesControl"
              HorizontalAlignment="Stretch">
-  <Grid HorizontalAlignment="Stretch">
-    <Border Background="#282828" CornerRadius="5" Margin="2" BorderBrush="Gray" BorderThickness="1">
-      <Grid>
+  <ScrollViewer>
+    <Grid Name="pnlProperties" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="0,0,0,4">
+      <TextBlock Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Id:</TextBlock>
+      <TextBox Name="txtId" Classes="dialog" Grid.Column="1" MaxWidth="Infinity" IsReadOnly="True"></TextBox>
 
-        <Grid Name="pnlProperties" IsVisible="False" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="0,0,0,4">
-          <TextBlock Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Id:</TextBlock>
-          <TextBox Name="txtId" Classes="dialog" Grid.Column="1" MaxWidth="Infinity" IsReadOnly="True"></TextBox>
-          
-          <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Name:</TextBlock>
-          <TextBox Name="txtName" Classes="dialog" Grid.Row="1" Grid.Column="1" MaxWidth="Infinity"></TextBox>
+      <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Name:</TextBlock>
+      <TextBox Name="txtName" Classes="dialog" Grid.Row="1" Grid.Column="1" MaxWidth="Infinity"></TextBox>
 
-          <TextBlock Grid.Row="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Mode:</TextBlock>
-          <ComboBox Name="cmbMode" Classes="dialog" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" MaxWidth="Infinity" Margin="4,0,0,2">
-            <ComboBoxItem>Monochrome</ComboBoxItem>
-            <ComboBoxItem>ZX Spectrum</ComboBoxItem>
-            <ComboBoxItem>Next (256 colors)</ComboBoxItem>
-          </ComboBox>
+      <TextBlock Grid.Row="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Mode:</TextBlock>
+      <ComboBox Name="cmbMode" Classes="dialog" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" MaxWidth="Infinity" Margin="4,0,0,2">
+        <ComboBoxItem>Monochrome</ComboBoxItem>
+        <ComboBoxItem>ZX Spectrum</ComboBoxItem>
+        <ComboBoxItem>Next (256 colors)</ComboBoxItem>
+      </ComboBox>
 
-          <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Width:</TextBlock>
-          <Border Grid.Row="3" Grid.Column="1" Classes="numericborder">
-            <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="256" Value="8" VerticalAlignment="Center"/>
-          </Border>
+      <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Width:</TextBlock>
+      <Border Grid.Row="3" Grid.Column="1" Classes="numericborder">
+        <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="64" Value="8" VerticalAlignment="Center"/>
+      </Border>
 
-          <TextBlock Grid.Row="4" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Height:</TextBlock>
-          <Border Grid.Row="4" Grid.Column="1" Classes="numericborder">
-            <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="1" Maximum="192" Value="8" VerticalAlignment="Center"/>
-          </Border>
+      <TextBlock Grid.Row="4" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Height:</TextBlock>
+      <Border Grid.Row="4" Grid.Column="1" Classes="numericborder">
+        <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="8" Maximum="64" Value="8" VerticalAlignment="Center"/>
+      </Border>
 
-          <CheckBox Grid.Row="5" Grid.ColumnSpan="2" Classes="dialog" Name="chkMasked" Margin="8,2,0,4">Masked sprite</CheckBox>
-
-          <CheckBox Grid.Row="6" Grid.ColumnSpan="2" Classes="dialog" Name="chkExport" Margin="8,2,0,4">Export</CheckBox>
-
-          <TextBlock Grid.Row="7" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>
-          <Border Grid.Row="7" Grid.Column="1" Classes="numericborder">
-            <NumericUpDown Classes="dialog" Name="txtFrames" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
-          </Border>
-
-          <Border Grid.Row="8" BorderBrush="White" BorderThickness="1" Width="34" Height="34">
-            <Canvas Name="cnvPoints" Width="32" Height="32" Background="#c0c0c0"></Canvas>
-          </Border>
-
-          <Border Grid.Row="9" BorderBrush="White" BorderThickness="1" Width="34" Height="34">
-            <Canvas Name="cnvFrames" Width="32" Height="32" Background="#c0c0c0"></Canvas>
-          </Border>
-
-          <Grid Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
-              <Button Classes="toolbar" Name="btnClone" ToolTip.Tip="Clone sprite" Margin="4,2,2,2">
-                <svg:Svg Path="/Svg/Copy.svg"></svg:Svg>
-              </Button>
-              <Button Classes="toolbar" Name="btnDelete" ToolTip.Tip="Delete sprite" Margin="4,2,2,2" IsVisible="False">
-                <svg:Svg Path="/Svg/trash-can-regular.svg"></svg:Svg>
-              </Button>
-              <Button Classes="toolbar" Name="btnApply" ToolTip.Tip="Apply settings" Margin="4,2,2,2" IsVisible="True">
-                <svg:Svg Path="/Svg/check-alt-svgrepo-com.svg"></svg:Svg>
-              </Button>
-              <Button Classes="toolbar" Name="btnCancel" ToolTip.Tip="Cancel changes" Margin="4,2,2,2" IsVisible="True">
-                <svg:Svg Path="/Svg/x-svgrepo-com.svg"></svg:Svg>
-              </Button>
-            </StackPanel>
-          </Grid>
-        </Grid>
-
-        <StackPanel Name="pnlNew" Orientation="Horizontal" HorizontalAlignment="Right" Margin="4" IsVisible="False">
-          <Button Classes="toolbar" Name="btnNew" ToolTip.Tip="Add new sprite">
-            <svg:Svg Path="/Svg/square-plus-solid.svg"></svg:Svg>
+      <TextBlock Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>
+      <Border Grid.Row="5" Grid.Column="1" Classes="numericborder">
+        <NumericUpDown Classes="dialog" Name="txtFrames" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
+      </Border>
+      
+      <CheckBox Grid.Row="6" Grid.ColumnSpan="2" Classes="dialog" Name="chkMasked" Margin="8,2,0,4">Masked sprite (pair frames)</CheckBox>
+      <CheckBox Grid.Row="7" Grid.ColumnSpan="2" Classes="dialog" Name="chkExport" Margin="8,2,0,4">Include in the export</CheckBox>
+      
+      <Grid Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
+          <Button Classes="toolbar" Name="btnClone" ToolTip.Tip="Clone sprite" Margin="4,2,2,2">
+            <svg:Svg Path="/Svg/Copy.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnDelete" ToolTip.Tip="Delete sprite" Margin="4,2,2,2">
+            <svg:Svg Path="/Svg/trash-can-regular.svg"></svg:Svg>
           </Button>
         </StackPanel>
-
-        <Grid Name="pnlPreview" ColumnDefinitions="Auto,*" IsVisible="False">
-          <Canvas Name="cnvPreview" Width="32" Height="32" Background="#c0c0c0"></Canvas>
-          <TextBlock Grid.Column="1" Name="lblName" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Left">---</TextBlock>
-        </Grid>
       </Grid>
-    </Border>
-  </Grid>
+    </Grid>
+  </ScrollViewer>
 </UserControl>

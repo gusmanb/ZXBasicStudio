@@ -27,10 +27,10 @@ public partial class MsBoxCustomView : UserControl, IFullApi<string>, ISetCloseA
         return _buttonResult;
     }
 
-    public Task Copy()
-    {
-        throw new System.NotImplementedException();
-    }
+    //public Task Copy()
+    //{
+    //    throw new System.NotImplementedException();
+    //}
 
     public void Close()
     {
