@@ -168,6 +168,10 @@ namespace ZXBasicStudio.BuildSystem
                 for (int buc = 0; buc < lines.Length; buc++)
                 {
                     var line = lines[buc];
+                    string trim = line.Trim().ToLower();
+
+                    if (string.IsNullOrWhiteSpace(trim))
+                        continue;
 
                     if (!inAsm)
                         inAsm = line.Trim().ToLower().StartsWith("asm");

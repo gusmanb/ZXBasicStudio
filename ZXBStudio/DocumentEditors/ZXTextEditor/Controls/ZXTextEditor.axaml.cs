@@ -809,6 +809,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             if (bp != null)
             {
                 bpMargin.Breakpoints.Remove(bp);
+                BreakpointManager.RemoveBreakpoint(_docPath, bp);
                 return true;
             }
 

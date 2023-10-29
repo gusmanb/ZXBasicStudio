@@ -1477,20 +1477,29 @@ namespace ZXBasicStudio
 
                         if (disas != null)
                         {
-                            disas.Text = loadedProgram?.Disassembly?.Content;
-                            disas.InvalidateArrange();
-                            disas.InvalidateMeasure();
-                            disas.InvalidateVisual();
+
+                            var oldText = disas.Text;
+
+                            if (disas.Text != loadedProgram?.Disassembly?.Content)
+                            {
+                                disas.Text = loadedProgram?.Disassembly?.Content;
+                                disas.InvalidateArrange();
+                                disas.InvalidateMeasure();
+                                disas.InvalidateVisual();
+                            }
                         }
 
                         var rom = await OpenFile(ZXConstants.ROM_DOC) as ZXTextEditor;
 
                         if (rom != null)
                         {
-                            rom.Text = emu.ModelDefinition?.RomDissasembly;
-                            rom.InvalidateArrange();
-                            rom.InvalidateMeasure();
-                            rom.InvalidateVisual();
+                            if (rom.Text != emu.ModelDefinition?.RomDissasembly)
+                            {
+                                rom.Text = emu.ModelDefinition?.RomDissasembly;
+                                rom.InvalidateArrange();
+                                rom.InvalidateMeasure();
+                                rom.InvalidateVisual();
+                            }
                         }
 
                         if (currentTab != null)

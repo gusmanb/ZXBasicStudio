@@ -48,14 +48,15 @@ namespace ZXBasicStudio.BuildSystem
                 lines.Add(line);
             }
 
-            var dupes = lines.GroupBy(l => l.Address).Where(g => g.Count() > 1).ToArray();
+            /*
+            var dupes = lines.GroupBy(l => l.fi l.Address).Where(g => g.Count() > 1).ToArray();
 
             foreach (var dupe in dupes)
             {
                 var dLines = dupe.OrderBy(d => d.LineNumber).Take(dupe.Count() - 1);
                 foreach (var dline in dLines)
                     lines.Remove(dline);
-            }
+            }*/
         }
     }
 
