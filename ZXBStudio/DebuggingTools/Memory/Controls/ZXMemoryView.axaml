@@ -19,6 +19,7 @@
       <MenuItem Header="HEX view" Name="mnuHex"/>
       <Separator></Separator>
       <MenuItem Header="Search..." Name="mnuSearch"/>
+      <MenuItem Header="Goto" Name="mnuGoto"/>
     </ContextMenu>
   </UserControl.ContextMenu>
   <Grid ColumnDefinitions="*,32">

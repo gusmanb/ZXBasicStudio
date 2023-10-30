@@ -60,6 +60,7 @@ namespace ZXBasicStudio.DebuggingTools.Memory.Controls
             mnuAscii.Click += (o, e) => { ASCIIMode = true; Update(); };
             mnuHex.Click += (o, e) => { ASCIIMode = false; Update(); };
             mnuSearch.Click += MnuSearch_Click;
+            mnuGoto.Click += MnuGoto_Click;
         }
 
         private async void MnuSearch_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -83,6 +84,27 @@ namespace ZXBasicStudio.DebuggingTools.Memory.Controls
             await dlg.ShowDialog(win);
         }
 
+        private async void MnuGoto_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (mem == null)
+                return;
+
+            var top = TopLevel.GetTopLevel(this);
+
+            if(top == null) 
+                return;
+
+            var win = top as Window;
+
+            if (win == null) 
+                return;
+
+            ZXMemoryGotoDialog dlg = new ZXMemoryGotoDialog();
+            dlg.Initialize(mem, this);
+
+            await dlg.ShowDialog(win);
+        }
+        
         public void Initialize(IMemory Memory)
         {
             mem = Memory;
