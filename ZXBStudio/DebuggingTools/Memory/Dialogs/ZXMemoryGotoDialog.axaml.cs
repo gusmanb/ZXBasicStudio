@@ -43,6 +43,7 @@ namespace ZXBasicStudio.DebuggingTools.Memory.Dialogs
                 ZXMemoryRange rng = new ZXMemoryRange { StartAddress = address , EndAddress = address };
 
                 view.HighlightedRange = rng;
+                nudAddress.Value = address;
                 view.GoToAddress(address);
                 view.Update();
                 currentAddr = (ushort)(address < 65535 ? address + 1 : address);
