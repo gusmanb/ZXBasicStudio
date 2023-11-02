@@ -125,6 +125,11 @@
       <Setter Property="Margin" Value="2"></Setter>
       <Setter Property="CornerRadius" Value="5"></Setter>
     </Style>
+    <Style Selector="ToggleButton.dialog">
+      <Setter Property="Margin" Value="2"></Setter>
+      <Setter Property="CornerRadius" Value="5"></Setter>
+      <Setter Property="Height" Value="32"></Setter>
+    </Style>
     <Style Selector="ComboBox.dialog">
       <Setter Property="Margin" Value="0"></Setter>
       <Setter Property="CornerRadius" Value="5"></Setter>
