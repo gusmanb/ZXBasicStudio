@@ -315,9 +315,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         public void Clear()
         {
-            foreach (var p in SpriteData.Patterns[SpriteData.CurrentFrame].Data)
+            var rd = SpriteData.Patterns[SpriteData.CurrentFrame].RawData;
+            for (int n=0; n<rd.Length; n++)
             {
-                p.ColorIndex = SecondaryColorIndex;
+                rd[n] = SecondaryColorIndex;
             }
             Refresh(true);
         }
@@ -363,6 +364,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             if (cbPatterns.Length == 1)
             {
                 SpriteData.Patterns[SpriteData.CurrentFrame].Data = cbPatterns[0].Data;
+                SpriteData.Patterns[SpriteData.CurrentFrame].RawData = cbPatterns[0].RawData;
             }
             else
             {

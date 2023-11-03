@@ -74,6 +74,7 @@ namespace ZXBasicStudio.Dialogs
                 txtDefines.Text = _settings.Defines == null || _settings.Defines.Length == 0 ? "" : string.Join(", ", _settings.Defines);
                 ckStrict.IsChecked = _settings.StrictBool;
                 ckHeaderless.IsChecked = _settings.Headerless;
+                ckNext.IsChecked = _settings.NextMode;
             }
             else
             {
@@ -91,6 +92,7 @@ namespace ZXBasicStudio.Dialogs
                 ckCase.IsChecked = false;
                 ckStrict.IsChecked = false;
                 ckHeaderless.IsChecked = false;
+                ckNext.IsChecked = false;
             }
         }
 
@@ -113,6 +115,7 @@ namespace ZXBasicStudio.Dialogs
             _settings.IgnoreCase = ckCase.IsChecked ?? false;
             _settings.StrictBool = ckStrict.IsChecked ?? false;
             _settings.Headerless = ckHeaderless.IsChecked ?? false;
+            _settings.NextMode = ckNext.IsChecked ?? false;
         }
     }
 }

@@ -18,7 +18,8 @@ namespace ZXBasicStudio.Dialogs
             btnSelectZxbc.Click += BtnSelectZxbc_Click;
             btnSelectZxbasm.Click += BtnSelectZxbasm_Click;
             btnDefaultBuildConfig.Click += BtnDefaultBuildConfig_Click;
-
+            btnSelectNextEmulator.Click += BtnSelectNextEmulator_Click;
+            
             txtZxbasm.Text = ZXOptions.Current.ZxbasmPath;
             txtZxbc.Text = ZXOptions.Current.ZxbcPath;
             nudFontSize.Value = (decimal)ZXOptions.Current.EditorFontSize;
@@ -27,9 +28,10 @@ namespace ZXBasicStudio.Dialogs
             ckCls.IsChecked = ZXOptions.Current.Cls;
             ckBorderless.IsChecked = ZXOptions.Current.Borderless;
             ckAntiAlias.IsChecked = ZXOptions.Current.AntiAlias;
+            txtNextEmulator.Text = ZXOptions.Current.NextEmulatorPath;
 
             btnKeybMap.Click += BtnKeybMap_Click;
-        }
+        }        
 
         private void BtnKeybMap_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
@@ -85,6 +87,28 @@ namespace ZXBasicStudio.Dialogs
                 txtZxbc.Text = Path.GetFullPath(select[0].Path.LocalPath);
         }
 
+
+        private async void BtnSelectNextEmulator_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var select = await StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+            {
+                AllowMultiple = false,
+                Title = "Select Next emulator path...",
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("CSpect") { Patterns = new[] { "CSpect.exe" } },
+                    new FilePickerFileType("ZEsarUX") { Patterns = new[] { "zesarux.exe" } },
+                    new FilePickerFileType("All files") { Patterns = new[] { "*", "*.*" } }
+                }
+            });
+
+            if (select != null && select.Count > 0)
+            {
+                txtNextEmulator.Text = Path.GetFullPath(select[0].Path.LocalPath);
+            }
+        }
+
+
         private void BtnCancel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             this.Close(false);
@@ -112,6 +136,7 @@ namespace ZXBasicStudio.Dialogs
             ZXOptions.Current.Cls = ckCls.IsChecked ?? false;
             ZXOptions.Current.Borderless = ckBorderless.IsChecked ?? false;
             ZXOptions.Current.AntiAlias = ckAntiAlias.IsChecked ?? false;
+            ZXOptions.Current.NextEmulatorPath = txtNextEmulator.Text;
 
             if (bsett != null)
                 ZXOptions.Current.DefaultBuildSettings = bsett;
