@@ -135,6 +135,7 @@ namespace ZXBasicStudio
 
             #region Attach menu events
             mnuOpenProject.Click += OpenProject;
+            mnuOpenLastProject.Click += OpenLastProject;
             mnuCreateProject.Click += CreateProject;
             mnuCreateFolder.Click += CreateFolder;
             mnuCreateFile.Click += CreateFile;
@@ -632,6 +633,8 @@ namespace ZXBasicStudio
                 return;
 
             ZXProjectManager.OpenProject(res[0].Path.LocalPath);
+            ZXOptions.Current.LastProjectPath = res[0].Path.LocalPath;
+            ZXOptions.SaveCurrentSettings();
 
             Cleanup();
             BreakpointManager.ClearBreakpoints();
@@ -644,6 +647,28 @@ namespace ZXBasicStudio
             EmulatorInfo.CanRun = true;
             EmulatorInfo.CanDebug = true;
 
+        }
+
+        private async void OpenLastProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+
+            if (!FileInfo.ProjectLoaded && string.IsNullOrEmpty(ZXOptions.Current.LastProjectPath) == false)
+            {
+                
+                ZXProjectManager.OpenProject(ZXOptions.Current.LastProjectPath);
+
+                Cleanup();
+                BreakpointManager.ClearBreakpoints();
+                peExplorer.UpdateProjectFolder();
+                editTabs.Clear();
+                openDocuments.Clear();
+                FileInfo.ProjectLoaded = true;
+                FileInfo.FileLoaded = false;
+                FileInfo.FileSystemObjectSelected = false;
+                EmulatorInfo.CanRun = true;
+                EmulatorInfo.CanDebug = true;
+                
+            }
         }
 
         private async void CreateFile(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

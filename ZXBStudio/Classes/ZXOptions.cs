@@ -40,6 +40,7 @@ namespace ZXBasicStudio.Classes
         public bool Cls { get; set; }
         public bool Borderless { get; set; }
         public bool AntiAlias { get; set; }
+        public string LastProjectPath { get; set; }
         public ZXBuildSettings? DefaultBuildSettings { get; set; }
     }
 }
