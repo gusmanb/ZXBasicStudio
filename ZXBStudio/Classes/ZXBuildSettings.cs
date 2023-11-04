@@ -24,7 +24,6 @@ namespace ZXBasicStudio.Classes
         public bool Strict { get; set; }
         public bool Headerless { get; set; }
         public bool NextMode { get; set; }
-        public string? NextCmd { get; set; }
         public string GetSettings()
         {
             List<string> settings = new List<string>();
@@ -69,6 +68,12 @@ namespace ZXBasicStudio.Classes
 
             if (Strict)
                 settings.Add("--strict");
+
+            if (NextMode)
+            {
+                settings.Add("--zxnext");
+                settings.Add("--arch=zxnext");
+            }
 
             return string.Join(' ', settings);
         }

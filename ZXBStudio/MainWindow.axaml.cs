@@ -57,7 +57,7 @@ namespace ZXBasicStudio
     public partial class MainWindow : ZXWindowBase //, IObserver<RawInputEventArgs>
     {
         const string repoUrl = "https://github.com/gusmanb/ZXBasicStudio";
-        const string zxbHelpUrl = "https://zxbasic.readthedocs.io/en/docs/";   
+        const string zxbHelpUrl = "https://zxbasic.readthedocs.io/en/docs/";
 
         #region Shortcut handling
 
@@ -135,6 +135,7 @@ namespace ZXBasicStudio
 
             #region Attach menu events
             mnuOpenProject.Click += OpenProject;
+            mnuOpenLastProject.Click += OpenLastProject;
             mnuCreateProject.Click += CreateProject;
             mnuCreateFolder.Click += CreateFolder;
             mnuCreateFile.Click += CreateFile;
@@ -632,6 +633,8 @@ namespace ZXBasicStudio
                 return;
 
             ZXProjectManager.OpenProject(res[0].Path.LocalPath);
+            ZXOptions.Current.LastProjectPath = res[0].Path.LocalPath;
+            ZXOptions.SaveCurrentSettings();
 
             Cleanup();
             BreakpointManager.ClearBreakpoints();
@@ -644,6 +647,28 @@ namespace ZXBasicStudio
             EmulatorInfo.CanRun = true;
             EmulatorInfo.CanDebug = true;
 
+        }
+
+        private async void OpenLastProject(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+
+            if (!FileInfo.ProjectLoaded && string.IsNullOrEmpty(ZXOptions.Current.LastProjectPath) == false)
+            {
+                
+                ZXProjectManager.OpenProject(ZXOptions.Current.LastProjectPath);
+
+                Cleanup();
+                BreakpointManager.ClearBreakpoints();
+                peExplorer.UpdateProjectFolder();
+                editTabs.Clear();
+                openDocuments.Clear();
+                FileInfo.ProjectLoaded = true;
+                FileInfo.FileLoaded = false;
+                FileInfo.FileSystemObjectSelected = false;
+                EmulatorInfo.CanRun = true;
+                EmulatorInfo.CanDebug = true;
+                
+            }
         }
 
         private async void CreateFile(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -674,7 +699,7 @@ namespace ZXBasicStudio
                     File.Delete(finalName);
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     await this.ShowError("Error", "Cannot delete existing file, aborting.");
                     return;
@@ -1308,7 +1333,7 @@ namespace ZXBasicStudio
 
         private void CreateRomBreakpoints()
         {
-            if(emu.ModelDefinition == null)
+            if (emu.ModelDefinition == null)
                 throw new ArgumentException("Unknown spectrum model!");
 
             romLines.Clear();
@@ -1325,7 +1350,7 @@ namespace ZXBasicStudio
 
             var userBps = userBreakpoints.Where(bp => ((ZXCodeLine?)bp.Tag)?.File == ZXConstants.ROM_DOC).ToArray();
 
-            foreach(var bp in userBps)
+            foreach (var bp in userBps)
                 userBreakpoints.Remove(bp);
         }
 
@@ -1353,7 +1378,7 @@ namespace ZXBasicStudio
             BlockEditors();
             _ = Task.Run(() =>
             {
-                if(peExplorer.RootPath != null)
+                if (peExplorer.RootPath != null)
                     ZXProjectBuilder.Build(outLog.Writer);
 
                 Dispatcher.UIThread.InvokeAsync(() =>
@@ -1388,8 +1413,80 @@ namespace ZXBasicStudio
             {
                 var program = peExplorer.RootPath == null ? null : ZXProjectBuilder.Build(outLog.Writer);
 
-                if (program != null)
+                var project = ZXProjectManager.Current;
+                var settings = project.GetProjectSettings();
+
+                if (settings.NextMode && program != null)
                 {
+                    string errorMsg = "";
+                    // Next mode
+                    var emulatorPath = ZXOptions.Current.NextEmulatorPath;
+                    if (string.IsNullOrEmpty(emulatorPath))
+                    {
+                        errorMsg = "There is no emulator configured for Next. Please configure an emulator from the Tools -> Options menu.";
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var emulatorName = Path.GetFileName(emulatorPath);
+                            switch (emulatorName.ToLower())
+                            {
+                                case "cspect.exe":
+                                    {
+                                        outLog.Writer.WriteLine("Launching CSpect...");
+                                        Process process = new Process();
+                                        process.StartInfo.FileName = emulatorPath;
+                                        process.StartInfo.Arguments = string.Format(
+                                            "-zxnext -tv -w3 -brk -r -mmc=.\\nextdrive\\ .\\nextdrive\\{0}",
+                                                Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                                        process.StartInfo.WorkingDirectory = project.ProjectPath;
+                                        process.StartInfo.UseShellExecute = true;
+                                        process.StartInfo.CreateNoWindow = false;
+                                        process.Start();
+                                        process.WaitForExit();
+                                    }
+                                    break;
+                                case "zesarux.exe":
+                                    {
+                                        outLog.Writer.WriteLine("Launching ZEsarUX...");
+                                        Process process = new Process();
+                                        process.StartInfo.FileName = emulatorPath;
+                                        process.StartInfo.Arguments = string.Format(
+                                            "--noconfigfile --zoom 1  --machine TBBlue --realvideo --enabletimexvideo --tbblue-fast-boot-mode --enable-esxdos-handler --esxdos-root-dir {0} {1} --snap-no-change-machine",
+                                                Path.Combine(project.ProjectPath, "nextdrive"),
+                                                Path.Combine(project.ProjectPath, "nextdrive", Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex"));
+                                        process.StartInfo.WorkingDirectory = Path.GetDirectoryName(emulatorPath);
+                                        process.StartInfo.UseShellExecute = true;
+                                        process.StartInfo.CreateNoWindow = false;
+                                        process.Start();
+                                        process.WaitForExit();
+                                    }
+                                    break;
+                                default:
+                                    errorMsg = "There is no valid emulator configured for Next. Please configure an emulator (CSpect or ZEsarUX) from the Tools -> Options menu.";
+                                    break;
+                            }
+                        } catch(Exception ex)
+                        {
+                            errorMsg = "Error executing emulator";
+                        }                        
+                    }
+
+                    Dispatcher.UIThread.InvokeAsync(async () =>
+                    {
+                        if (!string.IsNullOrEmpty(errorMsg))
+                        {
+                            await this.ShowError("Error", errorMsg);
+                        }
+                        UnblockEditors();
+                        EmulatorInfo.CanDebug = FileInfo.ProjectLoaded;
+                        EmulatorInfo.CanRun = FileInfo.ProjectLoaded;
+                    });
+                }
+                else if (program != null)
+                {
+                    // No Next mode :)
                     loadedProgram = program;
                     var disas = openDocuments.FirstOrDefault(e => e.DocumentPath == ZXConstants.DISASSEMBLY_DOC) as ZXTextEditor;
 
@@ -1424,12 +1521,15 @@ namespace ZXBasicStudio
                     });
                 }
                 else
+                {
+                    // Compiler error
                     Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         UnblockEditors();
                         EmulatorInfo.CanDebug = FileInfo.ProjectLoaded;
                         EmulatorInfo.CanRun = FileInfo.ProjectLoaded;
                     });
+                }
             });
         }
         private async void BuildAndDebug(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -1460,7 +1560,7 @@ namespace ZXBasicStudio
                 if (program != null)
                 {
                     basicBreakpoints.Clear();
-                    if(program.ProgramMap != null)
+                    if (program.ProgramMap != null)
                         basicBreakpoints.AddRange(program.ProgramMap.Lines.Select(l => new Breakpoint { Address = l.Address, Temporary = false, Id = ZXConstants.BASIC_BREAKPOINT, Tag = l }).ToList());
 
                     disassemblyBreakpoints.Clear();
@@ -1573,7 +1673,7 @@ namespace ZXBasicStudio
             EmulatorInfo.CanRun = false;
             _ = Task.Run(() =>
             {
-                if(peExplorer.RootPath != null)
+                if (peExplorer.RootPath != null)
                     ZXProjectBuilder.Export(opts, outLog.Writer);
 
                 Dispatcher.UIThread.InvokeAsync(() =>
@@ -1681,7 +1781,7 @@ namespace ZXBasicStudio
                 }
             }
         }
-        
+
         private void BtnFontDecrease_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             foreach (var tab in editTabs)
@@ -1706,7 +1806,7 @@ namespace ZXBasicStudio
                 }
             }
         }
-        
+
         private void BtnUncomment_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             foreach (var tab in editTabs)
@@ -2177,7 +2277,7 @@ namespace ZXBasicStudio
                 ZXLayoutPersister.SaveLayout(grdMain, dockLeft, dockRight, dockBottom);
 
             base.OnClosing(e);
-            
+
         }
 
         protected override void OnClosed(EventArgs e)
@@ -2203,7 +2303,7 @@ namespace ZXBasicStudio
 
         #region Application control
 
-        private async void ExitApplication(object?  sender, Avalonia.Interactivity.RoutedEventArgs? e)
+        private async void ExitApplication(object? sender, Avalonia.Interactivity.RoutedEventArgs? e)
         {
             Close();
         }

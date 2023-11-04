@@ -36,6 +36,8 @@
       <MenuItem Header="File">
         <MenuItem Header="Open project" Name="mnuOpenProject" Icon="{svg:SvgImage /Svg/White/diagram-project-solid.svg}"></MenuItem>
         <Separator></Separator>
+        <MenuItem Header="Open last project" Name="mnuOpenLastProject" IsEnabled="{Binding !FileInfo.ProjectLoaded}" Icon="{svg:SvgImage /Svg/White/open-last-project-solid.svg}"></MenuItem>
+        <Separator></Separator>
         <MenuItem Header="New...">
           <MenuItem Header="Project" Name="mnuCreateProject" Icon="{SvgImage /Svg/White/diagram-project-plus-solid.svg}"></MenuItem>
           <MenuItem Header="Folder" IsEnabled="{Binding FileInfo.ProjectLoaded}" Name="mnuCreateFolder" Icon="{SvgImage /Svg/White/folder-plus-solid.svg}"></MenuItem>
