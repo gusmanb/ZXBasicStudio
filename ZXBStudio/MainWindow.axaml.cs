@@ -1453,10 +1453,10 @@ namespace ZXBasicStudio
 
                         try
                         {
-                            var emulatorName = Path.GetFileName(emulatorPath);
+                            var emulatorName = Path.GetFileNameWithoutExtension(emulatorPath);
                             switch (emulatorName.ToLower())
                             {
-                                case "cspect.exe":
+                                case "cspect":
                                     {
                                         outLog.Writer.WriteLine("Launching CSpect...");
                                         Process process = new Process();
@@ -1471,7 +1471,7 @@ namespace ZXBasicStudio
                                         process.WaitForExit();
                                     }
                                     break;
-                                case "zesarux.exe":
+                                case "zesarux":
                                     {
                                         outLog.Writer.WriteLine("Launching ZEsarUX...");
                                         Process process = new Process();
