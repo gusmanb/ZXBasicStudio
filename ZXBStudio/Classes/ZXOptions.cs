@@ -41,5 +41,6 @@ namespace ZXBasicStudio.Classes
         public bool Borderless { get; set; }
         public bool AntiAlias { get; set; }
         public ZXBuildSettings? DefaultBuildSettings { get; set; }
+        public string? NextEmulatorPath { get; set; }
     }
 }

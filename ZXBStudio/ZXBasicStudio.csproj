@@ -110,6 +110,7 @@
     <None Remove="Fonts\NimbusSanL-BolIta.ttf" />
     <None Remove="Fonts\NimbusSanL-Reg.ttf" />
     <None Remove="Fonts\NimbusSanL-RegIta.ttf" />
+    <None Remove="Resources\sysvars.inc" />
     <None Remove="Svg\backward-solid.svg" />
     <None Remove="Svg\backward-step-solid.svg" />
     <None Remove="Svg\Binary.svg" />
@@ -496,6 +497,9 @@
     <AvaloniaResource Include="Svg\x-svgrepo-com.svg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\sysvars.inc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="zxbs.ico" />
   </ItemGroup>
 

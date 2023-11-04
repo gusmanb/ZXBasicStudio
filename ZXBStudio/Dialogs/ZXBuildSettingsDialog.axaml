@@ -44,8 +44,6 @@
     </Border>
     <TextBlock Classes="dialog" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Defines:</TextBlock>
     <TextBox Classes="dialog" Grid.Row="6" Grid.Column="2" Name="txtDefines"></TextBox>
-    <TextBlock Classes="dialog" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Next cmd:</TextBlock>
-    <TextBox Classes="dialog" Grid.Row="7" Grid.Column="2" Name="txtNextCommand"></TextBox>
     
     <TextBlock Classes="dialog" Grid.Row="0" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Right">Sinclair mode:</TextBlock>
     <CheckBox Classes="dialog" Grid.Row="0" Grid.Column="6"  Name="ckSinclair"></CheckBox>
