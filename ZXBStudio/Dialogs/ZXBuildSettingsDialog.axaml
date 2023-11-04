@@ -5,12 +5,12 @@
         xmlns:wnd="using:ZXBasicStudio.Classes"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="520"
         MinWidth="400" MaxWidth="400"
-        MinHeight="520" MaxHeight="520" 
+        MinHeight="450" MaxHeight="450" 
         CanResize="False"
         Icon="/Assets/zxbs.ico"
         x:Class="ZXBasicStudio.Dialogs.ZXBuildSettingsDialog"
         Title="Build settings" WindowStartupLocation="CenterOwner">
-  <Grid ColumnDefinitions="*,5*,12*,*,*,6*,2*,2*" RowDefinitions="*,*,*,*,*,*,*,*,2*">
+  <Grid ColumnDefinitions="*,5*,12*,*,*,6*,2*,2*" RowDefinitions="*,*,*,*,*,*,*,*,1.5*">
     <TextBlock Classes="dialog" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Main file:</TextBlock>
     <TextBox Classes="dialog" Grid.Row="0" Grid.Column="2" Name="txtFile"></TextBox>
     <TextBlock Classes="dialog" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">Optimization:</TextBlock>
