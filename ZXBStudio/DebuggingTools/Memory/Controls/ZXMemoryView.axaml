@@ -27,27 +27,27 @@
   <Grid RowDefinitions="auto,*">
     <Grid ColumnDefinitions="2*,16*">
       <StackPanel Grid.Row="0" Spacing="2" Orientation="Horizontal" Margin="2" HorizontalAlignment="Center">
-        <ToggleButton Classes="dialog" Name="btnMemoryAddressHexFormat" IsChecked="{Binding Path=!#MemoryDecimalMode}" ToolTip.Tip="Display memory address as Hexadecimal">
-          Hex
+        <ToggleButton FontWeight="Bold" Width="30" Foreground="Black" Classes="toolbar" Name="btnMemoryAddressHexFormat" IsChecked="{Binding Path=!#MemoryDecimalMode}" ToolTip.Tip="Display memory address as Hexadecimal">
+          0x0
         </ToggleButton>
-        <ToggleButton Classes="dialog" Name="btnMemoryAddressDecFormat" IsChecked="{Binding Path=#MemoryDecimalMode}" ToolTip.Tip="Display memory address as Decimal">
-          Dec
+        <ToggleButton FontWeight="Bold" Width="30" Foreground="Black" Classes="toolbar" Name="btnMemoryAddressDecFormat" IsChecked="{Binding Path=#MemoryDecimalMode}" ToolTip.Tip="Display memory address as Decimal">
+          00
         </ToggleButton>
       </StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-        <ToggleButton Classes="dialog" Name="btnSwitchHexFormat" IsChecked="{Binding Path=!#ASCIIMode}" ToolTip.Tip="Display memory content as HEX">
-          Hex
+        <ToggleButton FontWeight="Bold" Width="30" Foreground="Black" Classes="toolbar" Name="btnSwitchHexFormat" IsChecked="{Binding Path=!#ASCIIMode}" ToolTip.Tip="Display memory content as HEX">
+          0x0
         </ToggleButton>
-        <ToggleButton Classes="dialog" Name="btnSwitchASCIIFormat" IsChecked="{Binding Path=#ASCIIMode}" ToolTip.Tip="Display memory content as ASCII">
-          ASCII
+        <ToggleButton Margin="2,0,0,0" FontWeight="Bold" Width="30" Foreground="Black" Classes="toolbar" Name="btnSwitchASCIIFormat" IsChecked="{Binding Path=#ASCIIMode}" ToolTip.Tip="Display memory content as ASCII">
+          Ab
         </ToggleButton>
-        <Border Classes="numericBorder" Margin="24,0,5,0">
-          <NumericUpDown Margin="3,0" MinWidth="80" Classes="dialog" VerticalAlignment="Center"
+          <NumericUpDown Background="#303030" Height="24" Margin="15,0,5,0" MinWidth="80" Classes="dialog" VerticalAlignment="Center"
                          HorizontalAlignment="Left" ParsingNumberStyle="Integer" Increment="1" Minimum="0"
                          Maximum="65535" Value="0" Name="nudAddress">
           </NumericUpDown>
-        </Border>
-        <Button Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="7" Name="btnGoto">Goto</Button>
+        <Button Classes="toolbar" VerticalAlignment="Center" HorizontalAlignment="Right" Name="btnGoto" ToolTip.Tip="Go to address">
+          <svg:Svg Path="/Svg/magnifying-glass-arrow-right-solid.svg"></svg:Svg>
+        </Button>
       </StackPanel>
     </Grid>
     <Grid Grid.Row="1" ColumnDefinitions="*,32">

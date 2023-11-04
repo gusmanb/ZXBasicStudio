@@ -170,7 +170,9 @@
     <None Remove="Svg\layout-full-solid.svg" />
     <None Remove="Svg\layout-play-solid.svg" />
     <None Remove="Svg\list-ol-solid.svg" />
+    <None Remove="Svg\magnifying-glass-arrow-right-solid.svg" />
     <None Remove="Svg\magnifying-glass-location-solid.svg" />
+    <None Remove="Svg\magnifying-glass-solid.svg" />
     <None Remove="Svg\maximize-solid.svg" />
     <None Remove="Svg\minimize-solid.svg" />
     <None Remove="Svg\minus-solid.svg" />
@@ -332,6 +334,8 @@
     <AvaloniaResource Include="Svg\circle-info-solid.svg" />
     <AvaloniaResource Include="Svg\circle-question-solid.svg" />
     <AvaloniaResource Include="Svg\github.svg" />
+    <AvaloniaResource Include="Svg\magnifying-glass-arrow-right-solid.svg" />
+    <AvaloniaResource Include="Svg\magnifying-glass-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-info-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-question-solid.svg" />
     <AvaloniaResource Include="Svg\White\exit-solid.svg" />
