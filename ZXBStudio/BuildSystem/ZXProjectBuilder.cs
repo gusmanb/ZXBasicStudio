@@ -200,16 +200,27 @@ namespace ZXBasicStudio.BuildSystem
 
                     outputLogWritter.WriteLine("Building .nex file...");
                     Process process = new Process();
-                    process.StartInfo.FileName = "python.exe";
-                    process.StartInfo.Arguments = string.Format("{0} nex.cfg {1}",
-                        Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.py"),
-                        Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
-                    process.StartInfo.WorkingDirectory = project.ProjectPath;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.RedirectStandardOutput = true;
+                    if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                    {
+                        process.StartInfo.FileName = "python";
+                        process.StartInfo.Arguments = string.Format("{0} nex.cfg {1}",
+                            Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.py"),
+                            Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                        process.StartInfo.WorkingDirectory = project.ProjectPath;
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.StartInfo.RedirectStandardOutput = true;
+                    }
+                    else
+                    {
+                        process.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.py");
+                        process.StartInfo.Arguments = "nex.cfg " + Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex";
+                        process.StartInfo.WorkingDirectory = project.ProjectPath;
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.StartInfo.RedirectStandardOutput = true;
+                    }
                     process.Start();
-
                     process.WaitForExit();
 
                     if (!File.Exists(nexFile))

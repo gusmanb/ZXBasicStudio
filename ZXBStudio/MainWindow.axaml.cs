@@ -1427,6 +1427,30 @@ namespace ZXBasicStudio
                     }
                     else
                     {
+                        // Cleaning...
+                        {
+                            var file = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(settings.MainFile) + ".bin");
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                            file = Path.Combine(project.ProjectPath, "nex.cfg");
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                            file = Path.Combine(project.ProjectPath, "sysvars.inc");
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                            file = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                        }
+
                         try
                         {
                             var emulatorName = Path.GetFileName(emulatorPath);
