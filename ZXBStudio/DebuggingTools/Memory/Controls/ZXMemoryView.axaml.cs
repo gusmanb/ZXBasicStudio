@@ -19,6 +19,8 @@ namespace ZXBasicStudio.DebuggingTools.Memory.Controls
         DispatcherTimer timer;
 
         public bool ASCIIMode { get; set; }
+        public bool MemoryDecimalMode { get; set; }
+        
         public ZXMemoryRange? HighlightedRange { get; set; }
         public ZXMemoryView()
         {
@@ -60,6 +62,34 @@ namespace ZXBasicStudio.DebuggingTools.Memory.Controls
             mnuAscii.Click += (o, e) => { ASCIIMode = true; Update(); };
             mnuHex.Click += (o, e) => { ASCIIMode = false; Update(); };
             mnuSearch.Click += MnuSearch_Click;
+            mnuGoto.Click += MnuGoto_Click;
+            btnGoto.Click += (o, e) => { GoToAddress((ushort)(nudAddress.Value ?? 0)); Update(); };
+            btnSwitchASCIIFormat.Click += (o, e) =>
+            {
+                ASCIIMode = true;
+                btnSwitchASCIIFormat.IsChecked = true;
+                btnSwitchHexFormat.IsChecked = false;
+                Update();
+            };
+            btnSwitchHexFormat.Click += (o, e) =>
+            {
+                ASCIIMode = false;
+                btnSwitchASCIIFormat.IsChecked = false;
+                btnSwitchHexFormat.IsChecked = true;
+                Update();
+            };
+            btnMemoryAddressHexFormat.Click += (o, e) => {
+                MemoryDecimalMode = false;
+                btnMemoryAddressHexFormat.IsChecked = true;
+                btnMemoryAddressDecFormat.IsChecked = false;
+                Update();
+            };
+            btnMemoryAddressDecFormat.Click += (o, e) => {
+                MemoryDecimalMode = true;
+                btnMemoryAddressHexFormat.IsChecked = false;
+                btnMemoryAddressDecFormat.IsChecked = true;
+                Update();
+            };
         }
 
         private async void MnuSearch_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -83,6 +113,27 @@ namespace ZXBasicStudio.DebuggingTools.Memory.Controls
             await dlg.ShowDialog(win);
         }
 
+        private async void MnuGoto_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (mem == null)
+                return;
+
+            var top = TopLevel.GetTopLevel(this);
+
+            if(top == null) 
+                return;
+
+            var win = top as Window;
+
+            if (win == null) 
+                return;
+
+            ZXMemoryGotoDialog dlg = new ZXMemoryGotoDialog();
+            dlg.Initialize(mem, this);
+
+            await dlg.ShowDialog(win);
+        }
+        
         public void Initialize(IMemory Memory)
         {
             mem = Memory;
@@ -124,15 +175,16 @@ namespace ZXBasicStudio.DebuggingTools.Memory.Controls
             for (int y = 0; y < 16; y++)
             {
                 ushort rowAddress = (ushort)(y * 16);
-                addressBlocks[y].Text = (startAddress + rowAddress).ToString("X4");
-
+                addressBlocks[y].Text = MemoryDecimalMode
+                    ? (startAddress + rowAddress).ToString("D")
+                    : (startAddress + rowAddress).ToString("X4");
                 for (int x = 0; x < 16; x++)
                 {
                     int byteAddress = rowAddress + x + startAddress;
 
                     var tb = dataBlocks[x + rowAddress];
                     tb.Text = ASCIIMode ? Encoding.ASCII.GetString(block, x + rowAddress, 1) : block[x + rowAddress].ToString("X2");
-
+                    
                     if (HighlightedRange != null && HighlightedRange.Contains(byteAddress))
                     {
                         if (tb.Background != Brushes.Red)
@@ -153,7 +205,11 @@ namespace ZXBasicStudio.DebuggingTools.Memory.Controls
 
             if (rowAddress > 4080)
                 rowAddress = 4080;
+            
+            ZXMemoryRange rng = new ZXMemoryRange { StartAddress = Address , EndAddress = Address };
 
+            HighlightedRange = rng;
+            nudAddress.Value = Address;
             scrFirstRow.Value = rowAddress;
 
             timer.Stop();

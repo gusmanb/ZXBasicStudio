@@ -2,46 +2,77 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:wnd="using:ZXBasicStudio.Classes"
+             xmlns:svg="using:Avalonia.Svg.Skia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DebuggingTools.Memory.Controls.ZXMemoryView">
-  <UserControl.Styles>
-    <Style Selector="TextBlock">
-      <Setter Property="Foreground" Value="#ffffff"></Setter>
-      <Setter Property="VerticalAlignment" Value="Center"></Setter>
-      <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
-      <Setter Property="TextAlignment" Value="Center"></Setter>
-      <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace"></Setter>
-    </Style>
-  </UserControl.Styles>
-  <UserControl.ContextMenu>
-    <ContextMenu Placement="Pointer">
-      <MenuItem Header="ASCII view" Name="mnuAscii"/>
-      <MenuItem Header="HEX view" Name="mnuHex"/>
-      <Separator></Separator>
-      <MenuItem Header="Search..." Name="mnuSearch"/>
-    </ContextMenu>
-  </UserControl.ContextMenu>
-  <Grid ColumnDefinitions="*,32">
-    <Grid Name="grdBlocks" ColumnDefinitions="2*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#303030" Margin="0,0,0,02">
-      <TextBlock Grid.Column="1">00</TextBlock>
-      <TextBlock Grid.Column="2">01</TextBlock>
-      <TextBlock Grid.Column="3">02</TextBlock>
-      <TextBlock Grid.Column="4">03</TextBlock>
-      <TextBlock Grid.Column="5">04</TextBlock>
-      <TextBlock Grid.Column="6">05</TextBlock>
-      <TextBlock Grid.Column="7">06</TextBlock>
-      <TextBlock Grid.Column="8">07</TextBlock>
-      <TextBlock Grid.Column="9">08</TextBlock>
-      <TextBlock Grid.Column="10">09</TextBlock>
-      <TextBlock Grid.Column="11">0A</TextBlock>
-      <TextBlock Grid.Column="12">0B</TextBlock>
-      <TextBlock Grid.Column="13">0C</TextBlock>
-      <TextBlock Grid.Column="14">0D</TextBlock>
-      <TextBlock Grid.Column="15">0E</TextBlock>
-      <TextBlock Grid.Column="16">0F</TextBlock>
-      <Separator Margin="0" VerticalAlignment="Bottom" Grid.ColumnSpan="17"></Separator>
-      <Rectangle Grid.RowSpan="17" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1" Stroke="#444444" StrokeThickness="2" />
+    <UserControl.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#ffffff"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+            <Setter Property="TextAlignment" Value="Center"></Setter>
+            <Setter Property="FontFamily" Value="Cascadia Code,Consolas,Menlo,Monospace"></Setter>
+        </Style>
+    </UserControl.Styles>
+    <UserControl.ContextMenu>
+        <ContextMenu Placement="Pointer">
+            <MenuItem Header="ASCII view" Name="mnuAscii" />
+            <MenuItem Header="HEX view" Name="mnuHex" />
+            <Separator></Separator>
+            <MenuItem Header="Search..." Name="mnuSearch" />
+            <MenuItem Header="Goto" Name="mnuGoto" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
+    <Grid RowDefinitions="auto,*">
+        <StackPanel Grid.Row="0" Spacing="2" Orientation="Horizontal" Margin="2">
+            <ToggleButton Classes="dialog" Name="btnMemoryAddressHexFormat" IsChecked="{Binding Path=!#MemoryDecimalMode}" ToolTip.Tip="Display memory address as Hexadecimal">
+                Hex
+            </ToggleButton>
+            <ToggleButton Classes="dialog" Name="btnMemoryAddressDecFormat" IsChecked="{Binding Path=#MemoryDecimalMode}" ToolTip.Tip="Display memory address as Decimal">
+                Dec
+            </ToggleButton>
+            <Line StartPoint="0,2" EndPoint="0,34" Stroke="White" Margin="2,0,2,0"></Line>
+            <ToggleButton Classes="dialog" Name="btnSwitchHexFormat" IsChecked="{Binding Path=!#ASCIIMode}" ToolTip.Tip="Display memory content as HEX">
+                Hex
+            </ToggleButton>
+            <ToggleButton Classes="dialog" Name="btnSwitchASCIIFormat" IsChecked="{Binding Path=#ASCIIMode}" ToolTip.Tip="Display memory content as ASCII">
+                ASCII
+            </ToggleButton>
+            <Line StartPoint="0,2" EndPoint="0,34" Stroke="White" Margin="2,0,2,0"></Line>
+            <Border Classes="numericBorder">
+                <NumericUpDown Margin="3,0" MinWidth="100" Classes="dialog" VerticalAlignment="Center"
+                               HorizontalAlignment="Left" ParsingNumberStyle="Integer" Increment="1" Minimum="0"
+                               Maximum="65535" Value="0" Name="nudAddress">
+                </NumericUpDown>
+            </Border>
+            <Button Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="7" Name="btnGoto">Goto</Button>
+        </StackPanel>
+        <Grid Grid.Row="1" ColumnDefinitions="*,32">
+            <Grid Grid.Column="0" Grid.Row="1" Name="grdBlocks" ColumnDefinitions="2*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*"
+                  RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*" VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch" Background="#303030" Margin="0,0,0,02">
+                <TextBlock Grid.Column="1">00</TextBlock>
+                <TextBlock Grid.Column="2">01</TextBlock>
+                <TextBlock Grid.Column="3">02</TextBlock>
+                <TextBlock Grid.Column="4">03</TextBlock>
+                <TextBlock Grid.Column="5">04</TextBlock>
+                <TextBlock Grid.Column="6">05</TextBlock>
+                <TextBlock Grid.Column="7">06</TextBlock>
+                <TextBlock Grid.Column="8">07</TextBlock>
+                <TextBlock Grid.Column="9">08</TextBlock>
+                <TextBlock Grid.Column="10">09</TextBlock>
+                <TextBlock Grid.Column="11">0A</TextBlock>
+                <TextBlock Grid.Column="12">0B</TextBlock>
+                <TextBlock Grid.Column="13">0C</TextBlock>
+                <TextBlock Grid.Column="14">0D</TextBlock>
+                <TextBlock Grid.Column="15">0E</TextBlock>
+                <TextBlock Grid.Column="16">0F</TextBlock>
+                <Separator Margin="0" VerticalAlignment="Bottom" Grid.ColumnSpan="17"></Separator>
+                <Rectangle Grid.RowSpan="17" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1"
+                           Stroke="#444444" StrokeThickness="2" />
+            </Grid>
+            <ScrollBar Name="scrFirstRow" Orientation="Vertical" Minimum="0" Maximum="4080" Grid.Column="1"></ScrollBar>
+        </Grid>
     </Grid>
-    <ScrollBar Name="scrFirstRow" Orientation="Vertical" Minimum="0" Maximum="4080" Grid.Column="1"></ScrollBar>
-  </Grid>
 </UserControl>
