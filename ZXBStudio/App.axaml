@@ -80,7 +80,7 @@
       <Setter Property="Background" Value="#505050" />
     </Style>
     <Style Selector="Button.toolbar">
-      <Setter Property="Background" Value="#fff0f0f0" />
+      <Setter Property="Background" Value="#ffb0b0b0" />
       <Setter Property="Width" Value="24" />
       <Setter Property="Height" Value="24" />
       <Setter Property="Padding" Value="2" />
@@ -95,12 +95,20 @@
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Focusable" Value="False"></Setter>
     </Style>
+    <Style Selector="ToggleButton.checked">
+      <Setter Property="Background" Value="#ffb0b0b0" />
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="Padding" Value="2" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Focusable" Value="False"></Setter>
+    </Style>
     <Style Selector="Button.toolbar:disabled">
       <Setter Property="Background" Value="#ff606060" />
       <Setter Property="BorderBrush" Value="#ff606060" />
     </Style>
     <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#ffb0b0b0" />
+      <Setter Property="Background" Value="#fff0f0f0" />
     </Style>
     <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#ff606060" />
