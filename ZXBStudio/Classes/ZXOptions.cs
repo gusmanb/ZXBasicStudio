@@ -42,5 +42,6 @@ namespace ZXBasicStudio.Classes
         public bool AntiAlias { get; set; }
         public string LastProjectPath { get; set; }
         public ZXBuildSettings? DefaultBuildSettings { get; set; }
+        public string? NextEmulatorPath { get; set; }
     }
 }

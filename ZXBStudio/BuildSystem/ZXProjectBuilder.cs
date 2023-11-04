@@ -100,6 +100,14 @@ namespace ZXBasicStudio.BuildSystem
 
                 OutputLogWritter.WriteLine("Program built successfully.");
 
+                if (settings.NextMode)
+                {
+                    if (!BuildNexFile(binary, settings, project, OutputLogWritter))
+                    {
+                        return null;
+                    }
+                }
+
                 return program;
             }
             catch (Exception ex)
@@ -108,6 +116,127 @@ namespace ZXBasicStudio.BuildSystem
                 return null;
             }
         }
+
+
+        private static bool BuildNexFile(byte[] binary, ZXBuildSettings settings, ZXProjectManager project, TextWriter outputLogWritter)
+        {
+            try
+            {
+                outputLogWritter.WriteLine("Building .nex file...");
+                string binFile = "";
+                string cfgFile = "";
+
+                // Create .bin file
+                {
+                    binFile = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(settings.MainFile) + ".bin");
+                    if (File.Exists(binFile))
+                    {
+                        File.Delete(binFile);
+                    }
+                    File.WriteAllBytes(binFile, binary);
+                }
+
+                // Create nex.cfg file
+                {
+                    outputLogWritter.WriteLine("Creating nex.cfg configuration file...");
+                    var sb = new StringBuilder();
+                    sb.AppendLine("; Minimum core version");
+                    sb.AppendLine("!COR3,0,0");
+                    // sysvars.inc
+                    {
+                        var sysVarsPath = Path.Combine(Environment.CurrentDirectory, "Resources", "sysvars.inc");
+                        var sysVarsDest = Path.Combine(project.ProjectPath, "sysvars.inc");
+                        if (!File.Exists(sysVarsDest))
+                        {
+                            File.Copy(sysVarsPath, sysVarsDest);
+                        }
+                        sb.AppendLine("!MMU./sysvars.inc,10,$1C00");
+                    }
+                    // Origin
+                    {
+                        int org = settings.Origin == null ? 32768 : settings.Origin.Value;
+                        sb.AppendLine(string.Format("!PCSP${0:X2},${1:X2}", org, org - 2));
+                    }
+                    // Main file
+                    {
+                        var bank = 5;
+                        var address = 0x2000;
+                        sb.AppendLine(string.Format(".\\{0},{1},${2:X2}",
+                            Path.Combine(Path.GetFileNameWithoutExtension(settings.MainFile) + ".bin"),
+                            bank,
+                            address));
+                    }
+                    // Save nex.cfg file
+                    {
+                        cfgFile = Path.Combine(project.ProjectPath, "nex.cfg");
+                        if (File.Exists(cfgFile))
+                        {
+                            File.Delete(cfgFile);
+                        }
+                        File.WriteAllText(cfgFile, sb.ToString());
+                    }
+                }
+                // Build nex file
+                {
+                    string nextDriveFolder = "nextdrive";
+                    // Delete old .nex file
+                    string nexFile = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                    if (File.Exists(nexFile))
+                    {
+                        File.Delete(nexFile);
+                    }
+                    // Check if nextdata folder exists
+                    string dataFolder = Path.Combine(project.ProjectPath, nextDriveFolder);
+                    if (!Directory.Exists(dataFolder))
+                    {
+                        Directory.CreateDirectory(dataFolder);
+                    }
+                    // Delete old .next file in data folder
+                    string nexDataFile = Path.Combine(project.ProjectPath, nextDriveFolder, Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                    if (File.Exists(nexDataFile))
+                    {
+                        File.Delete(nexDataFile);
+                    }
+
+                    outputLogWritter.WriteLine("Building .nex file...");
+                    Process process = new Process();
+                    process.StartInfo.FileName = "python.exe";
+                    process.StartInfo.Arguments = string.Format("{0} nex.cfg {1}",
+                        Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.py"),
+                        Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                    process.StartInfo.WorkingDirectory = project.ProjectPath;
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.Start();
+
+                    process.WaitForExit();
+
+                    if (!File.Exists(nexFile))
+                    {
+                        outputLogWritter.WriteLine("Error building .nex file");
+                        using (StreamReader reader = process.StandardOutput)
+                        {
+                            string output = reader.ReadToEnd();
+                            outputLogWritter.WriteLine(output);
+                        }
+                        return false;
+                    }
+
+                    // Copy .nex file to data folder
+                    File.Copy(nexFile, nexDataFile);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                outputLogWritter.WriteLine($"Exception: {ex.Message} {ex.StackTrace}");
+                return false;
+            }
+
+        }
+
+
         public static ZXProgram? BuildDebug(TextWriter OutputLogWritter)
         {
             try
@@ -279,6 +408,12 @@ namespace ZXBasicStudio.BuildSystem
 
                 OutputLogWritter.WriteLine("Program built successfully.");
 
+                if (settings.NextMode)
+                {
+                    OutputLogWritter.WriteLine("Debugging in Next not supported.");
+                    return null;
+                }
+
                 return program;
             }
             catch (LineOutOfRangeException ex)
@@ -292,6 +427,8 @@ namespace ZXBasicStudio.BuildSystem
                 return null;
             }
         }
+
+
         public static bool Export(ZXExportOptions Export, TextWriter OutputLogWritter)
         {
             try
@@ -363,6 +500,8 @@ namespace ZXBasicStudio.BuildSystem
                 return false;
             }
         }
+
+
         private static void Cleanup(string Folder, string? BinFile = null, string? DisassemblyFile = null)
         {
 
@@ -383,6 +522,8 @@ namespace ZXBasicStudio.BuildSystem
             foreach (var dir in dirs)
                 Cleanup(dir);
         }
+
+
         private static IEnumerable<ZXCodeFile> ScanFolder(string folder)
         {
             List<ZXCodeFile> files = new List<ZXCodeFile>();
@@ -403,6 +544,8 @@ namespace ZXBasicStudio.BuildSystem
 
             return files;
         }
+
+
         private static void OutputProcessLog(TextWriter OutputLogWritter, Process proc, out string Log)
         {
             StringBuilder sbLog = new StringBuilder();
@@ -433,6 +576,8 @@ namespace ZXBasicStudio.BuildSystem
 
             Log = sbLog.ToString();
         }
+
+
         private static bool PreBuild(bool debug, string path, TextWriter outLog)
         {
             outLog.WriteLine("Building precompilation documents...");
@@ -449,6 +594,8 @@ namespace ZXBasicStudio.BuildSystem
 
             return true;
         }
+
+
         private static bool PostBuild(bool debug, string path, ZXProgram CompiledProgram, TextWriter outLog)
         {
             outLog.WriteLine("Building postcompilation documents...");
