@@ -5,7 +5,7 @@
         xmlns:wnd="using:ZXBasicStudio.Classes"
         mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
         MinWidth="330" MaxWidth="330"
-        MinHeight="450" MaxHeight="450"
+        MinHeight="460" MaxHeight="460"
         x:Class="ZXBasicStudio.Dialogs.ZXOptionsDialog"
         CanResize="False"
         Icon="/Assets/zxbs.ico"
