@@ -397,6 +397,7 @@
     <AvaloniaResource Include="Svg\diagram-project-solid.svg" />
     <AvaloniaResource Include="Svg\display-lines-solid.svg" />
     <AvaloniaResource Include="Svg\dumpster-solid.svg" />
+    <AvaloniaResource Include="Svg\eraser-solid.svg" />
     <AvaloniaResource Include="Svg\eject-solid.svg" />
     <AvaloniaResource Include="Svg\file-arrow-down-solid.svg" />
     <AvaloniaResource Include="Svg\file-circle-minus-solid.svg" />
@@ -459,6 +460,7 @@
     <AvaloniaResource Include="Svg\White\display-lines-solid.svg" />
     <AvaloniaResource Include="Svg\White\dumpster-solid.svg" />
     <AvaloniaResource Include="Svg\White\eject-solid.svg" />
+    <AvaloniaResource Include="Svg\White\eraser-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-arrow-down-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-circle-minus-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-circle-plus-solid.svg" />
@@ -525,6 +527,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="TextCopy" Version="6.2.1" />
   </ItemGroup>
 
   <ItemGroup>

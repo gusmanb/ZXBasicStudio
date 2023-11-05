@@ -156,18 +156,23 @@ namespace ZXBasicStudio.BuildSystem
                         sb.AppendLine("!MMU./sysvars.inc,10,$1C00");
                     }
                     // Origin
-                    {
-                        int org = settings.Origin == null ? 32768 : settings.Origin.Value;
-                        sb.AppendLine(string.Format("!PCSP${0:X2},${1:X2}", org, org - 2));
-                    }
+                    int org = settings.Origin == null ? 32768 : settings.Origin.Value;
+                    sb.AppendLine(string.Format("!PCSP${0:X2},${1:X2}", org, org - 2));
                     // Main file
                     {
-                        var bank = 5;
-                        var address = 0x2000;
+                        int[] nextBank16K = { 255, 5, 2, 0 };
+                        int bank = org/16384;
+                        int offset = org-(bank * 16384);
+                        if(bank<0 || bank > 3)
+                        {
+                            outputLogWritter.WriteLine("Error: Invalid ORG direction, must be >0 and <65535");
+                            return false;
+                        }
+                        bank = nextBank16K[bank];
                         sb.AppendLine(string.Format(".\\{0},{1},${2:X2}",
                             Path.Combine(Path.GetFileNameWithoutExtension(settings.MainFile) + ".bin"),
                             bank,
-                            address));
+                            offset));
                     }
                     // Save nex.cfg file
                     {
@@ -203,16 +208,27 @@ namespace ZXBasicStudio.BuildSystem
 
                     outputLogWritter.WriteLine("Building .nex file...");
                     Process process = new Process();
-                    process.StartInfo.FileName = "python.exe";
-                    process.StartInfo.Arguments = string.Format("{0} nex.cfg {1}",
-                        Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.py"),
-                        Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
-                    process.StartInfo.WorkingDirectory = project.ProjectPath;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.RedirectStandardOutput = true;
+                    if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                    {
+                        process.StartInfo.FileName = "python";
+                        process.StartInfo.Arguments = string.Format("{0} nex.cfg {1}",
+                            Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.py"),
+                            Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                        process.StartInfo.WorkingDirectory = project.ProjectPath;
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.StartInfo.RedirectStandardOutput = true;
+                    }
+                    else
+                    {
+                        process.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.py");
+                        process.StartInfo.Arguments = "nex.cfg " + Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex";
+                        process.StartInfo.WorkingDirectory = project.ProjectPath;
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.StartInfo.RedirectStandardOutput = true;
+                    }
                     process.Start();
-
                     process.WaitForExit();
 
                     if (!File.Exists(nexFile))
