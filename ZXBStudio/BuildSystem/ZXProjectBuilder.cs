@@ -62,8 +62,11 @@ namespace ZXBasicStudio.BuildSystem
 
                 var args = settings.GetSettings();
 
-                OutputLogWritter.WriteLine("Building program...");
-
+                var startTime = DateTime.Now;
+                OutputLogWritter.WriteLine("Project path: " + project.ProjectPath);
+                OutputLogWritter.WriteLine("Building program " + mainFile);
+                OutputLogWritter.WriteLine("Building starts at " + startTime);
+                
                 var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{mainFile}\" " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 string logOutput;
@@ -98,7 +101,7 @@ namespace ZXBasicStudio.BuildSystem
 
                 OutputLogWritter.WriteLine($"Program size: {binary.Length} bytes");
 
-                OutputLogWritter.WriteLine("Program built successfully.");
+                OutputLogWritter.WriteLine("Program built successfully (Elapsed time: " + (startTime - DateTime.Now).Duration().ToString(@"hh\:mm\:ss") + " seconds)");
 
                 if (settings.NextMode)
                 {
