@@ -153,18 +153,23 @@ namespace ZXBasicStudio.BuildSystem
                         sb.AppendLine("!MMU./sysvars.inc,10,$1C00");
                     }
                     // Origin
-                    {
-                        int org = settings.Origin == null ? 32768 : settings.Origin.Value;
-                        sb.AppendLine(string.Format("!PCSP${0:X2},${1:X2}", org, org - 2));
-                    }
+                    int org = settings.Origin == null ? 32768 : settings.Origin.Value;
+                    sb.AppendLine(string.Format("!PCSP${0:X2},${1:X2}", org, org - 2));
                     // Main file
                     {
-                        var bank = 5;
-                        var address = 0x2000;
+                        int[] nextBank16K = { 255, 5, 2, 0 };
+                        int bank = org/16384;
+                        int offset = org-(bank * 16384);
+                        if(bank<0 || bank > 3)
+                        {
+                            outputLogWritter.WriteLine("Error: Invalid ORG direction, must be >0 and <65535");
+                            return false;
+                        }
+                        bank = nextBank16K[bank];
                         sb.AppendLine(string.Format(".\\{0},{1},${2:X2}",
                             Path.Combine(Path.GetFileNameWithoutExtension(settings.MainFile) + ".bin"),
                             bank,
-                            address));
+                            offset));
                     }
                     // Save nex.cfg file
                     {
