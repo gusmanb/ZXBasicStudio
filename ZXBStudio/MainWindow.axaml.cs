@@ -1427,38 +1427,67 @@ namespace ZXBasicStudio
                     }
                     else
                     {
+                        // Cleaning...
+                        {
+                            outLog.Writer.WriteLine("Cleaning temp files...");
+                            var file = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(settings.MainFile) + ".bin");
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                            file = Path.Combine(project.ProjectPath, "nex.cfg");
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                            file = Path.Combine(project.ProjectPath, "sysvars.inc");
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                            file = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                        }
+
                         try
                         {
-                            var emulatorName = Path.GetFileName(emulatorPath);
+                            var emulatorName = Path.GetFileNameWithoutExtension(emulatorPath);
+                            var nextDrive = Path.Combine(project.ProjectPath, "nextdrive");
                             switch (emulatorName.ToLower())
                             {
-                                case "cspect.exe":
+                                case "cspect":
                                     {
                                         outLog.Writer.WriteLine("Launching CSpect...");
                                         Process process = new Process();
                                         process.StartInfo.FileName = emulatorPath;
                                         process.StartInfo.Arguments = string.Format(
-                                            "-zxnext -tv -w3 -brk -r -mmc=.\\nextdrive\\ .\\nextdrive\\{0}",
-                                                Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
+                                            "-zxnext -tv -w3 -brk -r -mmc=\"{0}\" \"{1}\"",
+                                                nextDrive,
+                                                Path.Combine(nextDrive, Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex"));
                                         process.StartInfo.WorkingDirectory = project.ProjectPath;
                                         process.StartInfo.UseShellExecute = true;
                                         process.StartInfo.CreateNoWindow = false;
+                                        outLog.Writer.WriteLine(process.StartInfo.FileName+" "+process.StartInfo.Arguments);
                                         process.Start();
                                         process.WaitForExit();
                                     }
                                     break;
-                                case "zesarux.exe":
+                                case "zesarux":
                                     {
                                         outLog.Writer.WriteLine("Launching ZEsarUX...");
                                         Process process = new Process();
                                         process.StartInfo.FileName = emulatorPath;
                                         process.StartInfo.Arguments = string.Format(
-                                            "--noconfigfile --zoom 1  --machine TBBlue --realvideo --enabletimexvideo --tbblue-fast-boot-mode --enable-esxdos-handler --esxdos-root-dir {0} {1} --snap-no-change-machine",
-                                                Path.Combine(project.ProjectPath, "nextdrive"),
-                                                Path.Combine(project.ProjectPath, "nextdrive", Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex"));
+                                            "--noconfigfile --zoom 1  --machine TBBlue --realvideo --enabletimexvideo --tbblue-fast-boot-mode --enable-esxdos-handler --esxdos-root-dir \"{0}\" \"{1}\" --snap-no-change-machine",
+                                                nextDrive,
+                                                Path.Combine(nextDrive, Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex"));
                                         process.StartInfo.WorkingDirectory = Path.GetDirectoryName(emulatorPath);
                                         process.StartInfo.UseShellExecute = true;
                                         process.StartInfo.CreateNoWindow = false;
+                                        outLog.Writer.WriteLine(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
                                         process.Start();
                                         process.WaitForExit();
                                     }
