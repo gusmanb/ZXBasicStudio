@@ -4,18 +4,48 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DebuggingTools.Flags.Controls.ZXFlagsView">
-  <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
-    <Border BorderThickness="0,0,1,0" BorderBrush="#000" Background="#303030">
-      <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Total</TextBlock>
-    </Border>
-    <Border Grid.Column="1" BorderThickness="1,0,0,0" BorderBrush="#000" Background="#303030">
-      <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Step</TextBlock>
-    </Border>
-    <Border Grid.Row="1" Background="#606060" BorderThickness="0,0,1,0" BorderBrush="#000">
-      <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Name="flag1">--</TextBlock>
-    </Border>
-    <Border Grid.Row="1" Grid.Column="1" Background="#606060" BorderThickness="1,0,0,0" BorderBrush="#000">
-      <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" Name="flag2">--</TextBlock>
-    </Border>
-  </Grid>
+  <Panel Background="#FF606060">
+        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="*,*" DataContext="{Binding ZXFlagsView, Mode=TwoWay}">
+            <TextBlock Grid.Row="0" Grid.Column="0" ToolTip.Tip="S - Sign flag: Set if the 2-complement value is negative (copy of MSB)">S</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="1" ToolTip.Tip="Z - Zero flag: Set if the value is zero">Z</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="2" ToolTip.Tip="F5 - undocumented: Copy of bit 5">-</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="3" ToolTip.Tip="H - Half Carry: Carry from bit 3 to bit 4">H</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="4" ToolTip.Tip="F3 - undocumented: Copy of bit 3">-</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="5" ToolTip.Tip="P/V - Parity or Overflow: Parity set if even number of bits set. Overflow set if the 2-complement result does not fit in the register">V</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="6" ToolTip.Tip="N - Subtract: Set if the last operation was a subtraction">N</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="7" ToolTip.Tip="C - Carry: Set if the result did not fit in the register">C</TextBlock>
+            <Border Grid.Column="0" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="{Binding Bit7Value,Mode=TwoWay}" Name="Bit7"/>
+            </Border>
+            <Border Grid.Column="1" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="{Binding Bit6Value,Mode=TwoWay}" Name="Bit6" />
+            </Border>
+            <Border Grid.Column="2" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="{Binding Bit5Value}" Name="Bit5" />
+            </Border>
+            <Border Grid.Column="3" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="{Binding bit4Value}" Name="Bit4" />
+            </Border>
+            <Border Grid.Column="4" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="{Binding bit3Value}" Name="Bit3" />
+            </Border>
+            <Border Grid.Column="5" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="{Binding bit2Value}" Name="Bit2" />
+            </Border>
+            <Border Grid.Column="6" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="{Binding bit1Value}" Name="Bit1" />
+            </Border>
+            <Border Grid.Column="7" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="{Binding bit0Value}" Name="Bit0" />
+            </Border>
+        </Grid>
+    </Panel>
 </UserControl>

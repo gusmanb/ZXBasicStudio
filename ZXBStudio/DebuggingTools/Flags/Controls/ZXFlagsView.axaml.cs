@@ -13,14 +13,12 @@ namespace ZXBasicStudio.DebuggingTools.Flags.Controls
 
         public void Update()
         {
-            flag1.Text = "HH";
-            flag2.Text = "HH";
+            
         }
 
         public void Clear()
         {
-            flag1.Text = "**";
-            flag2.Text = "**";
+           
         }
     }
 }
