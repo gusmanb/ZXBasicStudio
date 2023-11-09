@@ -9,6 +9,7 @@
         xmlns:zxdtr="using:ZXBasicStudio.DebuggingTools.Registers.Controls"
         xmlns:zxdtm="using:ZXBasicStudio.DebuggingTools.Memory.Controls"
         xmlns:zxdtt="using:ZXBasicStudio.DebuggingTools.TStates.Controls"
+        xmlns:zxdfl="using:ZXBasicStudio.DebuggingTools.Flags.Controls"
         xmlns:wnd="using:ZXBasicStudio.Classes"
         xmlns:svg="using:Avalonia.Svg.Skia"
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
@@ -189,25 +190,37 @@
     <TabControl Grid.Column="2" Grid.Row="2" Name="tcEditors" ItemsSource="{Binding EditItems}" />
     <zxd:ZXCollapseButton CollapseDirection="Right" GridColumn="4" Grid.Column="3" Grid.Row="2"></zxd:ZXCollapseButton>
     <GridSplitter Classes="vertical" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns"></GridSplitter>
-    <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,*" Grid.RowSpan="3" Name="dockRight">
-      <zxd:ZXDockingControl Title="Variables" Name="varsDock">
+    
+    <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,.3*,4,*" Grid.RowSpan="4" Name="dockRight">
+      
+      <zxd:ZXDockingControl Grid.Row="0" Title="Variables" Name="varsDock">
         <zxd:ZXDockingControl.DockedControl>
           <zxdtv:ZXVariablesView Name="varsView"></zxdtv:ZXVariablesView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
+      
       <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
-      <zxd:ZXDockingControl Title="T-States" Grid.Row="2" Name="tstatesDock">
+      <zxd:ZXDockingControl Grid.Row="2" Title="T-States" Name="tstatesDock">
         <zxd:ZXDockingControl.DockedControl>
           <zxdtt:ZXTStatesView Name="statesView"></zxdtt:ZXTStatesView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
+      
       <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
-      <zxd:ZXDockingControl Title="Registers" Grid.Row="4" Name="regsDock">
+      <zxd:ZXDockingControl Grid.Row="4" Title="Z80 Flags" Name="flagsDock">
+        <zxd:ZXDockingControl.DockedControl>
+          <zxdfl:ZXFlagsView Name="flagsView"></zxdfl:ZXFlagsView>
+        </zxd:ZXDockingControl.DockedControl>
+      </zxd:ZXDockingControl>
+      
+      <GridSplitter Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
+      <zxd:ZXDockingControl Grid.Row="6" Title="Registers" Name="regsDock">
         <zxd:ZXDockingControl.DockedControl>
           <zxdtr:ZXRegistersView Name="regView" AllowEdit="{Binding EmulatorInfo.CanStep}"></zxdtr:ZXRegistersView>
         </zxd:ZXDockingControl.DockedControl>
       </zxd:ZXDockingControl>
     </zxd:ZXDockingContainer>
+    
     <GridSplitter Classes="horizontal" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="3" ResizeDirection="Rows"></GridSplitter>
     <zxd:ZXTabDockingContainer Name="dockBottom" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="4" TabsPosition="Bottom">
       <zxd:ZXTabDockingContainer.DockedControls>
