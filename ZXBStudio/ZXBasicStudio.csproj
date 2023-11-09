@@ -16,6 +16,16 @@
     <Deterministic>False</Deterministic>
   </PropertyGroup>
   <ItemGroup>
+    <AvaloniaXaml Remove="LanguageDefinitions\**" />
+    <Compile Remove="LanguageDefinitions\**" />
+    <EmbeddedResource Remove="LanguageDefinitions\**" />
+    <None Remove="LanguageDefinitions\**" />
+    <Compile Update="DebuggingTools\Flags\Controls\ZXFlagsView.axaml.cs">
+      <DependentUpon>ZXFlagsView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <AvaloniaXaml Remove="Controls\ZXLocalVariablesView.axaml" />
     <AvaloniaXaml Remove="Controls\ZXVariableView.axaml" />
   </ItemGroup>

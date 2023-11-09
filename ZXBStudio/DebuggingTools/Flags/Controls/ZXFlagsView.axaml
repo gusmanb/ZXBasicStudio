@@ -4,48 +4,53 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DebuggingTools.Flags.Controls.ZXFlagsView">
-  <Panel Background="#FF606060">
-        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="*,*" DataContext="{Binding ZXFlagsView, Mode=TwoWay}">
-            <TextBlock Grid.Row="0" Grid.Column="0" ToolTip.Tip="S - Sign flag: Set if the 2-complement value is negative (copy of MSB)">S</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="1" ToolTip.Tip="Z - Zero flag: Set if the value is zero">Z</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="2" ToolTip.Tip="F5 - undocumented: Copy of bit 5">-</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="3" ToolTip.Tip="H - Half Carry: Carry from bit 3 to bit 4">H</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="4" ToolTip.Tip="F3 - undocumented: Copy of bit 3">-</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="5" ToolTip.Tip="P/V - Parity or Overflow: Parity set if even number of bits set. Overflow set if the 2-complement result does not fit in the register">V</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="6" ToolTip.Tip="N - Subtract: Set if the last operation was a subtraction">N</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="7" ToolTip.Tip="C - Carry: Set if the result did not fit in the register">C</TextBlock>
-            <Border Grid.Column="0" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock Text="{Binding Bit7Value,Mode=TwoWay}" Name="Bit7"/>
-            </Border>
-            <Border Grid.Column="1" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock Text="{Binding Bit6Value,Mode=TwoWay}" Name="Bit6" />
-            </Border>
-            <Border Grid.Column="2" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock Text="{Binding Bit5Value}" Name="Bit5" />
-            </Border>
-            <Border Grid.Column="3" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock Text="{Binding bit4Value}" Name="Bit4" />
-            </Border>
-            <Border Grid.Column="4" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock Text="{Binding bit3Value}" Name="Bit3" />
-            </Border>
-            <Border Grid.Column="5" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock Text="{Binding bit2Value}" Name="Bit2" />
-            </Border>
-            <Border Grid.Column="6" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock Text="{Binding bit1Value}" Name="Bit1" />
-            </Border>
-            <Border Grid.Column="7" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock Text="{Binding bit0Value}" Name="Bit0" />
-            </Border>
+    <UserControl.Styles>
+    </UserControl.Styles>
+        <Grid Grid.Row="1" RowDefinitions="50" VerticalAlignment="Stretch">
+            <Panel Background="#FF606060">
+            <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="25,25" Name="gridFlags">
+                    <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="S - Sign flag: Set if the 2-complement value is negative (copy of MSB)">S</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="Z - Zero flag: Set if the value is zero">Z</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="F5 - undocumented: Copy of bit 5">-</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="H - Half Carry: Carry from bit 3 to bit 4">H</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="F3 - undocumented: Copy of bit 3">-</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="5"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="P/V - Parity or Overflow: Parity set if even number of bits set. Overflow set if the 2-complement result does not fit in the register">
+                        V
+                    </TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="6"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="N - Subtract: Set if the last operation was a subtraction">
+                        N
+                    </TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="7"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="C - Carry: Set if the result did not fit in the register">
+                        C
+                    </TextBlock>
+                    <Border Grid.Column="0" Grid.Row="1" BorderBrush="Black" BorderThickness="0,1,0,0">
+                        <TextBlock Name="Bit7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border Grid.Column="1" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0">
+                        <TextBlock Name="Bit6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border Grid.Column="2" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0">
+                        <TextBlock Name="Bit5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border Grid.Column="3" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0">
+                        <TextBlock Name="Bit4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border Grid.Column="4" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0">
+                        <TextBlock Name="Bit3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border Grid.Column="5" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0">
+                        <TextBlock Name="Bit2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border Grid.Column="6" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0">
+                        <TextBlock Name="Bit1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <Border Grid.Column="7" Grid.Row="1" BorderBrush="Black" BorderThickness="1,1,0,0">
+                        <TextBlock Name="Bit0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </Grid>
+            </Panel>
         </Grid>
-    </Panel>
 </UserControl>
