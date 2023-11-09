@@ -39,6 +39,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.BuildSystem;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Common;
 using ZXBasicStudio.Common.ZXSinclairBasic;
 using ZXBasicStudio.Controls;
 using ZXBasicStudio.Controls.DockSystem;
@@ -1066,9 +1067,9 @@ namespace ZXBasicStudio
                 ClearBreakLines();
                 currentBp = await ShowBreakLines(emu.Registers.PC, true);
                 regView.Update();
+                flagsView.Update(emu.Registers.F);
                 varsView.BeginEdit();
                 statesView.Update(emu.TStates);
-                flagsView.Update();
             }
         }
         private void ResumeEmulator(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -1179,9 +1180,9 @@ namespace ZXBasicStudio
             }
 
             regView.Update();
+            flagsView.Update(emu.Registers.F);
             varsView.BeginEdit();
             statesView.Update(emu.TStates);
-            flagsView.Update();
         }
         private void Emu_ProgramReady(object? sender, EventArgs e)
         {
@@ -1237,8 +1238,8 @@ namespace ZXBasicStudio
                 currentBp = e.Breakpoint;
                 varsView.BeginEdit();
                 regView.Update();
+                flagsView.Update(emu.Registers.F);
                 statesView.Update(emu.TStates);
-                flagsView.Update();
                 outLog.Writer.WriteLine($"Breakpoint: file {Path.GetFileName(line.File)}, line {line.LineNumber + 1}, address {line.Address}");
 
             });

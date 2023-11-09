@@ -191,7 +191,7 @@
     <zxd:ZXCollapseButton CollapseDirection="Right" GridColumn="4" Grid.Column="3" Grid.Row="2"></zxd:ZXCollapseButton>
     <GridSplitter Classes="vertical" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" ResizeDirection="Columns"></GridSplitter>
     
-    <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,.3*,4,*" Grid.RowSpan="4" Name="dockRight">
+    <zxd:ZXDockingContainer Grid.Column="4" Grid.Row="2" RowDefinitions="*,4,0.3*,4,0.3*,4,*" Grid.RowSpan="4" Name="dockRight">
       
       <zxd:ZXDockingControl Grid.Row="0" Title="Variables" Name="varsDock">
         <zxd:ZXDockingControl.DockedControl>
