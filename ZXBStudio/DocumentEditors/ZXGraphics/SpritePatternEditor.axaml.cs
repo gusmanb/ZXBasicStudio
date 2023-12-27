@@ -430,7 +430,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             if (cbPatterns.Length == 1)
             {
-                SpriteData.Patterns[SpriteData.CurrentFrame] = cbPatterns[0];
+                SpriteData.Patterns[SpriteData.CurrentFrame].Data = cbPatterns[0].Data;
             }
             else
             {

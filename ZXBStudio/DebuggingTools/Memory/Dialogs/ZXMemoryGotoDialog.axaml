@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="120"
+        MinWidth="350" MaxWidth="300"
+        MinHeight="120" MaxHeight="120"
+        CanResize="false"
+        x:Class="ZXBasicStudio.DebuggingTools.Memory.Dialogs.ZXMemoryGotoDialog"
+        Icon="/Assets/zxbs.ico" WindowStartupLocation="CenterOwner"
+        Title="Goto memory position">
+  <Grid RowDefinitions="Auto,10,Auto,Auto,Auto" Margin="10">
+    <NumericUpDown Margin="0,5,0,0" MinWidth="100" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Center" ParsingNumberStyle="Integer" Increment="1" Minimum="0" Maximum="65535" Name="nudAddress"></NumericUpDown>
+    <StackPanel Margin="0,0,0,10" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnGoto">Goto</Button>
+      <Button Classes="dialog" VerticalAlignment="Bottom" Padding="7" Name="btnClose">Close</Button>
+    </StackPanel>
+  </Grid>
+</Window>
