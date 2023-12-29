@@ -9,45 +9,7 @@
              Focusable="True"
              Background="#ff202020"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.SpriteEditor">
-  <UserControl.Styles>
-    <Style Selector="Button.toolbar_r90">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="RenderTransform">
-        <Setter.Value>
-          <RotateTransform Angle="90"/>
-        </Setter.Value>
-      </Setter>
-    </Style>
-    <Style Selector="Button.toolbar_r270">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="RenderTransform">
-        <Setter.Value>
-          <RotateTransform Angle="270"/>
-        </Setter.Value>
-      </Setter>
-    </Style>
-    <Style Selector="Button.toolbar_hMirror">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="RenderTransform">
-        <Setter.Value>
-          <ScaleTransform ScaleX="-1"/>
-        </Setter.Value>
-      </Setter>
-    </Style>
-  </UserControl.Styles>
-
+  
   <Grid Name="grdMain" RowDefinitions="*,Auto">
     <Grid Name="grdEditor" Grid.RowSpan="2" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">
 
