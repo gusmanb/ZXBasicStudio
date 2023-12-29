@@ -6,46 +6,9 @@
              xmlns:local="using:ZXBasicStudio.DocumentEditors.ZXGraphics"
              xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             Focusable ="True"
              Background="#ff202020"
-             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.FontGDUEditor">
-  <UserControl.Styles>
-    <Style Selector="Button.toolbar_r90">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="RenderTransform">
-        <Setter.Value>
-          <RotateTransform Angle="90"/>
-        </Setter.Value>
-      </Setter>
-    </Style>
-    <Style Selector="Button.toolbar_r270">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="RenderTransform">
-        <Setter.Value>
-          <RotateTransform Angle="270"/>
-        </Setter.Value>
-      </Setter>
-    </Style>
-    <Style Selector="Button.toolbar_hMirror">
-      <Setter Property="Background" Value="#fff0f0f0" />
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="RenderTransform">
-        <Setter.Value>
-          <ScaleTransform ScaleX="-1"/>
-        </Setter.Value>
-      </Setter>
-    </Style>
-  </UserControl.Styles>
+             x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.FontGDUEditor">  
 
   <Grid Name="grdMain">
     <Grid Name="grdEditor" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">

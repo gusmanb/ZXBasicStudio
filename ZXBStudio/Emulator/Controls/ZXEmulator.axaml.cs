@@ -90,6 +90,8 @@ namespace ZXBasicStudio.Emulator.Controls
 
         public bool EnableKeyMapping { get { return mapper.Active; } set { mapper.Active = value; } }
 
+        public bool AntiAlias { get { return emuScr.AntiAlias; } set { emuScr.AntiAlias = value; } }
+
         #region Events
 
         public event EventHandler<BreakpointEventArgs>? Breakpoint;
@@ -144,9 +146,9 @@ namespace ZXBasicStudio.Emulator.Controls
                 throw new ArgumentException("Unknown Spectrum model!");
 
             if (Model == ZXSpectrumModel.Spectrum48k)
-                speccy = new Spectrum48k(ModelDefinition.RomSet, ModelDefinition.InjectAddress);
+                speccy = new Spectrum48k(ModelDefinition.RomSet);
             else
-                speccy = new Spectrum128k(ModelDefinition.RomSet, ModelDefinition.ResetAddress, ModelDefinition.InjectAddress);
+                speccy = new Spectrum128k(ModelDefinition.RomSet, ModelDefinition.ResetAddress);
 
             if (machine != null)
                 machine.Dispose();

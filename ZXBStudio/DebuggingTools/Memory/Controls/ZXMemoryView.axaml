@@ -2,6 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:wnd="using:ZXBasicStudio.Classes"
+             xmlns:svg="using:Avalonia.Svg.Skia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DebuggingTools.Memory.Controls.ZXMemoryView">
   <UserControl.Styles>
@@ -15,33 +17,64 @@
   </UserControl.Styles>
   <UserControl.ContextMenu>
     <ContextMenu Placement="Pointer">
-      <MenuItem Header="ASCII view" Name="mnuAscii"/>
-      <MenuItem Header="HEX view" Name="mnuHex"/>
+      <MenuItem Header="ASCII view" Name="mnuAscii" />
+      <MenuItem Header="HEX view" Name="mnuHex" />
       <Separator></Separator>
-      <MenuItem Header="Search..." Name="mnuSearch"/>
+      <MenuItem Header="Search..." Name="mnuSearch" />
+      <MenuItem Header="Goto" Name="mnuGoto" />
     </ContextMenu>
   </UserControl.ContextMenu>
-  <Grid ColumnDefinitions="*,32">
-    <Grid Name="grdBlocks" ColumnDefinitions="2*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*" RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#303030" Margin="0,0,0,02">
-      <TextBlock Grid.Column="1">00</TextBlock>
-      <TextBlock Grid.Column="2">01</TextBlock>
-      <TextBlock Grid.Column="3">02</TextBlock>
-      <TextBlock Grid.Column="4">03</TextBlock>
-      <TextBlock Grid.Column="5">04</TextBlock>
-      <TextBlock Grid.Column="6">05</TextBlock>
-      <TextBlock Grid.Column="7">06</TextBlock>
-      <TextBlock Grid.Column="8">07</TextBlock>
-      <TextBlock Grid.Column="9">08</TextBlock>
-      <TextBlock Grid.Column="10">09</TextBlock>
-      <TextBlock Grid.Column="11">0A</TextBlock>
-      <TextBlock Grid.Column="12">0B</TextBlock>
-      <TextBlock Grid.Column="13">0C</TextBlock>
-      <TextBlock Grid.Column="14">0D</TextBlock>
-      <TextBlock Grid.Column="15">0E</TextBlock>
-      <TextBlock Grid.Column="16">0F</TextBlock>
-      <Separator Margin="0" VerticalAlignment="Bottom" Grid.ColumnSpan="17"></Separator>
-      <Rectangle Grid.RowSpan="17" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1" Stroke="#444444" StrokeThickness="2" />
+  <Grid RowDefinitions="auto,*">
+    <Grid ColumnDefinitions="2*,16*">
+      <StackPanel Grid.Row="0" Spacing="2" Orientation="Horizontal" Margin="2" HorizontalAlignment="Center">
+        <ToggleButton FontWeight="Bold" Width="30" Foreground="Black" Classes="toolbar" Name="btnMemoryAddressHexFormat" IsChecked="{Binding Path=!#MemoryDecimalMode}" ToolTip.Tip="Display memory address as Hexadecimal">
+          0x0
+        </ToggleButton>
+        <ToggleButton FontWeight="Bold" Width="30" Foreground="Black" Classes="toolbar" Name="btnMemoryAddressDecFormat" IsChecked="{Binding Path=#MemoryDecimalMode}" ToolTip.Tip="Display memory address as Decimal">
+          00
+        </ToggleButton>
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+        <ToggleButton FontWeight="Bold" Width="30" Foreground="Black" Classes="toolbar" Name="btnSwitchHexFormat" IsChecked="{Binding Path=!#ASCIIMode}" ToolTip.Tip="Display memory content as HEX">
+          0x0
+        </ToggleButton>
+        <ToggleButton Margin="2,0,0,0" FontWeight="Bold" Width="30" Foreground="Black" Classes="toolbar" Name="btnSwitchASCIIFormat" IsChecked="{Binding Path=#ASCIIMode}" ToolTip.Tip="Display memory content as ASCII">
+          Ab
+        </ToggleButton>
+          <NumericUpDown Background="#303030" Height="24" Margin="15,0,5,0" MinWidth="80" Classes="dialog" VerticalAlignment="Center"
+                         HorizontalAlignment="Left" ParsingNumberStyle="Integer" Increment="1" Minimum="0"
+                         Maximum="65535" Value="0" Name="nudAddress">
+          </NumericUpDown>
+        <Button Classes="toolbar" VerticalAlignment="Center" HorizontalAlignment="Right" Name="btnGoto" ToolTip.Tip="Go to address">
+          <svg:Svg Path="/Svg/magnifying-glass-arrow-right-solid.svg"></svg:Svg>
+        </Button>
+      </StackPanel>
     </Grid>
-    <ScrollBar Name="scrFirstRow" Orientation="Vertical" Minimum="0" Maximum="4080" Grid.Column="1"></ScrollBar>
+    <Grid Grid.Row="1" ColumnDefinitions="*,32">
+      <Grid Grid.Column="0" Grid.Row="1" Name="grdBlocks" ColumnDefinitions="2*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*"
+            RowDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*" VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch" Background="#303030" Margin="0,0,0,02">
+        <TextBlock Grid.Column="1">00</TextBlock>
+        <TextBlock Grid.Column="2">01</TextBlock>
+        <TextBlock Grid.Column="3">02</TextBlock>
+        <TextBlock Grid.Column="4">03</TextBlock>
+        <TextBlock Grid.Column="5">04</TextBlock>
+        <TextBlock Grid.Column="6">05</TextBlock>
+        <TextBlock Grid.Column="7">06</TextBlock>
+        <TextBlock Grid.Column="8">07</TextBlock>
+        <TextBlock Grid.Column="9">08</TextBlock>
+        <TextBlock Grid.Column="10">09</TextBlock>
+        <TextBlock Grid.Column="11">0A</TextBlock>
+        <TextBlock Grid.Column="12">0B</TextBlock>
+        <TextBlock Grid.Column="13">0C</TextBlock>
+        <TextBlock Grid.Column="14">0D</TextBlock>
+        <TextBlock Grid.Column="15">0E</TextBlock>
+        <TextBlock Grid.Column="16">0F</TextBlock>
+        <Separator Margin="0" VerticalAlignment="Bottom" Grid.ColumnSpan="17"></Separator>
+        <Rectangle Grid.RowSpan="17" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="1"
+                    Stroke="#444444" StrokeThickness="2" />
+      </Grid>
+      <ScrollBar Name="scrFirstRow" Orientation="Vertical" Minimum="0" Maximum="4080" Grid.Column="1"></ScrollBar>
+    </Grid>
   </Grid>
 </UserControl>

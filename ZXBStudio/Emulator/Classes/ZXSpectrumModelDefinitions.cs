@@ -56,8 +56,7 @@ namespace ZXBasicStudio.Emulator.Classes
                     RomSet = new byte[][] { rom },
                     RomDissasembly = romDis,
                     RomDissasemblyMap = romMapLines,
-                    ResetAddress = 0,
-                    InjectAddress = 0x12ac
+                    ResetAddress = 0
                 };
 
                 defs.Add(def48k);
@@ -101,8 +100,7 @@ namespace ZXBasicStudio.Emulator.Classes
                     RomSet = new byte[][] { rom0, rom1 },
                     RomDissasembly = romDis,
                     RomDissasemblyMap = romMapLines,
-                    ResetAddress = 0x2656,
-                    InjectAddress = 0x12ac
+                    ResetAddress = 0x2656
                 };
 
                 defs.Add(def128k);
@@ -146,8 +144,7 @@ namespace ZXBasicStudio.Emulator.Classes
                     RomSet = new byte[][] { rom0, rom1 },
                     RomDissasembly = romDis,
                     RomDissasemblyMap = romMapLines,
-                    ResetAddress = 0x2675,
-                    InjectAddress = 0x12ac
+                    ResetAddress = 0x2675
                 };
 
                 defs.Add(defPlus2);
@@ -164,7 +161,6 @@ namespace ZXBasicStudio.Emulator.Classes
         public required string RomDissasembly { get; set; }
         public required ZXRomLine[] RomDissasemblyMap { get; set; }
         public required ushort ResetAddress { get; set; }
-        public required ushort InjectAddress { get; set; }
     }
 
     public class ZXRomLine

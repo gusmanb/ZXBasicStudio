@@ -17,7 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rom128Reconstructor", "Rom1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsBox.Avalonia", "MsBox.Avalonia\MsBox.Avalonia.csproj", "{1AC800DC-80F6-45C2-AF8A-861C31FB544D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZXBasicStudioSite", "ZXBasicStudioSite\ZXBasicStudioSite.csproj", "{2493E207-2E56-48AB-8064-0E7A805F7A62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZXBasicStudioSite", "ZXBasicStudioSite\ZXBasicStudioSite.csproj", "{2493E207-2E56-48AB-8064-0E7A805F7A62}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{C949A587-5005-4308-BCFD-85831B080589}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,6 +10,10 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>zxbs.ico</ApplicationIcon>
+    <Version>1.0.0-beta1</Version>
+    <Title>ZX Basic Studio</Title>
+    <AssemblyVersion>1.0.*</AssemblyVersion>
+    <Deterministic>False</Deterministic>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
@@ -34,12 +38,18 @@
   <ItemGroup>
     <None Remove=".gitignore" />
     <None Remove="Assets\asmFile.png" />
+    <None Remove="Assets\AssemblerIcon.png" />
     <None Remove="Assets\cfgFile.png" />
     <None Remove="Assets\debug.png" />
+    <None Remove="Assets\DirectiveIcon.png" />
     <None Remove="Assets\folder.png" />
+    <None Remove="Assets\Icon.png" />
+    <None Remove="Assets\IconAbout.png" />
+    <None Remove="Assets\KeywordIcon.png" />
     <None Remove="Assets\LogoBig.png" />
     <None Remove="Assets\logoSmall.png" />
     <None Remove="Assets\txtFile.png" />
+    <None Remove="Assets\TypeIcon.png" />
     <None Remove="Assets\unknFile.png" />
     <None Remove="Assets\zxbFile.png" />
     <None Remove="Assets\zxbs.ico" />
@@ -100,6 +110,7 @@
     <None Remove="Fonts\NimbusSanL-BolIta.ttf" />
     <None Remove="Fonts\NimbusSanL-Reg.ttf" />
     <None Remove="Fonts\NimbusSanL-RegIta.ttf" />
+    <None Remove="Resources\sysvars.inc" />
     <None Remove="Svg\backward-solid.svg" />
     <None Remove="Svg\backward-step-solid.svg" />
     <None Remove="Svg\Binary.svg" />
@@ -113,7 +124,9 @@
     <None Remove="Svg\cassette-solid.svg" />
     <None Remove="Svg\cassette.svg" />
     <None Remove="Svg\check-alt-svgrepo-com.svg" />
+    <None Remove="Svg\circle-info-solid.svg" />
     <None Remove="Svg\circle-minus-solid.svg" />
+    <None Remove="Svg\circle-question-solid.svg" />
     <None Remove="Svg\circle-xmark-solid.svg" />
     <None Remove="Svg\clock-rotate-left-solid.svg" />
     <None Remove="Svg\comment-dots-solid.svg" />
@@ -148,6 +161,7 @@
     <None Remove="Svg\forward-solid.svg" />
     <None Remove="Svg\forward-step-solid.svg" />
     <None Remove="Svg\gears-solid.svg" />
+    <None Remove="Svg\github.svg" />
     <None Remove="Svg\hashtag-solid.svg" />
     <None Remove="Svg\keyboard-regular.svg" />
     <None Remove="Svg\layout-alltools-solid.svg" />
@@ -156,7 +170,9 @@
     <None Remove="Svg\layout-full-solid.svg" />
     <None Remove="Svg\layout-play-solid.svg" />
     <None Remove="Svg\list-ol-solid.svg" />
+    <None Remove="Svg\magnifying-glass-arrow-right-solid.svg" />
     <None Remove="Svg\magnifying-glass-location-solid.svg" />
+    <None Remove="Svg\magnifying-glass-solid.svg" />
     <None Remove="Svg\maximize-solid.svg" />
     <None Remove="Svg\minimize-solid.svg" />
     <None Remove="Svg\minus-solid.svg" />
@@ -167,6 +183,7 @@
     <None Remove="Svg\rectangle-list-solid.svg" />
     <None Remove="Svg\rectangle-xmark-solid.svg" />
     <None Remove="Svg\scissors-solid.svg" />
+    <None Remove="Svg\Seal.svg" />
     <None Remove="Svg\square-minus-solid.svg" />
     <None Remove="Svg\square-plus-solid.svg" />
     <None Remove="Svg\stop-solid.svg" />
@@ -174,6 +191,7 @@
     <None Remove="Svg\text-asm.svg" />
     <None Remove="Svg\text-data.svg" />
     <None Remove="Svg\text-dim.svg" />
+    <None Remove="Svg\thumbtack-solid.svg" />
     <None Remove="Svg\trash-can-regular.svg" />
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
@@ -186,7 +204,9 @@
     <None Remove="Svg\White\caret-down-solid.svg" />
     <None Remove="Svg\White\caret-up-solid.svg" />
     <None Remove="Svg\White\cassette-solid.svg" />
+    <None Remove="Svg\White\circle-info-solid.svg" />
     <None Remove="Svg\White\circle-minus-solid.svg" />
+    <None Remove="Svg\White\circle-question-solid.svg" />
     <None Remove="Svg\White\circle-xmark-solid.svg" />
     <None Remove="Svg\White\clock-rotate-left-solid.svg" />
     <None Remove="Svg\White\comment-dots-solid.svg" />
@@ -210,6 +230,7 @@
     <None Remove="Svg\White\forward-solid.svg" />
     <None Remove="Svg\White\forward-step-solid.svg" />
     <None Remove="Svg\White\gears-solid.svg" />
+    <None Remove="Svg\White\github.svg" />
     <None Remove="Svg\White\hashtag-solid.svg" />
     <None Remove="Svg\White\keyboard-regular.svg" />
     <None Remove="Svg\White\layout-alltools-solid.svg" />
@@ -233,6 +254,8 @@
     <None Remove="Svg\White\square-plus-solid.svg" />
     <None Remove="Svg\White\stop-solid.svg" />
     <None Remove="Svg\White\tag-solid.svg" />
+    <None Remove="Svg\White\thumbtack-solid.svg" />
+    <None Remove="Svg\White\thumbtack-vertical-solid.svg" />
     <None Remove="Svg\White\trash-can-regular.svg" />
     <None Remove="Svg\White\trash-solid.svg" />
     <None Remove="Svg\White\truck-fast-solid.svg" />
@@ -240,12 +263,18 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\asmFile.png" />
+    <AvaloniaResource Include="Assets\AssemblerIcon.png" />
     <AvaloniaResource Include="Assets\cfgFile.png" />
     <AvaloniaResource Include="Assets\debug.png" />
+    <AvaloniaResource Include="Assets\DirectiveIcon.png" />
     <AvaloniaResource Include="Assets\folder.png" />
+    <AvaloniaResource Include="Assets\Icon.png" />
+    <AvaloniaResource Include="Assets\IconAbout.png" />
+    <AvaloniaResource Include="Assets\KeywordIcon.png" />
     <AvaloniaResource Include="Assets\LogoBig.png" />
     <AvaloniaResource Include="Assets\logoSmall.png" />
     <AvaloniaResource Include="Assets\txtFile.png" />
+    <AvaloniaResource Include="Assets\TypeIcon.png" />
     <AvaloniaResource Include="Assets\unknFile.png" />
     <AvaloniaResource Include="Assets\zxbFile.png" />
     <AvaloniaResource Include="Assets\zxbs.ico" />
@@ -302,6 +331,14 @@
     <AvaloniaResource Include="Fonts\ConsolaMono.ttf" />
     <AvaloniaResource Include="Fonts\DroidSansMono.ttf" />
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
+    <AvaloniaResource Include="Svg\circle-info-solid.svg" />
+    <AvaloniaResource Include="Svg\circle-question-solid.svg" />
+    <AvaloniaResource Include="Svg\github.svg" />
+    <AvaloniaResource Include="Svg\magnifying-glass-arrow-right-solid.svg" />
+    <AvaloniaResource Include="Svg\magnifying-glass-solid.svg" />
+    <AvaloniaResource Include="Svg\White\circle-info-solid.svg" />
+    <AvaloniaResource Include="Svg\White\circle-question-solid.svg" />
+    <AvaloniaResource Include="Svg\White\exit-solid.svg" />
     <AvaloniaResource Include="Svg\buildexport.svg" />
     <AvaloniaResource Include="Svg\caret-down-solid.svg" />
     <AvaloniaResource Include="Svg\caret-up-solid.svg" />
@@ -323,12 +360,14 @@
     <AvaloniaResource Include="Svg\minus-solid.svg" />
     <AvaloniaResource Include="Svg\MoveRight.svg" />
     <AvaloniaResource Include="Svg\Invert.svg" />
+    <AvaloniaResource Include="Svg\Seal.svg" />
     <AvaloniaResource Include="Svg\ShiftRight.svg" />
     <AvaloniaResource Include="Svg\RotateRight.svg" />
     <AvaloniaResource Include="Svg\RotateLeft.svg" />
     <AvaloniaResource Include="Svg\text-asm.svg" />
     <AvaloniaResource Include="Svg\text-data.svg" />
     <AvaloniaResource Include="Svg\text-dim.svg" />
+    <AvaloniaResource Include="Svg\thumbtack-solid.svg" />
     <AvaloniaResource Include="Svg\VMirror.svg" />
     <AvaloniaResource Include="Svg\HMirror.svg" />
     <AvaloniaResource Include="Svg\Paste.svg" />
@@ -354,9 +393,11 @@
     <AvaloniaResource Include="Svg\copy-solid.svg" />
     <AvaloniaResource Include="Svg\diagram-project-cross-solid.svg" />
     <AvaloniaResource Include="Svg\diagram-project-plus-solid.svg" />
+    <AvaloniaResource Include="Svg\open-last-project-solid.svg" />
     <AvaloniaResource Include="Svg\diagram-project-solid.svg" />
     <AvaloniaResource Include="Svg\display-lines-solid.svg" />
     <AvaloniaResource Include="Svg\dumpster-solid.svg" />
+    <AvaloniaResource Include="Svg\eraser-solid.svg" />
     <AvaloniaResource Include="Svg\eject-solid.svg" />
     <AvaloniaResource Include="Svg\file-arrow-down-solid.svg" />
     <AvaloniaResource Include="Svg\file-circle-minus-solid.svg" />
@@ -395,6 +436,8 @@
     <AvaloniaResource Include="Svg\trash-can-regular.svg" />
     <AvaloniaResource Include="Svg\trash-solid.svg" />
     <AvaloniaResource Include="Svg\truck-fast-solid.svg" />
+    <AvaloniaResource Include="Svg\font-increase.svg" />
+    <AvaloniaResource Include="Svg\font-decrease.svg" />
     <AvaloniaResource Include="Svg\White\backward-solid.svg" />
     <AvaloniaResource Include="Svg\White\backward-step-solid.svg" />
     <AvaloniaResource Include="Svg\White\box-open-solid.svg" />
@@ -413,9 +456,11 @@
     <AvaloniaResource Include="Svg\White\diagram-project-cross-solid.svg" />
     <AvaloniaResource Include="Svg\White\diagram-project-plus-solid.svg" />
     <AvaloniaResource Include="Svg\White\diagram-project-solid.svg" />
+    <AvaloniaResource Include="Svg\White\open-last-project-solid.svg" />
     <AvaloniaResource Include="Svg\White\display-lines-solid.svg" />
     <AvaloniaResource Include="Svg\White\dumpster-solid.svg" />
     <AvaloniaResource Include="Svg\White\eject-solid.svg" />
+    <AvaloniaResource Include="Svg\White\eraser-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-arrow-down-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-circle-minus-solid.svg" />
     <AvaloniaResource Include="Svg\White\file-circle-plus-solid.svg" />
@@ -428,6 +473,7 @@
     <AvaloniaResource Include="Svg\White\forward-solid.svg" />
     <AvaloniaResource Include="Svg\White\forward-step-solid.svg" />
     <AvaloniaResource Include="Svg\White\gears-solid.svg" />
+    <AvaloniaResource Include="Svg\White\github.svg" />
     <AvaloniaResource Include="Svg\White\hashtag-solid.svg" />
     <AvaloniaResource Include="Svg\White\keyboard-regular.svg" />
     <AvaloniaResource Include="Svg\White\layout-alltools-solid.svg" />
@@ -451,12 +497,17 @@
     <AvaloniaResource Include="Svg\White\square-plus-solid.svg" />
     <AvaloniaResource Include="Svg\White\stop-solid.svg" />
     <AvaloniaResource Include="Svg\White\tag-solid.svg" />
+    <AvaloniaResource Include="Svg\White\thumbtack-vertical-solid.svg" />
+    <AvaloniaResource Include="Svg\White\thumbtack-solid.svg" />
     <AvaloniaResource Include="Svg\White\trash-can-regular.svg" />
     <AvaloniaResource Include="Svg\White\trash-solid.svg" />
     <AvaloniaResource Include="Svg\White\truck-fast-solid.svg" />
     <AvaloniaResource Include="Svg\x-svgrepo-com.svg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\sysvars.inc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="zxbs.ico" />
   </ItemGroup>
 
@@ -476,6 +527,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="TextCopy" Version="6.2.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -494,6 +546,15 @@
     <Compile Update="DocumentEditors\NextDows\ZXFormsEditor.axaml.cs">
       <DependentUpon>ZXFormsEditor.axaml</DependentUpon>
     </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\ColorPickerDialog.axaml.cs">
+      <DependentUpon>ColorPickerDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\ColorPickerControl.axaml.cs">
+      <DependentUpon>ColorPickerControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpriteExportDialog.axaml.cs">
+      <DependentUpon>SpriteExportDialog.axaml</DependentUpon>
+    </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\SpritePatternEditor.axaml.cs">
       <DependentUpon>SpritePatternEditor.axaml</DependentUpon>
     </Compile>
@@ -502,6 +563,12 @@
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\FontGDUExportDialog.axaml.cs">
       <DependentUpon>FontGDUExportDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpritePatternControl.axaml.cs">
+      <DependentUpon>SpritePatternControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpritePreviewControl.axaml.cs">
+      <DependentUpon>SpritePreviewControl.axaml</DependentUpon>
     </Compile>
     <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>

@@ -11,15 +11,19 @@ namespace CoreSpectrum.Hardware
 {
     public class Spectrum128k : SpectrumBase
     {
+        const ushort LAST_K = 0x5C08;
+        const ushort KEY_INPUT = 0x10A8;
+        const ushort MAIN_2 = 0x12AC;
+        const ushort MAIN_3_END = 0x12e0;
+        const ushort CLEAR = 0x1EAF;
+        const ushort CLEAR_END = 0x1EEC;
+        const ushort BANKM = 0x5B5C;
+        const byte KEY_RET = 0x0D;
+
         /// <summary>
         /// PC safe for switching to 48k ROM
         /// </summary>
         ushort _resetPC;
-
-        /// <summary>
-        /// PC safe for injection (after switching to 48k mode)
-        /// </summary>
-        ushort _injectPC;
 
         private static readonly MachineTimmings Timmings128k = new MachineTimmings
         {
@@ -33,14 +37,15 @@ namespace CoreSpectrum.Hardware
 
         bool _injecting = false;
         bool _on48mode = false;
+        //bool _onClear = false;
+
         ProgramImage? _injectImage;
 
         public override event EventHandler? ProgramReady;
 
-        public Spectrum128k(byte[][] RomSet, ushort ResetAddress, ushort InjectAddress) : base(RomSet) 
+        public Spectrum128k(byte[][] RomSet, ushort ResetAddress) : base(RomSet) 
         {
             _resetPC = ResetAddress;
-            _injectPC = InjectAddress;
         }
 
         protected override MachineHardware GetHardware(byte[][] RomSet)
@@ -97,46 +102,80 @@ namespace CoreSpectrum.Hardware
         {
             if (_injecting)
             {
-                if (_z80.Registers.PC == _injectPC && _on48mode)
+                //Injection on the 128k is a bit more convoluted.
+                //First, we swap to the 48k ROM.
+                //Then we wait until the machine reaches the KEYBOARD_INPUT routine.
+                //There we inject a "return" key press.
+                //Next we issue a CLEAR call and clear the memory to ORG-1.
+                //Once the clear has finished we inject our program, set in the stack the return address to MAIN and jump to it.
+
+                if (_injectImage == null) //In case of having a null image, disable injection
                 {
-                    if (_injectImage != null)
+                    _injecting = false;
+                    _injectImage = null;
+                    _on48mode = false;
+
+                    base.z80_BeforeInstructionFetch(sender, e);
+                    return;
+                }
+
+                if (_z80.Registers.PC == _resetPC && !_on48mode) //Switch to 48k mode without disabling banking.
+                {
+                    var mem = (Memory128k)_memory;
+
+                    _on48mode = true;
+
+                    mem.Map.SetActiveRom(1);
+                    mem.Map.SetActiveBank(0);
+                    mem.Map.SetActiveScreen(0);
+
+                    _z80.Registers.PC = 0;
+                    _on48mode = true;
+                }
+                else if (_z80.Registers.PC == KEY_INPUT && _on48mode) //First entrance to keyboard routine, inject an "ENTER"
+                {
+                    var flags = _memory.GetByte(((ushort)_z80.Registers.IY) + 1); //Get the FLAGS variable
+                    flags |= (byte)(1 << 5); //Signal a key press
+                    _memory.SetByte(((ushort)_z80.Registers.IY) + 1, flags); //Update flags
+                    _memory.SetByte(LAST_K, KEY_RET); //Store a return in the LAST_K var
+                }
+                else if (_z80.Registers.PC == MAIN_3_END && _on48mode) //"ENTER" has been processed and we can call the "CLEAR" routine
+                {
+                    _z80.Registers.BC = (short)(_injectImage.Org - 1); //Store in BC the clear address
+                    _z80.ExecuteCall(CLEAR); //Call CLEAR
+                }
+                else if (_z80.Registers.PC == CLEAR_END && _on48mode) //Wait until CLEAR reaches its last instruction and inject our program5
+                {
+                    var mem = (Memory128k)_memory;
+
+                    foreach (var chunk in _injectImage.Chunks) //Inject memory chunks
                     {
-                        var mem = (Memory128k)_memory;
-
-                        foreach (var chunk in _injectImage.Chunks)
-                        {
-                            mem.Map.SetActiveBank(chunk.Bank);
-                            _memory.SetContents(chunk.Address, chunk.Data);
-                        }
-
-                        mem.Map.SetActiveBank(_injectImage.InitialBank);
-                        _z80.Registers.PC = _injectImage.Org;
-                        var sp = 0xFFFF;
-                        byte[] retAddr = BitConverter.GetBytes(_injectPC);
-                        sp -= 2;
-                        _z80.Registers.SP = unchecked((short)sp);
-                        _memory.SetContents(sp, retAddr);
-
-                        if (ProgramReady != null)
-                            ProgramReady(this, EventArgs.Empty);
+                        mem.Map.SetActiveBank(chunk.Bank);
+                        _memory.SetContents(chunk.Address, chunk.Data);
                     }
+
+                    mem.Map.SetActiveBank(_injectImage.InitialBank); //Swap to the specified memory bank
+                    _z80.Registers.PC = _injectImage.Org;
+
+                    //Update BANKM variable with the selected bank and ROM 1 enabled
+                    var bankm = (byte)(_injectImage.InitialBank | (1 << 4));
+                    _memory.SetByte(BANKM, bankm);
+
+                    //Store return address in stack
+                    ushort sp = (ushort)_z80.Registers.SP;
+                    sp -= 2;
+                    _z80.Registers.SP = unchecked((short)sp);
+                    _memory.SetUshort(sp, MAIN_2);
+
+                    //Signal program ready
+                    if (ProgramReady != null)
+                        ProgramReady(this, EventArgs.Empty);
 
                     _injecting = false;
                     _injectImage = null;
                     _on48mode = false;
                 }
-                else if (_z80.Registers.PC == _resetPC)
-                {
-                    
-                    var mem = (Memory128k)_memory;
-
-                    _on48mode = true;
-                    mem.Map.SetActiveRom(1);
-                    mem.Map.SetActiveBank(0);
-                    mem.Map.SetActiveScreen(0);
-                    _z80.Registers.PC = 0;
-                    _on48mode = true;
-                }
+                
             }
 
             base.z80_BeforeInstructionFetch(sender, e);

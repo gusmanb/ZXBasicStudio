@@ -40,5 +40,13 @@
         /// <exception cref="System.InvalidOperationException"><c>startAddress</c> + <c>length</c> (or <c>content.Length</c>)
         /// goes beyond the memory size.</exception>
         byte[] GetContents(int startAddress, int length);
+
+        void SetUshort(int startAddress, ushort value);
+
+        ushort GetUshort(int startAddress);
+
+        void SetByte(int startAddress, byte value);
+
+        byte GetByte(int startAddress);
     }
 }

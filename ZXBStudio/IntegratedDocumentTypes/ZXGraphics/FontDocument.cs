@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentEditors.ZXGraphics;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls;
 using ZXBasicStudio.DocumentModel.Enums;
@@ -37,6 +38,34 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
         public string? DocumentAspect => _docAspect;
 
         private static readonly ExportManager _exportManager = new ExportManager();
+
+        static readonly ZXKeybCommand[] _editCommands = new ZXKeybCommand[]
+        {
+            FontGDUEditor.keyboardCommands["Save"],
+            FontGDUEditor.keyboardCommands["Cut"],
+            FontGDUEditor.keyboardCommands["Copy"],
+            FontGDUEditor.keyboardCommands["Paste"],
+            FontGDUEditor.keyboardCommands["Clear"],
+            FontGDUEditor.keyboardCommands["Undo"],
+            FontGDUEditor.keyboardCommands["Redo"],
+            FontGDUEditor.keyboardCommands["Rotate Right"],
+            FontGDUEditor.keyboardCommands["Rotate Left"],
+            FontGDUEditor.keyboardCommands["Horizontal Mirror"],
+            FontGDUEditor.keyboardCommands["Vertical Mirror"],
+            FontGDUEditor.keyboardCommands["Shift Up"],
+            FontGDUEditor.keyboardCommands["Shift Right"],
+            FontGDUEditor.keyboardCommands["Shift Down"],
+            FontGDUEditor.keyboardCommands["Shift Left"],
+            FontGDUEditor.keyboardCommands["Move Up"],
+            FontGDUEditor.keyboardCommands["Move Right"],
+            FontGDUEditor.keyboardCommands["Move Down"],
+            FontGDUEditor.keyboardCommands["Move Left"],
+            FontGDUEditor.keyboardCommands["Invert"],
+            FontGDUEditor.keyboardCommands["Mask"],
+            FontGDUEditor.keyboardCommands["Export"],
+            FontGDUEditor.keyboardCommands["Zoom In"],
+            FontGDUEditor.keyboardCommands["Zoom Out"],
+        };
 
 
         public FontDocument()
@@ -70,7 +99,6 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
 
         Guid IZXDocumentType.DocumentTypeId => _docId;
 
-        // TODO: Implement commands
-        public ZXKeybCommand[]? EditorCommands => new ZXKeybCommand[0];
+        ZXKeybCommand[]? IZXDocumentType.EditorCommands => _editCommands;
     }
 }

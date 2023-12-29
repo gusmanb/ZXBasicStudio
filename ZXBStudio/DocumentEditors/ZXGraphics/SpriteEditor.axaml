@@ -6,6 +6,7 @@
              xmlns:local="using:ZXBasicStudio.DocumentEditors.ZXGraphics"
              xmlns:zxd="using:ZXBasicStudio.Controls.DockSystem"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             Focusable="True"
              Background="#ff202020"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.SpriteEditor">
   <UserControl.Styles>
@@ -47,8 +48,8 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid Name="grdMain">
-    <Grid Name="grdEditor" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">
+  <Grid Name="grdMain" RowDefinitions="*,Auto">
+    <Grid Name="grdEditor" Grid.RowSpan="2" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">
 
       <zxd:ZXDockingContainer Name="dockLeft" DockingGroup="ZXGraphics" RowDefinitions="*">
         <zxd:ZXDockingControl Name="dockPatterns" Title="Sprite list" DockingGroup="ZXGraphics" DesiredFloatingSize="">
@@ -133,28 +134,21 @@
           <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
           <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Export pattern">
-            <svg:Svg Path="/Svg/Export.svg"></svg:Svg>
+            <svg:Svg Path="/Svg/buildexport.svg"></svg:Svg>
           </Button>
         </WrapPanel>
 
-        <local:SpritePatternEditor Name="ctrEditor" Grid.Row="1" Background="#303030"/>
+        <local:SpritePatternEditor Name="ctrlEditor" Grid.Row="1" Background="#303030"/>
         
         <WrapPanel Orientation="Horizontal" Background="#ff202020" Grid.Row="2" Margin="10,5,10,5" Height="NaN">
-          <TextBlock Name="txtZoom" Classes="dialog">Zoom 24x</TextBlock>
+          <TextBlock Name="txtZoom" Classes="dialog" Width="54">Zoom 24x</TextBlock>
           <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" VerticalAlignment="Center"/>
-          <TextBlock Classes="dialog">Width</TextBlock>
-          <Border Classes="numericborder">
-            <NumericUpDown Classes="dialog" Name="txtEditorWidth" Minimum="1" Increment="1" Maximum="256" Value="1"/>
-          </Border>
-          <TextBlock Classes="dialog">Height</TextBlock>
-          <Border Classes="numericborder">
-            <NumericUpDown Classes="dialog" Name="txtEditorHeight" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
-          </Border>
-          <!--
-        <TextBlock>Paper</TextBlock>
-        <TextBlock>Ink</TextBlock>
-        <TextBlock>Bright</TextBlock>
-        -->
+          <TextBlock Name="txtFrame" Classes="dialog" Width="55" Margin="8,4,0,0">Frame</TextBlock>
+          <Slider Name="sldFrame" Width="100" Minimum="0" Maximum="0" Value="0" VerticalAlignment="Center"/>
+          <Button Name="btnPaper" Classes="toobar" Margin="8,0,0,0">Paper</Button>
+          <Button Name="btnInk" Classes="toobar" Margin="8,0,0,0">Ink</Button>
+          <Button Name="btnBright" Classes="toobar" Margin="8,0,0,0">Bright</Button>
+          <Button Name="btnFlash" Classes="toobar" Margin="8,0,0,0">Flash</Button>
         </WrapPanel>
 
       </Grid>
@@ -162,15 +156,27 @@
       <GridSplitter ResizeDirection="Columns" Grid.Column="3" Classes="vertical"></GridSplitter>
 
       <zxd:ZXDockingContainer Name="dockRight" DockingGroup="ZXGraphics" Grid.Column="4" RowDefinitions="*">
-        <zxd:ZXDockingControl Name="dockPreview" Title="Preview" DockingGroup="ZXGraphics" DesiredFloatingSize="200,400">
+        <Grid RowDefinitions="120,4,*">
+
+          <zxd:ZXDockingControl Grid.Row="0" Name="dockPreview" Title="Preview" DockingGroup="ZXGraphics2" DesiredFloatingSize="200,400">
+            <zxd:ZXDockingControl.DockedControl>
+              <local:SpritePreviewControl Name="ctrlPreview"></local:SpritePreviewControl>
+            </zxd:ZXDockingControl.DockedControl>
+          </zxd:ZXDockingControl>
+
+          <GridSplitter ResizeDirection="Rows" Grid.Row="1" Classes="horizontal"></GridSplitter>
+
+          <zxd:ZXDockingControl Grid.Row="2" Name="dockProperties" Title="Properties" DockingGroup="ZXGraphics2" DesiredFloatingSize="200,400">
           <zxd:ZXDockingControl.DockedControl>
-            <!--
-            <local:PreviewControl Name="ctrlPreview"></local:PreviewControl>
-            -->
+              <local:SpritePropertiesControl Name="ctrlProperties"/>
           </zxd:ZXDockingControl.DockedControl>
         </zxd:ZXDockingControl>
+        </Grid>
+
       </zxd:ZXDockingContainer>
 
     </Grid>
+
+    <local:ColorPickerControl Name="ctrlColorPicker" Grid.Row="1" IsVisible="false"/>
   </Grid>
 </UserControl>

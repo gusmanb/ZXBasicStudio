@@ -2,9 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="230"
-        MinWidth="450" MaxWidth="450"
-        MinHeight="230" MaxHeight="230"
+        mc:Ignorable="d" d:DesignWidth="475" d:DesignHeight="250"
+        MinWidth="475" MaxWidth="475"
+        MinHeight="250" MaxHeight="250"
         CanResize="false"
         x:Class="ZXBasicStudio.DebuggingTools.Memory.Dialogs.ZXMemorySearchDialog"
         Icon="/Assets/zxbs.ico" WindowStartupLocation="CenterOwner"
@@ -20,23 +20,23 @@
   <Grid RowDefinitions="Auto,10,Auto,Auto,Auto" Margin="10">
     <Border BorderBrush="#444444" BorderThickness="1" CornerRadius="5" />
     <StackPanel>
-      <TextBlock Margin="5">Search range</TextBlock>
+      <TextBlock Margin="8">Search range</TextBlock>
       <Grid ColumnDefinitions="Auto,*,Auto,*">
-        <TextBlock VerticalAlignment="Center" Margin="5">Start address:</TextBlock>
+        <TextBlock VerticalAlignment="Center" Margin="8">Start address:</TextBlock>
         <Border Height="32" Grid.Column="1" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,5,15,5">
-          <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="0" Minimum="0" Maximum="65535" Name="nudStart"></NumericUpDown>
+          <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Increment="1" Value="0" Minimum="0" Maximum="65535" Name="nudStart"></NumericUpDown>
         </Border>
         <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="5">End address:</TextBlock>
         <Border Height="32" Grid.Column="3" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,5,15,5">
-          <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="65535" Minimum="0" Maximum="65535" Name="nudEnd"></NumericUpDown>
+          <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Increment="1" Value="65535" Minimum="0" Maximum="65535" Name="nudEnd"></NumericUpDown>
         </Border>
       </Grid>
     </StackPanel>
     <Border BorderBrush="#444444" BorderThickness="1" CornerRadius="5" Grid.Row="2" />
     <StackPanel Grid.Row="2">
-      <TextBlock Margin="5">Value type</TextBlock>
+      <TextBlock Margin="8">Value type</TextBlock>
       <StackPanel Orientation="Horizontal">
-        <RadioButton Name="rbByte" IsChecked="True" GroupName="rgType">Byte</RadioButton>
+        <RadioButton Name="rbByte" Margin="8" IsChecked="True" GroupName="rgType">Byte</RadioButton>
         <RadioButton Name="rbShort" GroupName="rgType">Short</RadioButton>
         <RadioButton Name="rbInt" GroupName="rgType">Integer</RadioButton>
         <RadioButton Name="rbString" GroupName="rgType">String</RadioButton>

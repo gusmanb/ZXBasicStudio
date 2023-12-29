@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using System.Reflection;
 
 namespace ZXBasicStudio.Dialogs
 {

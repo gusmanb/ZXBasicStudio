@@ -1,4 +1,6 @@
 ﻿using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
@@ -12,37 +14,76 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
 {
     public class ZXBasicCompletionData : ICompletionData
     {
-        public IImage? Image { get; set; }
 
-        public required string? Text { get; set; }
+        static IImage keywordIcon;
+        static IImage typeIcon;
+        static IImage directiveIcon;
+        static IImage assemblerIcon;
+        static ZXBasicCompletionData()
+        {
+            keywordIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/KeywordIcon.png")));
+            typeIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/TypeIcon.png")));
+            directiveIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/DirectiveIcon.png")));
+            assemblerIcon = new Bitmap(AssetLoader.Open(new Uri("avares://ZXBasicStudio/Assets/AssemblerIcon.png")));
+        }
 
-        public object? Content { get { return new internalIcompletion {  Content = Text }; } }
+        public ZXBasicCompletionData(ZXBasicCompletionType DataType, string Text, string Description)
+        {
+            this.Text = Text;
+            this.Description = Description;
 
-        public object? Description { get; set; }
+            switch(DataType)
+            {
+                case ZXBasicCompletionType.Keyword:
+                    Image = keywordIcon;
+                    break;
+                case ZXBasicCompletionType.Type:
+                    Image = typeIcon;
+                    break;
+                case ZXBasicCompletionType.Directive:
+                    Image = directiveIcon;
+                    break;
+                case ZXBasicCompletionType.Assembler:
+                    Image = assemblerIcon;
+                    break;
+                default:
+                    throw new InvalidCastException("Invalid ZXBasicCompletionType");
+            }
+        }
+
+        public IImage Image { get; }
+
+        public string Text { get; }
+
+        public object Content => Text;
+
+        public object Description { get; }
 
         public double Priority { get; set; }
 
-        public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
+        public void Complete(TextArea textArea, ISegment completionSegment,
+            EventArgs insertionRequestEventArgs)
         {
-            textArea.Document.Replace(completionSegment, this.Text);
-        }
-
-        class internalIcompletion : ICompletionData
-        {
-            public IImage Image { get { return null; } }
-
-            public string Text { get { return null; } }
-
-            public object Content { get; set; }
-
-            public object Description { get { return null; } }
-
-            public double Priority { get { return 0; } }
-
-            public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
-            {
-                throw new NotImplementedException();
-            }
+            textArea.Document.Replace(completionSegment, Text);
         }
     }
+
+    public enum ZXBasicCompletionType
+    {
+        Keyword,
+        //Function,
+        //Variable,
+        //Constant,
+        Type,
+        //Label,
+        //Macro,
+        //Operator,
+        Directive,
+        //Comment,
+        //String,
+        //Number,
+        //Other
+        Assembler
+    }
+
 }

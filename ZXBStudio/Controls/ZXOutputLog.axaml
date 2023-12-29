@@ -2,9 +2,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:svg="using:Avalonia.Svg.Skia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.Controls.ZXOutputLog">
-  <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF202020" Name="scrOutput" VerticalScrollBarVisibility="Auto">
-    <TextBlock TextWrapping="Wrap" Foreground="White" Name="tbOutput" Padding="10"></TextBlock>
-  </ScrollViewer>
+    <UserControl.ContextMenu>
+        <ContextMenu Placement="Pointer">
+            <MenuItem Header="Clear output window" Name="mnuClearOutputWindow" />
+            <MenuItem Header="Copy to clipboard" Name="mnuCopyToClipboard" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
+    <Grid RowDefinitions="auto,*">
+        <Grid ColumnDefinitions="1*" DataContext=".ZXMemoryView">
+            <StackPanel Grid.Row="0" Spacing="2" Orientation="Horizontal" Margin="2,4" HorizontalAlignment="Left">
+                <Button Width="30" Foreground="Black" Classes="toolbar" Name="btnClearOutputWindow" ToolTip.Tip="Clear output window"><svg:Svg Path="/Svg/eraser-solid.svg"></svg:Svg></Button>
+                <Button Width="30" Foreground="Black" Classes="toolbar" Name="btnCopyToClipboard" ToolTip.Tip="Copy output log to clipboard"><svg:Svg Path="/Svg/copy-solid.svg"></svg:Svg></Button>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF202020" Name="scrOutput"
+                      VerticalScrollBarVisibility="Auto">
+            <TextBlock TextWrapping="Wrap" Foreground="White" Name="tbOutput" Padding="10"></TextBlock>
+        </ScrollViewer>
+        </Grid>
+    </Grid>
 </UserControl>
