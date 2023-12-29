@@ -1,49 +1,56 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
 using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
-    public partial class SpritePreviewControl : UserControl
+    public partial class SpritePreviewControl : UserControl, IDisposable
     {
         #region Public properties
 
         /// <summary>
         /// Sprite data
         /// </summary>
-        public Sprite SpriteData { get; set; }
+        public Sprite? SpriteData { get; set; }
+        public int Zoom { get; set; } = 4;
 
         #endregion
-
 
         #region Private fields
 
         private int frameNumber = 0;
         private int speed = 1;
-        private DispatcherTimer tmr = null;
+        private DispatcherTimer tmr;
+        private Color emptyColor = new Color(255, 0x28, 0x28, 0x28);
+        ZXSpriteImage aspect = new ZXSpriteImage();
 
         /// <summary>
         /// Speeds in milliseconds
         /// </summary>
-        private int[] speeds = new int[] { 600000, 1000, 500, 250, 200, 125, 100, 66, 50 };
+        private int[] speeds = new int[] { 600000, 1000, 500, 250, 200, 125, 100, 66, 50, 20 };
 
         #endregion
 
-
         public SpritePreviewControl()
         {
+            tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[2]), DispatcherPriority.Normal, Refresh);
+            tmr.Stop();
+            aspect.Clear(emptyColor);
             InitializeComponent();
+            imgPreview.Source = aspect;
         }
-
 
         /// <summary>
         /// Initializes the control
@@ -56,15 +63,20 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.SpriteData = spriteData;
 
             this.cmbSpeed.SelectionChanged += CmbSpeed_SelectionChanged;
-            if (tmr == null)
-            {
-                tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[2]), DispatcherPriority.Normal, Refresh);
-                cmbSpeed.SelectedIndex = 2;
-            }
+            tmr.Interval = TimeSpan.FromMilliseconds(speeds[speed]);
 
             return true;
         }
 
+        public void Start()
+        {
+            tmr.Start();
+        }
+
+        public void Stop()
+        {
+            tmr.Stop();
+        }
 
         private void CmbSpeed_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
@@ -77,81 +89,51 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             tmr.Interval = TimeSpan.FromMilliseconds(speeds[speed]);
         }
 
-
-        public void Refresh(object? sender = null, EventArgs e = null)
+        public void Refresh(object? sender = null, EventArgs? e = null)
         {
-            try
+            if (SpriteData == null || SpriteData.Patterns == null || SpriteData.Patterns.Count == 0)
             {
-                if (SpriteData == null || SpriteData.Patterns == null || SpriteData.Patterns.Count == 0)
-                {
-                    if (tmr != null)
-                    {
-                        tmr.Stop();
-                        tmr = null;
-                    }
+                // Delete background
 
-                    // Delete background
-                    {
-                        var r = new Rectangle();
-                        r.Width = cnvPreview.Width * 4;
-                        r.Height = cnvPreview.Height * 4;
-                        r.Fill = new SolidColorBrush(new Color(255, 0x28, 0x28, 0x28));
-                        cnvPreview.Children.Add(r);
-                        Canvas.SetTop(r, 0);
-                        Canvas.SetLeft(r, 0);
-                    }
-
+                if (aspect.IsEmpty)
                     return;
-                }
 
-                if (tmr == null)
-                {
-                    tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[speed]), DispatcherPriority.Normal, Refresh);
-                }
-                tmr.Stop();
+                aspect.Clear(emptyColor);
+                imgPreview.InvalidateVisual();
+                return;
+            }
 
+            if (tmr == null)
+            {
+                tmr = new DispatcherTimer(TimeSpan.FromMilliseconds(speeds[speed]), DispatcherPriority.Normal, Refresh);
+            }
+
+            if (SpriteData.Masked)
+            {
+                frameNumber += 2;
+            }
+            else
+            {
                 frameNumber++;
-                if (frameNumber >= SpriteData.Frames)
-                {
-                    frameNumber = 0;
-                }
-                cnvPreview.Width = SpriteData.Width * 4;
-                cnvPreview.Height = SpriteData.Height * 4;
-
-                cnvPreview.Children.Clear();
-                int index = 0;
-                var frame = SpriteData.Patterns[frameNumber];
-
-                int zoom = 4;                
-
-                for (int y = 0; y < SpriteData.Height; y++)
-                {
-                    for (int x = 0; x < SpriteData.Width; x++)
-                    {
-                        int p = frame.RawData[index];
-                        var palette = SpriteData.Palette[p];
-
-                        var r = new Rectangle();
-                        r.Width = zoom;
-                        r.Height = zoom;
-
-                        r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
-
-                        cnvPreview.Children.Add(r);
-                        Canvas.SetTop(r, y * zoom);
-                        Canvas.SetLeft(r, x * zoom);
-                        index++;
-                    }
-                }
             }
-            catch (Exception ex)
+
+            if (frameNumber >= SpriteData.Frames)
             {
+                frameNumber = 0;
             }
-            if (tmr != null)
-            {
-                tmr.Start();
-            }
+
+            imgPreview.Width = SpriteData.Width * Zoom;
+            imgPreview.Height = SpriteData.Height * Zoom;
+
+            aspect.RenderSprite(SpriteData, frameNumber);
+            imgPreview.InvalidateVisual();
         }
 
+        public void Dispose()
+        {
+            Stop();
+            aspect.Dispose();
+            imgPreview.Source = null;
+        }
     }
 }

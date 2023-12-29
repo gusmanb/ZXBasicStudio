@@ -139,26 +139,43 @@
         </WrapPanel>
 
         <local:SpritePatternEditor Name="ctrlEditor" Grid.Row="1" Background="#303030"/>
-        
+
         <WrapPanel Orientation="Horizontal" Background="#ff202020" Grid.Row="2" Margin="10,5,10,5" Height="NaN">
           <TextBlock Name="txtZoom" Classes="dialog" Width="54">Zoom 24x</TextBlock>
           <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" VerticalAlignment="Center"/>
           <TextBlock Name="txtFrame" Classes="dialog" Width="55" Margin="8,4,0,0">Frame</TextBlock>
           <Slider Name="sldFrame" Width="100" Minimum="0" Maximum="0" Value="0" VerticalAlignment="Center"/>
-          <Button Name="btnPaper" Classes="toobar" Margin="8,0,0,0">Paper</Button>
-          <Button Name="btnInk" Classes="toobar" Margin="8,0,0,0">Ink</Button>
+
+          <Grid Name="btnPaper" Margin="8,0,0,0" ColumnDefinitions="*,16,Auto">
+            <TextBlock Margin="10,5,5,5">Paper</TextBlock>
+            <Border  Grid.Column="1" BorderBrush="Red" BorderThickness="1" Width="20" Height="20">
+              <Grid Name="grdPaper">
+                <TextBlock Name="txtPaper" Grid.Column="2" HorizontalAlignment="Center">0</TextBlock>
+              </Grid>
+            </Border>
+          </Grid>
+
+          <Grid Name="btnInk" Margin="8,0,0,0" ColumnDefinitions="*,16,Auto">
+            <TextBlock Margin="10,5,5,5">Ink</TextBlock>
+            <Border  Grid.Column="1" BorderBrush="Red" BorderThickness="1" Width="20" Height="20">
+              <Grid Name="grdInk">
+                <TextBlock Name="txtInk" Grid.Column="2" HorizontalAlignment="Center">1</TextBlock>
+              </Grid>
+            </Border>
+          </Grid>
+
+          <!--
           <Button Name="btnBright" Classes="toobar" Margin="8,0,0,0">Bright</Button>
           <Button Name="btnFlash" Classes="toobar" Margin="8,0,0,0">Flash</Button>
+          -->
         </WrapPanel>
 
       </Grid>
 
       <GridSplitter ResizeDirection="Columns" Grid.Column="3" Classes="vertical"></GridSplitter>
 
-      <zxd:ZXDockingContainer Name="dockRight" DockingGroup="ZXGraphics" Grid.Column="4" RowDefinitions="*">
-        <Grid RowDefinitions="120,4,*">
-
-          <zxd:ZXDockingControl Grid.Row="0" Name="dockPreview" Title="Preview" DockingGroup="ZXGraphics2" DesiredFloatingSize="200,400">
+        <zxd:ZXDockingContainer Name="dockRight" DockingGroup="ZXGraphics" Grid.Column="4" RowDefinitions="*,4,4*" Background="Red">
+          <zxd:ZXDockingControl Grid.Row="0" Name="dockPreview" Title="Preview" DockingGroup="ZXGraphics" DesiredFloatingSize="200,400">
             <zxd:ZXDockingControl.DockedControl>
               <local:SpritePreviewControl Name="ctrlPreview"></local:SpritePreviewControl>
             </zxd:ZXDockingControl.DockedControl>
@@ -166,13 +183,11 @@
 
           <GridSplitter ResizeDirection="Rows" Grid.Row="1" Classes="horizontal"></GridSplitter>
 
-          <zxd:ZXDockingControl Grid.Row="2" Name="dockProperties" Title="Properties" DockingGroup="ZXGraphics2" DesiredFloatingSize="200,400">
-          <zxd:ZXDockingControl.DockedControl>
+          <zxd:ZXDockingControl Grid.Row="2" Name="dockProperties" Title="Properties" DockingGroup="ZXGraphics" DesiredFloatingSize="200,400">
+            <zxd:ZXDockingControl.DockedControl>
               <local:SpritePropertiesControl Name="ctrlProperties"/>
-          </zxd:ZXDockingControl.DockedControl>
-        </zxd:ZXDockingControl>
-        </Grid>
-
+            </zxd:ZXDockingControl.DockedControl>
+          </zxd:ZXDockingControl>
       </zxd:ZXDockingContainer>
 
     </Grid>
