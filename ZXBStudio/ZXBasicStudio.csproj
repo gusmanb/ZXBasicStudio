@@ -21,6 +21,10 @@
     <Compile Remove="LanguageDefinitions\**" />
     <EmbeddedResource Remove="LanguageDefinitions\**" />
     <None Remove="LanguageDefinitions\**" />
+    <Compile Update="DebuggingTools\Flags\Controls\ZXFlagsView.axaml.cs">
+      <DependentUpon>ZXFlagsView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="Controls\ZXLocalVariablesView.axaml" />
@@ -576,6 +580,9 @@
     </Compile>
     <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DebuggingTools\Flags\Controls\ZXFlagsView.axaml.cs">
+      <DependentUpon>ZXFlagsView.axaml</DependentUpon>
     </Compile>
     <Compile Update="DebuggingTools\Registers\Controls\ZXRegisterView.axaml.cs">
       <DependentUpon>ZXRegisterView.axaml</DependentUpon>
