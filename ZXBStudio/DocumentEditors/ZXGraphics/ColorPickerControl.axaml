@@ -7,10 +7,9 @@
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.ColorPickerControl">
   <Grid HorizontalAlignment="Center">
     <Grid Name="grdMonochrome" IsVisible="False">
-      <TextBlock>Monochrome...</TextBlock>
     </Grid>
     <Grid Name="grdZXSpectrum" IsVisible="False">
-      <TextBlock>ZX Spectrum...</TextBlock>
+      <Canvas Name="cnvZXSpectrum" Width="160" Height="40" Margin="4"/>
     </Grid>
     <Grid Name="grdNext" IsVisible="False">
       <TextBlock>Next...</TextBlock>

@@ -5,7 +5,7 @@
              xmlns:svg="using:Avalonia.Svg.Skia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.SpritePropertiesControl"
-             HorizontalAlignment="Stretch">
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
   <ScrollViewer>
     <Grid Name="pnlProperties" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="0,0,0,4">
       <TextBlock Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Id:</TextBlock>
@@ -18,17 +18,17 @@
       <ComboBox Name="cmbMode" Classes="dialog" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" MaxWidth="Infinity" Margin="4,0,0,2">
         <ComboBoxItem>Monochrome</ComboBoxItem>
         <ComboBoxItem>ZX Spectrum</ComboBoxItem>
-        <ComboBoxItem>Next (256 colors)</ComboBoxItem>
+        <!--<ComboBoxItem>Next (256 colors)</ComboBoxItem>-->
       </ComboBox>
 
       <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Width:</TextBlock>
       <Border Grid.Row="3" Grid.Column="1" Classes="numericborder">
-        <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="64" Value="8" VerticalAlignment="Center"/>
+        <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="32" Value="8" VerticalAlignment="Center"/>
       </Border>
 
       <TextBlock Grid.Row="4" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Height:</TextBlock>
       <Border Grid.Row="4" Grid.Column="1" Classes="numericborder">
-        <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="8" Maximum="64" Value="8" VerticalAlignment="Center"/>
+        <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="8" Maximum="32" Value="8" VerticalAlignment="Center"/>
       </Border>
 
       <TextBlock Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>
@@ -41,6 +41,9 @@
       
       <Grid Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
+          <Button Classes="toolbar" Name="btnInsert" ToolTip.Tip="Insert frame" Margin="4,2,2,2">
+            <svg:Svg Path="/Svg/square-plus-solid.svg"></svg:Svg>
+          </Button>
           <Button Classes="toolbar" Name="btnClone" ToolTip.Tip="Clone sprite" Margin="4,2,2,2">
             <svg:Svg Path="/Svg/Copy.svg"></svg:Svg>
           </Button>

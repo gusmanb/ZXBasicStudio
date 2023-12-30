@@ -31,5 +31,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
         /// Point data in raw format, used to save and load file
         /// </summary>
         public int[] RawData { get; set; }
+        /// <summary>
+        /// Attributes of the 8x8 cells in ZXMode
+        /// </summary>
+        public AttributeColor[] Attributes { get; set; }
     }
 }
