@@ -25,7 +25,7 @@ namespace ZXBasicStudio.BuildSystem
 
                 if (ZXProjectManager.Current == null)
                 {
-                    OutputLogWritter.WriteLine("No open projcet, aborting...");
+                    OutputLogWritter.WriteLine("No open project, aborting...");
                     return null;
                 }
 
@@ -262,7 +262,7 @@ namespace ZXBasicStudio.BuildSystem
             {
                 if (ZXProjectManager.Current == null)
                 {
-                    OutputLogWritter.WriteLine("No open projcet, aborting...");
+                    OutputLogWritter.WriteLine("No open project, aborting...");
                     return null;
                 }
 
@@ -454,14 +454,14 @@ namespace ZXBasicStudio.BuildSystem
             {
                 if (ZXProjectManager.Current == null)
                 {
-                    OutputLogWritter.WriteLine("No open projcet, aborting...");
+                    OutputLogWritter.WriteLine("No open project, aborting...");
                     return false;
                 }
 
                 var project = ZXProjectManager.Current;
 
                 Cleanup(project.ProjectPath);
-                ZXBuildSettings? settings = null;
+                ZXBuildSettings? settings;
                 string? mainFile = null;
 
                 if (string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbcPath) || string.IsNullOrWhiteSpace(ZXOptions.Current.ZxbasmPath))

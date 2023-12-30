@@ -14,6 +14,7 @@
     <Title>ZX Basic Studio</Title>
     <AssemblyVersion>1.0.*</AssemblyVersion>
     <Deterministic>False</Deterministic>
+    <Version>0.1.23.1014</Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
@@ -573,6 +574,9 @@
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\SpritePreviewControl.axaml.cs">
       <DependentUpon>SpritePreviewControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\ZXGridImageView.axaml.cs">
+      <DependentUpon>ZXGridImageView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Emulator\Controls\ZXKeyView.axaml.cs">
       <DependentUpon>ZXKeyView.axaml</DependentUpon>
