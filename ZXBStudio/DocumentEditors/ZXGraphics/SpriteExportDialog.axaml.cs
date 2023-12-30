@@ -49,19 +49,23 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.fileName = fileName;
             this.sprites = spritesData;
 
-            this.cmbSelectExportType.Initialize(ExportType_Changed);
             exportConfig = ServiceLayer.Export_GetConfigFile(fileName + ".zbs");
             if (exportConfig == null)
             {
                 exportConfig = ServiceLayer.Export_Sprite_GetDefaultConfig(fileName);
             }
 
+            this.cmbSelectExportType.Initialize(ExportType_Changed);
             cmbSelectExportType.InitializeSprite();
+
             txtOutputFile.Text = exportConfig.ExportFilePath;
             txtLabelName.Text = exportConfig.LabelName;
             chkAuto.IsChecked = exportConfig.AutoExport;
-            cmbSelectExportType.ExportType = exportConfig.ExportType;
             cmbArrayBase.SelectedIndex = exportConfig.ArrayBase.ToInteger();
+            chkAttr.IsChecked = exportConfig.IncludeAttr;
+
+            cmbSelectExportType.ExportType = exportConfig.ExportType;
+
             return true;
         }
 
@@ -138,14 +142,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             if (exportConfig == null)
             {
                 exportConfig = new ExportConfig();
-                exportConfig.ArrayBase = cmbArrayBase.SelectedIndex.ToInteger();
-                exportConfig.AutoExport = chkAuto.IsChecked == true;
-                exportConfig.ExportFilePath = txtOutputFile.Text.ToStringNoNull();
-                exportConfig.ExportType = cmbSelectExportType.ExportType;
-                exportConfig.LabelName = txtLabelName.Text.ToStringNoNull();
-                exportConfig.ZXAddress = 0;
-                exportConfig.ZXFileName = "";
             }
+            exportConfig.ArrayBase = cmbArrayBase.SelectedIndex.ToInteger();
+            exportConfig.AutoExport = chkAuto.IsChecked == true;
+            exportConfig.ExportFilePath = txtOutputFile.Text.ToStringNoNull();
+            exportConfig.ExportType = cmbSelectExportType.ExportType;
+            exportConfig.LabelName = txtLabelName.Text.ToStringNoNull();
+            exportConfig.ZXAddress = 0;
+            exportConfig.ZXFileName = "";
+            exportConfig.IncludeAttr = chkAttr.IsChecked == true;
         }
 
         private void CreateExample_PutChars()
@@ -190,14 +195,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             em.ExportSprites(exportConfig, sprites);
         }
 
-
-        private void GetExportOptions()
-        {
-            exportConfig.AutoExport = chkAuto.IsChecked.ToBoolean();
-            exportConfig.ExportFilePath = txtOutputFile.Text;
-            exportConfig.LabelName = txtLabelName.Text;
-        }
-
         #endregion
 
 
@@ -205,7 +202,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void BtnSave_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            GetExportOptions();
+            GetConfigFromUI();
             ServiceLayer.Export_SetConfigFile(fileName + ".zbs", exportConfig);
             Export();
             this.Close();
@@ -215,7 +212,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             var fileTypes = new FilePickerFileType[2];
             fileTypes[1] = new FilePickerFileType("All files") { Patterns = new[] { "*", "*.*" } };
-            fileTypes[0]= new FilePickerFileType("Sprite files") { Patterns = new[] { "*.spr" } };
+            fileTypes[0] = new FilePickerFileType("Sprite files") { Patterns = new[] { "*.spr" } };
 
             var select = await StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
             {
@@ -233,7 +230,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void BtnExport_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            GetExportOptions();
+            GetConfigFromUI();
             Export();
             this.Close();
         }

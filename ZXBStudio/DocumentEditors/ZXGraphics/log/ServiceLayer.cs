@@ -611,6 +611,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             }
         }
 
+
+        
+
         #endregion
 
 

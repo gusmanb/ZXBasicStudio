@@ -68,14 +68,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                         {
                             var patterns = CreatePatterns(fileTypeConfig, fileData);
                             Export(exportConfig, fileTypeConfig, patterns);
-                            return true;
                         }
+                        break;
                     case FileTypes.Sprite:
                         {
                             var sprites = CreateSprites(fileData);
                             ExportSprites(exportConfig, sprites);
-                            return true;
                         }
+                        break;
 
                 }
 
@@ -383,6 +383,29 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             {
                 var dataS = Encoding.UTF8.GetString(fileData);
                 var sprites = dataS.Deserializar<Sprite[]>();
+
+                // Check attributes for ZX Spectrum mode
+                foreach (var sprite in sprites)
+                {
+                    if (sprite != null && sprite.GraphicMode == GraphicsModes.ZXSpectrum)
+                    {
+                        foreach (var pattern in sprite.Patterns)
+                        {
+                            if (pattern.Attributes == null)
+                            {
+                                int cW = sprite.Width / 8;
+                                int cH = sprite.Height / 8;
+                                pattern.Attributes = new AttributeColor[cW * cH];
+                                foreach (var attr in pattern.Attributes)
+                                {
+                                    attr.Ink = 1;
+                                    attr.Paper = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 return sprites;
             }
             catch
@@ -472,89 +495,297 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
                 if (sprite.Frames == 1)
                 {
+                    // Single sprite
+                    // Header
                     sb.AppendLine(string.Format(
                         "DIM {0}{1}({2}) AS UByte => {{ _",
                         exportConfig.LabelName,
                         sprite.Name.Replace(" ", "_"),
                         ((sprite.Width / 8) * sprite.Height) - 1 + min));
+                    // Content
+                    var data = Export_Sprite_PutChars_Pattern(sprite, 0, exportConfig, 0);
+                    sb.Append(data);
+                    // Footer
+                    sb.AppendLine("");
+                }
+                else if (sprite.Frames == 2 && sprite.Masked)
+                {
+                    // Single sprite masked
+                    // Sprite
+                    {
+                        // Header
+                        sb.AppendLine(string.Format(
+                            "DIM {0}{1}({2}) AS UByte => {{ _",
+                            exportConfig.LabelName,
+                            sprite.Name.Replace(" ", "_"),
+                            ((sprite.Width / 8) * sprite.Height) - 1 + min));
+                        // Content
+                        var data = Export_Sprite_PutChars_Pattern(sprite, 0, exportConfig,0);
+                        sb.Append(data);
+                        // Footer
+                        sb.AppendLine("");
+                    }
+                    // Mask
+                    {
+                        // Header
+                        sb.AppendLine(string.Format(
+                            "DIM {0}{1}_Mask({2}) AS UByte => {{ _",
+                            exportConfig.LabelName,
+                            sprite.Name.Replace(" ", "_"),
+                            ((sprite.Width / 8) * sprite.Height) - 1 + min));
+                        // Content
+                        var data = Export_Sprite_PutChars_Pattern(sprite, 1, exportConfig,1);
+                        sb.Append(data);
+                        // Footer
+                        sb.AppendLine("");
+                    }
+
                 }
                 else
                 {
-                    sb.AppendLine(string.Format(
-                        "DIM {0}{1}({2},{3}) AS UByte => {{ _",
-                        exportConfig.LabelName,
-                        sprite.Name.Replace(" ", "_"),
-                        sprite.Frames - 1 + min,
-                        ((sprite.Width / 8) * sprite.Height) - 1 + min));
-                }
-
-                for (int n = 0; n < sprite.Patterns.Count; n++)
-                {
-                    var pattern = sprite.Patterns[n];
-                    var data = ServiceLayer.Files_CreateBinDataUpDown(pattern, sprite.Width, sprite.Height, exportConfig);
-
-                    if (sprite.Frames > 1)
+                    if (sprite.Masked)
                     {
-                        if (n > 0)
+                        // Sprites
                         {
-                            sb.AppendLine(", _");
-                        }
-                        sb.AppendLine("\t{ _");
-                    }
-
-                    int col = 0;
-                    int row = 0;
-                    foreach (var d in data)
-                    {
-                        if (col == 0)
-                        {
-                            if (row == 0)
+                            // Header
+                            sb.AppendLine(string.Format(
+                                "DIM {0}{1}({2},{3}) AS UByte => {{ _",
+                                exportConfig.LabelName,
+                                sprite.Name.Replace(" ", "_"),
+                                (sprite.Frames/2) - 1 + min,
+                                ((sprite.Width / 8) * sprite.Height) - 1 + min));
+                            // Data
+                            for (int n = 0; n < sprite.Patterns.Count; n += 2)
                             {
-                                row = 1;
+                                var data = Export_Sprite_PutChars_Pattern(sprite, n, exportConfig,0);
+                                sb.Append(data);
                             }
-                            else
-                            {
-                                sb.AppendLine(", _");
-                            }
-                            sb.Append("\t");
-                            if (sprite.Frames > 1)
-                            {
-                                sb.Append("\t");
-                            }
+                            // Footer
+                            sb.Append(" _\r\n}");
+                            sb.AppendLine("");
                         }
-                        if (col > 0)
+                        // Masks
                         {
-                            sb.Append(",");
+                            // Header
+                            sb.AppendLine(string.Format(
+                                "DIM {0}{1}_Mask({2},{3}) AS UByte => {{ _",
+                                exportConfig.LabelName,
+                                sprite.Name.Replace(" ", "_"),
+                                (sprite.Frames/2) - 1 + min,
+                                ((sprite.Width / 8) * sprite.Height) - 1 + min));
+                            // Data
+                            for (int n = 1; n < sprite.Patterns.Count; n += 2)
+                            {
+                                var data = Export_Sprite_PutChars_Pattern(sprite, n, exportConfig,1);
+                                sb.Append(data);
+                            }
+                            // Footer
+                            sb.Append(" _\r\n}");
+                            sb.AppendLine("");
                         }
-                        var x = string.Format("${0:X2}", d);
-                        sb.Append(x);
-
-                        col++;
-                        if (col >= 8)
-                        {
-                            col = 0;
-                        }
-                    }
-                    sb.AppendLine(" _");
-
-                    if (sprite.Frames == 1)
-                    {
-                        sb.Append("}");
                     }
                     else
                     {
-                        sb.Append("\t}");
+                        // Sprites
+                        {
+                            // Header
+                            sb.AppendLine(string.Format(
+                                "DIM {0}{1}({2},{3}) AS UByte => {{ _",
+                                exportConfig.LabelName,
+                                sprite.Name.Replace(" ", "_"),
+                                sprite.Frames - 1 + min,
+                                ((sprite.Width / 8) * sprite.Height) - 1 + min));
+                            // Data
+                            for (int n = 0; n < sprite.Patterns.Count; n++)
+                            {
+                                var data = Export_Sprite_PutChars_Pattern(sprite, n, exportConfig,0);
+                                sb.Append(data);
+                            }
+                            // Footer
+                            sb.Append(" _\r\n}");
+                            sb.AppendLine("");
+                        }
                     }
                 }
-                if (sprite.Frames > 1)
+
+
+                // Attributes
+                if (exportConfig.IncludeAttr && sprite.GraphicMode==GraphicsModes.ZXSpectrum)
                 {
-                    sb.Append(" _\r\n}");
+                    if (sprite.Frames == 1 || (sprite.Frames == 2 && sprite.Masked))
+                    {
+                        // Single sprite attributes
+                        // Header
+                        sb.AppendLine(string.Format(
+                            "DIM {0}{1}_Attr({2}) AS UByte => {{ _",
+                            exportConfig.LabelName,
+                            sprite.Name.Replace(" ", "_"),
+                            ((sprite.Width / 8) * (sprite.Height/8)) - 1 + min));
+                        // Content
+                        var data = Export_Sprite_PutChars_Attribute(sprite, 0, exportConfig,0);
+                        sb.Append(data);
+                        // Footer
+                        sb.AppendLine("");
+                    }
+                    else
+                    {
+                        // Mulriple sprites attributes
+                        // Header
+                        sb.AppendLine(string.Format(
+                            "DIM {0}{1}_Attr({2},{3}) AS UByte => {{ _",
+                            exportConfig.LabelName,
+                            sprite.Name.Replace(" ", "_"),
+                            sprite.Frames - 1 + min,
+                            ((sprite.Width / 8) * (sprite.Height/8)) - 1 + min));
+                        // Data
+                        for (int n = 0; n < sprite.Patterns.Count; n++)
+                        {
+                            var data = Export_Sprite_PutChars_Attribute(sprite, n, exportConfig,0);
+                            sb.Append(data);
+                        }
+                        // Footer
+                        sb.Append(" _\r\n}");
+                        sb.AppendLine("");
+                    }
                 }
-                sb.AppendLine("");
             }
 
             return sb.ToString();
         }
+
+
+        private static string Export_Sprite_PutChars_Pattern(Sprite sprite, int n, ExportConfig exportConfig, int firstItem)
+        {
+            var sb = new StringBuilder();
+
+            var pattern = sprite.Patterns[n];
+            var data = ServiceLayer.Files_CreateBinDataUpDown(pattern, sprite.Width, sprite.Height, exportConfig);
+
+            if (sprite.Frames > 1 &&
+                !(sprite.Frames == 2 && sprite.Masked))
+            {
+                if (n > firstItem)
+                {
+                    sb.AppendLine(", _");
+                }
+                sb.AppendLine("\t{ _");
+            }
+
+            int col = 0;
+            int row = 0;
+            foreach (var d in data)
+            {
+                if (col == 0)
+                {
+                    if (row == 0)
+                    {
+                        row = 1;
+                    }
+                    else
+                    {
+                        sb.AppendLine(", _");
+                    }
+                    sb.Append("\t");
+                    if (sprite.Frames > 1)
+                    {
+                        sb.Append("\t");
+                    }
+                }
+                if (col > 0)
+                {
+                    sb.Append(",");
+                }
+                var x = string.Format("${0:X2}", d);
+                sb.Append(x);
+
+                col++;
+                if (col >= 8)
+                {
+                    col = 0;
+                }
+            }
+            sb.AppendLine(" _");
+
+            if (sprite.Frames == 1)
+            {
+                sb.Append("}");
+            }
+            else
+            {
+                sb.Append("\t}");
+            }
+
+            return sb.ToString();
+        }
+
+
+        private static string Export_Sprite_PutChars_Attribute(Sprite sprite, int n, ExportConfig exportConfig, int firstItem)
+        {
+            var sb = new StringBuilder();
+
+            var pattern = sprite.Patterns[n];
+
+            if (pattern.Attributes == null)
+            {
+                return "";
+            }
+
+            if (sprite.Frames > 1)
+            {
+                if (n > firstItem)
+                {
+                    sb.AppendLine(", _");
+                }
+                sb.AppendLine("\t{ _");
+            }
+
+            int col = 0;
+            int row = 0;
+            foreach (var d in pattern.Attributes)
+            {
+                if (col == 0)
+                {
+                    if (row == 0)
+                    {
+                        row = 1;
+                    }
+                    else
+                    {
+                        sb.AppendLine(", _");
+                    }
+                    sb.Append("\t");
+                    if (sprite.Frames > 1)
+                    {
+                        sb.Append("\t");
+                    }
+                }
+                if (col > 0)
+                {
+                    sb.Append(",");
+                }
+                var x = string.Format("${0:X2}", d.Attribute);
+                sb.Append(x);
+
+                col++;
+                if (col >= 8)
+                {
+                    col = 0;
+                }
+            }
+            sb.AppendLine(" _");
+
+            if (sprite.Frames == 1)
+            {
+                sb.Append("}");
+            }
+            else
+            {
+                sb.Append("\t}");
+            }
+
+            return sb.ToString();
+        }
+
         #endregion
     }
 }

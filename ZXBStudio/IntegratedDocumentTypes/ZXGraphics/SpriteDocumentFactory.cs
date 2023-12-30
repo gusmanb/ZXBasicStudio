@@ -50,7 +50,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
                 OutputLog.WriteLine($"Document {Path} is not an sprite file, internal document handling error, operation aborted.");
                 return null;
             }
-            SpriteEditor editor = new SpriteEditor(Path);
+            SpriteEditor editor = new SpriteEditor(Path,SpriteDocument.Id);
             return editor;
         }
     }

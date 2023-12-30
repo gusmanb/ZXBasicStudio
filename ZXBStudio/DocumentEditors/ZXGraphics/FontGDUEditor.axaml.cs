@@ -698,7 +698,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 sldZoom.Value = v - 1;
             }
-
         }
 
         #endregion
