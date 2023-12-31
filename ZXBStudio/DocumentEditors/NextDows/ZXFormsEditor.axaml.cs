@@ -185,6 +185,8 @@ namespace ZXBasicStudio.DocumentEditors.NextDows
             Initialize(fileName);
             stpControlList.SizeChanged += StpControlList_SizeChanged;
             sldZoom.PropertyChanged += SldZoom_PropertyChanged;
+            //txtEditorWidth.ValueChanged += TxtEditorWidth_ValueChanged;
+            //txtEditorHeight.ValueChanged += TxtEditorHeight_ValueChanged;
         }
 
 

@@ -10,6 +10,7 @@ namespace ZXBasicStudio.DocumentEditors.NextDows
     public partial class ZXFormsControl : UserControl
     {
         public ControlsTypes ControlType { get; set; }
+
         public bool IsSelected
         {
             get
