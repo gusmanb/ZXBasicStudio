@@ -514,8 +514,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     UpdateColorPanel();
                     break;
                 case "CHANGEMODE":
-                    ctrlEditor.SpriteData = sender.SpriteData;
-                    SpriteList_Modified(sender.SpriteData);
                     switch (sender.SpriteData.GraphicMode)
                     {
                         case GraphicsModes.Monochrome:
@@ -526,11 +524,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             ctrlEditor.PrimaryColorIndex = 0;
                             ctrlEditor.SecondaryColorIndex = 7;
                             break;
-                        case GraphicsModes.Next:
-                            ctrlEditor.PrimaryColorIndex = 255;
-                            ctrlEditor.SecondaryColorIndex = 0;
-                            break;
                     }
+                    ctrlEditor.SpriteData = sender.SpriteData;
+                    SpriteList_Modified(sender.SpriteData);
                     UpdateColorPanel();
                     break;
             }

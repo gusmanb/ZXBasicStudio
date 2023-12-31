@@ -70,8 +70,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private bool newSprite = true;
         private Sprite _SpriteData = null;
 
-        private byte[] ZX2NextColors = new byte[] { 0, 2, 160, 162, 20, 22, 180, 227, 0, 3, 224, 226, 28, 31, 252, 255 };
-
         #endregion
 
 
@@ -292,185 +290,75 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void ChangeMode(GraphicsModes oldMode, GraphicsModes newMode)
         {
-            // TODO: Improve conversion...
             if (oldMode == newMode)
             {
                 return;
             }
             if (oldMode == GraphicsModes.Monochrome)
             {
-                switch (newMode)
+                foreach (var frame in SpriteData.Patterns)
                 {
-                    case GraphicsModes.ZXSpectrum:
+                    if (frame.Attributes == null)
+                    {
+                        int cW = SpriteData.Width / 8;
+                        int cH = SpriteData.Height / 8;
+                        frame.Attributes = new AttributeColor[cW * cH];
+                    }
+
+                    for (int n = 0; n < frame.Attributes.Length; n++)
+                    {
+                        frame.Attributes[n] = new AttributeColor()
                         {
-                            foreach (var frame in SpriteData.Patterns)
-                            {
-                                if (frame.Attributes == null)
-                                {
-                                    int cW = SpriteData.Width / 8;
-                                    int cH = SpriteData.Height / 8;
-                                    frame.Attributes = new AttributeColor[cW * cH];
-                                    for (int n = 0; n < frame.Attributes.Length; n++)
-                                    {
-                                        frame.Attributes[n] = new AttributeColor()
-                                        {
-                                            Ink = 0,
-                                            Paper = 7
-                                        };
-                                    }
-                                }
-                                /*
-                                for (int n = 0; n < frame.RawData.Length; n++)
-                                {
-                                    var o = frame.RawData[n];
-                                    if (o == 0)
-                                    {
-                                        frame.RawData[n] = 1;
-                                    }
-                                    else
-                                    {
-                                        frame.RawData[n] = 0;
-                                    }
-                                }
-                                */
-                            }
-                        }
-                        break;
-                    case GraphicsModes.Next:
+                            Ink = 0,
+                            Paper = 7
+                        };
+                    }
+
+                    for (int n = 0; n < frame.RawData.Length; n++)
+                    {
+                        var o = frame.RawData[n];
+                        if (o == 0)
                         {
-                            foreach (var frame in SpriteData.Patterns)
-                            {
-                                for (int n = 0; n < frame.RawData.Length; n++)
-                                {
-                                    var o = frame.RawData[n];
-                                    if (o == 0)
-                                    {
-                                        frame.RawData[n] = 227;
-                                    }
-                                    else
-                                    {
-                                        frame.RawData[n] = 0;
-                                    }
-                                }
-                            }
+                            frame.RawData[n] = 0;
                         }
-                        break;
+                        else
+                        {
+                            frame.RawData[n] = 7;
+                        }
+                    }
+
                 }
             }
-            else if (oldMode == GraphicsModes.ZXSpectrum)
+            else
             {
-                switch (newMode)
+                foreach (var frame in SpriteData.Patterns)
                 {
-                    case GraphicsModes.Monochrome:
+                    if (frame.Attributes == null)
+                    {
+                        int cW = SpriteData.Width / 8;
+                        int cH = SpriteData.Height / 8;
+                        frame.Attributes = new AttributeColor[cW * cH];
+                    }
+                        for (int n = 0; n < frame.Attributes.Length; n++)
                         {
-                            foreach (var frame in SpriteData.Patterns)
+                            frame.Attributes[n] = new AttributeColor()
                             {
-                                if (frame.Attributes == null)
-                                {
-                                    int cW = SpriteData.Width / 8;
-                                    int cH = SpriteData.Height / 8;
-                                    frame.Attributes = new AttributeColor[cW * cH];
-                                    for (int n = 0; n < frame.Attributes.Length; n++)
-                                    {
-                                        frame.Attributes[n] = new AttributeColor()
-                                        {
-                                            Ink = 0,
-                                            Paper = 7
-                                        };
-                                    }
-                                }
-                                for (int n = 0; n < frame.RawData.Length; n++)
-                                {
-                                    var o = frame.RawData[n];
-                                    if (o == 0)
-                                    {
-                                        frame.RawData[n] = 1;
-                                    }
-                                    else
-                                    {
-                                        frame.RawData[n] = 0;
-                                    }
-                                }
-                            }
+                                Ink = 0,
+                                Paper = 7
+                            };
                         }
-                        break;
-                    case GraphicsModes.Next:
+                    for (int n = 0; n < frame.RawData.Length; n++)
+                    {
+                        var o = frame.RawData[n];
+                        if (o == 0)
                         {
-                            foreach (var frame in SpriteData.Patterns)
-                            {
-                                for (int n = 0; n < frame.RawData.Length; n++)
-                                {
-                                    var o = frame.RawData[n];
-                                    if (o == 0)
-                                    {
-                                        frame.RawData[n] = 227;
-                                    }
-                                    else
-                                    {
-                                        frame.RawData[n] = 0;
-                                    }
-                                }
-                            }
+                            frame.RawData[n] = 0;
                         }
-                        break;
-                }
-            }
-            else if (oldMode == GraphicsModes.Next)
-            {
-                switch (newMode)
-                {
-                    case GraphicsModes.Monochrome:
+                        else
                         {
-                            foreach (var frame in SpriteData.Patterns)
-                            {
-                                for (int n = 0; n < frame.RawData.Length; n++)
-                                {
-                                    var o = frame.RawData[n];
-                                    if (o == 0)
-                                    {
-                                        frame.RawData[n] = 1;
-                                    }
-                                    else
-                                    {
-                                        frame.RawData[n] = 0;
-                                    }
-                                }
-                            }
+                            frame.RawData[n] = 1;
                         }
-                        break;
-                    case GraphicsModes.ZXSpectrum:
-                        {
-                            foreach (var frame in SpriteData.Patterns)
-                            {
-                                if (frame.Attributes == null)
-                                {
-                                    int cW = SpriteData.Width / 8;
-                                    int cH = SpriteData.Height / 8;
-                                    frame.Attributes = new AttributeColor[cW * cH];
-                                    for (int n = 0; n < frame.Attributes.Length; n++)
-                                    {
-                                        frame.Attributes[n] = new AttributeColor()
-                                        {
-                                            Ink = 0,
-                                            Paper = 7
-                                        };
-                                    }
-                                }
-                                for (int n = 0; n < frame.RawData.Length; n++)
-                                {
-                                    var o = frame.RawData[n];
-                                    if (o == 0)
-                                    {
-                                        frame.RawData[n] = 0;
-                                    }
-                                    else
-                                    {
-                                        frame.RawData[n] = 1;
-                                    }
-                                }
-                            }
-                        }
-                        break;
+                    }
                 }
             }
         }

@@ -95,7 +95,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             }
                             break;
                         case GraphicsModes.Monochrome:
-                        case GraphicsModes.Next:
+                            if (colorIndex > Sprite.Palette.Length - 1)
+                            {
+                                colorIndex = Sprite.Palette.Length - 1;
+                            }
                             color = Sprite.Palette[colorIndex];
                             break;
                         default:

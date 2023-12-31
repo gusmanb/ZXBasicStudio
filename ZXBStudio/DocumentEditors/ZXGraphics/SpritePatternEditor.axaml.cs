@@ -323,9 +323,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         SetAttribute(sprite, x, y);
                     }
                     break;
-                case GraphicsModes.Next:
-                    sprite.RawData[dir] = value;
-                    break;
             }
 
             Refresh(false);
