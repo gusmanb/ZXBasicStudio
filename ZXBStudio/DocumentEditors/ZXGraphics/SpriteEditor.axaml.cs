@@ -313,7 +313,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
 
             sldZoom.PropertyChanged += SldZoom_PropertyChanged;
-            sldFrame.PropertyChanged += SldFrame_PropertyChanged;
+            txtFrame.PropertyChanged += TxtFrame_PropertyChanged;
 
             btnClear.Tapped += BtnClear_Tapped;
             btnCut.Tapped += BtnCut_Tapped;
@@ -350,7 +350,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.AddHandler(KeyDownEvent, Keyboard_Down, handledEventsToo: true);
             this.Focus();
         }
-
 
         #region Color
 
@@ -498,17 +497,34 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     SpriteList_Clone(sender.SpriteData);
                     SpriteList_Modified(sender.SpriteData);
                     break;
+                case "FRAMEUPDATE":
+                    {
+                        int f = sender.SpriteData.Frames - 1;
+                        if (f < 0)
+                        {
+                            f = 0;
+                        }
+                        else if (f > 255)
+                        {
+                            f = 255;
+                        }
+                        txtFrame.Maximum = f;
+                        txtFrame.Text = f.ToString();
+                        txtFrame.UpdateLayout();
+                        SpriteProperties_Command(sender, "REFRESH");
+                    }
+                    break;
                 case "REFRESH":
                     ctrlEditor.SpriteData = sender.SpriteData;
                     SpriteList_Modified(sender.SpriteData);
                     if (ctrlEditor.SpriteData.CurrentFrame != actualFrame)
                     {
-                        actualFrame = ctrlEditor.SpriteData.CurrentFrame;
-                        if (sldFrame.Maximum < actualFrame)
+                        txtFrame.Value = actualFrame;
+                        if (txtFrame.Maximum < actualFrame)
                         {
-                            sldFrame.Maximum = actualFrame;
+                            txtFrame.Maximum = actualFrame;
                         }
-                        sldFrame.Value = actualFrame;
+                        txtFrame.Value = actualFrame;
                         Refresh();
                     }
                     UpdateColorPanel();
@@ -607,7 +623,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             spriteData.Frames++;
             ctrlProperties.Refresh();
             ctrlEditor.Refresh();
-            sldFrame.Maximum = spriteData.Frames;
+            txtFrame.MaxHeight = spriteData.Frames - 1;
         }
 
 
@@ -688,16 +704,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private void Refresh()
         {
-            txtFrame.Text = "Frame " + actualFrame.ToString();
+            txtFrame.Text = actualFrame.ToString();
             if (ctrlProperties.SpriteData != null)
             {
-                sldFrame.Maximum = ctrlProperties.SpriteData.Frames;
+                txtFrame.Maximum = ctrlProperties.SpriteData.Frames - 1;
             }
             else
             {
-                sldFrame.Maximum = 0;
+                txtFrame.Maximum = 0;
             }
-            sldFrame.UpdateLayout();
+            txtFrame.UpdateLayout();
         }
 
 
@@ -742,12 +758,19 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-        private void SldFrame_PropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
+        private void TxtFrame_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
         {
-            byte v = (byte)sldFrame.Value;
-            if (actualFrame == v || ctrlProperties.SpriteData == null || v < 0 || v >= (ctrlProperties.SpriteData.Frames))
+            byte v = txtFrame.Text.ToByte();
+            if (actualFrame == v ||
+                ctrlProperties.SpriteData == null ||
+                v < 0 ||
+                v >= (ctrlProperties.SpriteData.Frames))
             {
                 return;
+            }
+            if (v > 255)
+            {
+                v = 255;
             }
             actualFrame = v;
             if (ctrlEditor.SpriteData != null)

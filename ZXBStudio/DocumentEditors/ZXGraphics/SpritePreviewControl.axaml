@@ -19,6 +19,8 @@
       <ComboBoxItem>20 fps (50ms)</ComboBoxItem>
       <ComboBoxItem>50 fps (20ms)</ComboBoxItem>
     </ComboBox>
-    <Image Name="imgPreview" Grid.ColumnSpan="2" Grid.Row="1" Width="32" Height="32" RenderOptions.BitmapInterpolationMode="None"></Image>
+    <ScrollViewer Grid.ColumnSpan="2" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+      <Image Name="imgPreview" Grid.ColumnSpan="2" Grid.Row="1" Width="32" Height="32" RenderOptions.BitmapInterpolationMode="None" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+    </ScrollViewer>
   </Grid>
 </UserControl>

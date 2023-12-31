@@ -105,8 +105,10 @@
         <WrapPanel Orientation="Horizontal" Background="#ff202020" Grid.Row="2" Margin="10,5,10,5" Height="NaN">
           <TextBlock Name="txtZoom" Classes="dialog" Width="54">Zoom 24x</TextBlock>
           <Slider Name="sldZoom" Width="100" Minimum="1" Maximum="9" Value="6" VerticalAlignment="Center"/>
-          <TextBlock Name="txtFrame" Classes="dialog" Width="55" Margin="8,4,0,0">Frame</TextBlock>
-          <Slider Name="sldFrame" Width="100" Minimum="0" Maximum="0" Value="0" VerticalAlignment="Center"/>
+          <TextBlock Name="lblFrame" Classes="dialog" Width="55" Margin="16,8,0,0">Frame</TextBlock>         
+          <Border Classes="numericborder" Margin="-10,0,0,0">
+            <NumericUpDown Classes="dialog" Name="txtFrame" Minimum="0" Increment="1" Maximum="255" Value="0" VerticalAlignment="Center"/>
+          </Border>
 
           <Grid Name="btnPaper" Margin="8,0,0,0" ColumnDefinitions="*,16,Auto">
             <TextBlock Margin="10,5,5,5">Paper</TextBlock>

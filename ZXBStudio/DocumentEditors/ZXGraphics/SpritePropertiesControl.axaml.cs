@@ -413,7 +413,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 }
                 SpriteData.CurrentFrame = (byte)(SpriteData.Frames - 1);
                 Refresh();
-                CallBackCommand(this, "REFRESH");
+                CallBackCommand(this, "FRAMEUPDATE");
             }
         }
 
