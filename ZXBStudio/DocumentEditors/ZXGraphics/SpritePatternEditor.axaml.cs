@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Xml.Schema;
 using ZXBasicStudio.Common;
+using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using ZXBasicStudio.Extensions;
 
@@ -430,7 +431,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             if (cbPatterns.Length == 1)
             {
-                SpriteData.Patterns[SpriteData.CurrentFrame].Data = cbPatterns[0].Data;
+                if (cbPatterns[0].RawData == null)
+                {
+                    SpriteData.Patterns[SpriteData.CurrentFrame].RawData = ServiceLayer.PointData2RawData(cbPatterns[0].Data, 8, 8);
+                }
+                else
+                {
+                    SpriteData.Patterns[SpriteData.CurrentFrame].RawData = cbPatterns[0].RawData;
+                }
             }
             else
             {
@@ -443,8 +451,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     // Paste from PointData
                     int ox = 0;
                     int oy = 0;
+                    int dir = 0;
                     for (int n = 0; n < cbPatterns.Length; n++)
                     {
+                        //int d1 = (n / SpriteData.Width);
+                        //int d2 = (d1 * SpriteData.Width) - n;
                         for (int py = 0; py < 8; py++)
                         {
                             for (int px = 0; px < 8; px++)
@@ -452,10 +463,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                                 var po = cbPatterns[n].Data.FirstOrDefault(d => d.X == px && d.Y == py);
                                 if (po != null)
                                 {
-                                    var pd = pat2.Data.FirstOrDefault(d => d.X == px + ox && d.Y == py + oy);
-                                    if (pd != null)
+                                    dir = ((oy+py) * SpriteData.Width) + (ox+px);
+
+                                    if (dir < pattern.RawData.Length)
                                     {
-                                        pd.ColorIndex = po.ColorIndex;
+                                        SpriteData.Patterns[SpriteData.CurrentFrame].RawData[dir] = po.ColorIndex;
+                                        //pattern.RawData[dir] = po.ColorIndex;
                                     }
                                 }
                             }
@@ -467,7 +480,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             oy += 8;
                         }
                     }
-                    SpriteData.Patterns[SpriteData.CurrentFrame].Data = pat2.Data;
+                    //SpriteData.Patterns[SpriteData.CurrentFrame].Data = pat2.Data;
                 }
                 else
                 {
