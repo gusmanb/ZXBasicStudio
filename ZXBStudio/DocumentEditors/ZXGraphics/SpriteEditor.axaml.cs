@@ -464,6 +464,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     ctrlPreview.Refresh();
                     ctrlProperties.SpriteData = sender.SpriteData;
                     ctrlProperties.Refresh();
+                    SpriteProperties_FrameUpdate(ctrlProperties, command);
+                    txtFrame.Text = "0";
                     break;
             }
         }
@@ -498,21 +500,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     SpriteList_Modified(sender.SpriteData);
                     break;
                 case "FRAMEUPDATE":
-                    {
-                        int f = sender.SpriteData.Frames - 1;
-                        if (f < 0)
-                        {
-                            f = 0;
-                        }
-                        else if (f > 255)
-                        {
-                            f = 255;
-                        }
-                        txtFrame.Maximum = f;
-                        txtFrame.Text = f.ToString();
-                        txtFrame.UpdateLayout();
-                        SpriteProperties_Command(sender, "REFRESH");
-                    }
+                        SpriteProperties_FrameUpdate(sender, command);
                     break;
                 case "REFRESH":
                     ctrlEditor.SpriteData = sender.SpriteData;
@@ -546,6 +534,29 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     UpdateColorPanel();
                     break;
             }
+        }
+
+
+        private void SpriteProperties_FrameUpdate(SpritePropertiesControl sender, string command)
+        {
+            if (sender.SpriteData == null)
+            {
+                return;
+            }
+
+            int f = sender.SpriteData.Frames - 1;
+            if (f < 0)
+            {
+                f = 0;
+            }
+            else if (f > 255)
+            {
+                f = 255;
+            }
+            txtFrame.Maximum = f;
+            txtFrame.Text = f.ToString();
+            txtFrame.UpdateLayout();
+            SpriteProperties_Command(sender, "REFRESH");
         }
 
 

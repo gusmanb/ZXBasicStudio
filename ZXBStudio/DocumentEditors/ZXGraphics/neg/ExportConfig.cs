@@ -16,6 +16,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
         /// </summary>
         public ExportTypes ExportType { get; set; }
         /// <summary>
+        /// Export data type format: DIM, ASM, .BIN, .TAP...
+        /// </summary>
+        public ExportDataTypes ExportDataType { get; set; }
+        /// <summary>
         /// Generate export on every Pre-Build
         /// </summary>
         public bool AutoExport { get; set; }
