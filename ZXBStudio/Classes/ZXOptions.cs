@@ -43,5 +43,6 @@ namespace ZXBasicStudio.Classes
         public string LastProjectPath { get; set; }
         public ZXBuildSettings? DefaultBuildSettings { get; set; }
         public string? NextEmulatorPath { get; set; }
+        public bool DisableAuto { get; set; }
     }
 }

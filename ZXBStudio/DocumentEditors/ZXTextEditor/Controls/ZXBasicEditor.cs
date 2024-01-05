@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding;
 using ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
@@ -471,6 +472,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             string postText = text.Substring(Column);
 
             var context = GetContext(Document, line.Offset + Column);
+
+            if (!ByRequest)
+            {
+                if(ZXOptions.Current.DisableAuto)
+                    return null;
+            }
 
             if (ByRequest)
             {

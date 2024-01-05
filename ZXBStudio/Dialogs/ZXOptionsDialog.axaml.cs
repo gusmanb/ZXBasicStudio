@@ -19,7 +19,6 @@ namespace ZXBasicStudio.Dialogs
             btnSelectZxbasm.Click += BtnSelectZxbasm_Click;
             btnDefaultBuildConfig.Click += BtnDefaultBuildConfig_Click;
             btnSelectNextEmulator.Click += BtnSelectNextEmulator_Click;
-            
             txtZxbasm.Text = ZXOptions.Current.ZxbasmPath;
             txtZxbc.Text = ZXOptions.Current.ZxbcPath;
             nudFontSize.Value = (decimal)ZXOptions.Current.EditorFontSize;
@@ -29,9 +28,10 @@ namespace ZXBasicStudio.Dialogs
             ckBorderless.IsChecked = ZXOptions.Current.Borderless;
             ckAntiAlias.IsChecked = ZXOptions.Current.AntiAlias;
             txtNextEmulator.Text = ZXOptions.Current.NextEmulatorPath;
+            ckDisableAuto.IsChecked = ZXOptions.Current.DisableAuto;
 
             btnKeybMap.Click += BtnKeybMap_Click;
-        }        
+        }
 
         private void BtnKeybMap_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
@@ -61,8 +61,7 @@ namespace ZXBasicStudio.Dialogs
                 Title = "Select ZXBASM path...", 
                 FileTypeFilter = new[] 
                 { 
-                    new FilePickerFileType("ZXBASM executable") { Patterns = new[] { "zxbasm.exe" } },
-                    new FilePickerFileType("All files") { Patterns = new[] { "*", "*.*" } }
+                    new FilePickerFileType("ZXBASM executable") { Patterns = new[] { "*" } }
                 } 
             });
 
@@ -78,8 +77,7 @@ namespace ZXBasicStudio.Dialogs
                 Title = "Select ZXBC path...", 
                 FileTypeFilter = new[] 
                 { 
-                    new FilePickerFileType("ZXBC executable") { Patterns = new[] { "zxbc.exe" } }, 
-                    new FilePickerFileType("All files") { Patterns = new[] { "*", "*.*" } } 
+                    new FilePickerFileType("ZXBC executable") { Patterns = new[] { "*" } } 
                 } 
             });
 
@@ -137,6 +135,7 @@ namespace ZXBasicStudio.Dialogs
             ZXOptions.Current.Borderless = ckBorderless.IsChecked ?? false;
             ZXOptions.Current.AntiAlias = ckAntiAlias.IsChecked ?? false;
             ZXOptions.Current.NextEmulatorPath = txtNextEmulator.Text;
+            ZXOptions.Current.DisableAuto = ckDisableAuto.IsChecked ?? false;
 
             if (bsett != null)
                 ZXOptions.Current.DefaultBuildSettings = bsett;
