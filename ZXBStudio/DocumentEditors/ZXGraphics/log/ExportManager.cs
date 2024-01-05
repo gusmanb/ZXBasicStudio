@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Joins;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.BuildSystem;
@@ -12,6 +13,8 @@ using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Pattern = ZXBasicStudio.DocumentEditors.ZXGraphics.neg.Pattern;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 {
@@ -466,6 +469,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                     return Export_Sprite_PutChars_DIM(exportConfig, sprites);
                 case ExportDataTypes.ASM:
                     return Export_Sprite_PutChars_ASM(exportConfig, sprites);
+                case ExportDataTypes.BIN:
+                    return Export_Sprite_PutChars_BIN(exportConfig, sprites);
+                case ExportDataTypes.TAP:
+                    return Export_Sprite_PutChars_TAP(exportConfig, sprites);
                 default:
                     return "ERROR: Not implemented!";
             }
@@ -677,7 +684,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             var sb = new StringBuilder();
 
             var pattern = sprite.Patterns[n];
-            var data = ServiceLayer.Files_CreateBinDataUpDown(pattern, sprite.Width, sprite.Height, exportConfig);
+            var data = ServiceLayer.Files_CreateBinDataUpDown(pattern, sprite.Width, sprite.Height);
 
             if (sprite.Frames > 1 &&
                 !(sprite.Frames == 2 && sprite.Masked))
@@ -907,7 +914,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
             var sb = new StringBuilder();
 
             var pattern = sprite.Patterns[n];
-            var data = ServiceLayer.Files_CreateBinDataUpDown(pattern, sprite.Width, sprite.Height, exportConfig);
+            var data = ServiceLayer.Files_CreateBinDataUpDown(pattern, sprite.Width, sprite.Height);
 
             int col = 0;
             int row = 0;
@@ -991,6 +998,47 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
 
         #endregion
 
+
+        #region TAP and BIN
+
+
+        public static string Export_Sprite_PutChars_BIN(ExportConfig exportConfig, IEnumerable<Sprite> sprites)
+        {
+            var binData = Export_Sprite_PutChars_GetBinaryData(sprites);
+            ServiceLayer.Files_SaveFileData(exportConfig.ExportFilePath, binData);
+            return "";
+        }
+
+
+        public static string Export_Sprite_PutChars_TAP(ExportConfig exportConfig, IEnumerable<Sprite> sprites)
+        {
+            var binData = Export_Sprite_PutChars_GetBinaryData(sprites);
+            binData = ServiceLayer.Bin2Tap(exportConfig.ZXFileName, exportConfig.ZXAddress, binData);
+            ServiceLayer.Files_SaveFileData(exportConfig.ExportFilePath, binData);
+            return "";
+        }
+
+
+        private static byte[] Export_Sprite_PutChars_GetBinaryData(IEnumerable<Sprite> sprites)
+        {
+            var binData=new List<byte>();
+
+            foreach (var sprite in sprites)
+            {
+                if (sprite != null)
+                {
+                    foreach (var pattern in sprite.Patterns)
+                    {
+                        var data = ServiceLayer.Files_CreateBinDataUpDown(pattern, sprite.Width, sprite.Height);
+                        binData.AddRange(data);
+                    }
+                }
+            }
+
+            return binData.ToArray();
+        }
+
+        #endregion
 
         #endregion
     }

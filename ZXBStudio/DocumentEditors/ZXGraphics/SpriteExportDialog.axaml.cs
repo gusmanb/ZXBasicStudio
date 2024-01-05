@@ -216,6 +216,49 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                         sb.AppendLine(ExportManager.Export_Sprite_PutChars(exportConfig, sprites));
                     }
                     break;
+
+                case ExportDataTypes.BIN:
+                    {
+                        sb.AppendLine("'- Includes -----------------------------------------------");
+                        sb.AppendLine("#INCLUDE <putchars.bas>");
+                        sb.AppendLine("");
+                        sb.AppendLine("'- Draw sprite --------------------------------------------");
+                        var sprite = sprites.ElementAt(0);
+                        sb.AppendLine(string.Format(
+                            "putChars(10,5,{0},{1},@{2})",
+                            sprite.Width / 8,
+                            sprite.Height / 8,
+                            exportConfig.LabelName));
+                        sb.AppendLine("");
+                        sb.AppendLine("' This section must not be executed");
+                        sb.AppendLine(string.Format(
+                            "{0}:",
+                            exportConfig.LabelName));
+                        sb.AppendLine("ASM");
+                        sb.AppendLine(string.Format("\tINCBIN \"{0}\"",
+                            Path.GetFileName(exportConfig.ExportFilePath)));
+                        sb.AppendLine("END ASM");
+                    }
+                    break;
+
+                case ExportDataTypes.TAP:
+                    {
+                        sb.AppendLine("'- Includes -----------------------------------------------");
+                        sb.AppendLine("#INCLUDE <putchars.bas>");
+                        sb.AppendLine("");
+                        sb.AppendLine("' Load .tap data ------------------------------------------");
+                        sb.AppendLine("LOAD \"\" CODE");
+                        sb.AppendLine("");
+                        sb.AppendLine("'- Draw sprite --------------------------------------------");
+                        var sprite = sprites.ElementAt(0);
+                        sb.AppendLine(string.Format(
+                            "putChars(10,5,{0},{1},@{2})",
+                            sprite.Width / 8,
+                            sprite.Height / 8,
+                            exportConfig.LabelName));
+                        sb.AppendLine("");
+                    }
+                    break;
             }
 
             txtCode.Text = sb.ToString();
@@ -300,6 +343,25 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             var idx = cmbDataType.SelectedIndex;
             exportConfig.ExportDataType = (ExportDataTypes)idx;
+
+            var ext = "";
+            switch (exportConfig.ExportDataType)
+            {
+                case ExportDataTypes.ASM:
+                case ExportDataTypes.DIM:
+                    ext = ".bas";
+                    break;
+                case ExportDataTypes.BIN:
+                    ext = ".bin";
+                    break;
+                case ExportDataTypes.TAP:
+                    ext = ".tap";
+                    break;
+                default:
+                    return;
+            }
+            txtOutputFile.Text = Path.Combine(Path.GetDirectoryName(txtOutputFile.Text), Path.GetFileNameWithoutExtension(txtOutputFile.Text) + ext);
+            exportConfig.ExportFilePath = txtOutputFile.Text;
             Refresh();
         }
 

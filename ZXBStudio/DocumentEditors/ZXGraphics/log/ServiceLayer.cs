@@ -245,7 +245,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         /// <param name="fileType">File information</param>
         /// <param name="sprite">Sprite or tile data</param>
         /// <returns>Arrfay of byte with the data ready to save on disk</returns>
-        public static byte[] Files_CreateBinDataUpDown(Pattern pattern, int width, int height, ExportConfig export)
+        public static byte[] Files_CreateBinDataUpDown(Pattern pattern, int width, int height)
         {
             try
             {
