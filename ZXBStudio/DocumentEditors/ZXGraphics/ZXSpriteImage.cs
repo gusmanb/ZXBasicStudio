@@ -95,7 +95,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             }
                             break;
                         case GraphicsModes.Monochrome:
-                        case GraphicsModes.Next:
+                            if (colorIndex > Sprite.Palette.Length - 1)
+                            {
+                                colorIndex = Sprite.Palette.Length - 1;
+                            }
                             color = Sprite.Palette[colorIndex];
                             break;
                         default:
@@ -126,7 +129,26 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             int cW = Sprite.Width / 8;
             int cX = X / 8;
             int cY = Y / 8;
-            return Pattern.Attributes[(cY * cW) + cX];
+            int dir = (cY * cW) + cX;
+            if (Pattern.Attributes == null)
+            {
+                Pattern.Attributes = new AttributeColor[(Sprite.Width + Sprite.Height) / 8];
+                for (int n = 0; n < Pattern.Attributes.Length; n++)
+                {
+                    Pattern.Attributes[n] = new AttributeColor()
+                    {
+                        Attribute = 56  // Paper 7, ink 0
+                    };
+                }
+            }
+            if (dir > Pattern.Attributes.Length)
+            {
+                return new AttributeColor()
+                {
+                    Attribute = 56  // Paper 7, ink 0
+                };
+            }
+            return Pattern.Attributes[dir];
         }
         #endregion
 

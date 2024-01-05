@@ -260,7 +260,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
                         {
                             var dir = (row * width) + xx + x;
                             var p = pattern.RawData[dir];
-                            if (p == 1)
+                            if (p != 0)
                             {
                                 b = b | (int)Math.Pow(2, (7 - x));
                             }

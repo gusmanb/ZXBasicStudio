@@ -69,10 +69,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     rows = 2;
                     cols = 8;
                     break;
-                case GraphicsModes.Next:
-                    rows = 16;
-                    cols = 16;
-                    break;
             }
 
             int cellW = (int)(((this.Width - 200) / 2) / cols);

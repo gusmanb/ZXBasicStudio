@@ -53,10 +53,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     DrawZXSpectrum();
                     grdZXSpectrum.IsVisible = true;
                     break;
-                case GraphicsModes.Next:
-                    grdNext.IsVisible = true;
-                    break;
-
             }
 
             return true;
