@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Avalonia.Svg.Skia;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -116,7 +117,14 @@ namespace ZXBasicStudio.BuildSystem
                     string line = lines[lineNum];
                     string trim = line.Trim().ToLower();
 
-                    if (trim.StartsWith("#line") || string.IsNullOrWhiteSpace(trim))
+                    if (string.IsNullOrWhiteSpace(trim))
+                    {
+                        sbSource.AppendLine(line);
+                        sb.AppendLine(line);
+                        continue;
+                    }
+
+                    if (trim.StartsWith("#line"))
                         continue;
 
                     if (regInclude.IsMatch(line))
@@ -156,8 +164,48 @@ namespace ZXBasicStudio.BuildSystem
 
                 BuildContent = sb.ToString();
 
+                bool doTrim = true;
+
+                while (doTrim)
+                {
+                    BuildContent.TrimEnd();
+
+                    if (BuildContent.EndsWith("\r") || BuildContent.EndsWith("\n"))
+                    {
+
+                        if (BuildContent.EndsWith("\r\n"))
+                            BuildContent = BuildContent.Substring(0, BuildContent.Length - 2);
+                        else
+                            BuildContent = BuildContent.Substring(0, BuildContent.Length - 1);
+
+                    }
+                    else
+                        doTrim = false;
+                }
+
                 File.WriteAllText(Path.Combine(Directory, TempFileName), BuildContent);
+
                 Content = sbSource.ToString();
+
+                doTrim = true;
+
+                while (doTrim)
+                {
+
+                    Content.TrimEnd();
+
+                    if (Content.EndsWith("\r") || Content.EndsWith("\n"))
+                    {
+
+                        if (Content.EndsWith("\r\n"))
+                            Content = Content.Substring(0, Content.Length - 2);
+                        else
+                            Content = Content.Substring(0, Content.Length - 1);
+
+                    }
+                    else
+                        doTrim = false;
+                }
             }
             else
             {
@@ -171,7 +219,10 @@ namespace ZXBasicStudio.BuildSystem
                     string trim = line.Trim().ToLower();
 
                     if (string.IsNullOrWhiteSpace(trim))
+                    {
+                        sb.AppendLine(line);
                         continue;
+                    }
 
                     if (!inAsm)
                         inAsm = line.Trim().ToLower().StartsWith("asm");
@@ -208,6 +259,26 @@ namespace ZXBasicStudio.BuildSystem
                 }
 
                 BuildContent = sb.ToString();
+
+                bool dotrim = true;
+
+                while (dotrim)
+                {
+
+                    BuildContent.TrimEnd();
+
+                    if (BuildContent.EndsWith("\r") || BuildContent.EndsWith("\n"))
+                    {
+
+                        if (BuildContent.EndsWith("\r\n"))
+                            BuildContent = BuildContent.Substring(0, BuildContent.Length - 2);
+                        else
+                            BuildContent = BuildContent.Substring(0, BuildContent.Length - 1);
+
+                    }
+                    else
+                        dotrim = false;
+                }
 
                 File.WriteAllText(Path.Combine(Directory, TempFileName), sb.ToString());
             }
