@@ -3,11 +3,13 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Platform;
+using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml.Schema;
 using ZXBasicStudio.Common;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.neg;
@@ -87,6 +89,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private int _Zoom = 24;
         private Action<SpritePatternEditor, string> CallBackCommand = null;
         private int? lastId = null;
+        private ZXSpriteImage aspect = new ZXSpriteImage();
 
         /// <summary>
         /// True when mouse left button is pressed
@@ -111,13 +114,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             InitializeComponent();
 
+            grdEditor.BackgroundImage = aspect;
+
             PrimaryColorIndex = 1;
             SecondaryColorIndex = 0;
 
-            cnvEditor.PointerMoved += CnvEditor_PointerMoved;
-            cnvEditor.PointerPressed += CnvEditor_PointerPressed;
-            cnvEditor.PointerReleased += CnvEditor_PointerReleased;
-            cnvEditor.PointerExited += CnvEditor_PointerExited;
+            grdEditor.PointerMoved += GrdEditor_PointerMoved;
+            grdEditor.PointerPressed += GrdEditor_PointerPressed;
+            grdEditor.PointerReleased += GrdEditor_PointerReleased;
+            grdEditor.PointerExited += GrdEditor_PointerExited;
         }
 
 
@@ -138,61 +143,66 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         public void Refresh(bool callBack = false)
         {
-            cnvEditor.Children.Clear();
+            //cnvEditor.Children.Clear();
             if (SpriteData == null)
             {
+                aspect.Clear(Colors.White);
+                grdEditor.InvalidateVisual();
                 return;
             }
 
-            cnvEditor.Children.Clear();
-            for (int oy = 0; oy < SpriteData.Height; oy++)
-            {
-                for (int ox = 0; ox < SpriteData.Width; ox++)
-                {
-
-                    var frame = SpriteData.Patterns[SpriteData.CurrentFrame];
-                    int colorIndex = frame.RawData[(SpriteData.Width * oy) + ox];
-
-                    var r = new Rectangle();
-                    r.Width = _Zoom + 1;
-                    r.Height = _Zoom + 1;
-                    r.Stroke = Brushes.White;
-                    r.StrokeThickness = 1;
-
-                    var palette = SpriteData.Palette[colorIndex];
-                    r.Fill = new SolidColorBrush(new Color(255, palette.Red, palette.Green, palette.Blue));
-
-                    cnvEditor.Children.Add(r);
-                    Canvas.SetTop(r, oy * _Zoom);
-                    Canvas.SetLeft(r, ox * _Zoom);
-                }
-            }
-
-            for (int oy = 0; oy < SpriteData.Height; oy += 8)
-            {
-                for (int ox = 0; ox < SpriteData.Width; ox += 8)
-                {
-                    var r = new Rectangle();
-                    int mx = (ox + 8) > SpriteData.Width ? (SpriteData.Width % 8) : 8;
-                    int my = (oy + 8) > SpriteData.Height ? (SpriteData.Height % 8) : 8;
-                    r.Width = (_Zoom * mx) + 1;
-                    r.Height = (_Zoom * my) + 1;
-                    r.Stroke = Brushes.Red;
-                    r.StrokeThickness = 1;
-                    r.Fill = Brushes.Transparent;
-                    cnvEditor.Children.Add(r);
-                    Canvas.SetTop(r, oy * _Zoom);
-                    Canvas.SetLeft(r, ox * _Zoom);
-                }
-            }
-            cnvEditor.Width = (_Zoom * SpriteData.Width);
-            cnvEditor.Height = (_Zoom * SpriteData.Height);
+            aspect.RenderSprite(SpriteData, SpriteData.CurrentFrame);
+            grdEditor.Zoom = _Zoom;
+            this.InvalidateVisual();
 
             if (callBack)
             {
                 CallBackCommand?.Invoke(this, "REFRESH");
             }
         }
+
+        #endregion
+
+
+        #region Undo and Redo
+
+        private List<Operation> operations = new List<Operation>();
+        private List<Operation> operationsDeleted = new List<Operation>();
+
+        public void Undo()
+        {
+            // Get last operation
+            var op = operations.LastOrDefault();
+            if (op != null)
+            {
+                // Move from operations to operationsDeleted
+                operations.Remove(op);
+                // Restore point value (Undo)
+                SetPoint(op.X, op.Y, op.ColorIndex);
+                // Remove new operation (Undo don't add operation)
+                var op2 = operations.LastOrDefault();
+                if (op2 != null)
+                {
+                    operations.Remove(op2);
+                    operationsDeleted.Add(op2);
+                }
+            }
+        }
+
+
+        public void Redo()
+        {
+            // Get last undo operation
+            var op = operationsDeleted.LastOrDefault();
+            if (op != null)
+            {
+                // Delete from operationsDeleted
+                operationsDeleted.Remove(op);
+                // Set point value (Undo)
+                SetPoint(op.X, op.Y, op.ColorIndex);
+            }
+        }
+
 
         #endregion
 
@@ -204,9 +214,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CnvEditor_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        private void GrdEditor_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            var p = e.GetCurrentPoint(cnvEditor);
+            var p = e.GetCurrentPoint(grdEditor);
             if (p.Properties.IsLeftButtonPressed)
             {
                 SetPoint(p.Position.X, p.Position.Y, PrimaryColorIndex);
@@ -227,7 +237,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CnvEditor_PointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+        private void GrdEditor_PointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
         {
             MouseLeftPressed = false;
             MouseRightPressed = false;
@@ -239,7 +249,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CnvEditor_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+        private void GrdEditor_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
         {
             MouseLeftPressed = false;
             MouseRightPressed = false;
@@ -251,9 +261,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CnvEditor_PointerMoved(object? sender, Avalonia.Input.PointerEventArgs e)
+        private void GrdEditor_PointerMoved(object? sender, Avalonia.Input.PointerEventArgs e)
         {
-            var p = e.GetCurrentPoint(cnvEditor);
+            var p = e.GetCurrentPoint(grdEditor);
             if (MouseLeftPressed)
             {
                 SetPoint(p.Position.X, p.Position.Y, PrimaryColorIndex);
@@ -276,15 +286,46 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             int x = (int)mx;
             int y = (int)my;
 
-            x = x / _Zoom;
-            y = y / _Zoom;
+            x = x / (_Zoom + 1);
+            y = y / (_Zoom + 1);
 
             if (x < 0 || y < 0 || x >= SpriteData.Width || y >= SpriteData.Height)
             {
                 return;
             }
 
-            SpriteData.Patterns[SpriteData.CurrentFrame].RawData[(SpriteData.Width * y) + x] = value;
+            int dir = (SpriteData.Width * y) + x;
+            operations.Add(new Operation()
+            {
+                ColorIndex = SpriteData.Patterns[SpriteData.CurrentFrame].RawData[dir],
+                X = (int)mx,
+                Y = (int)my
+            });
+
+            var sprite = SpriteData.Patterns[SpriteData.CurrentFrame];
+
+            switch (SpriteData.GraphicMode)
+            {
+                case GraphicsModes.Monochrome:
+                    sprite.RawData[dir] = value;
+                    break;
+                case GraphicsModes.ZXSpectrum:
+                    {
+                        if (value == PrimaryColorIndex)
+                        {
+                            sprite.RawData[dir] = 1;
+                        }
+                        else
+                        {
+                            sprite.RawData[dir] = 0;
+                        }
+                        SetAttribute(sprite, x, y);
+                    }
+                    break;
+                case GraphicsModes.Next:
+                    sprite.RawData[dir] = value;
+                    break;
+            }
 
             Refresh(false);
 
@@ -297,6 +338,27 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             tmr.Stop();
             tmr.Start();
         }
+
+
+        private void SetAttribute(Pattern pattern, int x, int y)
+        {
+            int cW = SpriteData.Width / 8;
+            int cX = x / 8;
+            int cY = y / 8;
+            var attr = pattern.Attributes[(cY * cW) + cX];
+            attr.Ink = PrimaryColorIndex;
+            attr.Paper = SecondaryColorIndex;
+        }
+
+
+        private AttributeColor GetAttribute(Pattern pattern, int x, int y)
+        {
+            int cW = SpriteData.Width / 8;
+            int cX = x / 8;
+            int cY = y / 8;
+            return pattern.Attributes[(cY * cW) + cX];
+        }
+
 
         private void Tmr_Tick(object? sender, EventArgs e)
         {
@@ -315,10 +377,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// </summary>
         public void Clear()
         {
-            var rd = SpriteData.Patterns[SpriteData.CurrentFrame].RawData;
-            for (int n=0; n<rd.Length; n++)
+            if (SpriteData == null || SpriteData.Patterns == null ||
+                SpriteData.CurrentFrame >= (SpriteData.Patterns.Count) ||
+                SpriteData.Patterns[SpriteData.CurrentFrame].RawData == null)
             {
-                rd[n] = SecondaryColorIndex;
+                return;
+            }
+            for (int n = 0; n < SpriteData.Patterns[SpriteData.CurrentFrame].RawData.Length; n++)
+            {
+                SpriteData.Patterns[SpriteData.CurrentFrame].RawData[n] = SecondaryColorIndex;
             }
             Refresh(true);
         }
@@ -364,7 +431,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             if (cbPatterns.Length == 1)
             {
                 SpriteData.Patterns[SpriteData.CurrentFrame].Data = cbPatterns[0].Data;
-                SpriteData.Patterns[SpriteData.CurrentFrame].RawData = cbPatterns[0].RawData;
             }
             else
             {

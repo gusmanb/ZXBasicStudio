@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentEditors.ZXGraphics;
 using ZXBasicStudio.DocumentEditors.ZXGraphics.log;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
@@ -23,6 +24,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
         static readonly string _docCat = "Graphics";
         static readonly string _docAspect = "/Svg/Documents/file-sprite.svg";
         static readonly Guid _docId = Guid.Parse("E5D4D440-B156-42F1-8FBB-E78D655E754E");
+        public static Guid Id => _docId;
 
         static readonly SpriteDocumentFactory _factory = new SpriteDocumentFactory();
         Bitmap? _icon;
@@ -34,6 +36,34 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
         public string? DocumentAspect => _docAspect;
 
         private static readonly ExportManager _exportManager = new ExportManager();
+
+        static readonly ZXKeybCommand[] _editCommands = new ZXKeybCommand[]
+        {
+            SpriteEditor.keyboardCommands["Save"],
+            SpriteEditor.keyboardCommands["Cut"],
+            SpriteEditor.keyboardCommands["Copy"],
+            SpriteEditor.keyboardCommands["Paste"],
+            SpriteEditor.keyboardCommands["Clear"],
+            SpriteEditor.keyboardCommands["Undo"],
+            SpriteEditor.keyboardCommands["Redo"],
+            SpriteEditor.keyboardCommands["Rotate Right"],
+            SpriteEditor.keyboardCommands["Rotate Left"],
+            SpriteEditor.keyboardCommands["Horizontal Mirror"],
+            SpriteEditor.keyboardCommands["Vertical Mirror"],
+            SpriteEditor.keyboardCommands["Shift Up"],
+            SpriteEditor.keyboardCommands["Shift Right"],
+            SpriteEditor.keyboardCommands["Shift Down"],
+            SpriteEditor.keyboardCommands["Shift Left"],
+            SpriteEditor.keyboardCommands["Move Up"],
+            SpriteEditor.keyboardCommands["Move Right"],
+            SpriteEditor.keyboardCommands["Move Down"],
+            SpriteEditor.keyboardCommands["Move Left"],
+            SpriteEditor.keyboardCommands["Invert"],
+            SpriteEditor.keyboardCommands["Mask"],
+            SpriteEditor.keyboardCommands["Export"],
+            SpriteEditor.keyboardCommands["Zoom In"],
+            SpriteEditor.keyboardCommands["Zoom Out"],
+        };
 
 
         public SpriteDocument()
@@ -67,9 +97,6 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics
 
         Guid IZXDocumentType.DocumentTypeId => _docId;
 
-        ZXKeybCommand[]? IZXDocumentType.EditorCommands => new ZXKeybCommand[]
-        {
-
-        };
+        ZXKeybCommand[]? IZXDocumentType.EditorCommands => _editCommands;
     }
 }

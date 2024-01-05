@@ -39,6 +39,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.BuildSystem;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.Common;
 using ZXBasicStudio.Common.ZXSinclairBasic;
 using ZXBasicStudio.Controls;
 using ZXBasicStudio.Controls.DockSystem;
@@ -1050,6 +1051,7 @@ namespace ZXBasicStudio
             UnblockEditors();
             varsView.EndEdit();
             statesView.Clear();
+            flagsView.Clear();
         }
         private async void PauseEmulator(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
@@ -1065,6 +1067,7 @@ namespace ZXBasicStudio
                 ClearBreakLines();
                 currentBp = await ShowBreakLines(emu.Registers.PC, true);
                 regView.Update();
+                flagsView.Update(emu.Registers.F);
                 varsView.BeginEdit();
                 statesView.Update(emu.TStates);
             }
@@ -1177,6 +1180,7 @@ namespace ZXBasicStudio
             }
 
             regView.Update();
+            flagsView.Update(emu.Registers.F);
             varsView.BeginEdit();
             statesView.Update(emu.TStates);
         }
@@ -1234,6 +1238,7 @@ namespace ZXBasicStudio
                 currentBp = e.Breakpoint;
                 varsView.BeginEdit();
                 regView.Update();
+                flagsView.Update(emu.Registers.F);
                 statesView.Update(emu.TStates);
                 outLog.Writer.WriteLine($"Breakpoint: file {Path.GetFileName(line.File)}, line {line.LineNumber + 1}, address {line.Address}");
 
@@ -2170,6 +2175,7 @@ namespace ZXBasicStudio
 
             varsView.EndEdit();
             statesView.Clear();
+            flagsView.Clear();
             currentBp = null;
             emu.UpdateBreakpoints(null);
             EmulatorInfo.IsRunning = false;

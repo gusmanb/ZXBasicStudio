@@ -7,7 +7,7 @@
              x:Class="ZXBasicStudio.Emulator.Controls.ZXEmulator" Focusable="True">
   <Grid ColumnDefinitions="*,16,0" Background="#FF202020" Name="grdEmulator">
     <zxc:ZXScreen Name="emuScr"></zxc:ZXScreen>
-    <Button Grid.Column="1" Name="btnKeyb">&lt;</Button>
+    <Button Grid.Column="1" Name="btnKeyb" Focusable="False">&lt;</Button>
     <Border Grid.Column="2" Background="#000000" IsVisible="False" Name="brdKeyb">
       <zxc:ZXKeyboardView Margin="0" Name="emuKeyb"></zxc:ZXKeyboardView>
     </Border>
