@@ -13,7 +13,7 @@
     </UserControl.ContextMenu>
     <Grid RowDefinitions="auto,*">
         <Grid ColumnDefinitions="1*" DataContext=".ZXMemoryView">
-            <StackPanel Grid.Row="0" Spacing="2" Orientation="Horizontal" Margin="2,4" HorizontalAlignment="Left">
+            <StackPanel Grid.Row="0" Spacing="2" Orientation="Horizontal" Margin="2" HorizontalAlignment="Left">
                 <Button Width="30" Foreground="Black" Classes="toolbar" Name="btnClearOutputWindow" ToolTip.Tip="Clear output window"><svg:Svg Path="/Svg/eraser-solid.svg"></svg:Svg></Button>
                 <Button Width="30" Foreground="Black" Classes="toolbar" Name="btnCopyToClipboard" ToolTip.Tip="Copy output log to clipboard"><svg:Svg Path="/Svg/copy-solid.svg"></svg:Svg></Button>
             </StackPanel>
