@@ -12,7 +12,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding
 {
     public class ZXBasicFoldingStrategy : AbstractFoldingStrategy
     {
-        Regex regStartSubFold = new Regex("(^|:)[^\\S\\r\\n^:]*(fastcall)?[^\\S\\r\\n^:]*?(sub|function)\\s+(fastcall\\s+)?([^\\s\\(]+)\\([^\\n]*?$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        Regex regStartSubFold = new Regex("(^|:)[^\\S\\r\\n^:]*(fastcall)?[^\\S\\r\\n^:]*?(sub|function)\\s+(fastcall\\s+)?([^\\s\\(]+)\\s*?\\([^\\n]*?$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         Regex regEndSubFold = new Regex("(^|[^\\S\\r\\n^:]+|:)[^\\S\\r\\n^:]*?end\\s+(sub|function)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         Regex regStartCommentFold = new Regex("/'", RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -27,6 +27,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding
         Regex regStartMultiDefine = new Regex("^[^\\S$\\n]*?#define\\s+(\\w+(\\([^\\)]*\\)?))[^\\n]*?\\\\[^\\S$\\n]*?$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         Regex regEndMultiDefine = new Regex("^[^\\\\]*?$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
+        Regex regStartProcedure = new Regex("^\\s*?PROC\\s*?[\\r\\n;]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        Regex regEndProcedure = new Regex("^\\s*?ENDP\\s*?[\\r\\n;]", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
         public override IEnumerable<NewFolding> CreateNewFoldings(TextDocument document, out int firstErrorOffset)
         {
             int subError = -1;
@@ -39,6 +42,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding
             var regionFoldings = CreateRegionFoldings(document, out regionError);
             int defineError = -1;
             var defineFoldings = CreateMultiDefineFoldings(document, out defineError);
+            int procedureError = -1;
+            var procedureFoldings = CreateProcedureFoldings(document, out procedureError);
 
             List<NewFolding> allFoldings = new List<NewFolding>();
             allFoldings.AddRange(subFoldings);
@@ -46,8 +51,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding
             allFoldings.AddRange(dimFoldings);
             allFoldings.AddRange(regionFoldings);
             allFoldings.AddRange(defineFoldings);
+            allFoldings.AddRange(procedureFoldings);
 
-            int[] errs = new int[] { subError, commentError, dimError, regionError, defineError };
+            int[] errs = new int[] { subError, commentError, dimError, regionError, defineError, procedureError };
 
             firstErrorOffset = !errs.Any(e => e != -1) ? -1 : errs.Where(e => e != -1).Min();
 
@@ -199,6 +205,31 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.Folding
                 int disp = end.Value.EndsWith('\n') || end.Value.EndsWith('\r') ? 1 : 0;
 
                 foldings.Add(new NewFolding { StartOffset = start.Index, EndOffset = end.Index + end.Length - disp, DefaultClosed = true, IsDefinition = true, Name = name });
+            }
+
+            return foldings;
+        }
+        private IEnumerable<NewFolding> CreateProcedureFoldings(TextDocument document, out int firstErrorOffset)
+        {
+            firstErrorOffset = -1;
+
+            List<NewFolding> foldings = new List<NewFolding>();
+            var startFoldings = regStartProcedure.Matches(document.Text).ToArray();
+
+            for (int buc = 0; buc < startFoldings.Length; buc++)
+            {
+                var start = startFoldings[buc];
+
+                var end = regEndProcedure.Match(document.Text, start.Index + start.Length);
+
+                if (end == null || !end.Success)
+                    continue;
+
+                string name = "PROC";
+
+                int disp = end.Value.EndsWith('\n') || end.Value.EndsWith('\r') ? 1 : 0;
+
+                foldings.Add(new NewFolding { StartOffset = start.Index, EndOffset = end.Index + end.Length - disp, DefaultClosed = false, IsDefinition = false, Name = name });
             }
 
             return foldings;

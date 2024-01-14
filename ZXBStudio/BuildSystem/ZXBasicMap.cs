@@ -562,23 +562,27 @@ namespace ZXBasicStudio.BuildSystem
 
         private static int GetDimensionSize(string DimensionString)
         {
-            int size = 0;
-
-            if (!int.TryParse(DimensionString, out size))
+            try
             {
-                if (DimensionString.ToLower().Contains("to"))
-                {
-                    string[] parts = DimensionString.ToLower().Split("to");
-                    if (parts.Length == 1)
-                        return int.Parse(parts[0]);
-                    else
-                        return int.Parse(parts[1]) - int.Parse(parts[0]) + 1;
-                }
-                else
-                    return 0;
-            }
+                int size = 0;
 
-            return size;
+                if (!int.TryParse(DimensionString, out size))
+                {
+                    if (DimensionString.ToLower().Contains("to"))
+                    {
+                        string[] parts = DimensionString.ToLower().Split("to");
+                        if (parts.Length == 1)
+                            return int.Parse(parts[0]);
+                        else
+                            return int.Parse(parts[1]) - int.Parse(parts[0]) + 1;
+                    }
+                    else
+                        return 0;
+                }
+
+                return size;
+            }
+            catch { return 0; }
         }
     }
 

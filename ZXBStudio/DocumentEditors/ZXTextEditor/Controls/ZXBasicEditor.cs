@@ -394,7 +394,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ORG", "Set origin."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ASM", "End assembly."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ALIGN", "Align section."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "PROC", "Procedure start."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "ENDP", "Procedure end."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "LOCAL", "Procedure local label."),
         };
+        //Also contains flags
         static ZXBasicCompletionData[] assemblerRegisters = new ZXBasicCompletionData[]
         {
             new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "AF", "Register pair."),
@@ -419,6 +423,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IXL", "Register."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IYH", "Register."),
             new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "IYL", "Register."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "Z", "Zero flag set."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "NZ", "Zero flag not set."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "C", "Carry flag set."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "NC", "Carry flag not set."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "M", "Sign flag set."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "P", "Sign flag not set."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "PE", "Parity/overflow flag set."),
+            new ZXBasicCompletionData(ZXBasicCompletionType.Assembler, "PO", "Parity/overflow flag not set."),
         };
         static ZXBasicCompletionData[] assembler;
 
