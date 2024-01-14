@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="680" d:DesignHeight="450"
+             x:Class="ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls.ZXRamDiskEditor">
+  <Grid RowDefinitions="90,*,40">
+    <Border Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
+      <Grid RowDefinitions="5,*" ColumnDefinitions="96,*,64,160">
+        <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Disk name:</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" Name="txtDiskName"></TextBox>
+        <TextBlock Grid.Row="1" Grid.Column="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Target bank:</TextBlock>
+        <ComboBox Classes="dialog" Grid.Row="1" Grid.Column="3" Name="cbBank" Width="110" SelectedIndex="0" FontSize="10">
+          <ComboBoxItem>Bank 4</ComboBoxItem>
+          <ComboBoxItem>Bank 6</ComboBoxItem>
+          <ComboBoxItem>Bank 1</ComboBoxItem>
+          <ComboBoxItem>Bank 3</ComboBoxItem>
+          <ComboBoxItem>Bank 7</ComboBoxItem>
+        </ComboBox>
+      </Grid>
+    </Border>
+    <Border Grid.Row="1" Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
+      <Grid RowDefinitions="5,24,*" ColumnDefinitions="320,*">
+        <TextBlock Grid.Row="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Add file</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">File list</TextBlock>
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="10">
+          <Grid ColumnDefinitions="56,*,32" RowDefinitions="Auto,Auto,Auto,Auto,16,*">
+            <TextBlock Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">File:</TextBlock>
+            <TextBox Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,0,5" Name="txtFilePath"></TextBox>
+            <Button  Grid.Column="2" Classes="dialog" Margin="10,5,10,5" Width="32" Height="32" Name="btnSelectFile">...</Button>
+            <TextBlock Grid.Row="1" Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">Name:</TextBlock>
+            <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,10,5" MaxLength="10" Name="txtFileName"></TextBox>
+            
+            <Button Grid.Row="5" Grid.ColumnSpan="3" Classes="dialog" Margin="10,5,10,5" Height="32" Name="btnAddFile" VerticalAlignment="Bottom">Add file</Button>
+          </Grid>
+        </ScrollViewer>
+        <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*,48" RowDefinitions="24,28,*,48">
+          <Border Background="#202020" BorderBrush="White" BorderThickness="1">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">File name</TextBlock>
+          </Border>
+          <Border Grid.Column="1" Background="#202020" BorderBrush="White" BorderThickness="1">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Path</TextBlock>
+          </Border>
+          <Border Grid.Column="2" Background="#202020" BorderBrush="White" BorderThickness="1">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Size</TextBlock>
+          </Border>
+          <ListBox Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="0,0,0,15" ItemsSource="{Binding Files}" Name="lstFiles">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="*,*,*">
+                  <TextBlock HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding Name}">asas</TextBlock>
+                  <TextBlock Grid.Column="1" HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding SourcePath}"></TextBlock>
+                  <TextBlock Grid.Column="2" HorizontalAlignment="Left" Classes="dialog" TextTrimming="CharacterEllipsis" Text="{Binding Size}"></TextBlock>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <Button Classes="dialog" Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Stretch" Margin="10,5,10,15" Name="btnRemoveFile">
+            <Svg Path="/Svg/White/minus-solid.svg"></Svg>
+          </Button>
+        </Grid>
+      </Grid>
+    </Border>
+    <TextBlock Grid.Row="1" Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">Files</TextBlock>
+    <Grid ColumnDefinitions="*,*" Grid.Row="2">
+      <Button Classes="dialog" Name="btnSave">Save changes</Button>
+      <Button Classes="dialog" Grid.Column="1" Name="btnDiscard">Discard changes</Button>
+    </Grid>
+  </Grid>
+</UserControl>

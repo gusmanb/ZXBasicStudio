@@ -32,7 +32,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         }
 
 
-        public bool Build(string BuildPath, ZXBuildType BuildType, ZXProgram? program, TextWriter OutputLog)
+        public bool Build(string BuildPath, ZXBuildStage Stage, ZXBuildType BuildType, ZXProgram? program, TextWriter OutputLog)
         {
             if (!ServiceLayer.Initialized)
             {

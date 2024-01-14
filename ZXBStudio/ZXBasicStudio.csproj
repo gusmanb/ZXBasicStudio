@@ -53,6 +53,8 @@
     <None Remove="Assets\KeywordIcon.png" />
     <None Remove="Assets\LogoBig.png" />
     <None Remove="Assets\logoSmall.png" />
+    <None Remove="Assets\ramdiskBinFile.png" />
+    <None Remove="Assets\ramdiskFile.png" />
     <None Remove="Assets\txtFile.png" />
     <None Remove="Assets\TypeIcon.png" />
     <None Remove="Assets\unknFile.png" />
@@ -150,6 +152,7 @@
     <None Remove="Svg\Documents\file-zxasm.svg" />
     <None Remove="Svg\Documents\file-zxbasic.svg" />
     <None Remove="Svg\Documents\file-zxforms.svg" />
+    <None Remove="Svg\Documents\file-zxramdisk.svg" />
     <None Remove="Svg\Documents\file-zxtape.svg" />
     <None Remove="Svg\dumpster-solid.svg" />
     <None Remove="Svg\eject-solid.svg" />
@@ -278,6 +281,8 @@
     <AvaloniaResource Include="Assets\KeywordIcon.png" />
     <AvaloniaResource Include="Assets\LogoBig.png" />
     <AvaloniaResource Include="Assets\logoSmall.png" />
+    <AvaloniaResource Include="Assets\ramdiskBinFile.png" />
+    <AvaloniaResource Include="Assets\ramdiskFile.png" />
     <AvaloniaResource Include="Assets\txtFile.png" />
     <AvaloniaResource Include="Assets\TypeIcon.png" />
     <AvaloniaResource Include="Assets\unknFile.png" />
@@ -338,6 +343,7 @@
     <AvaloniaResource Include="Fonts\FiraCode-Regular.ttf" />
     <AvaloniaResource Include="Svg\circle-info-solid.svg" />
     <AvaloniaResource Include="Svg\circle-question-solid.svg" />
+    <AvaloniaResource Include="Svg\Documents\file-zxramdisk.svg" />
     <AvaloniaResource Include="Svg\github.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-arrow-right-solid.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-solid.svg" />
@@ -521,14 +527,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.6" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.9" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+    <PackageReference Include="Avalonia" Version="11.0.0" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.6" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />

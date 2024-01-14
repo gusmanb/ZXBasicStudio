@@ -12,6 +12,7 @@ using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
 using ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics;
 using ZXBasicStudio.IntegratedDocumentTypes.NextDows;
 using ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder;
+using ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk;
 
 namespace ZXBasicStudio.DocumentModel.Classes
 {
@@ -29,6 +30,8 @@ namespace ZXBasicStudio.DocumentModel.Classes
             _docTypes.Add(new ZXTextDocument());
             _docTypes.Add(new ZXConfigurationDocument());
             _docTypes.Add(new ZXTapeBuilderDocument());
+            _docTypes.Add(new ZXRamDiskDocument());
+            _docTypes.Add(new ZXRamDiskBinaryDocument());
             // ZXGraphics
             _docTypes.Add(new UDGDocument());
             _docTypes.Add(new FontDocument());
@@ -100,12 +103,12 @@ namespace ZXBasicStudio.DocumentModel.Classes
 
         public static IEnumerable<IZXDocumentBuilder> GetPrecompilationDocumentBuilders()
         {
-            return _docTypes.Where(d => d.DocumentBuilder != null && d.DocumentBuildStage == Enums.ZXBuildStage.PreBuild).Select(d => d.DocumentBuilder);
+            return _docTypes.Where(d => d.DocumentBuilder != null && (d.DocumentBuildStage?.HasFlag(Enums.ZXBuildStage.PreBuild) ?? false)).Select(d => d.DocumentBuilder);
         }
 
         public static IEnumerable<IZXDocumentBuilder> GetPostcompilationDocumentBuilders()
         {
-            return _docTypes.Where(d => d.DocumentBuilder != null && d.DocumentBuildStage == Enums.ZXBuildStage.PostBuild).Select(d => d.DocumentBuilder);
+            return _docTypes.Where(d => d.DocumentBuilder != null && (d.DocumentBuildStage?.HasFlag(Enums.ZXBuildStage.PostBuild) ?? false)).Select(d => d.DocumentBuilder);
         }
 
         public static IZXDocumentType GetDocumentTypeInstance(Type DocumentType)

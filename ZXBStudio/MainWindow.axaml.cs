@@ -1541,7 +1541,7 @@ namespace ZXBasicStudio
                                 disas.Text = loadedProgram.Disassembly.Content;
                         }
 
-                        if (!emu.InjectProgram(program.Org, program.Binary, true))
+                        if (!emu.InjectProgram(program.Org, program.Binary, program.RamDisks?.ToArray(), true))
                         {
                             await this.ShowError("Error", "Cannot inject program! Check program size and address.");
                         }
@@ -1641,7 +1641,7 @@ namespace ZXBasicStudio
 
                         UpdateUserBreakpoints();
 
-                        if (!emu.InjectProgram(program.Org, program.Binary, true))
+                        if (!emu.InjectProgram(program.Org, program.Binary, program.RamDisks?.ToArray(), true))
                         {
                             await this.ShowError("Error", "Cannot inject program! Check program size and address.");
                         }

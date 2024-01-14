@@ -19,9 +19,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 {
     public class ZXTapeBuilderBuilder : IZXDocumentBuilder
     {
-        public bool Build(string BuildPath, ZXBuildType BuildType, ZXProgram? CompiledProgram, TextWriter OutputLog)
+        public bool Build(string BuildPath, ZXBuildStage Stage, ZXBuildType BuildType, ZXProgram? CompiledProgram, TextWriter OutputLog)
         {
-            if (BuildType != ZXBuildType.Release || CompiledProgram == null)
+            if (Stage != ZXBuildStage.PostBuild || BuildType != ZXBuildType.Release || CompiledProgram == null)
                 return true;
 
             string[] tapeBuilds = Directory.GetFiles(BuildPath, "*" + ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXTapeBuilderDocument)).DocumentExtensions[0], SearchOption.AllDirectories);

@@ -22,6 +22,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -29,6 +30,7 @@ using System.Threading.Tasks;
 using Tmds.DBus;
 using ZXBasicStudio.Classes;
 using ZXBasicStudio.Controls.DockSystem;
+using ZXBasicStudio.DocumentEditors.ZXRamDisk.Classes;
 using ZXBasicStudio.Emulator.Classes;
 
 namespace ZXBasicStudio.Emulator.Controls
@@ -414,16 +416,21 @@ namespace ZXBasicStudio.Emulator.Controls
             }
         }
 
-        public bool InjectProgram(ushort Address, byte[] Data, bool ImmediateJump)
+        public bool InjectProgram(ushort Address, byte[] Data, ZXRamDisk[]? RAMDisks, bool ImmediateJump)
         {
+
+            List<ImageChunk> Chunks = new List<ImageChunk>();
+
+            Chunks.Add(new ImageChunk { Address = Address, Bank = 0, Data = Data });
+
+            if(RAMDisks != null)
+                Chunks.AddRange(RAMDisks.Select(d => new ImageChunk { Address = 0xC000, Data = d.Data, Bank = (byte)d.Bank }));
+
             ProgramImage img = new ProgramImage 
             { 
                 Org = Address, 
                 InitialBank = 0, 
-                Chunks = new[] 
-                { 
-                    new ImageChunk { Address = Address, Bank = 0, Data = Data }  
-                } 
+                Chunks = Chunks.ToArray()
             };
 
             if (!machine.InjectProgram(img))
