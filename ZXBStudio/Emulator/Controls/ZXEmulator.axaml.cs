@@ -16,7 +16,6 @@ using CoreSpectrum.Hardware;
 using CoreSpectrum.Interfaces;
 using CoreSpectrum.Renderers;
 using CoreSpectrum.SupportClasses;
-using Fizzler;
 using Konamiman.Z80dotNet;
 using Newtonsoft.Json.Linq;
 using System;

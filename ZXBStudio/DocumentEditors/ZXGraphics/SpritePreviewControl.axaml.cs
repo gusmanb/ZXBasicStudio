@@ -50,6 +50,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             aspect.Clear(emptyColor);
             InitializeComponent();
             imgPreview.Source = aspect;
+            imgPreview.Width = aspect.Size.Width;
+            imgPreview.Height = aspect.Size.Height;
         }
 
         /// <summary>
@@ -99,6 +101,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     return;
 
                 aspect.Clear(emptyColor);
+                imgPreview.Width = aspect.Size.Width;
+                imgPreview.Height = aspect.Size.Height;
                 imgPreview.InvalidateVisual();
                 return;
             }

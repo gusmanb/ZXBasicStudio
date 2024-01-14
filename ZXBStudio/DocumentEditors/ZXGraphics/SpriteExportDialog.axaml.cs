@@ -39,7 +39,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnCopy.Tapped += BtnCopy_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
             btnOutputFile.Tapped += BtnOutputFile_Tapped;
+            cmbDataType.SelectionChanged += CmbDataType_SelectionChanged;
             cmbArrayBase.SelectionChanged += CmbArrayBase_SelectionChanged;
+            chkAttr.Click += ChkAttr_Click;
             btnSave.Tapped += BtnSave_Tapped;
         }
 
@@ -61,6 +63,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             txtOutputFile.Text = exportConfig.ExportFilePath;
             txtLabelName.Text = exportConfig.LabelName;
             chkAuto.IsChecked = exportConfig.AutoExport;
+            cmbDataType.SelectedIndex = (int)exportConfig.ExportDataType;
             cmbArrayBase.SelectedIndex = exportConfig.ArrayBase.ToInteger();
             chkAttr.IsChecked = exportConfig.IncludeAttr;
 
@@ -75,7 +78,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void ExportType_Changed(ExportTypes exportType)
         {
             exportConfig.ExportType = exportType;
+            Refresh();
+        }
 
+
+        private void Refresh()
+        {
             grdOptions.IsVisible = true;
 
             chkAuto.IsVisible = true;
@@ -88,6 +96,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             txtLabelName.IsVisible = true;
 
             lblArrayBase.IsVisible = true;
+            cmbDataType.IsVisible = true;
             cmbArrayBase.IsVisible = true;
 
             bool canExport = false;
@@ -101,7 +110,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 txtError.IsVisible = false;
             }
 
-            switch (exportType)
+            switch (exportConfig.ExportType)
             {
                 case ExportTypes.PutChars:
                     CreateExportPath(".bas");
@@ -145,6 +154,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
             exportConfig.ArrayBase = cmbArrayBase.SelectedIndex.ToInteger();
             exportConfig.AutoExport = chkAuto.IsChecked == true;
+            exportConfig.ExportDataType = (ExportDataTypes)cmbDataType.SelectedIndex.ToInteger();
             exportConfig.ExportFilePath = txtOutputFile.Text.ToStringNoNull();
             exportConfig.ExportType = cmbSelectExportType.ExportType;
             exportConfig.LabelName = txtLabelName.Text.ToStringNoNull();
@@ -160,24 +170,96 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 txtCode.Text = "";
             }
 
-            GetConfigFromUI();
             var sb = new StringBuilder();
-            sb.AppendLine("'- Includes -----------------------------------------------");
-            sb.AppendLine("#INCLUDE <putchars.bas>");
-            sb.AppendLine("");
-            sb.AppendLine(ExportManager.Export_Sprite_PutChars(exportConfig, sprites));
-            sb.AppendLine("");
-            sb.AppendLine("'- Draw sprite --------------------------------------------");
+            switch (exportConfig.ExportDataType)
+            {
+                case ExportDataTypes.DIM:
+                    {
+                        sb.AppendLine("'- Includes -----------------------------------------------");
+                        sb.AppendLine("#INCLUDE <putchars.bas>");
+                        sb.AppendLine("");
+                        sb.AppendLine(string.Format("' Can use: #INCLUDE \"{0}\"",
+                            Path.GetFileName(exportConfig.ExportFilePath)));
+                        sb.AppendLine(ExportManager.Export_Sprite_PutChars(exportConfig, sprites));
+                        sb.AppendLine("");
+                        sb.AppendLine("'- Draw sprite --------------------------------------------");
 
-            var sprite = sprites.ElementAt(0);
-            sb.AppendLine(string.Format(
-                "putChars(10,5,{0},{1},@{2}{3}({4}))",
-                sprite.Width / 8,
-                sprite.Height / 8,
-                exportConfig.LabelName,
-                sprite.Name.Replace(" ", "_"),
-                sprite.Frames == 1 ? "0" : "0,0"));
-            sb.AppendLine("");
+                        var sprite = sprites.ElementAt(0);
+                        sb.AppendLine(string.Format(
+                            "putChars(10,5,{0},{1},@{2}{3}({4}))",
+                            sprite.Width / 8,
+                            sprite.Height / 8,
+                            exportConfig.LabelName,
+                            sprite.Name.Replace(" ", "_"),
+                            sprite.Frames == 1 ? "0" : "0,0"));
+                        sb.AppendLine("");
+                    }
+                    break;
+
+                case ExportDataTypes.ASM:
+                    {
+                        sb.AppendLine("'- Includes -----------------------------------------------");
+                        sb.AppendLine("#INCLUDE <putchars.bas>");
+                        sb.AppendLine("");
+                        sb.AppendLine("'- Draw sprite --------------------------------------------");
+                        var sprite = sprites.ElementAt(0);
+                        sb.AppendLine(string.Format(
+                            "putChars(10,5,{0},{1},@{2}{3})",
+                            sprite.Width / 8,
+                            sprite.Height / 8,
+                            exportConfig.LabelName,
+                            sprite.Name.Replace(" ", "_")));
+                        sb.AppendLine("");
+                        sb.AppendLine("' This section must not be executed");
+                        sb.AppendLine(string.Format("' Can use: #INCLUDE \"{0}\"",
+                            Path.GetFileName(exportConfig.ExportFilePath)));
+                        sb.AppendLine(ExportManager.Export_Sprite_PutChars(exportConfig, sprites));
+                    }
+                    break;
+
+                case ExportDataTypes.BIN:
+                    {
+                        sb.AppendLine("'- Includes -----------------------------------------------");
+                        sb.AppendLine("#INCLUDE <putchars.bas>");
+                        sb.AppendLine("");
+                        sb.AppendLine("'- Draw sprite --------------------------------------------");
+                        var sprite = sprites.ElementAt(0);
+                        sb.AppendLine(string.Format(
+                            "putChars(10,5,{0},{1},@{2})",
+                            sprite.Width / 8,
+                            sprite.Height / 8,
+                            exportConfig.LabelName));
+                        sb.AppendLine("");
+                        sb.AppendLine("' This section must not be executed");
+                        sb.AppendLine(string.Format(
+                            "{0}:",
+                            exportConfig.LabelName));
+                        sb.AppendLine("ASM");
+                        sb.AppendLine(string.Format("\tINCBIN \"{0}\"",
+                            Path.GetFileName(exportConfig.ExportFilePath)));
+                        sb.AppendLine("END ASM");
+                    }
+                    break;
+
+                case ExportDataTypes.TAP:
+                    {
+                        sb.AppendLine("'- Includes -----------------------------------------------");
+                        sb.AppendLine("#INCLUDE <putchars.bas>");
+                        sb.AppendLine("");
+                        sb.AppendLine("' Load .tap data ------------------------------------------");
+                        sb.AppendLine("LOAD \"\" CODE");
+                        sb.AppendLine("");
+                        sb.AppendLine("'- Draw sprite --------------------------------------------");
+                        var sprite = sprites.ElementAt(0);
+                        sb.AppendLine(string.Format(
+                            "putChars(10,5,{0},{1},@{2})",
+                            sprite.Width / 8,
+                            sprite.Height / 8,
+                            exportConfig.LabelName));
+                        sb.AppendLine("");
+                    }
+                    break;
+            }
 
             txtCode.Text = sb.ToString();
         }
@@ -253,6 +335,41 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         {
             var idx = cmbArrayBase.SelectedIndex;
             exportConfig.ArrayBase = idx;
+            Refresh();
+        }
+
+
+        private void CmbDataType_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var idx = cmbDataType.SelectedIndex;
+            exportConfig.ExportDataType = (ExportDataTypes)idx;
+
+            var ext = "";
+            switch (exportConfig.ExportDataType)
+            {
+                case ExportDataTypes.ASM:
+                case ExportDataTypes.DIM:
+                    ext = ".bas";
+                    break;
+                case ExportDataTypes.BIN:
+                    ext = ".bin";
+                    break;
+                case ExportDataTypes.TAP:
+                    ext = ".tap";
+                    break;
+                default:
+                    return;
+            }
+            txtOutputFile.Text = Path.Combine(Path.GetDirectoryName(txtOutputFile.Text), Path.GetFileNameWithoutExtension(txtOutputFile.Text) + ext);
+            exportConfig.ExportFilePath = txtOutputFile.Text;
+            Refresh();
+        }
+
+
+        private void ChkAttr_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            exportConfig.IncludeAttr = chkAttr.IsChecked.ToBoolean();
+            Refresh();
         }
 
         #endregion

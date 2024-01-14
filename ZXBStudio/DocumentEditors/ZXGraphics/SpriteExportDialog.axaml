@@ -25,23 +25,31 @@
             <Grid ColumnDefinitions="180,*,Auto" RowDefinitions="Auto, Auto,Auto,Auto,Auto,Auto,Auto,Auto">
               <TextBlock Name="lblBuild" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Enable build:</TextBlock>
               <CheckBox Classes="dialog" Name="chkAuto" Grid.Column="1"></CheckBox>
-              
-              <TextBlock Name="lblOutputFile" Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">File path:</TextBlock>
-              <TextBox Name="txtOutputFile" Grid.Row="1" Classes="dialog" Grid.Column="1" MaxWidth="Infinity"></TextBox>
-              <Button Name="btnOutputFile" Grid.Row="1" Classes="dialog" Grid.Column="2" VerticalAlignment="Center">...</Button>
 
-              <TextBlock Name="lblLabelName" Classes="dialog" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right">Var prefix:</TextBlock>
-              <TextBox Name="txtLabelName" Classes="dialog" Grid.Row="2" Grid.Column="1" MaxLength="64" Width="100" HorizontalAlignment="Left"></TextBox>
+              <TextBlock Name="lblDataType" Classes="dialog" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right">Data type:</TextBlock>
+              <ComboBox Name="cmbDataType" Classes="dialog" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left">
+                <ComboBoxItem>DIM (data as array)</ComboBoxItem>
+                <ComboBoxItem>ASM (DEFB inside ASM Block)</ComboBoxItem>
+                <ComboBoxItem>.BIN file (INCBIN "file.bin")</ComboBoxItem>
+                <ComboBoxItem>.TAP file (LOAD "" CODE)</ComboBoxItem>
+              </ComboBox>
+
+              <TextBlock Name="lblOutputFile" Grid.Row="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">File path:</TextBlock>
+              <TextBox Name="txtOutputFile" Grid.Row="2" Classes="dialog" Grid.Column="1" MaxWidth="Infinity"></TextBox>
+              <Button Name="btnOutputFile" Grid.Row="2" Classes="dialog" Grid.Column="2" VerticalAlignment="Center">...</Button>
+
+              <TextBlock Name="lblLabelName" Classes="dialog" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right">Var prefix:</TextBlock>
+              <TextBox Name="txtLabelName" Classes="dialog" Grid.Row="3" Grid.Column="1" MaxLength="64" Width="100" HorizontalAlignment="Left"></TextBox>
            
-              <TextBlock Name="lblArrayBase" Classes="dialog" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Right">Array base:</TextBlock>
-              <ComboBox Name="cmbArrayBase" Classes="dialog" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left">
+              <TextBlock Name="lblArrayBase" Classes="dialog" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Right">Array base:</TextBlock>
+              <ComboBox Name="cmbArrayBase" Classes="dialog" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left">
                 <ComboBoxItem>0 (default)</ComboBoxItem>
                 <ComboBoxItem>1</ComboBoxItem>
                 <ComboBoxItem>From project settings</ComboBoxItem>
               </ComboBox>
 
-              <TextBlock Name="lblAttr" Grid.Row="6" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Export attributes</TextBlock>
-              <CheckBox Name="chkAttr" Grid.Row="6" Grid.Column="1" Classes="dialog"></CheckBox>
+              <TextBlock Name="lblAttr" Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Export attributes</TextBlock>
+              <CheckBox Name="chkAttr" Grid.Row="5" Grid.Column="1" Classes="dialog"></CheckBox>
             </Grid>
 
             <TextBlock Name="txtError" FontSize="14" Foreground="Red" Margin="0,16,0,16" IsVisible="False">

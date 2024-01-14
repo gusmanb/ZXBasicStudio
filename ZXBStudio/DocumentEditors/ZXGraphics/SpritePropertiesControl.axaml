@@ -18,17 +18,16 @@
       <ComboBox Name="cmbMode" Classes="dialog" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" MaxWidth="Infinity" Margin="4,0,0,2">
         <ComboBoxItem>Monochrome</ComboBoxItem>
         <ComboBoxItem>ZX Spectrum</ComboBoxItem>
-        <!--<ComboBoxItem>Next (256 colors)</ComboBoxItem>-->
       </ComboBox>
 
       <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Width:</TextBlock>
       <Border Grid.Row="3" Grid.Column="1" Classes="numericborder">
-        <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="32" Value="8" VerticalAlignment="Center"/>
+        <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="256" Value="8" VerticalAlignment="Center"/>
       </Border>
 
       <TextBlock Grid.Row="4" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Height:</TextBlock>
       <Border Grid.Row="4" Grid.Column="1" Classes="numericborder">
-        <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="8" Maximum="32" Value="8" VerticalAlignment="Center"/>
+        <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="8" Maximum="256" Value="8" VerticalAlignment="Center"/>
       </Border>
 
       <TextBlock Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>
