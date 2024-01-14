@@ -66,7 +66,7 @@ namespace ZXBasicStudio.BuildSystem
                 OutputLogWritter.WriteLine("Project path: " + project.ProjectPath);
                 OutputLogWritter.WriteLine("Building program " + mainFile);
                 OutputLogWritter.WriteLine("Building starts at " + startTime);
-                
+
                 var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{mainFile}\" " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 string logOutput;
@@ -131,6 +131,7 @@ namespace ZXBasicStudio.BuildSystem
 
                 // Create .bin file
                 {
+                    outputLogWritter.WriteLine("Creating .bin file...");
                     binFile = Path.Combine(project.ProjectPath, Path.GetFileNameWithoutExtension(settings.MainFile) + ".bin");
                     if (File.Exists(binFile))
                     {
@@ -161,9 +162,9 @@ namespace ZXBasicStudio.BuildSystem
                     // Main file
                     {
                         int[] nextBank16K = { 255, 5, 2, 0 };
-                        int bank = org/16384;
-                        int offset = org-(bank * 16384);
-                        if(bank<0 || bank > 3)
+                        int bank = org / 16384;
+                        int offset = org - (bank * 16384);
+                        if (bank < 0 || bank > 3)
                         {
                             outputLogWritter.WriteLine("Error: Invalid ORG direction, must be >0 and <65535");
                             return false;
@@ -210,7 +211,8 @@ namespace ZXBasicStudio.BuildSystem
                     Process process = new Process();
                     if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                     {
-                        process.StartInfo.FileName = "python";
+                        CheckNextCreator();
+                        process.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "python", "python.exe");
                         process.StartInfo.Arguments = string.Format("{0} nex.cfg {1}",
                             Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.py"),
                             Path.GetFileNameWithoutExtension(settings.MainFile) + ".nex");
@@ -228,12 +230,17 @@ namespace ZXBasicStudio.BuildSystem
                         process.StartInfo.CreateNoWindow = true;
                         process.StartInfo.RedirectStandardOutput = true;
                     }
+                    outputLogWritter.WriteLine(string.Format("{0} {1}",
+                        process.StartInfo.FileName,
+                        process.StartInfo.Arguments));
                     process.Start();
                     process.WaitForExit();
 
                     if (!File.Exists(nexFile))
                     {
                         outputLogWritter.WriteLine("Error building .nex file");
+                        outputLogWritter.WriteLine(process.StartInfo.WorkingDirectory);
+
                         using (StreamReader reader = process.StandardOutput)
                         {
                             string output = reader.ReadToEnd();
@@ -253,6 +260,19 @@ namespace ZXBasicStudio.BuildSystem
                 return false;
             }
 
+        }
+
+
+        private static void CheckNextCreator()
+        {
+            var fNCexe = Path.Combine(Path.GetDirectoryName(ZXOptions.Current.ZxbcPath), "tools", "nextcreator.exe");
+            if (File.Exists(fNCexe))
+            {
+                return;
+            }
+
+            File.Copy(ZXOptions.Current.ZxbcPath, fNCexe);
+            return;
         }
 
 
