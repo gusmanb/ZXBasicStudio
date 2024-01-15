@@ -20,7 +20,8 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk
         {
             try
             {
-                ZXRamDiskFile doc = new ZXRamDiskFile { DiskName = "Unnamed", Bank = RamDiskBank.Bank4 };
+                ZXRamDiskFile doc = new ZXRamDiskFile { RelocateStack = true, EnableIndirect = true, IndirectBufferSize = 64 };
+
                 string content = JsonConvert.SerializeObject(doc);
                 File.WriteAllText(Path, content);
                 return true;

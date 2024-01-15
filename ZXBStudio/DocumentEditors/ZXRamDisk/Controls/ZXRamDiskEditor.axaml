@@ -6,24 +6,38 @@
              x:Class="ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls.ZXRamDiskEditor">
   <Grid RowDefinitions="90,*,40">
     <Border Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
-      <Grid RowDefinitions="5,*" ColumnDefinitions="96,*,64,160">
-        <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Disk name:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,15,5" Name="txtDiskName"></TextBox>
-        <TextBlock Grid.Row="1" Grid.Column="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Target bank:</TextBlock>
-        <ComboBox Classes="dialog" Grid.Row="1" Grid.Column="3" Name="cbBank" Width="110" SelectedIndex="0" FontSize="10">
-          <ComboBoxItem>Bank 4</ComboBoxItem>
-          <ComboBoxItem>Bank 6</ComboBoxItem>
-          <ComboBoxItem>Bank 1</ComboBoxItem>
-          <ComboBoxItem>Bank 3</ComboBoxItem>
-          <ComboBoxItem>Bank 7</ComboBoxItem>
-        </ComboBox>
+      <Grid RowDefinitions="5,*" ColumnDefinitions="140,20,148,160,148,20">
+        <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Enable indirect load:</TextBlock>
+        <CheckBox Grid.Row="1" Grid.Column="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right" Name="ckIndirect"></CheckBox>
+        
+        <TextBlock Grid.Row="1" Grid.Column="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Indirect buffer size:</TextBlock>
+        <Border Height="32" Grid.Row="1" Grid.Column="3" BorderBrush="#ff909090" BorderThickness="2" CornerRadius="5" Padding="-1" Margin="5,0,5,0">
+          <NumericUpDown Classes="dialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ParsingNumberStyle="Integer" Value="64" Minimum="16" Maximum="256" FormatString="####" Name="nudIndSize"></NumericUpDown>
+        </Border>
+        <TextBlock Grid.Row="1" Grid.Column="4" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Relocate stack:</TextBlock>
+        <CheckBox Grid.Row="1" Grid.Column="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right" Name="ckRelocate"></CheckBox>
+        
+        
       </Grid>
     </Border>
     <Border Grid.Row="1" Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
-      <Grid RowDefinitions="5,24,*" ColumnDefinitions="320,*">
-        <TextBlock Grid.Row="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Add file</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">File list</TextBlock>
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="10">
+      <Grid RowDefinitions="5,60,24,*" ColumnDefinitions="320,*">
+        <StackPanel Spacing="10" HorizontalAlignment="Center" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="0"  Orientation="Horizontal">
+          <TextBlock VerticalAlignment="Center" Margin="0,-10,0,0">Active bank:</TextBlock>
+          <ComboBox Classes="dialog" Name="cbBank" Width="110" SelectedIndex="0" FontSize="10" Margin="0,-10,0,0">
+            <ComboBoxItem>Bank 4</ComboBoxItem>
+            <ComboBoxItem>Bank 6</ComboBoxItem>
+            <ComboBoxItem>Bank 1</ComboBoxItem>
+            <ComboBoxItem>Bank 3</ComboBoxItem>
+            <ComboBoxItem>Bank 7</ComboBoxItem>
+          </ComboBox>
+        </StackPanel>
+
+        <Separator Grid.Row="1" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Margin="30,0,30,5"></Separator>
+        
+        <TextBlock Grid.Row="2" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Add file</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">File list</TextBlock>
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Margin="10">
           <Grid ColumnDefinitions="56,*,32" RowDefinitions="Auto,Auto,Auto,Auto,16,*">
             <TextBlock Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">File:</TextBlock>
             <TextBox Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,0,5" Name="txtFilePath"></TextBox>
@@ -34,7 +48,7 @@
             <Button Grid.Row="5" Grid.ColumnSpan="3" Classes="dialog" Margin="10,5,10,5" Height="32" Name="btnAddFile" VerticalAlignment="Bottom">Add file</Button>
           </Grid>
         </ScrollViewer>
-        <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*,48" RowDefinitions="24,28,*,48">
+        <Grid Grid.Row="3" Grid.Column="1" ColumnDefinitions="*,*,*,48" RowDefinitions="24,28,*,48">
           <Border Background="#202020" BorderBrush="White" BorderThickness="1">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">File name</TextBlock>
           </Border>

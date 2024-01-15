@@ -1,39 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
+using ZXBasicStudio.Emulator.Classes;
 
 namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Classes
 {
     public class ZXRamDiskFile
     {
-        public required string DiskName { get; set; }
-        public RamDiskBank Bank { get; set; }
-        public List<ZXRamDiskContainedFile> Files { get; set; } = new List<ZXRamDiskContainedFile>();
+        public bool EnableIndirect { get; set; }
+        public int IndirectBufferSize { get; set; }
+        public bool RelocateStack { get; set; }
+        public ZXRamDiskLogicBank[] Banks { get; set; } = new ZXRamDiskLogicBank[]
+        {
+            new ZXRamDiskLogicBank{ Bank = ZXMemoryBank.Bank4 },
+            new ZXRamDiskLogicBank{ Bank = ZXMemoryBank.Bank6 },
+            new ZXRamDiskLogicBank{ Bank = ZXMemoryBank.Bank1 },
+            new ZXRamDiskLogicBank{ Bank = ZXMemoryBank.Bank3 },
+            new ZXRamDiskLogicBank{ Bank = ZXMemoryBank.Bank7 },
+        };
     }
 
-    public class ZXRamDisk
+    public class ZXRamDiskLogicBank
     {
-        public RamDiskBank Bank { get; set; }
-        public required byte[] Data { get; set; }
+        public ZXMemoryBank Bank { get; set; }
+        public List<ZXRamDiskContainedFile> Files { get; set; } = new List<ZXRamDiskContainedFile>();
     }
 
     public class ZXRamDiskContainedFile
     {
         public required string Name { get; set; }
         public required string SourcePath { get; set; }
-        public required byte[] Content { get; set; }
-        public int Size => Content?.Length ?? 0;
+        public byte[] Content { get { return File.ReadAllBytes(Path.Combine(ZXProjectManager.Current.ProjectPath, SourcePath)); } }
+        public int Size => Content.Length;
     }
 
-    public enum RamDiskBank
-    {
-        Bank1 = 1,
-        Bank3 = 3,
-        Bank4 = 4,
-        Bank6 = 6,
-        Bank7 = 7
-    }
+    
 }

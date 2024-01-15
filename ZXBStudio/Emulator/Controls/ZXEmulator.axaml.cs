@@ -416,15 +416,15 @@ namespace ZXBasicStudio.Emulator.Controls
             }
         }
 
-        public bool InjectProgram(ushort Address, byte[] Data, ZXRamDisk[]? RAMDisks, bool ImmediateJump)
+        public bool InjectProgram(ushort Address, byte[] Data, ZXBinaryBank[]? PagedBanks, bool ImmediateJump)
         {
 
             List<ImageChunk> Chunks = new List<ImageChunk>();
 
             Chunks.Add(new ImageChunk { Address = Address, Bank = 0, Data = Data });
 
-            if(RAMDisks != null)
-                Chunks.AddRange(RAMDisks.Select(d => new ImageChunk { Address = 0xC000, Data = d.Data, Bank = (byte)d.Bank }));
+            if(PagedBanks != null)
+                Chunks.AddRange(PagedBanks.Select(d => new ImageChunk { Address = 0xC000, Data = d.Data, Bank = (byte)d.Bank }));
 
             ProgramImage img = new ProgramImage 
             { 

@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using AvaloniaEdit.Utils;
@@ -8,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZXBasicStudio.Classes;
+using ZXBasicStudio.DebuggingTools.Registers.Binding;
 using ZXBasicStudio.DocumentEditors.ZXRamDisk.Classes;
 using ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes;
 using ZXBasicStudio.DocumentModel.Classes;
@@ -18,12 +21,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
 {
     public partial class ZXRamDiskEditor : ZXDocumentEditorBase
     {
+        public static StyledProperty<ObservableCollection<ZXRamDiskContainedFile>> FilesProperty = AvaloniaProperty.Register<ZXRamDiskEditor, ObservableCollection<ZXRamDiskContainedFile>>("Files");
+
         #region Private variables
         string _docName;
         string _docPath;
         bool _modified;
         bool _internalUpdate;
-        ObservableCollection<ZXRamDiskContainedFile> _files = new ObservableCollection<ZXRamDiskContainedFile>();
+        ObservableCollection<ZXRamDiskContainedFile>[] _files = new ObservableCollection<ZXRamDiskContainedFile>[5];
         #endregion
 
         #region Events
@@ -34,7 +39,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
         #endregion
 
         #region Binding properties
-        public ObservableCollection<ZXRamDiskContainedFile> Files => _files;
+        public ObservableCollection<ZXRamDiskContainedFile> Files 
+        {
+            get { return GetValue(FilesProperty); }
+            set { SetValue(FilesProperty, value); }
+        }
         #endregion
 
         #region ZXDocumentBase properties
@@ -44,16 +53,31 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
         #endregion
         public ZXRamDiskEditor()
         {
+            for (int buc = 0; buc < 5; buc++)
+                _files[buc] = new ObservableCollection<ZXRamDiskContainedFile>();
+
+            //Order: 4, 6, 1, 3, 7
+            Files = _files[0];
+
             DataContext = this;
             InitializeComponent();
         }
 
         public ZXRamDiskEditor(string DocumentPath)
         {
+            for (int buc = 0; buc < 5; buc++)
+                _files[buc] = new ObservableCollection<ZXRamDiskContainedFile>();
+
+            //Order: 4, 6, 1, 3, 7
+            Files = _files[0];
+
             DataContext = this;
             InitializeComponent();
 
-            txtDiskName.TextChanged += DocumentChanged;
+            ckIndirect.IsCheckedChanged += DocumentChanged;
+            ckRelocate.IsCheckedChanged += DocumentChanged;
+            nudIndSize.ValueChanged += DocumentChanged;
+            cbBank.SelectionChanged += ChangeSelectedBank;
 
             btnSelectFile.Click += BtnSelectFile_Click;
             btnAddFile.Click += BtnAddFile_Click;
@@ -67,6 +91,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
                 throw new Exception("Error opening document");
         }
 
+        private void ChangeSelectedBank(object? sender, SelectionChangedEventArgs e)
+        {
+            int bank = cbBank.SelectedIndex;
+            Files = _files[bank];
+        }
 
         private async void BtnAddFile_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
@@ -76,7 +105,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
                 return;
             }
 
-            if (!File.Exists(txtFilePath.Text))
+            string path = Path.Combine(ZXProjectManager.Current.ProjectPath, txtFilePath.Text);
+
+            if (!File.Exists(path))
             {
                 await Window.GetTopLevel(this).ShowError("File not found", "Cannot find the specified file.");
                 return;
@@ -88,9 +119,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
                 return;
             }
 
-            ZXRamDiskContainedFile file = new ZXRamDiskContainedFile { Name = txtFileName.Text, SourcePath = txtFilePath.Text, Content = File.ReadAllBytes(txtFilePath.Text) };
+            ZXRamDiskContainedFile file = new ZXRamDiskContainedFile { Name = txtFileName.Text, SourcePath = txtFilePath.Text };
 
-            _files.Add(file);
+            Files.Add(file);
 
             DocumentChanged(this, e);
         }
@@ -121,6 +152,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
             if (string.IsNullOrWhiteSpace(file))
                 return;
 
+            file = Path.GetRelativePath(ZXProjectManager.Current.ProjectPath, file);
+
             txtFilePath.Text = file;
 
             string fileName = Path.GetFileNameWithoutExtension(txtFilePath.Text);
@@ -132,7 +165,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
         {
             if (lstFiles.SelectedItem != null)
             {
-                _files.Remove((ZXRamDiskContainedFile)lstFiles.SelectedItem);
+                Files.Remove((ZXRamDiskContainedFile)lstFiles.SelectedItem);
                 DocumentChanged(this, e);
             }
         }
@@ -183,30 +216,18 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
 
             _internalUpdate = true;
 
-            txtDiskName.Text = fileContent.DiskName;
+            ckIndirect.IsChecked = fileContent.EnableIndirect;
+            ckRelocate.IsChecked = fileContent.RelocateStack;
+            nudIndSize.Value = fileContent.IndirectBufferSize;
 
-            switch (fileContent.Bank)
+            for (int buc = 0; buc < 5; buc++)
             {
-                case RamDiskBank.Bank1:
-                    cbBank.SelectedIndex = 2;
-                    break;
-                case RamDiskBank.Bank3:
-                    cbBank.SelectedIndex = 3;
-                    break;
-                case RamDiskBank.Bank4:
-                    cbBank.SelectedIndex = 0;
-                    break;
-                case RamDiskBank.Bank6:
-                    cbBank.SelectedIndex = 1;
-                    break;
-                case RamDiskBank.Bank7:
-                    cbBank.SelectedIndex = 4;
-                    break;
+                _files[buc].Clear();
+                _files[buc].AddRange(fileContent.Banks[buc].Files);
             }
 
-            _files.Clear();
-            _files.AddRange(fileContent.Files);
-            
+            cbBank.SelectedIndex = 0;
+
             Task.Run(async () =>
             {
                 await Task.Delay(100);
@@ -219,47 +240,26 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
         #region ZXDocumentBase implementation
         public override bool SaveDocument(TextWriter OutputLog)
         {
-            if (string.IsNullOrWhiteSpace(txtDiskName.Text))
-            {
-                OutputLog.WriteLine("Missing disk name, aborting...");
-                return false;
-            }
-
-            if(_files.Count == 0) 
+            if(_files.Sum(f => f.Count) == 0) 
             {
                 OutputLog.WriteLine("No files on disk, aborting...");
                 return false;
             }
 
-            if (_files.Sum(f => f.Size) > 16 * 1024)
+            if (_files.Any(f => f.Sum(ff => ff.Size) > 16 * 1024))
             {
-                OutputLog.WriteLine("Total size exceeds 16Kb, aborting...");
+                OutputLog.WriteLine("Bank size exceeds 16Kb, aborting...");
                 return false;
             }
 
-            RamDiskBank selBank = new RamDiskBank();
+            ZXRamDiskFile fileContent = new ZXRamDiskFile();
 
-            switch (cbBank.SelectedIndex)
-            {
-                case 2:
-                    selBank = RamDiskBank.Bank1;
-                    break;
-                case 3:
-                    selBank = RamDiskBank.Bank3;
-                    break;
-                case 0:
-                    selBank = RamDiskBank.Bank4;
-                    break;
-                case 1:
-                    selBank = RamDiskBank.Bank6;
-                    break;
-                case 4:
-                    selBank = RamDiskBank.Bank7;
-                    break;
-            }
+            for (int buc = 0; buc < 5; buc++)
+                fileContent.Banks[buc].Files.AddRange(_files[buc]);
 
-            //TODO: Make paths relative to project
-            ZXRamDiskFile fileContent = new ZXRamDiskFile { DiskName = txtDiskName.Text, Bank = selBank, Files = _files.ToList() };
+            fileContent.IndirectBufferSize = (int)(nudIndSize.Value ?? 0);
+            fileContent.EnableIndirect = ckIndirect.IsChecked ?? false;
+            fileContent.RelocateStack = ckRelocate.IsChecked ?? false;
 
             string content = JsonConvert.SerializeObject(fileContent, Formatting.Indented);
             try
