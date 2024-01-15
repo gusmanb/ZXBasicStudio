@@ -23,7 +23,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk
             {
                 case ZXBuildStage.PreBuild:
 
-                    return BuildDiskAndCode(BuildPath, OutputLog);
+                    return BuildDiskAndCode(BuildPath, BuildType, OutputLog);
 
                 case ZXBuildStage.PostBuild:
 
@@ -65,7 +65,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk
             return true;
         }
 
-        private bool BuildDiskAndCode(string buildPath, TextWriter outputLog)
+        private bool BuildDiskAndCode(string buildPath, ZXBuildType BuildType, TextWriter outputLog)
         {
             string[] diskBuilds = Directory.GetFiles(buildPath, "*" + ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXRamDiskDocument)).DocumentExtensions[0], SearchOption.AllDirectories);
 
@@ -92,7 +92,6 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk
                     List<byte> data = new List<byte>();
 
                     sb.AppendLine($"#define {diskFile.DiskName} {(int)diskFile.Bank}");
-                    sb.AppendLine($"#define {diskFile.DiskName}_SIZE {diskFile.Files.Sum(f => f.Size)}");
 
                     foreach(var file in diskFile.Files) 
                     {
@@ -108,10 +107,15 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk
                         }
 
                         data.AddRange(fileData);
-                        sb.AppendLine($"#define {file.Name}_SIZE {fileData.Length}");
+                        sb.AppendLine($"#define {file.Name}Size {fileData.Length}");
+
+                        sb.AppendLine($"#define Load{file.Name}From{diskFile.DiskName}(Dest) LoadRamData({diskFile.DiskName}, {file.Name} + $C000, Dest, {file.Name}Size)");
+
+                        sb.AppendLine($"#define LoadPartial{file.Name}From{diskFile.DiskName}(Dest, Size) LoadRamData({diskFile.DiskName}, {file.Name} + $C000, Dest, Size)");
                     }
 
-                    sb.AppendLine($"\r\nLoadRamDisk({diskFile.DiskName})");
+                    if(BuildType == ZXBuildType.Release)
+                        sb.AppendLine($"\r\nLoadRamDisk({diskFile.DiskName})");
 
                     outputLog.WriteLine("Writting binary disk...");
                     File.WriteAllBytes(diskPath.Substring(0, diskPath.Length - 4) + ".zxrbin", data.ToArray());
