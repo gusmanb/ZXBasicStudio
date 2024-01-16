@@ -527,7 +527,7 @@ END SUB
 
                         sb.AppendLine($"#define Load{file.Name}From{diskName}(Dest) LoadRamData({file.Name}Bank, {file.Name}Address, Dest, {file.Name}Size)");
 
-                        sb.AppendLine($"#define LoadPartial{file.Name}From{diskName}(Dest, Size) LoadRamData({file.Name}Bank, {file.Name}Address, Dest, Size)");
+                        sb.AppendLine($"#define LoadPartial{file.Name}From{diskName}(Offset, Dest, Size) LoadRamData({file.Name}Bank, {file.Name}Address + Offset, Dest, Size)");
                     }
 
                     outputLog.WriteLine($"Writting binary bank {(int)bank.Bank}...");
