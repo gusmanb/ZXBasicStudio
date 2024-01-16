@@ -9,7 +9,6 @@
              Focusable="True"
              Background="#ff202020"
              x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.SpriteEditor">
-  
   <Grid Name="grdMain" RowDefinitions="*,Auto">
     <Grid Name="grdEditor" Grid.RowSpan="2" ColumnDefinitions="180,4,*,4,200" Margin="0,8,0,0">
 

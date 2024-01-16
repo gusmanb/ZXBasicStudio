@@ -778,6 +778,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             if (!allowsBreakpoints || e.OffsetChangeMap == null || e.OffsetChangeMap.Count == 0)
                 return;
 
+
+            if (updateFoldingsTimer != null)
+            {
+                updateFoldingsTimer.IsEnabled = false;
+                updateFoldingsTimer.IsEnabled = true;
+            }
+
             // TODO: DUEFECTU 2023.05.17 - if e.OffsetChangeMap.Count == 0, e.OffsetChangeMap[0].Offset throws a null reference exception
             if (e.OffsetChangeMap.Count == 0)
             {
