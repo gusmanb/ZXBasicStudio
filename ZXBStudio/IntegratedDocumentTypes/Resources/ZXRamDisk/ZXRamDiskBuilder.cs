@@ -19,6 +19,10 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk
     public class ZXRamDiskBuilder : IZXDocumentBuilder
     {
 
+        public Guid Id => Guid.Parse("42257fd1-d649-4334-813a-de3b81a54654");
+
+        public Guid[]? DependsOn => null;
+
         static readonly string mainTemplate = @"''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 'INCLUDE THIS FILE AT THE FIRST LINE IN THE MAIN PROGRAM TO  '
 'ENSURE THE CODE IS NOT STORED IN THE BANKING AREA           '
@@ -439,9 +443,14 @@ END SUB
                     if (bank.Files.Count == 0)
                         continue;
 
-                    byte[] binFile = File.ReadAllBytes(diskPath.Substring(0, diskPath.Length - 4) + $"_{(int)bank.Bank}.zxrbin");
+                    string bankFile = diskPath.Substring(0, diskPath.Length - 4) + $"_{(int)bank.Bank}.zxrbin";
 
-                    compiledProgram.Banks.Add(new ZXBinaryBank { Bank = bank.Bank, Data = binFile });
+                    byte[] binFile = File.ReadAllBytes(bankFile);
+
+                    compiledProgram.Banks.Add(new ZXBinaryBank { Identifier = Path.GetFileNameWithoutExtension(bankFile),  Bank = bank.Bank, Data = binFile });
+
+                    if (!diskFile.PreserveBin)
+                        File.Delete(bankFile);
                 }
             }
             catch (Exception ex)

@@ -77,6 +77,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
             ckIndirect.IsCheckedChanged += DocumentChanged;
             ckRelocate.IsCheckedChanged += DocumentChanged;
             nudIndSize.ValueChanged += DocumentChanged;
+            ckPreserve.IsCheckedChanged += DocumentChanged;
+
             cbBank.SelectionChanged += ChangeSelectedBank;
 
             btnSelectFile.Click += BtnSelectFile_Click;
@@ -219,6 +221,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
             ckIndirect.IsChecked = fileContent.EnableIndirect;
             ckRelocate.IsChecked = fileContent.RelocateStack;
             nudIndSize.Value = fileContent.IndirectBufferSize;
+            ckPreserve.IsChecked = fileContent.PreserveBin;
 
             for (int buc = 0; buc < 5; buc++)
             {
@@ -260,6 +263,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls
             fileContent.IndirectBufferSize = (int)(nudIndSize.Value ?? 0);
             fileContent.EnableIndirect = ckIndirect.IsChecked ?? false;
             fileContent.RelocateStack = ckRelocate.IsChecked ?? false;
+            fileContent.PreserveBin = ckPreserve.IsChecked ?? false;
 
             string content = JsonConvert.SerializeObject(fileContent, Formatting.Indented);
             try

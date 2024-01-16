@@ -8,6 +8,7 @@ namespace ZXBasicStudio.Emulator.Classes
 {
     public class ZXBinaryBank
     {
+        public string? Identifier { get; set; }
         public ZXMemoryBank Bank { get; set; }
         public required byte[] Data { get; set; }
     }

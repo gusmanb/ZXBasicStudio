@@ -12,9 +12,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXRamDisk.Classes
 {
     public class ZXRamDiskFile
     {
-        public bool EnableIndirect { get; set; }
-        public int IndirectBufferSize { get; set; }
-        public bool RelocateStack { get; set; }
+        public bool EnableIndirect { get; set; } = false;
+        public int IndirectBufferSize { get; set; } = 64;
+        public bool RelocateStack { get; set; } = false;
+        public bool PreserveBin { get; set; } = false;
         public ZXRamDiskLogicBank[] Banks { get; set; } = new ZXRamDiskLogicBank[]
         {
             new ZXRamDiskLogicBank{ Bank = ZXMemoryBank.Bank4 },

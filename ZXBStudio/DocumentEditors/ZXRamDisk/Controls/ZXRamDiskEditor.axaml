@@ -6,7 +6,7 @@
              x:Class="ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls.ZXRamDiskEditor">
   <Grid RowDefinitions="90,*,40">
     <Border Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
-      <Grid RowDefinitions="5,*" ColumnDefinitions="140,20,148,160,148,20">
+      <Grid RowDefinitions="5,*" ColumnDefinitions="140,20,130,80,100,20,120,20">
         <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Enable indirect load:</TextBlock>
         <CheckBox Grid.Row="1" Grid.Column="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right" Name="ckIndirect"></CheckBox>
         
@@ -16,8 +16,9 @@
         </Border>
         <TextBlock Grid.Row="1" Grid.Column="4" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Relocate stack:</TextBlock>
         <CheckBox Grid.Row="1" Grid.Column="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right" Name="ckRelocate"></CheckBox>
-        
-        
+
+        <TextBlock Grid.Row="1" Grid.Column="6" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Preseve binaries:</TextBlock>
+        <CheckBox Grid.Row="1" Grid.Column="7" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right" Name="ckPreserve"></CheckBox>
       </Grid>
     </Border>
     <Border Grid.Row="1" Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">

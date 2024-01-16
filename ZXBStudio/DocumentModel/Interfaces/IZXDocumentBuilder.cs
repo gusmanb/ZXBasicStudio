@@ -15,6 +15,16 @@ namespace ZXBasicStudio.DocumentModel.Interfaces
     public interface IZXDocumentBuilder
     {
         /// <summary>
+        /// Id of the builder
+        /// </summary>
+        public Guid Id { get; }
+
+        /// <summary>
+        /// List of dependencies (only in the same stage)
+        /// </summary>
+        public Guid[]? DependsOn { get; }
+
+        /// <summary>
         /// Builds all the documents of the handled type belonging to the project.
         /// </summary>
         /// <param name="BuildPath">Path of the project. The document builder must handle all the documents inside the path.</param>
