@@ -120,39 +120,6 @@ RAMDSK_PROTECTED_END:
 
 END ASM
 
-'Call this function the first in your program in order to
-'load the banks data
-SUB LoadRamDisk()
-
-    DIM buc AS UBYTE
-    
-    
-    FOR buc = 0 TO {banks_count}
-
-        rdkTransferBank = banks(buc)
-
-        ASM
-            LD A, (_rdkTransferBank)    
-            RDK_PROC_PROLOGUE()
-            CALL RDK_SWITCH_BANK
-            EI
-        
-        END ASM
-    
-        LOAD """" CODE $C000
-    
-        ASM
-    
-            DI
-            CALL RDK_SWITCH_BANK
-            RDK_PROC_EPILOGUE()
-        
-        END ASM
-
-    NEXT buc
-
-END SUB
-
 {basic_functions_template}
 ";
 
@@ -495,6 +462,7 @@ END SUB
 
                 StringBuilder sb = new StringBuilder();
 
+                /*
                 sb.Append($"#define Load{diskName}()");
 
                 foreach (var bank in diskFile.Banks)
@@ -504,6 +472,7 @@ END SUB
                 }
 
                 sb.Append("\r\n");
+                */
 
                 List<int> usedBanks = new List<int>();
 

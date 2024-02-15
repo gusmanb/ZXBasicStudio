@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HeadlessEmulator": {
+      "commandName": "Project",
+      "commandLineArgs": "-b overflow_i8_add.bin -a 32768 -m M128k -p 8 10"
+    }
+  }
+}
