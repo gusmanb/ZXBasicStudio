@@ -23,6 +23,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes
         public ZXTapeBuilderDataBlock[]? DataBlocks { get; set; }
         public bool IncludeRAMDisk { get; set; }
         public ZXRAMDiskOrder RAMDiskOrder { get; set; }
+        public bool BasicLoadRAMDisk { get; set; } = true;
     }
 
     public enum ZXRAMDiskOrder

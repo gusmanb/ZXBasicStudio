@@ -84,6 +84,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
             txtScreenFile.TextChanged += DocumentChanged;
             ckRAMDisk.IsCheckedChanged += DocumentChanged;
             cbRAMDiskOrder.SelectionChanged += DocumentChanged;
+            ckBasicRAMDisk.IsCheckedChanged += DocumentChanged;
 
             btnSelectScreen.Click += BtnSelectScreen_Click;
             btnSelectBlock.Click += BtnSelectBlock_Click;
@@ -311,6 +312,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
 
             //RAM disk
             ckRAMDisk.IsChecked = fileContent.IncludeRAMDisk;
+            ckBasicRAMDisk.IsChecked = fileContent.BasicLoadRAMDisk;
+
             if (fileContent.RAMDiskOrder == ZXRAMDiskOrder.Before)
                 cbRAMDiskOrder.SelectedIndex = 0;
             else
@@ -424,7 +427,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 ScreenName = txtScreenName.Text,
                 DataBlocks = _blocks.ToArray(),
                 IncludeRAMDisk = ckRAMDisk.IsChecked ?? false,
-                RAMDiskOrder = cbRAMDiskOrder.SelectedIndex == 0 ? ZXRAMDiskOrder.Before : ZXRAMDiskOrder.After
+                RAMDiskOrder = cbRAMDiskOrder.SelectedIndex == 0 ? ZXRAMDiskOrder.Before : ZXRAMDiskOrder.After,
+                BasicLoadRAMDisk = ckBasicRAMDisk.IsChecked ?? false
             };
 
             string content = JsonConvert.SerializeObject(fileContent, Formatting.Indented);

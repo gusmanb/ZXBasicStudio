@@ -102,7 +102,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 
                 line.AddTokens(I.LOAD, "\"\"", I.CODE, CompiledProgram.Org);
 
-                if (buildFile.IncludeRAMDisk && buildFile.RAMDiskOrder == ZXRAMDiskOrder.Before)
+                if (buildFile.IncludeRAMDisk && buildFile.BasicLoadRAMDisk && buildFile.RAMDiskOrder == ZXRAMDiskOrder.Before)
                 {
                     foreach (var bank in CompiledProgram.Banks)
                     {
@@ -121,7 +121,7 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
                         line.AddTokens(I.LOAD, "\"\"", I.CODE, block.BlockAddress);
                 }
 
-                if (buildFile.IncludeRAMDisk && buildFile.RAMDiskOrder == ZXRAMDiskOrder.After)
+                if (buildFile.IncludeRAMDisk && buildFile.BasicLoadRAMDisk && buildFile.RAMDiskOrder == ZXRAMDiskOrder.After)
                 {
                     foreach (var bank in CompiledProgram.Banks)
                     {
@@ -133,15 +133,6 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
                     line.AddTokens(I.POKE, 23388, ",", 16);
                     line.AddTokens(I.OUT, 32765, ",", 16);
                 }
-
-
-
-
-
-
-
-
-
 
                 if (buildFile.HideHeaders)
                     line.AddTokens(I.POKE, 23739, ",", 244);

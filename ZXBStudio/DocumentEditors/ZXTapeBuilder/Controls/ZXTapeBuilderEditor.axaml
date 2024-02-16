@@ -129,7 +129,7 @@
     </Border>
     <TextBlock Grid.Row="2" Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">Data blocks</TextBlock>
     <Border Grid.Row="3" Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
-      <Grid ColumnDefinitions="140,32,100,150,*">
+      <Grid ColumnDefinitions="140,32,100,150,100,32,*">
         <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" HorizontalAlignment="Right">Include RAM disk blocks:</TextBlock>
         <CheckBox Name="ckRAMDisk" Grid.Column="1" VerticalAlignment="Center" Margin="5" HorizontalAlignment="Left"></CheckBox>
         <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="15,0,0,0" HorizontalAlignment="Right">Inclusion order:</TextBlock>
@@ -137,6 +137,8 @@
           <ComboBoxItem>Before data blocks</ComboBoxItem>
           <ComboBoxItem>After data blocks</ComboBoxItem>
         </ComboBox>
+        <TextBlock Grid.Column="4" VerticalAlignment="Center" Margin="15,0,0,0" HorizontalAlignment="Right">Basic loader:</TextBlock>
+        <CheckBox Name="ckBasicRAMDisk" Grid.Column="5" VerticalAlignment="Center" Margin="5" HorizontalAlignment="Left"></CheckBox>
       </Grid>
     </Border>
     <TextBlock Grid.Row="3" Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">RAM disk</TextBlock>
