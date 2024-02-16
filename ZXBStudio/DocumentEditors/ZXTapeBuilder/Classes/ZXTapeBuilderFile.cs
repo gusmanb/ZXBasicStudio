@@ -21,7 +21,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes
         public string? ScreenName { get; set; }
         public string? ScreenFile { get; set; }
         public ZXTapeBuilderDataBlock[]? DataBlocks { get; set; }
+        public bool IncludeRAMDisk { get; set; }
+        public ZXRAMDiskOrder RAMDiskOrder { get; set; }
+        public bool BasicLoadRAMDisk { get; set; } = true;
+    }
 
+    public enum ZXRAMDiskOrder
+    {
+        Before,
+        After
     }
 
     public class ZXTapeBuilderPoke

@@ -23,6 +23,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
     /// </summary>
     public class ExportManager : IZXDocumentBuilder
     {
+        public Guid Id => Guid.Parse("4596ac56-9cd4-4553-b191-acdaa5ee3898");
+
+        public Guid[]? DependsOn => null;
+
         private FileTypes fileType = FileTypes.Undefined;
 
         public bool Initialize(FileTypes fileType)
@@ -32,7 +36,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         }
 
 
-        public bool Build(string BuildPath, ZXBuildType BuildType, ZXProgram? program, TextWriter OutputLog)
+        public bool Build(string BuildPath, ZXBuildStage Stage, ZXBuildType BuildType, ZXProgram? program, TextWriter OutputLog)
         {
             if (!ServiceLayer.Initialized)
             {

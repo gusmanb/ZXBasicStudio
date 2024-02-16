@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentEditors.ZXRamDisk.Classes;
+using ZXBasicStudio.Emulator.Classes;
 
 namespace ZXBasicStudio.BuildSystem
 {
@@ -14,6 +16,7 @@ namespace ZXBasicStudio.BuildSystem
         public ZXMemoryMap? ProgramMap { get; set; }
         public ZXMemoryMap? DisassemblyMap { get; set; }
         public ZXVariableMap? Variables { get; set; }
+        public List<ZXBinaryBank> Banks { get; } = new List<ZXBinaryBank>();
         public byte[] Binary { get; set; }
         public ushort Org { get; set; }
         public bool Debug { get; set; }

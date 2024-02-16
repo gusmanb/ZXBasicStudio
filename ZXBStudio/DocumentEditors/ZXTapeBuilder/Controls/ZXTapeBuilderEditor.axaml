@@ -9,7 +9,7 @@
   <UserControl.Resources>
     <local:BoolToColorConverter x:Key="BoolToColorConverter" />
   </UserControl.Resources>
-  <Grid RowDefinitions="160,120,*,40">
+  <Grid RowDefinitions="160,120,*,60,40">
     <Border Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
       <Grid RowDefinitions="5,*,*,*" ColumnDefinitions="96,*">
         <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Program name:</TextBlock>
@@ -78,8 +78,8 @@
       <Grid RowDefinitions="5,24,*" ColumnDefinitions="320,*">
         <TextBlock Grid.Row="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Add block</TextBlock>
         <TextBlock Grid.Row="1" Grid.Column="1" Classes="dialog" HorizontalAlignment="Center" VerticalAlignment="Center">Block list</TextBlock>
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="10">
-          <Grid ColumnDefinitions="56,*,32" RowDefinitions="Auto,Auto,Auto,Auto,16,*">
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="10,5,10,10">
+          <Grid ColumnDefinitions="56,*,32" RowDefinitions="Auto,Auto,Auto,Auto,*">
             <TextBlock Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">File:</TextBlock>
             <TextBox Grid.Column="1" Classes="dialog" HorizontalAlignment="Stretch" MaxWidth="Infinity" Margin="5,5,0,5" Name="txtBlockFile"></TextBox>
             <Button  Grid.Column="2" Classes="dialog" Margin="10,5,10,5" Width="32" Height="32" Name="btnSelectBlock">...</Button>
@@ -91,7 +91,7 @@
             </Border>
             <TextBlock Grid.Row="3" Classes="dialog" HorizontalAlignment="Right" VerticalAlignment="Center">Basic load:</TextBlock>
             <CheckBox Classes="dialog" Grid.Row="3" Grid.Column="1" Margin="10" Name="ckBasicLoad"></CheckBox>
-            <Button Grid.Row="5" Grid.ColumnSpan="3" Classes="dialog" Margin="10,5,10,5" Height="32" Name="btnAddBlock" VerticalAlignment="Bottom">Add block</Button>
+            <Button Grid.Row="4" Grid.ColumnSpan="3" Classes="dialog" Margin="10,5,10,5" Height="32" Name="btnAddBlock" VerticalAlignment="Bottom">Add block</Button>
           </Grid>
         </ScrollViewer>
         <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*,48" RowDefinitions="24,28,*,48">
@@ -128,7 +128,21 @@
       </Grid>
     </Border>
     <TextBlock Grid.Row="2" Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">Data blocks</TextBlock>
-    <Grid ColumnDefinitions="*,*" Grid.Row="3">
+    <Border Grid.Row="3" Margin="5,14,5,5" BorderBrush="White" BorderThickness="1" CornerRadius="5">
+      <Grid ColumnDefinitions="140,32,100,150,100,32,*">
+        <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" HorizontalAlignment="Right">Include RAM disk blocks:</TextBlock>
+        <CheckBox Name="ckRAMDisk" Grid.Column="1" VerticalAlignment="Center" Margin="5" HorizontalAlignment="Left"></CheckBox>
+        <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="15,0,0,0" HorizontalAlignment="Right">Inclusion order:</TextBlock>
+        <ComboBox Grid.Column="3" Classes="dialog" SelectedIndex="0" Margin="5,0,0,0" Name="cbRAMDiskOrder">
+          <ComboBoxItem>Before data blocks</ComboBoxItem>
+          <ComboBoxItem>After data blocks</ComboBoxItem>
+        </ComboBox>
+        <TextBlock Grid.Column="4" VerticalAlignment="Center" Margin="15,0,0,0" HorizontalAlignment="Right">Basic loader:</TextBlock>
+        <CheckBox Name="ckBasicRAMDisk" Grid.Column="5" VerticalAlignment="Center" Margin="5" HorizontalAlignment="Left"></CheckBox>
+      </Grid>
+    </Border>
+    <TextBlock Grid.Row="3" Margin="15,0,0,0" Padding="5" Background="#202020" HorizontalAlignment="Left" VerticalAlignment="Top">RAM disk</TextBlock>
+    <Grid ColumnDefinitions="*,*" Grid.Row="4">
       <Button Classes="dialog" Name="btnSave">Save changes</Button>
       <Button Classes="dialog" Grid.Column="1" Name="btnDiscard">Discard changes</Button>
     </Grid>

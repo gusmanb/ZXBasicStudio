@@ -12,6 +12,7 @@ using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Text;
 using ZXBasicStudio.IntegratedDocumentTypes.ZXGraphics;
 using ZXBasicStudio.IntegratedDocumentTypes.NextDows;
 using ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder;
+using ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk;
 
 namespace ZXBasicStudio.DocumentModel.Classes
 {
@@ -29,6 +30,8 @@ namespace ZXBasicStudio.DocumentModel.Classes
             _docTypes.Add(new ZXTextDocument());
             _docTypes.Add(new ZXConfigurationDocument());
             _docTypes.Add(new ZXTapeBuilderDocument());
+            _docTypes.Add(new ZXRamDiskDocument());
+            _docTypes.Add(new ZXRamDiskBinaryDocument());
             // ZXGraphics
             _docTypes.Add(new UDGDocument());
             _docTypes.Add(new FontDocument());
@@ -100,12 +103,41 @@ namespace ZXBasicStudio.DocumentModel.Classes
 
         public static IEnumerable<IZXDocumentBuilder> GetPrecompilationDocumentBuilders()
         {
-            return _docTypes.Where(d => d.DocumentBuilder != null && d.DocumentBuildStage == Enums.ZXBuildStage.PreBuild).Select(d => d.DocumentBuilder);
+            var builders = _docTypes.Where(d => d.DocumentBuilder != null && (d.DocumentBuildStage?.HasFlag(Enums.ZXBuildStage.PreBuild) ?? false)).Select(d => d.DocumentBuilder);
+
+            var sortedBuilders = SortByDependency(builders, builder => builders.Where(b => b != null && builder != null && builder.DependsOn != null && builder.DependsOn.Contains(b.Id)));
+
+            return sortedBuilders;
         }
 
         public static IEnumerable<IZXDocumentBuilder> GetPostcompilationDocumentBuilders()
         {
-            return _docTypes.Where(d => d.DocumentBuilder != null && d.DocumentBuildStage == Enums.ZXBuildStage.PostBuild).Select(d => d.DocumentBuilder);
+            var builders = _docTypes.Where(d => d.DocumentBuilder != null && (d.DocumentBuildStage?.HasFlag(Enums.ZXBuildStage.PostBuild) ?? false)).Select(d => d.DocumentBuilder);
+
+            var sortedBuilders = SortByDependency(builders, builder => builders.Where(b => b != null && builder != null && builder.DependsOn != null && builder.DependsOn.Contains(b.Id)));
+
+            return sortedBuilders;
+        }
+
+        private static IEnumerable<T> SortByDependency<T>(this IEnumerable<T> nodes,
+                                                Func<T, IEnumerable<T>> connected)
+        {
+            var elems = nodes.ToDictionary(node => node,
+                                           node => new HashSet<T>(connected(node)));
+            while (elems.Count > 0)
+            {
+                var elem = elems.FirstOrDefault(x => x.Value.Count == 0);
+                if (elem.Key == null)
+                {
+                    throw new ArgumentException("Cyclic connections are not allowed");
+                }
+                elems.Remove(elem.Key);
+                foreach (var selem in elems)
+                {
+                    selem.Value.Remove(elem.Key);
+                }
+                yield return elem.Key;
+            }
         }
 
         public static IZXDocumentType GetDocumentTypeInstance(Type DocumentType)

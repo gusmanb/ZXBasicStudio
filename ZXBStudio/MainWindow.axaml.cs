@@ -1330,6 +1330,7 @@ namespace ZXBasicStudio
             if (emu.ModelDefinition?.Model != sModel)
             {
                 emu.SetModel(sModel);
+                memView.Initialize(emu.Memory);
                 CreateRomBreakpoints();
                 await CloseDocumentByFile(ZXConstants.DISASSEMBLY_DOC);
                 _player.Datacorder = emu.Datacorder;
@@ -1541,7 +1542,7 @@ namespace ZXBasicStudio
                                 disas.Text = loadedProgram.Disassembly.Content;
                         }
 
-                        if (!emu.InjectProgram(program.Org, program.Binary, true))
+                        if (!emu.InjectProgram(program.Org, program.Binary, program.Banks?.ToArray(), true))
                         {
                             await this.ShowError("Error", "Cannot inject program! Check program size and address.");
                         }
@@ -1641,7 +1642,7 @@ namespace ZXBasicStudio
 
                         UpdateUserBreakpoints();
 
-                        if (!emu.InjectProgram(program.Org, program.Binary, true))
+                        if (!emu.InjectProgram(program.Org, program.Binary, program.Banks?.ToArray(), true))
                         {
                             await this.ShowError("Error", "Cannot inject program! Check program size and address.");
                         }

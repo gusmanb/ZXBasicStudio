@@ -624,7 +624,7 @@ namespace ZXBasicStudio.BuildSystem
 
             foreach (var builder in builders)
             {
-                if (!builder.Build(path, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, null, outLog))
+                if (!builder.Build(path, DocumentModel.Enums.ZXBuildStage.PreBuild, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, null, outLog))
                 {
                     outLog.WriteLine("Error on pre-build stage, aborting...");
                     return false;
@@ -642,7 +642,7 @@ namespace ZXBasicStudio.BuildSystem
 
             foreach (var builder in builders)
             {
-                if (!builder.Build(path, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, CompiledProgram, outLog))
+                if (!builder.Build(path, DocumentModel.Enums.ZXBuildStage.PostBuild, debug ? DocumentModel.Enums.ZXBuildType.Debug : DocumentModel.Enums.ZXBuildType.Release, CompiledProgram, outLog))
                 {
                     outLog.WriteLine("Error on post-build stage, aborting...");
                     return false;

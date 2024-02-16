@@ -82,6 +82,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
             txtPokesAfter.TextChanged += DocumentChanged;
             txtScreenName.TextChanged += DocumentChanged;   
             txtScreenFile.TextChanged += DocumentChanged;
+            ckRAMDisk.IsCheckedChanged += DocumentChanged;
+            cbRAMDiskOrder.SelectionChanged += DocumentChanged;
+            ckBasicRAMDisk.IsCheckedChanged += DocumentChanged;
 
             btnSelectScreen.Click += BtnSelectScreen_Click;
             btnSelectBlock.Click += BtnSelectBlock_Click;
@@ -278,7 +281,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
             cbPaper.SelectedIndex = fileContent.Paper;
             ckBorder.IsChecked = fileContent.UseBorder;
             cbBorder.SelectedIndex = fileContent.Border;
-
+            
             if (fileContent.PokesBeforeLoad != null)
             {
                 txtPokesBefore.Text = string.Join(';', fileContent.PokesBeforeLoad.Select(p => p.Address.ToString() + "," + p.Value.ToString()));
@@ -306,6 +309,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 foreach(var block in fileContent.DataBlocks) 
                     _blocks.Add(block);
             }
+
+            //RAM disk
+            ckRAMDisk.IsChecked = fileContent.IncludeRAMDisk;
+            ckBasicRAMDisk.IsChecked = fileContent.BasicLoadRAMDisk;
+
+            if (fileContent.RAMDiskOrder == ZXRAMDiskOrder.Before)
+                cbRAMDiskOrder.SelectedIndex = 0;
+            else
+                cbRAMDiskOrder.SelectedIndex = 1;
 
             Task.Run(async () => 
             {
@@ -414,6 +426,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls
                 ScreenFile = txtScreenFile.Text,
                 ScreenName = txtScreenName.Text,
                 DataBlocks = _blocks.ToArray(),
+                IncludeRAMDisk = ckRAMDisk.IsChecked ?? false,
+                RAMDiskOrder = cbRAMDiskOrder.SelectedIndex == 0 ? ZXRAMDiskOrder.Before : ZXRAMDiskOrder.After,
+                BasicLoadRAMDisk = ckBasicRAMDisk.IsChecked ?? false
             };
 
             string content = JsonConvert.SerializeObject(fileContent, Formatting.Indented);

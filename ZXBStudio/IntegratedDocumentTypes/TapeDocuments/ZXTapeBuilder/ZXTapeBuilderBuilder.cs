@@ -13,15 +13,21 @@ using ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Enums;
 using ZXBasicStudio.DocumentModel.Interfaces;
+using ZXBasicStudio.Emulator.Classes;
 using I = ZXBasicStudio.Common.ZXSinclairBasic.ZXSinclairBasicInstruction;
 
 namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 {
     public class ZXTapeBuilderBuilder : IZXDocumentBuilder
     {
-        public bool Build(string BuildPath, ZXBuildType BuildType, ZXProgram? CompiledProgram, TextWriter OutputLog)
+
+        public Guid Id => Guid.Parse("8e100c13-6c01-464c-83ab-6f8e91cf0840");
+
+        public Guid[] DependsOn => new[] { Guid.Parse("42257fd1-d649-4334-813a-de3b81a54654") };
+
+        public bool Build(string BuildPath, ZXBuildStage Stage, ZXBuildType BuildType, ZXProgram? CompiledProgram, TextWriter OutputLog)
         {
-            if (BuildType != ZXBuildType.Release || CompiledProgram == null)
+            if (Stage != ZXBuildStage.PostBuild || BuildType != ZXBuildType.Release || CompiledProgram == null)
                 return true;
 
             string[] tapeBuilds = Directory.GetFiles(BuildPath, "*" + ZXDocumentProvider.GetDocumentTypeInstance(typeof(ZXTapeBuilderDocument)).DocumentExtensions[0], SearchOption.AllDirectories);
@@ -96,10 +102,36 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 
                 line.AddTokens(I.LOAD, "\"\"", I.CODE, CompiledProgram.Org);
 
+                if (buildFile.IncludeRAMDisk && buildFile.BasicLoadRAMDisk && buildFile.RAMDiskOrder == ZXRAMDiskOrder.Before)
+                {
+                    foreach (var bank in CompiledProgram.Banks)
+                    {
+                        line.AddTokens(I.POKE, 23388, ",", 16 + (int)bank.Bank);
+                        line.AddTokens(I.OUT, 32765, ",", 16 + (int)bank.Bank);
+                        line.AddTokens(I.LOAD, "\"\"", I.CODE, 0xC000);
+                    }
+
+                    line.AddTokens(I.POKE, 23388, ",", 16);
+                    line.AddTokens(I.OUT, 32765, ",", 16);
+                }
+
                 if (buildFile.DataBlocks != null && buildFile.DataBlocks.Length > 0 && buildFile.DataBlocks.Any(b => b.BasicLoad))
                 {
                     foreach(var block in buildFile.DataBlocks.Where(b => b.BasicLoad))
                         line.AddTokens(I.LOAD, "\"\"", I.CODE, block.BlockAddress);
+                }
+
+                if (buildFile.IncludeRAMDisk && buildFile.BasicLoadRAMDisk && buildFile.RAMDiskOrder == ZXRAMDiskOrder.After)
+                {
+                    foreach (var bank in CompiledProgram.Banks)
+                    {
+                        line.AddTokens(I.POKE, 23388, ",", 16 + (int)bank.Bank);
+                        line.AddTokens(I.OUT, 32765, ",", 16 + (int)bank.Bank);
+                        line.AddTokens(I.LOAD, "\"\"", I.CODE, 0xC000);
+                    }
+
+                    line.AddTokens(I.POKE, 23388, ",", 16);
+                    line.AddTokens(I.OUT, 32765, ",", 16);
                 }
 
                 if (buildFile.HideHeaders)
@@ -147,6 +179,24 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
 
                 tFile.Blocks.Add(TAPBlock.CreateDataBlock(buildFile.ProgramName, CompiledProgram.Binary, CompiledProgram.Org));
 
+                if (buildFile.IncludeRAMDisk && buildFile.RAMDiskOrder == ZXRAMDiskOrder.Before)
+                {
+                    OutputLog.WriteLine("Adding RAM disk blocks");
+
+                    if(CompiledProgram.Banks.Count == 0) 
+                    {
+                        OutputLog.WriteLine("No RAM disk blocks found! Aborting build...");
+                        return false;
+                    }
+
+                    foreach(var bank in CompiledProgram.Banks) 
+                    {
+                        OutputLog.WriteLine($"Adding RAM disk bank {(int)bank.Bank}...");
+                        string bankName = bank.Identifier ?? bank.Bank.ToString();
+                        tFile.Blocks.Add(TAPBlock.CreateDataBlock(bankName, bank.Data, 0xC000));
+                    }
+                }
+
                 if (buildFile.DataBlocks != null && buildFile.DataBlocks.Length > 0)
                 {
                     OutputLog.WriteLine("Adding data blocks...");
@@ -174,6 +224,24 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
                             OutputLog.WriteLine($"Error adding data file: {ex.Message}");
                             return false;
                         }
+                    }
+                }
+
+                if (buildFile.IncludeRAMDisk && buildFile.RAMDiskOrder == ZXRAMDiskOrder.After)
+                {
+                    OutputLog.WriteLine("Adding RAM disk blocks");
+
+                    if (CompiledProgram.Banks.Count == 0)
+                    {
+                        OutputLog.WriteLine("No RAM disk blocks found! Aborting build...");
+                        return false;
+                    }
+
+                    foreach (var bank in CompiledProgram.Banks)
+                    {
+                        OutputLog.WriteLine($"Adding RAM disk bank {(int)bank.Bank}...");
+                        string bankName = bank.Identifier ?? bank.Bank.ToString();
+                        tFile.Blocks.Add(TAPBlock.CreateDataBlock(bankName, bank.Data, 0xC000));
                     }
                 }
 

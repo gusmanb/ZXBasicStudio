@@ -5,26 +5,28 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ZXBasicStudio.Classes;
+using ZXBasicStudio.DocumentEditors.ZXRamDisk.Classes;
+using ZXBasicStudio.DocumentEditors.ZXRamDisk.Controls;
 using ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Classes;
 using ZXBasicStudio.DocumentEditors.ZXTapeBuilder.Controls;
 using ZXBasicStudio.DocumentModel.Classes;
 using ZXBasicStudio.DocumentModel.Interfaces;
 
-namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
+namespace ZXBasicStudio.IntegratedDocumentTypes.Resources.ZXRamDisk
 {
-    public class ZXTapeBuilderFactory : IZXDocumentFactory
+    public class ZXRamDiskFactory : IZXDocumentFactory
     {
         public bool CreateDocument(string Path, TextWriter OutputLog)
         {
             try
             {
-                ZXTapeBuilderFile doc = new ZXTapeBuilderFile { ProgramName = "Unnamed" };
+                ZXRamDiskFile doc = new ZXRamDiskFile { RelocateStack = true, EnableIndirect = true, IndirectBufferSize = 64 };
+
                 string content = JsonConvert.SerializeObject(doc);
                 File.WriteAllText(Path, content);
                 return true;
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 OutputLog.WriteLine($"Error creating document: {ex.Message}");
                 return false;
@@ -35,9 +37,9 @@ namespace ZXBasicStudio.IntegratedDocumentTypes.TapeDocuments.ZXTapeBuilder
         {
             try
             {
-                return new ZXTapeBuilderEditor(Path);
+                return new ZXRamDiskEditor(Path);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 OutputLog.WriteLine("Error opening the document. Aborting.");
                 return null;
