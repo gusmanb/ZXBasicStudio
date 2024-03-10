@@ -5,7 +5,13 @@ namespace CoreSpectrum.Hardware
 {
     public class Spectrum48k : SpectrumBase
     {
+        const ushort KEY_INPUT = 0x10A8;
         const ushort MAIN_2 = 0x12AC;
+        const ushort MAIN_3_END = 0x12e0;
+        const ushort CLEAR = 0x1EAF;
+        const ushort CLEAR_END = 0x1EEC;
+        const ushort LAST_K = 0x5C08;
+        const byte KEY_RET = 0x0D;
 
         private static readonly MachineTimmings Timmings48k = new MachineTimmings 
         { 
@@ -69,6 +75,7 @@ namespace CoreSpectrum.Hardware
         {
             if (_injecting)
             {
+                /*
                 if (_z80.Registers.PC == MAIN_2)
                 {
                     if (_injectImage != null)
@@ -90,6 +97,50 @@ namespace CoreSpectrum.Hardware
                         if (ProgramReady != null)
                             ProgramReady(this, EventArgs.Empty);
                     }
+
+                    _injecting = false;
+                    _injectImage = null;
+                }*/
+
+                if (_injectImage == null) //In case of having a null image, disable injection
+                {
+                    _injecting = false;
+                    _injectImage = null;
+
+                    base.z80_BeforeInstructionFetch(sender, e);
+                    return;
+                }
+
+                if (_z80.Registers.PC == KEY_INPUT) //First entrance to keyboard routine, inject an "ENTER"
+                {
+                    var flags = _memory.GetByte(((ushort)_z80.Registers.IY) + 1); //Get the FLAGS variable
+                    flags |= (byte)(1 << 5); //Signal a key press
+                    _memory.SetByte(((ushort)_z80.Registers.IY) + 1, flags); //Update flags
+                    _memory.SetByte(LAST_K, KEY_RET); //Store a return in the LAST_K var
+                }
+                else if (_z80.Registers.PC == MAIN_3_END) //"ENTER" has been processed and we can call the "CLEAR" routine
+                {
+                    _z80.Registers.BC = (short)(_injectImage.Org - 1); //Store in BC the clear address
+                    _z80.ExecuteCall(CLEAR); //Call CLEAR
+                }
+                else if (_z80.Registers.PC == CLEAR_END) //Wait until CLEAR reaches its last instruction and inject our program5
+                {
+
+                    //Fill memory with chunks
+                    foreach (var chunk in _injectImage.Chunks)
+                        _memory.SetContents(chunk.Address, chunk.Data);
+
+                    _z80.Registers.PC = _injectImage.Org;
+
+                    //Store return address in stack
+                    ushort sp = (ushort)_z80.Registers.SP;
+                    sp -= 2;
+                    _z80.Registers.SP = unchecked((short)sp);
+                    _memory.SetUshort(sp, MAIN_2);
+
+                    //Signal program ready
+                    if (ProgramReady != null)
+                        ProgramReady(this, EventArgs.Empty);
 
                     _injecting = false;
                     _injectImage = null;

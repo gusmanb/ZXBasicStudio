@@ -56,25 +56,28 @@ namespace ZXBasicStudio.BuildSystem
         }
         public ZXArrayDescriptor? GetArrayDescriptor(IMemory Memory, IZ80Registers Registers)
         {
-            if (VariableType != ZXVariableType.Array)
-                throw new InvalidCastException();
-
-            if (!Scope.InRange(Registers.PC) || IsReference) //Parameter arrays are unsupported, impossible to retrieve descriptor
-                return null;
-
-            if (Address.AddressType == ZXVariableAddressType.Absolute)
+            try
             {
-                ushort realAddress = (ushort)Address.AddressValue;
-                return ZXVariableHelper.GetArrayDescriptor(Memory, realAddress);
-            }
-            else
-            {
-                var ptrAddress = (ushort)((ushort)Registers.IX + Address.AddressValue);
-                var storAddress = (ushort)((ushort)Registers.IX + Address.AddressValue + 2);
-                return ZXVariableHelper.GetArrayDescriptor(Memory, ptrAddress, storAddress, StorageSize);
+                if (VariableType != ZXVariableType.Array)
+                    throw new InvalidCastException();
 
-            }
+                if (!Scope.InRange(Registers.PC) || IsReference) //Parameter arrays are unsupported, impossible to retrieve descriptor
+                    return null;
 
+                if (Address.AddressType == ZXVariableAddressType.Absolute)
+                {
+                    ushort realAddress = (ushort)Address.AddressValue;
+                    return ZXVariableHelper.GetArrayDescriptor(Memory, realAddress);
+                }
+                else
+                {
+                    var ptrAddress = (ushort)((ushort)Registers.IX + Address.AddressValue);
+                    var storAddress = (ushort)((ushort)Registers.IX + Address.AddressValue + 2);
+                    return ZXVariableHelper.GetArrayDescriptor(Memory, ptrAddress, storAddress, StorageSize);
+
+                }
+            }
+            catch { return null; }
         }
         public object? GetArrayValue(IMemory Memory, IZ80Registers Registers, int[] Index)
         {
