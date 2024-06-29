@@ -9,6 +9,19 @@ Documentation will come in the near future, but for now you can refer to the [se
 
 Have fun!
 
+## MacOS Install instructions
+Install the following:
+- [Rider](https://www.jetbrains.com/rider/)
+- Mono (You can install this from within Rider)
+- [.NET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+
+1. Then clone this repo and open the solution up in Rider.
+2. Select *Edit* in the *Run Configuration Menu* for `ZXBasicStudio` solution.
+3. select *Runtime* & add the dotnet 7.0.0 path (it's probably installed to - `/usr/local/share/dotnet/dotnet`)
+4. Now you can click *Run*.
+
+From here you can create a build / executable to run on your Mac.
+
 ## Credits
 - Development team:
   - El Dr. Gusman
