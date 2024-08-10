@@ -300,7 +300,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             if (SpritePatternsList.Count == 0)
             {
-                SpriteList_AddSprite();
+                SpriteList_AddSprite(null);
                 ctrlEditor.Initialize(Editor_Command);
                 ctrlPreview.Initialize(null);
                 ctrlProperties.Initialize(null, SpriteProperties_Command);
@@ -334,6 +334,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnInvert.Tapped += BtnInvert_Tapped;
             btnMask.Tapped += BtnMask_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
+            btnImport.Tapped += BtnImport_Tapped;
 
             Refresh();
             _Modified = false;
@@ -350,6 +351,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             this.AddHandler(KeyDownEvent, Keyboard_Down, handledEventsToo: true);
             this.Focus();
         }
+
+
 
         #region Color
 
@@ -450,7 +453,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             switch (command)
             {
                 case "ADD":
-                    SpriteList_AddSprite();
+                    SpriteList_AddSprite(null);
                     ctrlEditor.SpriteData = sender.SpriteData;
                     ctrlPreview.SpriteData = sender.SpriteData;
                     ctrlPreview.Refresh();
@@ -500,7 +503,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     SpriteList_Modified(sender.SpriteData);
                     break;
                 case "FRAMEUPDATE":
-                        SpriteProperties_FrameUpdate(sender, command);
+                    SpriteProperties_FrameUpdate(sender, command);
                     break;
                 case "REFRESH":
                     ctrlEditor.SpriteData = sender.SpriteData;
@@ -560,7 +563,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
-        private void SpriteList_AddSprite()
+        private void SpriteList_AddSprite(Sprite spriteData)
         {
             SpritePatternControl selectedSprite = null;
             int id = 0;
@@ -568,8 +571,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 id = SpritePatternsList.Where(d => d.SpriteData != null).Max(d => d.SpriteData.Id) + 1;
             }
-            foreach (var spc in SpritePatternsList)
+            for(int n=0; n<SpritePatternsList.Count; n++)            
             {
+                var spc = SpritePatternsList[n];
                 if (spc.SpriteData != null && spc.SpriteData.Id < 0)
                 {
                     spc.SpriteData.Id = id;
@@ -581,8 +585,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     selectedSprite = spc;
                     break;
                 }
+                if (spc.SpriteData == null && spriteData!=null)
+                {
+                    SpritePatternsList[n].SpriteData=spriteData;
+                    selectedSprite = SpritePatternsList[n];
+                    break;
+                }
             }
 
+            // Add void sprite
             var spritePattern = new SpritePatternControl();
             SpritePatternsList.Add(spritePattern);
             wpSpriteList.Children.Add(spritePattern);
@@ -673,7 +684,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 return;
             }
-            var ctrl = SpritePatternsList.FirstOrDefault(d => d.SpriteData.Id == spriteData.Id);
+            var ctrl = SpritePatternsList.FirstOrDefault(d => d.SpriteData!=null && d.SpriteData.Id == spriteData.Id);
             if (ctrl != null)
             {
                 ctrl.SpriteData = spriteData;
@@ -1003,8 +1014,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             dlg.ShowDialog(this.VisualRoot as Window);
         }
 
-        #endregion
 
+        private void BtnImport_Tapped(object? sender, TappedEventArgs e)
+        {
+            Import();
+        }
+
+        #endregion
 
 
         #region Keyboard shortcus
@@ -1096,5 +1112,40 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         #endregion
 
+
+        #region Import
+
+        private void Import()
+        {
+            var dlg = new SpriteImportDialog();
+            dlg.Initialize(FileName, SpritePatternsList.Select(d=>d.SpriteData), Import_Command);
+            dlg.ShowDialog(this.VisualRoot as Window);
+        }
+
+
+        private void Import_Command(Sprite sprite, string command)
+        {
+            switch (command)
+            {
+                case "ADD":
+                    SpriteList_AddSprite(sprite);                   
+                    ctrlEditor.SpriteData = sprite;
+                    ctrlPreview.SpriteData = sprite;
+                    ctrlPreview.Refresh();
+                    ctrlProperties.SpriteData = sprite;
+                    //SpriteList_Modified(sender.SpriteData);
+                    break;
+                case "UPDATE":
+                    //var spr = SpritePatternsList.FirstOrDefault(d => d.Name == sprite.Name);
+                    //if (spr != null)
+                    //{
+                    //    SpriteList_Modified(sprite);
+                    //}
+                    break;
+            }
+        }
+
+
+        #endregion
     }
 }

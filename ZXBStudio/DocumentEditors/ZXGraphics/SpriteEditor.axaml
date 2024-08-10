@@ -94,6 +94,10 @@
           </Button>
           <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
+          <Button Classes="toolbar" Name="btnImport" ToolTip.Tip="Import from image or data">
+            <svg:Svg Path="/Svg/ImageImport.svg"></svg:Svg>
+          </Button>
+          
           <Button Classes="toolbar" Name="btnExport" ToolTip.Tip="Export pattern">
             <svg:Svg Path="/Svg/buildexport.svg"></svg:Svg>
           </Button>

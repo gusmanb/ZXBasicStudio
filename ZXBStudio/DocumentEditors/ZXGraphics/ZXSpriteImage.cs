@@ -59,59 +59,72 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         public unsafe void RenderSprite(Sprite Sprite, int FrameNumber)
         {
-
-            if (bitmap == null) //disposed
-                throw new ObjectDisposedException("ZXSpriteImage");
-
-            if (bitmap.PixelSize.Width != Sprite.Width || bitmap.PixelSize.Height != Sprite.Height)
+            try
             {
-                bitmap.Dispose();
-                bitmap = new WriteableBitmap(new PixelSize(Sprite.Width, Sprite.Height), new Vector(72, 72), Avalonia.Platform.PixelFormat.Rgba8888, Avalonia.Platform.AlphaFormat.Opaque);
-            }
-
-            using var lockData = bitmap.Lock();
-            uint* data = (uint*)lockData.Address;
-
-            var frame = Sprite.Patterns[FrameNumber];
-            int index = 0;
-
-            for (int y = 0; y < Sprite.Height; y++)
-            {
-                for (int x = 0; x < Sprite.Width; x++)
+                if (bitmap == null)
                 {
-                    int colorIndex = frame.RawData[index++];
-
-                    PaletteColor color;
-
-                    switch (Sprite.GraphicMode)
-                    {
-                        case GraphicsModes.ZXSpectrum:
-                            {
-                                var attr = GetAttribute(Sprite, frame, x, y);
-                                if (colorIndex == 0)
-                                    color = Sprite.Palette[attr.Paper];
-                                else
-                                    color = Sprite.Palette[attr.Ink];
-                            }
-                            break;
-                        case GraphicsModes.Monochrome:
-                            if (colorIndex > Sprite.Palette.Length - 1)
-                            {
-                                colorIndex = Sprite.Palette.Length - 1;
-                            }
-                            color = Sprite.Palette[colorIndex];
-                            break;
-                        default:
-                            color = new PaletteColor { Red = 0xFF, Green = 0xFF, Blue = 0xFF };
-                            break;
-                    }
-
-                    data[y * lockData.RowBytes / 4 + x] = ToRgba(color);
-
+                    throw new ObjectDisposedException("ZXSpriteImage");
                 }
-            }
 
-            IsEmpty = false;
+                if(Sprite.Width==0 || Sprite.Height == 0)
+                {
+                    return;
+                }
+
+                if (bitmap.PixelSize.Width != Sprite.Width || bitmap.PixelSize.Height != Sprite.Height)
+                {
+                    bitmap.Dispose();
+                    bitmap = new WriteableBitmap(new PixelSize(Sprite.Width, Sprite.Height), new Vector(72, 72), Avalonia.Platform.PixelFormat.Rgba8888, Avalonia.Platform.AlphaFormat.Opaque);
+                }
+
+                using var lockData = bitmap.Lock();
+                uint* data = (uint*)lockData.Address;
+
+                var frame = Sprite.Patterns[FrameNumber];
+                int index = 0;
+
+                for (int y = 0; y < Sprite.Height; y++)
+                {
+                    for (int x = 0; x < Sprite.Width; x++)
+                    {
+                        int colorIndex = frame.RawData[index++];
+
+                        PaletteColor color;
+
+                        switch (Sprite.GraphicMode)
+                        {
+                            case GraphicsModes.ZXSpectrum:
+                                {
+                                    var attr = GetAttribute(Sprite, frame, x, y);
+                                    if (colorIndex == 0)
+                                        color = Sprite.Palette[attr.Paper];
+                                    else
+                                        color = Sprite.Palette[attr.Ink];
+                                }
+                                break;
+                            case GraphicsModes.Monochrome:
+                                if (colorIndex > Sprite.Palette.Length - 1)
+                                {
+                                    colorIndex = Sprite.Palette.Length - 1;
+                                }
+                                color = Sprite.Palette[colorIndex];
+                                break;
+                            default:
+                                color = new PaletteColor { Red = 0xFF, Green = 0xFF, Blue = 0xFF };
+                                break;
+                        }
+
+                        data[y * lockData.RowBytes / 4 + x] = ToRgba(color);
+
+                    }
+                }
+
+                IsEmpty = false;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
         #endregion
 
@@ -150,6 +163,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
             return Pattern.Attributes[dir];
         }
+
         #endregion
 
         #region IZXBitmap implementation

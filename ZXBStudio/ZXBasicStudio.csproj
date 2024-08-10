@@ -171,6 +171,7 @@
     <None Remove="Svg\gears-solid.svg" />
     <None Remove="Svg\github.svg" />
     <None Remove="Svg\hashtag-solid.svg" />
+    <None Remove="Svg\ImageImport.svg" />
     <None Remove="Svg\keyboard-regular.svg" />
     <None Remove="Svg\layout-alltools-solid.svg" />
     <None Remove="Svg\layout-debug-solid.svg" />
@@ -344,6 +345,7 @@
     <AvaloniaResource Include="Svg\circle-info-solid.svg" />
     <AvaloniaResource Include="Svg\circle-question-solid.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxramdisk.svg" />
+    <AvaloniaResource Include="Svg\ImageImport.svg" />
     <AvaloniaResource Include="Svg\github.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-arrow-right-solid.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-solid.svg" />
@@ -537,6 +539,7 @@
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.6" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
     <PackageReference Include="TextCopy" Version="6.2.1" />
   </ItemGroup>
@@ -562,6 +565,9 @@
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\ColorPickerControl.axaml.cs">
       <DependentUpon>ColorPickerControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="DocumentEditors\ZXGraphics\SpriteImportDialog.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
     <Compile Update="DocumentEditors\ZXGraphics\SpriteExportDialog.axaml.cs">
       <DependentUpon>SpriteExportDialog.axaml</DependentUpon>
