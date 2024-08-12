@@ -10,11 +10,10 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>zxbs.ico</ApplicationIcon>
-    <Version>1.0.0-beta1</Version>
     <Title>ZX Basic Studio</Title>
-    <AssemblyVersion>1.0.*</AssemblyVersion>
+    <AssemblyVersion>1.2.*</AssemblyVersion>
     <Deterministic>False</Deterministic>
-    <Version>0.1.23.1014</Version>
+    <Version>1.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
