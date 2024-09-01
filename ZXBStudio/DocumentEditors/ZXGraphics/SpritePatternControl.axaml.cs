@@ -28,7 +28,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             {
                 _SpriteData = value;
                 IsSelected = true;
-                ApplySettings(false);
+                //ApplySettings(false);
+                Refresh();
             }
         }
 
@@ -264,41 +265,41 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         public void ApplySettings(bool askForApply)
         {
-            if (SpriteData == null)
+            if (_SpriteData == null)
             {
                 return;
             }
             else
             {
-                var sp = SpriteData.Clonar<Sprite>();
+                var sp = _SpriteData.Clonar<Sprite>();                
 
-                if (sp.Width != SpriteData.Width || sp.Height != SpriteData.Height)
+                if (sp.Width != _SpriteData.Width || sp.Height != _SpriteData.Height)
                 {
-                    if (!ServiceLayer.SpriteData_Resize(ref sp, SpriteData.Width, SpriteData.Height))
+                    if (!ServiceLayer.SpriteData_Resize(ref sp, _SpriteData.Width, _SpriteData.Height))
                     {
                         // TODO: Report error
                         return;
                     }
                 }
-                if (sp.GraphicMode != SpriteData.GraphicMode)
+                if (sp.GraphicMode != _SpriteData.GraphicMode)
                 {
-                    if (!ServiceLayer.SpriteData_ChangeMode(ref sp, SpriteData.GraphicMode))
+                    if (!ServiceLayer.SpriteData_ChangeMode(ref sp, _SpriteData.GraphicMode))
                     {
                         // TODO: Report error
                         return;
                     }
                 }
-                if (sp.Masked != SpriteData.Masked)
+                if (sp.Masked != _SpriteData.Masked)
                 {
-                    if (!ServiceLayer.SpriteData_ChangeMasked(ref sp, SpriteData.Masked))
+                    if (!ServiceLayer.SpriteData_ChangeMasked(ref sp, _SpriteData.Masked))
                     {
                         // TODO: Report error
                         return;
                     }
                 }
-                if (sp.Frames != SpriteData.Frames)
+                if (sp.Frames != _SpriteData.Frames)
                 {
-                    if (!ServiceLayer.SpriteData_ChangeFrames(ref sp, SpriteData.Frames))
+                    if (!ServiceLayer.SpriteData_ChangeFrames(ref sp, _SpriteData.Frames))
                     {
                         // TODO: Report error
                         return;

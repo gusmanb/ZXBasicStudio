@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:ZXBasicStudio.DocumentEditors.ZXGraphics"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="501"
+        Width="800" Height="501"
+        Icon="/Assets/zxbs.ico"
+        x:Class="ZXBasicStudio.DocumentEditors.ZXGraphics.SpriteImportDialog"
+        Title="Import" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+  <Grid Name="grdImport" ColumnDefinitions="400,8,*" RowDefinitions="Auto,*" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+
+    <TextBlock FontSize="18" FontWeight="Bold">Source</TextBlock>
+
+    <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
+      <Button Name="btnFile" Grid.Row="0" Classes="dialog" HorizontalAlignment="Left">Open file for import</Button>
+
+      <Grid Width="400" Height="400" Grid.Row="1">
+        <local:ImageViewImportControl Grid.Row="1" Name="cnvSource"/>
+      </Grid>
+
+      <Grid Grid.Row="2" ColumnDefinitions="48,*">
+        <TextBlock Name="txtZoom" Classes="dialog">Zoom 1x</TextBlock>
+        <Slider Name="sldZoom" Grid.Column="1" Width="100" Minimum="1" Maximum="8" Value="4" HorizontalAlignment="Left" Focusable="False" />
+      </Grid>
+    </Grid>
+
+    <TextBlock FontSize="18" FontWeight="Bold" Grid.Column="2">Target</TextBlock>
+
+    <Grid Name="pnlProperties" Grid.Column="2" Grid.Row="1" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="0,0,0,4">
+      <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Name:</TextBlock>
+      <TextBox Name="txtName" Classes="dialog" Grid.Row="1" Grid.Column="1" MaxWidth="Infinity"></TextBox>
+
+      <TextBlock Grid.Row="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Mode:</TextBlock>
+      <ComboBox Name="cmbMode" Classes="dialog" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" MaxWidth="Infinity" Margin="4,0,0,2" SelectedIndex="0" Focusable="False">
+        <ComboBoxItem>Monochrome</ComboBoxItem>
+        <ComboBoxItem>ZX Spectrum</ComboBoxItem>
+      </ComboBox>
+
+      <TextBlock Grid.Row="3" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Width:</TextBlock>
+      <Border Grid.Row="3" Grid.Column="1" Classes="numericborder">
+        <NumericUpDown Classes="dialog" Name="txtWidth" Minimum="8" Increment="8" Maximum="256" Value="8" VerticalAlignment="Center"/>
+      </Border>
+
+      <TextBlock Grid.Row="4" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Height:</TextBlock>
+      <Border Grid.Row="4" Grid.Column="1" Classes="numericborder">
+        <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="8" Maximum="256" Value="8" VerticalAlignment="Center"/>
+      </Border>
+
+      <TextBlock Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>
+      <Border Grid.Row="5" Grid.Column="1" Classes="numericborder">
+        <NumericUpDown Classes="dialog" Name="txtFrames" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
+      </Border>
+
+      <TextBlock Grid.Row="6" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frame margin:</TextBlock>
+      <Border Grid.Row="6" Grid.Column="1" Classes="numericborder">
+        <NumericUpDown Classes="dialog" Name="txtMargin" Minimum="0" Increment="1" Maximum="256" Value="0" VerticalAlignment="Center"/>
+      </Border>
+
+      <ScrollViewer Grid.Row="7" Grid.ColumnSpan="2">
+        <WrapPanel Name="pnlPreview" Margin="8" />
+      </ScrollViewer>
+
+      <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Name="btnCancel" Classes="dialog">Cancel</Button>
+        <Button Name="btnImport" Classes="dialog">Import data</Button>
+      </StackPanel>
+      
+    </Grid>
+  </Grid>
+</Window>
