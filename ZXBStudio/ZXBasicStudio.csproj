@@ -13,7 +13,7 @@
     <Title>ZX Basic Studio</Title>
     <AssemblyVersion>1.2.*</AssemblyVersion>
     <Deterministic>False</Deterministic>
-    <Version>1.1</Version>
+    <Version>1.2.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
