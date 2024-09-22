@@ -284,6 +284,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="value">Value of the point</param>
         private void SetPoint(double mx, double my, int value)
         {
+            if (SpriteData == null)
+            {
+                return;
+            }
+
             int x = (int)mx;
             int y = (int)my;
 
@@ -346,6 +351,24 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             var attr = pattern.Attributes[(cY * cW) + cX];
             attr.Ink = PrimaryColorIndex;
             attr.Paper = SecondaryColorIndex;
+            attr.Flash = false;
+            switch (SpriteData.GraphicMode)
+            {
+                case GraphicsModes.Monochrome:
+                    attr.Bright = false;
+                    break;
+                case GraphicsModes.ZXSpectrum:
+                    if (PrimaryColorIndex > 7 || SecondaryColorIndex > 7)
+                    {
+                        attr.Bright = true;
+                    }
+                    else
+                    {
+                        attr.Bright = false;
+                    }
+                    break;
+            }
+            pattern.Attributes[(cY * cW) + cX] = attr;
         }
 
 
@@ -460,7 +483,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                                 var po = cbPatterns[n].Data.FirstOrDefault(d => d.X == px && d.Y == py);
                                 if (po != null)
                                 {
-                                    dir = ((oy+py) * SpriteData.Width) + (ox+px);
+                                    dir = ((oy + py) * SpriteData.Width) + (ox + px);
 
                                     if (dir < pattern.RawData.Length)
                                     {
@@ -846,6 +869,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     else if (pd1 == SecondaryColorIndex)
                     {
                         pd1 = PrimaryColorIndex;
+                    }
+                    else
+                    {
+
                     }
                     SetPointValue(x, y, pd1, ref pattern2);
                 }
