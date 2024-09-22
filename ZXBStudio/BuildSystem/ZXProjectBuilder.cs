@@ -331,7 +331,9 @@ namespace ZXBasicStudio.BuildSystem
                 OutputLogWritter.WriteLine("Building map files...");
 
                 foreach (var file in files)
+                {
                     file.CreateBuildFile(files);
+                }
 
                 OutputLogWritter.WriteLine("Building program map...");
 
@@ -344,7 +346,10 @@ namespace ZXBasicStudio.BuildSystem
                     return null;
                 }
 
-                var proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -M MEMORY_MAP " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
+                var proc = Process.Start(
+                    new ProcessStartInfo(
+                        Path.GetFullPath(ZXOptions.Current.ZxbcPath), 
+                        $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -M MEMORY_MAP " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
 
                 OutputProcessLog(OutputLogWritter, proc, out logOutput);
 
@@ -364,7 +369,22 @@ namespace ZXBasicStudio.BuildSystem
 
                 OutputLogWritter.WriteLine("Building variable map...");
 
-                proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -E " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
+                // DUEFECTU: 2024.09.11 -> Force .ic extension for debug
+                //proc = Process.Start(new ProcessStartInfo(Path.GetFullPath(ZXOptions.Current.ZxbcPath), $"\"{Path.Combine(codeFile.Directory, codeFile.TempFileName)}\" -E " + args) { WorkingDirectory = project.ProjectPath, RedirectStandardError = true, CreateNoWindow = true });
+                var pi = new ProcessStartInfo();
+                pi.WorkingDirectory = project.ProjectPath;
+                pi.RedirectStandardError = true;
+                pi.CreateNoWindow = true;
+                // Compile command
+                var tempFileName = Path.Combine(codeFile.Directory, codeFile.TempFileName);
+                var debugFile = Path.GetFileNameWithoutExtension(tempFileName) + ".ic"; // force .ic extension
+                pi.FileName = Path.GetFullPath(ZXOptions.Current.ZxbcPath);      // ZXBC.exe
+                pi.Arguments = string.Format("\"{0}\" -E -o {1} {2}",
+                    tempFileName,                                               // Main project file
+                    debugFile,                                                  // Debug file
+                    args);                                                      // user arguments
+                // Go for it
+                proc = Process.Start(pi);
 
                 OutputProcessLog(OutputLogWritter, proc, out logOutput);
 
