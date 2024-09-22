@@ -284,6 +284,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <param name="value">Value of the point</param>
         private void SetPoint(double mx, double my, int value)
         {
+            if (SpriteData == null)
+            {
+                return;
+            }
+
             int x = (int)mx;
             int y = (int)my;
 
