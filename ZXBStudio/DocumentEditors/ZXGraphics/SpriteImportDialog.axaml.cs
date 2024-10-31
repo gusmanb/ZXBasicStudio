@@ -27,6 +27,9 @@ using ZXBasicStudio.DocumentModel.Interfaces;
 using ZXBasicStudio.Extensions;
 using ZXBasicStudio.IntegratedDocumentTypes.CodeDocuments.Basic;
 using static System.Net.Mime.MediaTypeNames;
+using Avalonia.Controls.Presenters;
+using Avalonia.Input;
+using System.Formats.Tar;
 
 namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 {
@@ -52,8 +55,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private int spriteFrames = 1;
         private int spriteMargin = 0;
         private int spriteZoom = 4;
-
+        private int cutOff = 5;
+        private bool exportInOneSprite = true;
         private DispatcherTimer tmr = null;
+        private bool resetFocus = false;
 
 
         public SpriteImportDialog()
@@ -69,6 +74,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             txtWidth.ValueChanged += TxtWidth_ValueChanged;
             txtHeight.ValueChanged += TxtHeight_ValueChanged;
             txtFrames.ValueChanged += TxtFrames_ValueChanged;
+            sldCutOff.PropertyChanged += sldCutOff_PropertyChanged;
 
             btnCancel.Tapped += BtnCancel_Tapped;
             btnImport.Tapped += BtnImport_Tapped;
@@ -108,309 +114,6 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 tmr = null;
             }
         }
-
-#if NO
-        #region ExportOptions
-
-        private void ExportType_Changed(ExportTypes exportType)
-        {
-            exportConfig.ExportType = exportType;
-            Refresh();
-        }
-
-
-        private void Refresh()
-        {
-            grdOptions.IsVisible = true;
-
-            chkAuto.IsVisible = true;
-
-            lblOutputFile.IsVisible = true;
-            txtOutputFile.IsVisible = true;
-            btnOutputFile.IsVisible = true;
-
-            lblLabelName.IsVisible = true;
-            txtLabelName.IsVisible = true;
-
-            lblArrayBase.IsVisible = true;
-            cmbDataType.IsVisible = true;
-            cmbArrayBase.IsVisible = true;
-
-            bool canExport = false;
-            if (sprites == null || sprites.Where(d => d != null && d.Export).Count() == 0)
-            {
-                txtError.IsVisible = true;
-            }
-            else
-            {
-                canExport = true;
-                txtError.IsVisible = false;
-            }
-
-            switch (exportConfig.ExportType)
-            {
-                case ExportTypes.PutChars:
-                    CreateExportPath(".bas");
-                    if (canExport)
-                    {
-                        CreateExample_PutChars();
-                    }
-                    break;
-                default:
-                    grdOptions.IsVisible = false;
-                    break;
-            }
-        }
-
-
-        private void CreateExportPath(string extension)
-        {
-            if (string.IsNullOrEmpty(exportConfig.ExportFilePath))
-            {
-                txtOutputFile.Text = fileType.FileName + extension;
-                var spName = Path.GetFileNameWithoutExtension(fileType.FileName.ToStringNoNull());
-                txtLabelName.Text = spName;
-                if (spName.Length > 10)
-                {
-                    spName = spName.Substring(0, 10);
-                }
-            }
-        }
-
-
-        #endregion
-
-
-        #region Examples
-
-        private void GetConfigFromUI()
-        {
-            if (exportConfig == null)
-            {
-                exportConfig = new ExportConfig();
-            }
-            exportConfig.ArrayBase = cmbArrayBase.SelectedIndex.ToInteger();
-            exportConfig.AutoExport = chkAuto.IsChecked == true;
-            exportConfig.ExportDataType = (ExportDataTypes)cmbDataType.SelectedIndex.ToInteger();
-            exportConfig.ExportFilePath = txtOutputFile.Text.ToStringNoNull();
-            exportConfig.ExportType = cmbSelectExportType.ExportType;
-            exportConfig.LabelName = txtLabelName.Text.ToStringNoNull();
-            exportConfig.ZXAddress = 0;
-            exportConfig.ZXFileName = "";
-            exportConfig.IncludeAttr = chkAttr.IsChecked == true;
-        }
-
-        private void CreateExample_PutChars()
-        {
-            if (sprites == null || sprites.Count() == 0)
-            {
-                txtCode.Text = "";
-            }
-
-            var sb = new StringBuilder();
-            switch (exportConfig.ExportDataType)
-            {
-                case ExportDataTypes.DIM:
-                    {
-                        sb.AppendLine("'- Includes -----------------------------------------------");
-                        sb.AppendLine("#INCLUDE <putchars.bas>");
-                        sb.AppendLine("");
-                        sb.AppendLine(string.Format("' Can use: #INCLUDE \"{0}\"",
-                            Path.GetFileName(exportConfig.ExportFilePath)));
-                        sb.AppendLine(ExportManager.Export_Sprite_PutChars(exportConfig, sprites));
-                        sb.AppendLine("");
-                        sb.AppendLine("'- Draw sprite --------------------------------------------");
-
-                        var sprite = sprites.ElementAt(0);
-                        sb.AppendLine(string.Format(
-                            "putChars(10,5,{0},{1},@{2}{3}({4}))",
-                            sprite.Width / 8,
-                            sprite.Height / 8,
-                            exportConfig.LabelName,
-                            sprite.Name.Replace(" ", "_"),
-                            sprite.Frames == 1 ? "0" : "0,0"));
-                        sb.AppendLine("");
-                    }
-                    break;
-
-                case ExportDataTypes.ASM:
-                    {
-                        sb.AppendLine("'- Includes -----------------------------------------------");
-                        sb.AppendLine("#INCLUDE <putchars.bas>");
-                        sb.AppendLine("");
-                        sb.AppendLine("'- Draw sprite --------------------------------------------");
-                        var sprite = sprites.ElementAt(0);
-                        sb.AppendLine(string.Format(
-                            "putChars(10,5,{0},{1},@{2}{3})",
-                            sprite.Width / 8,
-                            sprite.Height / 8,
-                            exportConfig.LabelName,
-                            sprite.Name.Replace(" ", "_")));
-                        sb.AppendLine("");
-                        sb.AppendLine("' This section must not be executed");
-                        sb.AppendLine(string.Format("' Can use: #INCLUDE \"{0}\"",
-                            Path.GetFileName(exportConfig.ExportFilePath)));
-                        sb.AppendLine(ExportManager.Export_Sprite_PutChars(exportConfig, sprites));
-                    }
-                    break;
-
-                case ExportDataTypes.BIN:
-                    {
-                        sb.AppendLine("'- Includes -----------------------------------------------");
-                        sb.AppendLine("#INCLUDE <putchars.bas>");
-                        sb.AppendLine("");
-                        sb.AppendLine("'- Draw sprite --------------------------------------------");
-                        var sprite = sprites.ElementAt(0);
-                        sb.AppendLine(string.Format(
-                            "putChars(10,5,{0},{1},@{2})",
-                            sprite.Width / 8,
-                            sprite.Height / 8,
-                            exportConfig.LabelName));
-                        sb.AppendLine("");
-                        sb.AppendLine("' This section must not be executed");
-                        sb.AppendLine(string.Format(
-                            "{0}:",
-                            exportConfig.LabelName));
-                        sb.AppendLine("ASM");
-                        sb.AppendLine(string.Format("\tINCBIN \"{0}\"",
-                            Path.GetFileName(exportConfig.ExportFilePath)));
-                        sb.AppendLine("END ASM");
-                    }
-                    break;
-
-                case ExportDataTypes.TAP:
-                    {
-                        sb.AppendLine("'- Includes -----------------------------------------------");
-                        sb.AppendLine("#INCLUDE <putchars.bas>");
-                        sb.AppendLine("");
-                        sb.AppendLine("' Load .tap data ------------------------------------------");
-                        sb.AppendLine("LOAD \"\" CODE");
-                        sb.AppendLine("");
-                        sb.AppendLine("'- Draw sprite --------------------------------------------");
-                        var sprite = sprites.ElementAt(0);
-                        sb.AppendLine(string.Format(
-                            "putChars(10,5,{0},{1},@{2})",
-                            sprite.Width / 8,
-                            sprite.Height / 8,
-                            exportConfig.LabelName));
-                        sb.AppendLine("");
-                    }
-                    break;
-            }
-
-            txtCode.Text = sb.ToString();
-        }
-
-        #endregion
-
-
-        #region Export
-
-        private void Export()
-        {
-            GetConfigFromUI();
-            var em = new ExportManager();
-            em.Initialize(FileTypes.Sprite);
-            em.ExportSprites(exportConfig, sprites);
-        }
-
-        #endregion
-
-
-        #region Buttons
-
-        private void BtnSave_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
-        {
-            GetConfigFromUI();
-            ServiceLayer.Export_SetConfigFile(fileName + ".zbs", exportConfig);
-            Export();
-            this.Close();
-        }
-
-        private async void BtnOutputFile_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
-        {
-            var fileTypes = new FilePickerFileType[2];
-            fileTypes[1] = new FilePickerFileType("All files") { Patterns = new[] { "*", "*.*" } };
-            fileTypes[0] = new FilePickerFileType("Sprite files") { Patterns = new[] { "*.spr" } };
-
-            var select = await StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
-            {
-                ShowOverwritePrompt = true,
-                FileTypeChoices = fileTypes,
-                Title = "Select Export path...",
-            });
-
-            if (select != null)
-            {
-                txtOutputFile.Text = Path.GetFullPath(select.Path.LocalPath);
-            }
-        }
-
-
-        private void BtnExport_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
-        {
-            GetConfigFromUI();
-            Export();
-            this.Close();
-        }
-
-
-        private void BtnCopy_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
-        {
-            TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(txtCode.Text);
-        }
-
-
-        private void BtnCancel_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
-        {
-            this.Close();
-        }
-
-
-
-        private void CmbArrayBase_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            var idx = cmbArrayBase.SelectedIndex;
-            exportConfig.ArrayBase = idx;
-            Refresh();
-        }
-
-
-        private void CmbDataType_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            var idx = cmbDataType.SelectedIndex;
-            exportConfig.ExportDataType = (ExportDataTypes)idx;
-
-            var ext = "";
-            switch (exportConfig.ExportDataType)
-            {
-                case ExportDataTypes.ASM:
-                case ExportDataTypes.DIM:
-                    ext = ".bas";
-                    break;
-                case ExportDataTypes.BIN:
-                    ext = ".bin";
-                    break;
-                case ExportDataTypes.TAP:
-                    ext = ".tap";
-                    break;
-                default:
-                    return;
-            }
-            txtOutputFile.Text = Path.Combine(Path.GetDirectoryName(txtOutputFile.Text), Path.GetFileNameWithoutExtension(txtOutputFile.Text) + ext);
-            exportConfig.ExportFilePath = txtOutputFile.Text;
-            Refresh();
-        }
-
-
-        private void ChkAttr_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            exportConfig.IncludeAttr = chkAttr.IsChecked.ToBoolean();
-            Refresh();
-        }
-
-        #endregion
-#endif
 
         #region Image source
 
@@ -455,6 +158,17 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
             txtZoom.Text = "Zoom " + z.ToString() + "x";
             cnvSource.Zoom = z;
+        }
+
+
+        /// <summary>
+        /// CutOff changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void sldCutOff_PropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
+        {
+            cutOff = (int)sldCutOff.Value;
         }
 
 
@@ -514,6 +228,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void UpdatePreview(object userState, EventArgs e)
         {
             _UpdatePreview();
+            if (resetFocus)
+            {
+                btnFile.Focus();
+                resetFocus = false;
+            }
         }
 
         private void _UpdatePreview()
@@ -543,7 +262,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 s.Width = spriteWidth;
 
                 int numAttr = (spriteWidth / 8) * (spriteHeight / 8);
-                var attrs = new AttributeColor[numAttr];
+                var attrsDefault = new AttributeColor[numAttr];
+
                 for (int n = 0; n < numAttr; n++)
                 {
                     var attr = new AttributeColor();
@@ -551,42 +271,97 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     attr.Ink = 0;
                     attr.Bright = false;
                     attr.Flash = false;
-                    attrs[n] = attr;
+                    attrsDefault[n] = attr;
                 }
 
+                var w = scrPreview.Bounds.Width;
+                var h = scrPreview.Bounds.Width;
+                double ix = (spriteWidth + 2) * 4;
+                double iy = (spriteHeight + 2) * 4;
+                int sw = spriteWidth / 8;
+                int sh = spriteHeight / 8;
+                int px = 0;
+                int py = 0;
+                int xs = 0;
+                int ys = 0;
+                int paper = -1;
+                int ink = -1;
+                int prevX = 0;
+                int prevY = 0;
+                int anchoPreview = 0;
+                int altoPreview = 0;
+
                 pnlPreview.Children.Clear();
+
                 for (int n = 0; n < spriteFrames; n++)
                 {
+                    var attrs = attrsDefault.Clonar<AttributeColor[]>();
                     var pattern = new Pattern();
-                    pattern.Attributes = new AttributeColor[(spriteWidth / 8) * (spriteHeight / 8)];
+                    pattern.Attributes = attrs; // new AttributeColor[(spriteWidth / 8) * (spriteHeight / 8)];
                     pattern.Id = n;
                     pattern.Name = spriteName;
                     pattern.Number = n.ToString();
                     pattern.RawData = new int[spriteWidth * spriteHeight];
 
                     int dir = 0;
-                    int ys = cnvSource.OffsetY;
-                    for (int y = 0; y < spriteHeight; y++)
+                    for (int cy = 0; cy < sh; cy++)
                     {
-                        int xs = cnvSource.OffsetX;
-                        xs += (spriteWidth + spriteMargin) * n;
-                        for (int x = 0; x < spriteWidth; x++)
+                        py = cy * 8;
+                        for (int cx = 0; cx < sw; cx++)
                         {
-                            if (xs >= 0 && xs < imgData.Width &&
-                                ys > 0 && ys < imgData.Height)
+                            ys = cnvSource.OffsetY + py;
+                            px = cx * 8;
+                            paper = -1;
+                            ink = -1;
+                            for (int y = 0; y < 8; y++)
                             {
-                                var c = imgData[xs, ys];
-                                var idxAttr = GetColor(c.R, c.G, c.B, s.Palette);
-                                pattern.RawData[dir] = idxAttr;
+                                xs = (cnvSource.OffsetX + (n * spriteWidth)) + px;
+                                dir = (((cy * 8) + y) * spriteWidth) + (cx * 8);
+                                for (int x = 0; x < 8; x++)
+                                {
+                                    if (xs >= 0 && xs < imgData.Width &&
+                                        ys >= 0 && ys < imgData.Height)
+                                    {
+                                        var c = imgData[xs, ys];
+                                        var idxAttr = GetColor(c.R, c.G, c.B, s.Palette);
+                                        if (spriteMode == GraphicsModes.ZXSpectrum)
+                                        {
+                                            // Fijar el color
+                                            var dirAttr = (cy * sw) + cx;
+                                            var attr = pattern.Attributes[dirAttr];
+                                            attr.Bright = attr.Bright | (idxAttr > 7);
+                                            byte cCol = (byte)(idxAttr & 0b111);
+                                            if (paper == -1)
+                                            {
+                                                attr.Paper = cCol;
+                                                paper = cCol;
+                                            }
+                                            else if (ink == -1 && paper != cCol)
+                                            {
+                                                attr.Ink = cCol;
+                                                ink = cCol;
+                                            }
+                                            if (cCol == paper)
+                                            {
+                                                idxAttr = 0;
+                                            }
+                                            else
+                                            {
+                                                idxAttr = 7;
+                                            }
+                                        }
+                                        pattern.RawData[dir] = idxAttr;
+                                    }
+                                    else
+                                    {
+                                        pattern.RawData[dir] = 0;
+                                    }
+                                    dir++;
+                                    xs++;
+                                }
+                                ys++;
                             }
-                            else
-                            {
-                                pattern.RawData[dir] = 0;
-                            }
-                            dir++;
-                            xs++;
                         }
-                        ys++;
                     }
                     s.Patterns.Add(pattern);
 
@@ -596,9 +371,31 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                     img.Height = spriteHeight * spriteZoom;
                     img.Source = prev;
                     pnlPreview.Children.Add(img);
+
+                    Canvas.SetLeft(img, prevX);
+                    Canvas.SetTop(img, prevY);
+                    prevX += (spriteWidth * 4);
+
+                    if (anchoPreview < prevX)
+                    {
+                        anchoPreview = prevX;
+                    }
+                    if ((prevX + sw) > w)
+                    {
+                        prevY += (spriteHeight * 4);
+                        prevX = 0;
+                        if (altoPreview < prevY)
+                        {
+                            altoPreview = prevY;
+                        }
+                    }
+
                     prev.RenderSprite(s, n);
+
                 }
                 sprite = s;
+                pnlPreview.Width = anchoPreview + (spriteWidth * 4);
+                pnlPreview.Height = altoPreview + (spriteHeight * 4);
             }
             catch (Exception ex)
             {
@@ -609,12 +406,20 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private int GetColor(byte r, byte g, byte b, PaletteColor[] palette)
         {
+            if (r > 0)
+            {
+
+            }
+            byte cr = GetColor_CutOff(r);
+            byte cg = GetColor_CutOff(g);
+            byte cb = GetColor_CutOff(b);
             PaletteColor targetColor = new PaletteColor()
             {
-                Blue = b,
-                Green = g,
-                Red = r
+                Blue = cb,
+                Green = cg,
+                Red = cr
             };
+
             var palColor = palette.OrderBy(c => GetColorDistance(c, targetColor)).First();
             for (int n = 0; n < palette.Count(); n++)
             {
@@ -627,6 +432,40 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 }
             }
             return 0;
+        }
+
+
+        private byte GetColor_CutOff(byte c)
+        {
+            if (cutOff == 5)
+            {
+                return c;
+            }
+
+            if (cutOff < 5)
+            {
+                int ic = c - (25 * (5 - cutOff));
+                if (ic < 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return ic.ToByte();
+                }
+            }
+            else
+            {
+                int ic = c + (25 * (cutOff - 5));
+                if (ic > 255)
+                {
+                    return 255;
+                }
+                else
+                {
+                    return ic.ToByte();
+                }
+            }
         }
 
 
@@ -646,33 +485,40 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             spriteHeight = txtHeight.Text.ToInteger();
             spriteFrames = txtFrames.Text.ToInteger();
             spriteMargin = txtMargin.Text.ToInteger();
+            spriteMode = (GraphicsModes)cmbMode.SelectedIndex;
+            exportInOneSprite = chkFrames.IsChecked == true;
         }
 
         private void CmbMode_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            btnFile.Focus();
+            resetFocus = true;
+            //btnFile.Focus();
         }
 
 
         private void ChangeMode(GraphicsModes oldMode, GraphicsModes newMode)
         {
-            btnFile.Focus();
+            resetFocus = true;
         }
 
 
         private void TxtWidth_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
         {
-            btnFile.Focus();
+            resetFocus = true;
+            cnvSource.SpriteWidth = txtWidth.Text.ToInteger();
+            cnvSource.Refresh();
         }
 
         private void TxtHeight_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
         {
-            btnFile.Focus();
+            resetFocus = true;
+            cnvSource.SpriteHeight = txtHeight.Text.ToInteger();
+            cnvSource.Refresh();
         }
 
         private void TxtFrames_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
         {
-            btnFile.Focus();
+            resetFocus = true;
         }
 
         #endregion
@@ -698,48 +544,108 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
         private async void Import()
         {
-            GetProperties();
-
-            if (string.IsNullOrEmpty(spriteName))
+            try
             {
-                var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
-                {
-                    ButtonDefinitions = ButtonEnum.Ok,
-                    ContentTitle = "Parameter ERROR",
-                    ContentMessage = "You must specify a name for the imported sprite.",
-                    Icon = MsBox.Avalonia.Enums.Icon.Warning,
-                    WindowIcon = ((Window)this.VisualRoot).Icon,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                });
-                box.ShowAsPopupAsync(this);
-                return;
-            }
+                GetProperties();
 
-            // Check if name exists
-            var spr = sprites.FirstOrDefault(d => d!=null && d.Name == spriteName);
-            if (spr == null)
-            {
-                if (sprites.Count() > 1)
+                if (string.IsNullOrEmpty(spriteName))
                 {
-                    sprite.Id = sprites.Where(d => d != null).Max(d => d.Id) + 1;
+                    var box = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
+                    {
+                        ButtonDefinitions = ButtonEnum.Ok,
+                        ContentTitle = "Parameter ERROR",
+                        ContentMessage = "You must specify a name for the imported sprite.",
+                        Icon = MsBox.Avalonia.Enums.Icon.Warning,
+                        WindowIcon = ((Window)this.VisualRoot).Icon,
+                        WindowStartupLocation = WindowStartupLocation.CenterOwner
+                    });
+                    box.ShowAsPopupAsync(this);
+                    return;
+                }
+
+                if (exportInOneSprite)
+                {
+                    // Check if name exists
+                    var spr = sprites.FirstOrDefault(d => d != null && d.Name == spriteName);
+                    if (spr == null)
+                    {
+                        if (sprites.Count() > 1)
+                        {
+                            sprite.Id = sprites.Where(d => d != null).Max(d => d.Id) + 1;
+                        }
+                        else
+                        {
+                            sprite.Id = 1;
+                        }
+                        CallBackCommand?.Invoke(sprite, "ADD");
+                    }
+                    else
+                    {
+                        if (!await this.ShowConfirm("Confirm overwrite", $"There is already a sprite with the name \"{spriteName}\".\r\nAre you sure you want to overwrite it?"))
+                        {
+                            return;
+                        }
+                        sprite.Id = spr.Id;
+                        CallBackCommand?.Invoke(sprite, "UPDATE");
+                    }
                 }
                 else
                 {
-                    sprite.Id = 1;
+                    string sprName = spriteName;
+                    // Check for duplicates
+                    {
+                        var spr = sprites.FirstOrDefault(d => d != null && d.Name == spriteName);
+                        if (spr != null)
+                        {
+                            if (!await this.ShowConfirm("Confirm overwrite", $"There is already a sprite with the name \"{spriteName}\".\r\nAre you sure you want to overwrite it?"))
+                            {
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            spr = sprites.FirstOrDefault(d => d != null && d.Name == spriteName + "_0");
+                            if (spr != null)
+                            {
+                                if (!await this.ShowConfirm("Confirm overwrite", $"There is already a sprite with the name \"{spriteName}_0\".\r\nAre you sure you want to overwrite it?"))
+                                {
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    for (int n = 0; n < sprite.Patterns.Count(); n++)
+                    {
+                        var spr = sprite.Clonar<Sprite>();
+                        spr.Patterns = spr.Patterns.Skip(n).Take(1).ToList();
+                        spr.Frames = 1;
+                        spr.Name = sprName + "_" + n.ToString();
+                        var spr2 = sprites.FirstOrDefault(d => d != null && d.Name == spr.Name);
+                        if (spr2 == null)
+                        {
+                            var id = 0;
+                            if (sprites.Count() > 0 && sprites.ElementAt(0) != null)
+                            {
+                                id = sprites.Where(d => d != null).Max(d => d.Id) + 1;
+                            }
+                            spr.Id = id;
+                            CallBackCommand?.Invoke(spr, "ADD");
+                        }
+                        else
+                        {
+                            spr.Id = spr2.Id;
+                            CallBackCommand?.Invoke(sprite, "UPDATE");
+                        }
+                    }
                 }
-                CallBackCommand?.Invoke(sprite, "ADD");
+                this.Close();
+                this.Dispose();
             }
-            else
+            catch (Exception ex)
             {
-                if (!await this.ShowConfirm("Confirm overwrite", $"There is already a sprite with the name \"{spriteName}\".\r\nAre you sure you want to overwrite it?"))
-                {
-                    return;
-                }
-                sprite.Id = spr.Id;
-                CallBackCommand?.Invoke(sprite, "UPDATE");
+                this.ShowError("ERROR importing image", ex.Message + ex.StackTrace);
             }
-            this.Close();
-            this.Dispose();
         }
 
         #endregion

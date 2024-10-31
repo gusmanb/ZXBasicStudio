@@ -263,9 +263,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
                     foreach (var sprite in sprites)
                     {
+                        /*
                         // Check attributes for ZX Spectrum mode
                         if (sprite != null && sprite.GraphicMode == GraphicsModes.ZXSpectrum)
                         {
+                            // Force ZX Spectrum palette
+                            sprite.Palette = ServiceLayer.GetPalette(GraphicsModes.ZXSpectrum);
                             foreach (var pattern in sprite.Patterns)
                             {
                                 int cW = sprite.Width / 8;
@@ -289,6 +292,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                                 }
                             }
                         }
+                        */
                         // Create pattern list
                         var spc = new SpritePatternControl();
                         spc.Initialize(sprite, SpriteList_Command);
@@ -335,6 +339,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             btnMask.Tapped += BtnMask_Tapped;
             btnExport.Tapped += BtnExport_Tapped;
             btnImport.Tapped += BtnImport_Tapped;
+
+            btnUndo.Tapped += BtnUndo_Tapped;
+            btnRedo.Tapped += BtnRedo_Tapped;
+            btnInvertColorsCell.Tapped += BtnInvertColorsCell_Tapped;
+            btnInvertPixelsCell.Tapped += BtnInvertPixelsCell_Tapped;
 
             Refresh();
 
@@ -569,7 +578,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             int id = 0;
             if (SpritePatternsList.Count > 0)
             {
-                id = SpritePatternsList.Where(d => d.SpriteData != null).Max(d => d.SpriteData.Id) + 1;
+                var sds = SpritePatternsList.Where(d => d.SpriteData != null);
+                if (sds.Any())
+                {
+                    id = sds.Max(d => d.SpriteData.Id) + 1;
+                }
             }
             for (int n = 0; n < SpritePatternsList.Count; n++)
             {
@@ -1019,6 +1032,30 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         private void BtnImport_Tapped(object? sender, TappedEventArgs e)
         {
             Import();
+        }
+
+
+        private void BtnInvertPixelsCell_Tapped(object? sender, TappedEventArgs e)
+        {
+            
+        }
+
+
+        private void BtnInvertColorsCell_Tapped(object? sender, TappedEventArgs e)
+        {
+            
+        }
+
+
+        private void BtnRedo_Tapped(object? sender, TappedEventArgs e)
+        {
+            
+        }
+
+
+        private void BtnUndo_Tapped(object? sender, TappedEventArgs e)
+        {
+            
         }
 
         #endregion

@@ -152,6 +152,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 return;
             }
 
+
             aspect.RenderSprite(SpriteData, SpriteData.CurrentFrame);
             grdEditor.Zoom = _Zoom;
             this.InvalidateVisual();

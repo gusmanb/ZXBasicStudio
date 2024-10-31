@@ -13,7 +13,7 @@
     <Title>ZX Basic Studio</Title>
     <AssemblyVersion>1.2.*</AssemblyVersion>
     <Deterministic>False</Deterministic>
-    <Version>1.2.1</Version>
+    <Version>1.2.1.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
@@ -171,6 +171,8 @@
     <None Remove="Svg\github.svg" />
     <None Remove="Svg\hashtag-solid.svg" />
     <None Remove="Svg\ImageImport.svg" />
+    <None Remove="Svg\invert-color-svgrepo-com.svg" />
+    <None Remove="Svg\invert-mode-svgrepo-com.svg" />
     <None Remove="Svg\keyboard-regular.svg" />
     <None Remove="Svg\layout-alltools-solid.svg" />
     <None Remove="Svg\layout-debug-solid.svg" />
@@ -190,6 +192,7 @@
     <None Remove="Svg\power-off-solid.svg" />
     <None Remove="Svg\rectangle-list-solid.svg" />
     <None Remove="Svg\rectangle-xmark-solid.svg" />
+    <None Remove="Svg\redo.svg" />
     <None Remove="Svg\scissors-solid.svg" />
     <None Remove="Svg\Seal.svg" />
     <None Remove="Svg\square-minus-solid.svg" />
@@ -203,6 +206,7 @@
     <None Remove="Svg\trash-can-regular.svg" />
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
+    <None Remove="Svg\Undo.svg" />
     <None Remove="Svg\White\backward-solid.svg" />
     <None Remove="Svg\White\backward-step-solid.svg" />
     <None Remove="Svg\White\box-open-solid.svg" />
@@ -346,8 +350,12 @@
     <AvaloniaResource Include="Svg\Documents\file-zxramdisk.svg" />
     <AvaloniaResource Include="Svg\github.svg" />
     <AvaloniaResource Include="Svg\ImageImport.svg" />
+    <AvaloniaResource Include="Svg\invert-color-svgrepo-com.svg" />
+    <AvaloniaResource Include="Svg\invert-mode-svgrepo-com.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-arrow-right-solid.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-solid.svg" />
+    <AvaloniaResource Include="Svg\redo.svg" />
+    <AvaloniaResource Include="Svg\undo.svg" />
     <AvaloniaResource Include="Svg\White\circle-info-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-question-solid.svg" />
     <AvaloniaResource Include="Svg\White\exit-solid.svg" />

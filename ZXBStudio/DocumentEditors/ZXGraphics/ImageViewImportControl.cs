@@ -78,7 +78,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <summary>
         /// Width of the sprite window
         /// </summary>
-        private int SpriteWidth
+        public int SpriteWidth
         {
             get
             {
@@ -95,7 +95,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         /// <summary>
         /// Height of the sprite window
         /// </summary>
-        private int SpriteHeight
+        public int SpriteHeight
         {
             get
             {
@@ -150,6 +150,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
         }
 
 
+        public void Refresh()
+        {
+            this.InvalidateVisual();
+        }
+
+
         public override void Render(DrawingContext context)
         {
             try
@@ -163,16 +169,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                 // Background
                 {
                     bool yPair = true;
-                    for (int yy = 0; yy < 200; yy += z8)
+                    for (int yy = 0; yy < 400; yy += z8)
                     {
                         bool pair = yPair;
                         yPair = !yPair;
-                        for (int xx = 0; xx < 200; xx += z8)
+                        for (int xx = 0; xx < 400; xx += z8)
                         {
-                            int x1 = xx + 200;
+                            int x1 = xx;
                             int x2 = x1 + z8;
                             int xz = z8;
-                            int y1 = yy + 200;
+                            int y1 = yy;
                             int y2 = y1 + z8;
                             int yz = z8;
                             if (x1 >= 400 || y1 >= 400)
@@ -188,24 +194,13 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                                 yz = 400 - y1;
                             }
                             Rect r0 = new Rect(x1, y1, xz, yz);
-                            Rect r1 = new Rect(x1, (400 - y1) - yz, xz, yz);
-                            Rect r2 = new Rect((400 - x1) - xz, y1, xz, yz);
-                            Rect r3 = new Rect((400 - x1) - xz, (400 - y1) - yz, xz, yz);
                             if (pair)
                             {
                                 context.FillRectangle(brushGray, r0);
-                                context.FillRectangle(brushWhite, r1);
-                                context.FillRectangle(brushWhite, r2);
-                                context.FillRectangle(brushGray, r3);
-                                //context.DrawRectangle(penRed, r2);
                             }
                             else
                             {
-                                context.FillRectangle(brushWhite, r0);
-                                context.FillRectangle(brushGray, r1);
-                                context.FillRectangle(brushGray, r2);
-                                context.FillRectangle(brushWhite, r3);
-                                //context.DrawRectangle(penRed, r2);
+                                context.FillRectangle(brushWhite, r0);                             
                             }
                             pair = !pair;
                         }
@@ -232,8 +227,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             {
                                 try
                                 {
-                                    int xx = x + 200 - z8;
-                                    int yy = y + 200 - z8;
+                                    int xx = x;
+                                    int yy = y;
 
                                     if ((xx + z) > w)
                                     {
@@ -270,139 +265,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
 
                 // Mask
                 {
-                    int sw = SpriteWidth * _Zoom;
-                    int x1 = 200 - (sw / 2);
+                    int x2 = SpriteWidth * _Zoom;
+                    int y2 = SpriteHeight * _Zoom;
 
-                    var r0 = new Rect(0, 0, 400, x1);
+                    var r0 = new Rect(x2, 0, 400-x2, 400);
                     context.FillRectangle(brushMask, r0);
-                    var r1 = new Rect(0, x1 + sw, 400, x1);
+                    var r1 = new Rect(0, y2, x2, 400-y2);
                     context.FillRectangle(brushMask, r1);
-                    var r2 = new Rect(0, x1, x1, sw);
-                    context.FillRectangle(brushMask, r2);
-                    var r3 = new Rect(x1 + sw, x1, x1, sw);
-                    context.FillRectangle(brushMask, r3);
 
-                    context.DrawRectangle(penRed,
-                        new Rect(x1, x1, sw, sw));
-                }
-
-
-                /*
-                z = _Zoom * 8;
-                int cw = 0;
-                int ch = 0;
-                bool pairRow = false; ;
-                bool pair = false;
-                for (int y = 0; y < h; y += z)
-                {
-                    pair = pairRow;
-                    pairRow = !pairRow;
-                    for (int x = 0; x < w; x += z)
-                    {
-                        if ((x + z) > w)
-                        {
-                            cw = w - x;
-                        }
-                        else
-                        {
-                            cw = z;
-                        }
-                        if ((y + z) > h)
-                        {
-                            ch = h - y;
-                        }
-                        else
-                        {
-                            ch = z;
-                        }
-                        Rect r = new Rect(x, y, cw, ch);
-                        if (pair)
-                        {
-                            context.FillRectangle(brushGray, r);
-                        }
-                        else
-                        {
-                            context.FillRectangle(brushWhite, r);
-                        }
-                        pair = !pair;
-                    }
-                }
-            }
-
-                // Image
-                if (imageData != null)
-                {
-                    int iw = imageData.Size.Width;
-            int ih = imageData.Size.Height;
-            //int w = (int)this.Bounds.Width;
-            //int h = (int)this.Bounds.Height;
-            int cw = 0;
-            int ch = 0;
-            z = _Zoom;
-
-                    int yd = offsetY * z;
-                    for (int y = 0; y<h; y += z)
-                    {
-                        int xd = offsetX * z;
-                        for (int x = 0; x<w; x += z)
-                        {
-                            if (xd >= 0 && xd<iw &&
-                                yd >= 0 && yd<ih)
-                            {
-                                try
-                                {
-                                    if ((x + z) > w)
-                                    {
-                                        cw = w - x;
-                                    }
-                                    else
-                                    {
-                                        cw = z;
-                                    }
-    if ((y + z) > h)
-    {
-        ch = h - y;
-    }
-    else
-    {
-        ch = z;
-    }
-    Rect r = new Rect(x, y, cw, ch);
-    var pixel = imageData[xd, yd];
-    var brush = new SolidColorBrush(Color.FromArgb(
-        pixel.A, pixel.R, pixel.G, pixel.B));
-    context.FillRectangle(brush, r);
-                                }
-                                catch (Exception ex)
-                                {
-
-                                }
-                            }
-                            xd++;
-                        }
-                        yd++;
-                    }
-                }
-
-                // Mask
-                {
-        int sw = SpriteWidth * _Zoom;
-        int mx = w / 2;
-        int x1 = mx - (sw / 2);
-        int x2 = w - x1;
-
-        int sh = SpriteHeight * _Zoom;
-        int my = h / 2;
-        int y1 = my - (sh / 2);
-        int y2 = h - y1;
-
-        context.FillRectangle(brushMask, new Rect(0, 0, w, y1));
-        context.FillRectangle(brushMask, new Rect(0, y2, w, h - y2));
-        context.FillRectangle(brushMask, new Rect(0, y1, x1, sh + 1));
-        context.FillRectangle(brushMask, new Rect(x2, y1, w - x2, sh + 1));
-        context.DrawRectangle(penRed, new Rect(x1 - 1, y1 - 1, sw + 1, sh + 1));
-    }
-                */
+                    context.DrawRectangle(penRed, new Rect(-1, -1, x2, y2));
+                }              
             }
             catch (Exception ex)
             {
@@ -410,136 +282,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
             }
         }
 
-
-#if NO
-        public override void Render(DrawingContext context)
-        {
-            base.Render(context);
-
-            int w = (int)this.Bounds.Width;
-            int h = (int)this.Bounds.Height;
-            int z = 1;
-
-            // Background
-            {
-                z = _Zoom * 8;
-                int cw = 0;
-                int ch = 0;
-                bool pairRow = false; ;
-                bool pair = false;
-                for (int y = 0; y < h; y += z)
-                {
-                    pair = pairRow;
-                    pairRow = !pairRow;
-                    for (int x = 0; x < w; x += z)
-                    {
-                        if ((x + z) > w)
-                        {
-                            cw = w - x;
-                        }
-                        else
-                        {
-                            cw = z;
-                        }
-                        if ((y + z) > h)
-                        {
-                            ch = h - y;
-                        }
-                        else
-                        {
-                            ch = z;
-                        }
-                        Rect r = new Rect(x, y, cw, ch);
-                        if (pair)
-                        {
-                            context.FillRectangle(brushGray, r);
-                        }
-                        else
-                        {
-                            context.FillRectangle(brushWhite, r);
-                        }
-                        pair = !pair;
-                    }
-                }
-            }
-
-            // Image
-            if (imageData != null)
-            {
-                int iw = imageData.Size.Width;
-                int ih = imageData.Size.Height;
-                //int w = (int)this.Bounds.Width;
-                //int h = (int)this.Bounds.Height;
-                int cw = 0;
-                int ch = 0;
-                z = _Zoom;
-
-                int yd = offsetY*z;
-                for (int y = 0; y < h; y += z)
-                {
-                    int xd = offsetX*z;
-                    for (int x = 0; x < w; x += z)
-                    {
-                        if (xd >= 0 && xd < iw &&
-                            yd >= 0 && yd < ih)
-                        {
-                            try
-                            {
-                                if ((x + z) > w)
-                                {
-                                    cw = w - x;
-                                }
-                                else
-                                {
-                                    cw = z;
-                                }
-                                if ((y + z) > h)
-                                {
-                                    ch = h - y;
-                                }
-                                else
-                                {
-                                    ch = z;
-                                }
-                                Rect r = new Rect(x, y, cw, ch);
-                                var pixel = imageData[xd, yd];
-                                var brush = new SolidColorBrush(Color.FromArgb(
-                                    pixel.A, pixel.R, pixel.G, pixel.B));
-                                context.FillRectangle(brush, r);
-                            }
-                            catch (Exception ex)
-                            {
-
-                            }
-                        }
-                        xd++;
-                    }
-                    yd++;
-                }
-            }
-
-            // Mask
-            {
-                int sw = SpriteWidth * _Zoom;
-                int mx = w / 2;
-                int x1 = mx - (sw / 2);
-                int x2 = w - x1;
-
-                int sh = SpriteHeight* _Zoom;
-                int my = h / 2;
-                int y1 = my - (sh / 2);
-                int y2 = h - y1;
-
-                context.FillRectangle(brushMask, new Rect(0, 0, w, y1));
-                context.FillRectangle(brushMask, new Rect(0, y2, w, h - y2));
-                context.FillRectangle(brushMask, new Rect(0, y1, x1, sh+1));
-                context.FillRectangle(brushMask, new Rect(x2, y1, w-x2, sh+1));
-                context.DrawRectangle(penRed, new Rect(x1-1, y1-1, sw+1, sh+1));
-            }
-        }
-#endif
-
-        #endregion
+#endregion
 
 
         #region Mouse

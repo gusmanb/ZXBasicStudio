@@ -9,6 +9,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
     public class AttributeColor
     {
         public int Ink { get; set; }
+
         public int Paper { get; set; }
         public bool Bright { get; set; }
         public bool Flash { get; set; }
