@@ -537,21 +537,21 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.log
         {
             new PaletteColor() { Red=0x00, Green=0x00, Blue=0x00 },     // Black
             new PaletteColor() { Red=0x00, Green=0x00, Blue=0xa0 },     // Blue
-            new PaletteColor() { Red=0xdc, Green=0x00, Blue=0x00 },     // Red
-            new PaletteColor() { Red=0xe4, Green=0x00, Blue=0xb4 },     // Magenta
-            new PaletteColor() { Red=0x00, Green=0xd4, Blue=0x00 },     // Green
-            new PaletteColor() { Red=0x00, Green=0xd4, Blue=0xd4 },     // Cyan
-            new PaletteColor() { Red=0xd0, Green=0xd0, Blue=0x00 },     // Yellow
-            new PaletteColor() { Red=0xc8, Green=0xc8, Blue=0xc8 },     // White
+            new PaletteColor() { Red=0xa0, Green=0x00, Blue=0x00 },     // Red
+            new PaletteColor() { Red=0xa0, Green=0x00, Blue=0xa0 },     // Magenta
+            new PaletteColor() { Red=0x00, Green=0xa0, Blue=0x00 },     // Green
+            new PaletteColor() { Red=0x00, Green=0xa0, Blue=0xa0 },     // Cyan
+            new PaletteColor() { Red=0xa0, Green=0xa0, Blue=0x00 },     // Yellow
+            new PaletteColor() { Red=0xa0, Green=0xa0, Blue=0xa0 },     // White
             // Bright 1
             new PaletteColor() { Red=0x00, Green=0x00, Blue=0x00 },     // Black
-            new PaletteColor() { Red=0x00, Green=0x00, Blue=0xac },     // Blue
-            new PaletteColor() { Red=0xf0, Green=0x00, Blue=0x00 },     // Red
-            new PaletteColor() { Red=0xfc, Green=0x00, Blue=0xdc },     // Magenta
-            new PaletteColor() { Red=0x00, Green=0xf0, Blue=0x00 },     // Green
-            new PaletteColor() { Red=0x00, Green=0xfc, Blue=0xfc },     // Cyan
-            new PaletteColor() { Red=0xfc, Green=0xfc, Blue=0x00 },     // Yellow
-            new PaletteColor() { Red=0xfc, Green=0xfc, Blue=0xfc }      // White
+            new PaletteColor() { Red=0x00, Green=0x00, Blue=0xff },     // Blue
+            new PaletteColor() { Red=0xff, Green=0x00, Blue=0x00 },     // Red
+            new PaletteColor() { Red=0xff, Green=0x00, Blue=0xff },     // Magenta
+            new PaletteColor() { Red=0x00, Green=0xff, Blue=0x00 },     // Green
+            new PaletteColor() { Red=0x00, Green=0xff, Blue=0xff },     // Cyan
+            new PaletteColor() { Red=0xff, Green=0xff, Blue=0x00 },     // Yellow
+            new PaletteColor() { Red=0xff, Green=0xff, Blue=0xff }      // White
         };
 
 

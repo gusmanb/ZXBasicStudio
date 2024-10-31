@@ -26,14 +26,23 @@
 
       <Grid Grid.Column="2" Grid.Row="1" RowDefinitions="Auto,*,Auto">
         <WrapPanel Orientation="Horizontal" Grid.ColumnSpan="5" Margin="10" Background="#ff202020" Height="NaN">
-          <Button Classes="toolbar" Name="btnClear" ToolTip.Tip="Clear active patterns">
+
+          <Button Classes="toolbar" Name="btnUndo" ToolTip.Tip="Undo last action" IsEnabled="False">
+            <svg:Svg Path="/Svg/undo.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnRedo" ToolTip.Tip="Redo last action" IsEnabled="False">
+            <svg:Svg Path="/Svg/redo.svg"></svg:Svg>
+          </Button>
+          
+          <Button Classes="toolbar" Name="btnClear" ToolTip.Tip="Clear active patterns" Margin="4,0,0,0">
             <svg:Svg Path="/Svg/Cancel.svg"></svg:Svg>
           </Button>
           <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
-
+          
           <Button Classes="toolbar" Name="btnCut" ToolTip.Tip="Cut active patterns to clipboard">
             <svg:Svg Path="/Svg/Cut.svg"></svg:Svg>
           </Button>
+          
           <Button Classes="toolbar" Name="btnCopy" ToolTip.Tip="Copy active patterns to clipboard">
             <svg:Svg Path="/Svg/Copy.svg"></svg:Svg>
           </Button>
@@ -91,6 +100,14 @@
           </Button>
           <Button Classes="toolbar" Name="btnMask" ToolTip.Tip="Mask pattern">
             <svg:Svg Path="/Svg/Mask.svg"></svg:Svg>
+          </Button>
+          <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
+
+          <Button Classes="toolbar" Name="btnInvertPixelsCell" ToolTip.Tip="Invert pixels on cell" IsEnabled="False">
+            <svg:Svg Path="/Svg/invert-mode-svgrepo-com.svg"></svg:Svg>
+          </Button>
+          <Button Classes="toolbar" Name="btnInvertColorsCell" ToolTip.Tip="Invert colors on cell" IsEnabled="False">
+            <svg:Svg Path="/Svg/invert-color-svgrepo-com.svg"></svg:Svg>
           </Button>
           <Line StartPoint="0,0" EndPoint="0,32" Stroke="White" Margin="5,0,5,0"></Line>
 
