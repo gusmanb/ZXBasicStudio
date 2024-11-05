@@ -16,14 +16,15 @@
 
     <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
       <Button Name="btnFile" Grid.Row="0" Classes="dialog" HorizontalAlignment="Left">Open file for import</Button>
-
+      <TextBlock HorizontalAlignment="Right" Classes="dialog">Move the image with the arrow keys (shift faster)</TextBlock>
+      
       <Grid Width="400" Height="400" Grid.Row="1">
         <local:ImageViewImportControl Grid.Row="1" Name="cnvSource"/>
       </Grid>
 
       <Grid Grid.Row="2" ColumnDefinitions="48,*">
         <TextBlock Name="txtZoom" Classes="dialog">Zoom 1x</TextBlock>
-        <Slider Name="sldZoom" Grid.Column="1" Width="100" Minimum="1" Maximum="8" Value="4" HorizontalAlignment="Left" Focusable="False" />
+        <Slider Name="sldZoom" Grid.Column="1" Width="100" Minimum="1" Maximum="8" Value="4" HorizontalAlignment="Left" Focusable="False" />        
       </Grid>
     </Grid>
 
