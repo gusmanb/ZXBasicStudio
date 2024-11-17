@@ -206,7 +206,7 @@
     <None Remove="Svg\trash-can-regular.svg" />
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
-    <None Remove="Svg\Undo.svg" />
+    <None Remove="Svg\undo.svg" />
     <None Remove="Svg\White\backward-solid.svg" />
     <None Remove="Svg\White\backward-step-solid.svg" />
     <None Remove="Svg\White\box-open-solid.svg" />
