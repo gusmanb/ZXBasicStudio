@@ -206,7 +206,6 @@
     <None Remove="Svg\trash-can-regular.svg" />
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
-    <None Remove="Svg\Undo.svg" />
     <None Remove="Svg\White\backward-solid.svg" />
     <None Remove="Svg\White\backward-step-solid.svg" />
     <None Remove="Svg\White\box-open-solid.svg" />
@@ -272,6 +271,7 @@
     <None Remove="Svg\White\trash-solid.svg" />
     <None Remove="Svg\White\truck-fast-solid.svg" />
     <None Remove="Svg\x-svgrepo-com.svg" />
+    <None Remove="Svg\xxxundo.svg" />
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\asmFile.png" />
@@ -355,7 +355,7 @@
     <AvaloniaResource Include="Svg\magnifying-glass-arrow-right-solid.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-solid.svg" />
     <AvaloniaResource Include="Svg\redo.svg" />
-    <AvaloniaResource Include="Svg\undo.svg" />
+    <AvaloniaResource Include="Svg\xxxundo.svg" />
     <AvaloniaResource Include="Svg\White\circle-info-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-question-solid.svg" />
     <AvaloniaResource Include="Svg\White\exit-solid.svg" />
