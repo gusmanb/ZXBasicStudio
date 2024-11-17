@@ -16,20 +16,21 @@
 
     <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
       <Button Name="btnFile" Grid.Row="0" Classes="dialog" HorizontalAlignment="Left">Open file for import</Button>
-
+      <TextBlock HorizontalAlignment="Right" Classes="dialog">Move the image with the arrow keys (shift faster)</TextBlock>
+      
       <Grid Width="400" Height="400" Grid.Row="1">
         <local:ImageViewImportControl Grid.Row="1" Name="cnvSource"/>
       </Grid>
 
       <Grid Grid.Row="2" ColumnDefinitions="48,*">
         <TextBlock Name="txtZoom" Classes="dialog">Zoom 1x</TextBlock>
-        <Slider Name="sldZoom" Grid.Column="1" Width="100" Minimum="1" Maximum="8" Value="4" HorizontalAlignment="Left" Focusable="False" />
+        <Slider Name="sldZoom" Grid.Column="1" Width="100" Minimum="1" Maximum="8" Value="4" HorizontalAlignment="Left" Focusable="False" />        
       </Grid>
     </Grid>
 
     <TextBlock FontSize="18" FontWeight="Bold" Grid.Column="2">Target</TextBlock>
 
-    <Grid Name="pnlProperties" Grid.Column="2" Grid.Row="1" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="0,0,0,4">
+    <Grid Name="pnlProperties" Grid.Column="2" Grid.Row="1" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="0,0,0,4">
       <TextBlock Grid.Row="1" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Name:</TextBlock>
       <TextBox Name="txtName" Classes="dialog" Grid.Row="1" Grid.Column="1" MaxWidth="Infinity"></TextBox>
 
@@ -49,25 +50,36 @@
         <NumericUpDown Classes="dialog" Name="txtHeight" Minimum="1" Increment="8" Maximum="256" Value="8" VerticalAlignment="Center"/>
       </Border>
 
-      <TextBlock Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames:</TextBlock>
-      <Border Grid.Row="5" Grid.Column="1" Classes="numericborder">
-        <NumericUpDown Classes="dialog" Name="txtFrames" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
-      </Border>
+      <TextBlock Grid.Row="5" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frames/Images:</TextBlock>
+      <Grid Grid.Row="5" Grid.Column="1" ColumnDefinitions="*,20,Auto">
+        <Border Classes="numericborder">
+          <NumericUpDown Classes="dialog" Name="txtFrames" Minimum="1" Increment="1" Maximum="256" Value="1" VerticalAlignment="Center"/>
+        </Border>
+        <CheckBox Name="chkFrames" Grid.Column="1" IsChecked="True"/>
+        <TextBlock Grid.Column="2" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Export in one sprite</TextBlock>
+      </Grid>
 
       <TextBlock Grid.Row="6" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right">Frame margin:</TextBlock>
       <Border Grid.Row="6" Grid.Column="1" Classes="numericborder">
         <NumericUpDown Classes="dialog" Name="txtMargin" Minimum="0" Increment="1" Maximum="256" Value="0" VerticalAlignment="Center"/>
       </Border>
 
-      <ScrollViewer Grid.Row="7" Grid.ColumnSpan="2">
-        <WrapPanel Name="pnlPreview" Margin="8" />
-      </ScrollViewer>
+      <TextBlock Grid.Row="7" Classes="dialog" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,10,0,0">Cutoff threshold:</TextBlock>
+      <Slider x:Name="sldCutOff" Grid.Row="7" Grid.Column="1" Maximum="10" Minimum="0" Value="5" SmallChange="0.5" VerticalAlignment="Bottom" Margin="0,12,0,0"/>
 
-      <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
+      <ScrollViewer Name="scrPreview" Grid.Row="8" Grid.ColumnSpan="2" Margin="0,5,0,0"
+                    ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+          <Canvas Name="pnlPreview" HorizontalAlignment="Left" VerticalAlignment="Top"              
+                 Margin="8" />
+      </ScrollViewer>
+      
+      <StackPanel Grid.Row="9" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
         <Button Name="btnCancel" Classes="dialog">Cancel</Button>
         <Button Name="btnImport" Classes="dialog">Import data</Button>
       </StackPanel>
-      
+
     </Grid>
   </Grid>
 </Window>
