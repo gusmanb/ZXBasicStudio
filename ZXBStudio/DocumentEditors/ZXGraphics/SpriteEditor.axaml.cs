@@ -293,6 +293,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             }
                         }
                         */
+                        // Check attributes for ZX Spectrum mode
+                        if (sprite != null && sprite.Patterns != null)
+                        {
+                            var al = (sprite.Width / 8) * (sprite.Height / 8);
+                            foreach (var pattern in sprite.Patterns)
+                            {
+                                pattern.Attributes = pattern.Attributes.Take(al).ToArray();
+                            }
+                        }
+
                         // Create pattern list
                         var spc = new SpritePatternControl();
                         spc.Initialize(sprite, SpriteList_Command);
