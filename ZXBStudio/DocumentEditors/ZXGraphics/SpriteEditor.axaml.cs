@@ -299,7 +299,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics
                             var al = (sprite.Width / 8) * (sprite.Height / 8);
                             foreach (var pattern in sprite.Patterns)
                             {
-                                pattern.Attributes = pattern.Attributes.Take(al).ToArray();
+                                if (pattern.Attributes != null)
+                                {
+                                    pattern.Attributes = pattern.Attributes.Take(al).ToArray();
+                                }
                             }
                         }
 
