@@ -487,8 +487,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
             if (!ByRequest)
             {
-                if(ZXOptions.Current.DisableAuto)
+                if (ZXOptions.Current.DisableAuto)
+                {
                     return null;
+                }                
             }
 
             if (ByRequest)
@@ -540,7 +542,8 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             }
 
 
-            if (string.IsNullOrWhiteSpace(preText))
+            //if (string.IsNullOrWhiteSpace(preText))
+            if(trimmed.Length > 1)
             {
                 if (RequestedChar == '#')
                     return directives;
