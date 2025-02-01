@@ -215,6 +215,9 @@ namespace ZXBasicStudio
             regView.Registers = emu.Registers;
             memView.Initialize(emu.Memory);
             CreateRomBreakpoints();
+#if DEBUG
+            this.AttachDevTools();
+#endif
             #endregion
 
             #region Player intialization
