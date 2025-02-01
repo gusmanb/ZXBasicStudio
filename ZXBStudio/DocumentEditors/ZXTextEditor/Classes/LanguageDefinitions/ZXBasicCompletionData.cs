@@ -55,7 +55,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
 
         public string Text { get; }
 
-        public object Content => Text;
+        public object Content => this; // Text;
 
         public object Description { get; }
 
@@ -66,7 +66,10 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Classes.LanguageDefinitions
         {
             textArea.Document.Replace(completionSegment, Text);
         }
+
+        public override string ToString() => Text;
     }
+
 
     public enum ZXBasicCompletionType
     {

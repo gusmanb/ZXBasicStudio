@@ -35,6 +35,7 @@ using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Utils;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics;
+using SixLabors.ImageSharp.Formats.Webp;
 
 namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 {
@@ -99,14 +100,14 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         public override string DocumentName => _docName;
         public override string DocumentPath => _docPath;
         public override bool Modified
-        { 
-            get 
-            { 
-                if (_docPath == ZXConstants.DISASSEMBLY_DOC || _docPath == ZXConstants.ROM_DOC) 
-                    return false; 
-                
-                return editor?.IsModified ?? false; 
-            } 
+        {
+            get
+            {
+                if (_docPath == ZXConstants.DISASSEMBLY_DOC || _docPath == ZXConstants.ROM_DOC)
+                    return false;
+
+                return editor?.IsModified ?? false;
+            }
         }
         #endregion
 
@@ -139,7 +140,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         #region Constructors
         public ZXTextEditor() : this("Untitled", ZXTextDocument.Id)
         {
-            
+
         }
         public ZXTextEditor(string DocumentPath, Guid DocumentTypeId)
         {
@@ -147,7 +148,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
             _docTypeId = DocumentTypeId;
             InitializeShortcuts();
-            
+
             editor.DataContext = editor;
             editor.FontSize = ZXOptions.Current.EditorFontSize;
             editor.WordWrap = ZXOptions.Current.WordWrap;
@@ -208,7 +209,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         {
 
             if (e.Text == null || e.Text.Length == 0)
+            {
                 return;
+            }
 
             if (completionWindow == null && !string.IsNullOrWhiteSpace(e.Text) && !char.IsNumber(e.Text[0]))
             {
@@ -216,11 +219,15 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 var completionData = ShouldComplete(editor.Document, editor.TextArea.Caret.Line, editor.TextArea.Caret.Column - 1, e.Text[0], false);
 
                 if (completionData != null)
+                {
                     ShowCompletion(completionData, false);
+                }
             }
             else if (completionWindow != null && !char.IsLetterOrDigit(e.Text[0]))
+            {
                 completionWindow.CompletionList.RequestInsertion(e);
-             
+            }
+
         }
 
         private void TextArea_KeyDown(object? sender, KeyEventArgs e)
@@ -231,7 +238,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 var completionData = ShouldComplete(editor.Document, editor.TextArea.Caret.Line, editor.TextArea.Caret.Column - 1, null, true);
 
                 if (completionData != null)
+                {
                     ShowCompletion(completionData, true);
+                }
             }
         }
 
@@ -240,10 +249,9 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             if (completionWindow == null)
             {
                 completionWindow = new CompletionWindow(editor.TextArea);
-
                 ICompletionData? selectedItem = null;
 
-                if (requested)
+                //if (requested)
                 {
                     var line = editor.Document.GetLineByNumber(editor.TextArea.Caret.Line);
                     var text = editor.Document.GetText(line);
@@ -270,6 +278,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                 data.AddRange(completions);
                 completionWindow.Show();
                 completionWindow.CompletionList.SelectedItem = selectedItem;
+
                 completionWindow.KeyDown += (s, e) =>
                 {
                     if (e.Key == Key.F1 && completionWindow.CompletionList.SelectedItem != null)
@@ -512,7 +521,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
                 return true;
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 OutputLog.WriteLine($"Error saving file {_docPath}: {ex.Message}");
                 return false;
@@ -520,12 +529,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         }
         public override bool RenameDocument(string NewName, TextWriter OutputLog)
         {
-            try 
+            try
             {
                 UpdateFileName(_docPath, NewName);
                 return true;
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 OutputLog.WriteLine($"Error internally updating the document name: {ex.Message}");
                 return false;
@@ -602,22 +611,22 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             foreach (var fold in fManager.AllFoldings)
                 fold.IsFolded = false;
         }
-        
+
         public void FontIncrease()
         {
             editor.FontSize++;
         }
-        
+
         public void FontDecrease()
         {
             editor.FontSize--;
         }
-        
+
         public void CommentSelection()
         {
             if (editor.IsReadOnly || commentChar == null || editor.TextArea.Selection == null)
                 return;
-            
+
             TextDocument document = editor.TextArea.Document;
 
             if (editor.TextArea.Selection.Length == 0)
@@ -629,7 +638,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             else
             {
                 IEnumerable<SelectionSegment> selectionSegments = editor.TextArea.Selection.Segments;
-                
+
                 foreach (SelectionSegment segment in selectionSegments)
                 {
                     int lineStart = document.GetLineByOffset(segment.StartOffset).LineNumber;
@@ -741,17 +750,17 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
             if (e.RemovalLength > 0)
             {
-                
+
                 int end = start + e.RemovalLength;
                 int linesRemoved = 0;
                 int pos = start;
-                while(pos < end) 
+                while (pos < end)
                 {
                     var line = editor.Document.GetLineByOffset(pos);
                     if (pos >= line.EndOffset)
                         firstLine++;
 
-                    
+
                     string lineText = editor.Document.GetText(line.Offset, line.Length);
                     int removalLength = Math.Min(line.EndOffset - pos, end - pos);
                     string leftText = lineText.Remove(pos - line.Offset, removalLength);
@@ -766,11 +775,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
                         linesRemoved++;
                 }
 
-                if(linesRemoved > 0)
+                if (linesRemoved > 0)
                     changed |= MoveBreakpoints(firstLine, -linesRemoved);
             }
 
-            if(changed)
+            if (changed)
                 bpMargin?.InvalidateVisual();
         }
         private void Document_Changed(object? sender, DocumentChangeEventArgs e)
@@ -801,7 +810,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
 
                 var firstText = editor.Document.GetText(firstLine.Offset, firstLine.Length);
 
-                if(!string.IsNullOrWhiteSpace(firstText))
+                if (!string.IsNullOrWhiteSpace(firstText))
                     changed = MoveBreakpoints(firstLine.LineNumber + 1, addedLines);
                 else
                     changed = MoveBreakpoints(firstLine.LineNumber, addedLines);
@@ -873,12 +882,12 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         #region IObserver implementation for modified document notifications
         public void OnCompleted()
         {
-            
+
         }
 
         public void OnError(Exception error)
         {
-            
+
         }
 
         public void OnNext(AvaloniaPropertyChangedEventArgs value)
