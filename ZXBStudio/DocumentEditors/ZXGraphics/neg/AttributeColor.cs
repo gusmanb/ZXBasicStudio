@@ -9,6 +9,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
     public class AttributeColor
     {
         public int Ink { get; set; }
+
         public int Paper { get; set; }
         public bool Bright { get; set; }
         public bool Flash { get; set; }
@@ -17,7 +18,7 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
             get
             {
                 byte atr = (byte)((Ink & 0b00000111) | ((Paper & 0b00000111) << 3));
-                if (Ink > 7 || Paper > 7)
+                if (Ink > 7 || Paper > 7 || Bright)
                 {
                     Bright = true;
                 }
@@ -41,6 +42,11 @@ namespace ZXBasicStudio.DocumentEditors.ZXGraphics.neg
                 Bright = (value & 0b01000000) > 0;
                 Paper = (value >> 3) & 0b00000111;
                 Ink = value & 0b00000111;
+                if (Bright)
+                {
+                    Paper += 8;
+                    Ink += 8;
+                }
             }
         }
     }

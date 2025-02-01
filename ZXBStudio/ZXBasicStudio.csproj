@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -10,11 +10,10 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>zxbs.ico</ApplicationIcon>
-    <Version>1.0.0-beta1</Version>
     <Title>ZX Basic Studio</Title>
-    <AssemblyVersion>1.0.*</AssemblyVersion>
+    <AssemblyVersion>1.4.*</AssemblyVersion>
     <Deterministic>False</Deterministic>
-    <Version>0.1.23.1014</Version>
+    <Version></Version>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="LanguageDefinitions\**" />
@@ -171,6 +170,9 @@
     <None Remove="Svg\gears-solid.svg" />
     <None Remove="Svg\github.svg" />
     <None Remove="Svg\hashtag-solid.svg" />
+    <None Remove="Svg\ImageImport.svg" />
+    <None Remove="Svg\invert-color-svgrepo-com.svg" />
+    <None Remove="Svg\invert-mode-svgrepo-com.svg" />
     <None Remove="Svg\keyboard-regular.svg" />
     <None Remove="Svg\layout-alltools-solid.svg" />
     <None Remove="Svg\layout-debug-solid.svg" />
@@ -190,6 +192,7 @@
     <None Remove="Svg\power-off-solid.svg" />
     <None Remove="Svg\rectangle-list-solid.svg" />
     <None Remove="Svg\rectangle-xmark-solid.svg" />
+    <None Remove="Svg\redo.svg" />
     <None Remove="Svg\scissors-solid.svg" />
     <None Remove="Svg\Seal.svg" />
     <None Remove="Svg\square-minus-solid.svg" />
@@ -203,6 +206,7 @@
     <None Remove="Svg\trash-can-regular.svg" />
     <None Remove="Svg\trash-solid.svg" />
     <None Remove="Svg\truck-fast-solid.svg" />
+    <None Remove="Svg\undo.svg" />
     <None Remove="Svg\White\backward-solid.svg" />
     <None Remove="Svg\White\backward-step-solid.svg" />
     <None Remove="Svg\White\box-open-solid.svg" />
@@ -345,8 +349,13 @@
     <AvaloniaResource Include="Svg\circle-question-solid.svg" />
     <AvaloniaResource Include="Svg\Documents\file-zxramdisk.svg" />
     <AvaloniaResource Include="Svg\github.svg" />
+    <AvaloniaResource Include="Svg\ImageImport.svg" />
+    <AvaloniaResource Include="Svg\invert-color-svgrepo-com.svg" />
+    <AvaloniaResource Include="Svg\invert-mode-svgrepo-com.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-arrow-right-solid.svg" />
     <AvaloniaResource Include="Svg\magnifying-glass-solid.svg" />
+    <AvaloniaResource Include="Svg\redo.svg" />
+    <AvaloniaResource Include="Svg\undo.svg" />
     <AvaloniaResource Include="Svg\White\circle-info-solid.svg" />
     <AvaloniaResource Include="Svg\White\circle-question-solid.svg" />
     <AvaloniaResource Include="Svg\White\exit-solid.svg" />
@@ -527,16 +536,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.6" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.10" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.1.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.6" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.2.3" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
     <PackageReference Include="TextCopy" Version="6.2.1" />
   </ItemGroup>
