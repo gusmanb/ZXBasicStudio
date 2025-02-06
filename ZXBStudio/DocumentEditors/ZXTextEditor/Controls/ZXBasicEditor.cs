@@ -475,6 +475,16 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
         public ZXBasicEditor() : base() { }
         public ZXBasicEditor(string DocumentPath) : base(DocumentPath, ZXBasicDocument.Id) { }
 
+
+        /// <summary>
+        /// Gestion de autocompletar
+        /// </summary>
+        /// <param name="Document"></param>
+        /// <param name="Line"></param>
+        /// <param name="Column"></param>
+        /// <param name="RequestedChar"></param>
+        /// <param name="ByRequest"></param>
+        /// <returns></returns>
         protected override IEnumerable<ICompletionData>? ShouldComplete(IDocument Document, int Line, int Column, char? RequestedChar, bool ByRequest)
         {
             var line = Document.GetLineByNumber(Line);
@@ -524,26 +534,33 @@ namespace ZXBasicStudio.DocumentEditors.ZXTextEditor.Controls
             }
 
             if (context == ContextType.Comment)
+            {
                 return null;
+            }
 
             string trimmed = preText.Trim();
 
-            if(context == ContextType.Assembler)
+            if (context == ContextType.Assembler)
             {
                 if (!char.IsLetter(RequestedChar ?? ' ') || regCommentAsm.IsMatch(trimmed))
+                {
                     return null;
 
+                }
                 if (string.IsNullOrWhiteSpace(trimmed))
+                {
                     PrioritizeAssemblerKeywords();
+                }
                 else
+                {
                     PrioritizeAssemblerRegisters();
-
+                }
                 return assembler;
             }
 
 
-            //if (string.IsNullOrWhiteSpace(preText))
-            if(trimmed.Length > 1)
+            if (string.IsNullOrWhiteSpace(preText))
+            //if(trimmed.Length > 1)
             {
                 if (RequestedChar == '#')
                     return directives;

@@ -10,16 +10,17 @@
         Title="About..." CanResize="False"
         WindowStartupLocation="CenterScreen"
         Topmost="True">
-  <Grid RowDefinitions="2.7*,1*,0.5*,0.5*,0.5*,0.5*,1.5*,1.6*,*,0.4*,0.4*,0.4*,*">
+  <Grid RowDefinitions="Auto,Auto,Auto,*,*,Auto,Auto,Auto,Auto,*,Auto,Auto,*,32">
     <Image Margin="10" Width="128" Height="128" VerticalAlignment="Top" Source="avares://ZXBasicStudio/Assets/IconAbout.png"></Image>
     <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="36" FontWeight="Black">ZX Basic Studio</TextBlock>
     <TextBlock Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="24">Beta release</TextBlock>
-    <TextBlock Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" Name="txtBuild">Build 1.3.5.6</TextBlock>
-    <TextBlock Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" Name="txtDate">2023-10-29</TextBlock>
-    <TextBlock Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" TextAlignment="Center" TextWrapping="Wrap" FontWeight="DemiBold">The ZX Basic Studio development team</TextBlock>
-    <TextBlock Grid.Row="7" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center" FontSize="18" TextWrapping="Wrap">El Dr. Gusman, Duefectu, AdolFITO, Hash6Iron, SirRickster</TextBlock>
-    <TextBlock Grid.Row="8" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center" FontSize="16" TextWrapping="Wrap">Many thanks to Boriel for the ZX Basic compiler and his support to this project.</TextBlock>
-    <TextBlock Grid.Row="10" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center" FontSize="12" TextWrapping="Wrap">(C) 2023, El Dr. Gusman</TextBlock>
-    <Button Name="btnClose" Grid.Row="12">Close</Button>
+    <TextBlock Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="16" Name="txtBuild">Build 1.3.5.6</TextBlock>
+    <TextBlock Grid.Row="4" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="16" Name="txtDate">2023-10-29</TextBlock>
+    <TextBlock Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" TextAlignment="Center" TextWrapping="Wrap" FontWeight="DemiBold">The ZX Basic Studio development team</TextBlock>
+    <TextBlock Grid.Row="7" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center" FontSize="18" TextWrapping="Wrap">El Dr. Gusman, Boriel, Duefectu, AdolFITO, Hash6Iron, SirRickster</TextBlock>
+    <TextBlock Grid.Row="9" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center" FontSize="16" TextWrapping="Wrap">Many thanks to Boriel for the ZX Basic compiler and his support to this project.</TextBlock>
+    <TextBlock Grid.Row="11" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center" FontSize="12" TextWrapping="Wrap">(C) 2023, El Dr. Gusman</TextBlock>
+    <TextBlock Grid.Row="12" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center" FontSize="12" TextWrapping="Wrap">(C) 2025, Boriel &amp; DuefectuCorp</TextBlock>
+    <Button Name="btnClose" Grid.Row="14">Close</Button>
   </Grid>
 </Window>
