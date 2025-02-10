@@ -1,0 +1,42 @@
+name: Build .NET project
+
+on:
+  push:
+  pull_request: 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+  
+      - name: Install .NET 8
+        run: |
+          curl -Lo dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/a91ddad4-a3c2-4303-9efc-1ca6b7af850c/be1763df9211599df1cf1c6f504b3c41/dotnet-sdk-8.0.405-linux-x64.tar.gz
+          mkdir dotnet
+          tar -C dotnet -xf dotnet.tar.gz
+          rm dotnet.tar.gz
+          echo DOTNET_ROOT=~/dotnet >> $GITHUB_ENV
+          echo PATH=$PATH:~/dotnet >> $GITHUB_ENV
+          
+      - name: Show version
+        run: dotnet --version
+
+      - name: Clean build artifacts
+        run: dotnet restore
+    
+      - name: Build project
+        run: dotnet build ZXBasicStudio.sln --configuration Release --no-restore
+    
+      - name: Publish single executable
+        run: |
+          dotnet publish ZXBStudio/ZXBasicStudio.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o out
+
+      - name: Pack files
+        run: zip -9 -r ZXBasicStudio-linux-x64.zip ~/work/ZXBasicStudio/ZXBasicStudio/out/
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZXBasicStudio-linux-x64
+          path: ZXBasicStudio-linux-x64.zip
