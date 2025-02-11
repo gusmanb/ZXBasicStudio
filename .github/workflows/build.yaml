@@ -33,45 +33,26 @@ jobs:
         run: |
           dotnet publish ZXBStudio/ZXBasicStudio.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o out
 
-      - name: Pack files for Linux
-        run: |
-          pushd ~/work/ZXBasicStudio/ZXBasicStudio/out/
-          zip -9 -r ZXBasicStudio-linux-x64.zip .
-          mv ZXBasicStudio-linux-x64.zip ~/
-          popd
-        
       - name: Publish for Windows
-        run: dotnet publish ZXBStudio/ZXBasicStudio.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o out-win
-        
-      - name: Pack files for Windows
         run: |
-          pushd ~/work/ZXBasicStudio/ZXBasicStudio/out-win/
-          zip -9 -r ZXBasicStudio-win-x64.zip .
-          mv ZXBasicStudio-win-x64.zip ~/
-          popd
-          
+          dotnet publish ZXBStudio/ZXBasicStudio.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o out-win
+            
       - name: Publish for Mac
-        run: dotnet publish ZXBStudio/ZXBasicStudio.csproj -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -o out-mac
-
-      - name: Pack files for Mac
         run: |
-          pushd ~/work/ZXBasicStudio/ZXBasicStudio/out-mac/
-          zip -9 -r ZXBasicStudio-osx-x64.zip .
-          mv ZXBasicStudio-osx-x64.zip ~/
-          popd
+          dotnet publish ZXBStudio/ZXBasicStudio.csproj -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -o out-mac
 
       - uses: actions/upload-artifact@v4
         with:
           name: ZXBasicStudio-linux-x64
-          path: ~/ZXBasicStudio-linux-x64.zip
+          path: ~/work/ZXBasicStudio/ZXBasicStudio/out/
 
       - uses: actions/upload-artifact@v4
         with:
           name: ZXBasicStudio-win-x64
-          path: ~/ZXBasicStudio-win-x64.zip
+          path: ~/work/ZXBasicStudio/ZXBasicStudio/out-win/
 
       - uses: actions/upload-artifact@v4
         with:
           name: ZXBasicStudio-osx-x64
-          path: ~/ZXBasicStudio-osx-x64.zip
+          path: ~/work/ZXBasicStudio/ZXBasicStudio/out-mac/
       
